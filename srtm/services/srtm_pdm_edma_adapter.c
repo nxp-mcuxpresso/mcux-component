@@ -44,6 +44,7 @@ typedef struct _srtm_pdm_edma_buf_runtime
     uint32_t remainingPeriods; /* periods to be consumed/filled */
     uint32_t remainingLoadPeriods; /* periods to be preloaded either to DMA transfer or to local buffer. */
     uint32_t offset;               /* period offset, non-zero value means current period is not finished. */
+    bool period_missed;        /* flag indicating that one or more periods have been missed (SRTM task busy) so DMA should be restarted */
 } *srtm_pdm_edma_buf_runtime_t;
 
 struct _srtm_pdm_edma_local_runtime
@@ -161,6 +162,8 @@ static void SRTM_PdmEdmaAdapter_DmaM2MCallback(edma_handle_t *edma_handle,
 #endif
 static void SRTM_PdmEdmaAdapter_CopyData(srtm_pdm_edma_adapter_t handle);
 static void SRTM_PdmEdmaAdapter_AddNewPeriods(srtm_pdm_edma_runtime_t rtm, uint32_t periodIdx);
+static void SRTM_PdmEdmaAdapter_InitPDM(srtm_pdm_edma_adapter_t handle);
+static void SRTM_PdmEdmaAdapter_SetConfig(srtm_pdm_edma_adapter_t handle);
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -227,6 +230,7 @@ static void SRTM_PdmEdmaAdaptor_ResetLocalBuf(srtm_pdm_edma_runtime_t rtm)
 
         rtm->localRtm.bufRtm.remainingLoadPeriods = rtm->localBuf.periods;
         rtm->localRtm.bufRtm.remainingPeriods     = rtm->localBuf.periods;
+        rtm->localRtm.bufRtm.period_missed = false;
     }
 }
 
@@ -313,6 +317,19 @@ static void SRTM_PdmEdmaAdapter_DmaTransfer(srtm_pdm_edma_adapter_t handle)
     uint32_t i;
     status_t status;
     uint32_t num;
+
+    if (rtm->localRtm.bufRtm.period_missed) {
+        /*
+         * Missed one or several periods.
+         * Usually because SRTM dispatcher task busy and delaying too much Rx Proc.
+         * Abort potential on-Going DMA transfer and restart cleanly.
+         */
+        SRTM_DEBUG_MESSAGE(SRTM_DEBUG_VERBOSE_WARN, "period missed!\r\n");
+        PDM_TransferAbortReceiveEDMA(handle->pdm, &rtm->pdmHandle);
+        SRTM_PdmEdmaAdaptor_ResetLocalBuf(rtm);
+        SRTM_PdmEdmaAdapter_InitPDM(handle);
+        SRTM_PdmEdmaAdapter_SetConfig(handle);
+    }
 
     num = bufRtm->remainingLoadPeriods;
 
@@ -661,6 +678,12 @@ static void SRTM_PdmEdmaRxCallback(PDM_Type *sai, pdm_edma_handle_t *edmaHandle,
     }
 #endif
 
+    if (rtm->proc == NULL)
+    {
+        rtm->localRtm.bufRtm.period_missed = true;
+        return;
+    }
+
     /* When localBuf is used, the period size should not exceed the max size supported by one DMA tranfer. */
     if (rtm->localBuf.buf != NULL)
     {
@@ -761,10 +784,6 @@ static void SRTM_PdmEdmaRxCallback(PDM_Type *sai, pdm_edma_handle_t *edmaHandle,
             /* Add buffer to DMA scatter-gather list if there's remaining buffer to record. */
             (void)SRTM_Dispatcher_PostProc(adapter->service->dispatcher, rtm->proc);
             rtm->proc = NULL;
-        }
-        else if (rtm->proc == NULL)
-        {
-            SRTM_DEBUG_MESSAGE(SRTM_DEBUG_VERBOSE_WARN, "%s: proc busy!\r\n", __func__);
         }
         else
         {
