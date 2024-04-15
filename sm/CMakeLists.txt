@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_component.sm_clock)
@@ -101,5 +101,15 @@ if (CONFIG_MCUX_COMPONENT_component.sm.imx95_cm7)
     )
     mcux_add_include(
         INCLUDES porting/platform/imx95/cm7
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.sm.imx95_ca55)
+    mcux_add_source(
+        SOURCES porting/platform/imx95/ca55/sm_platform.h
+                porting/platform/imx95/ca55/sm_platform.c
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx95/ca55
     )
 endif()
