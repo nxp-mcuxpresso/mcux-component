@@ -1,4 +1,5 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
+#
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.sm_clock
@@ -14,11 +15,27 @@ config MCUX_COMPONENT_component.sm_clock
         config MCUX_DEPENDENCY_COMPONENT_component.sm_clock_DEPEND_ANYOF_OPTION_1
           bool "Select MCUX_COMPONENT_component.sm.imx95_cm33"
           select MCUX_COMPONENT_component.sm.imx95_cm33
-        
+
         config MCUX_DEPENDENCY_COMPONENT_component.sm_clock_DEPEND_ANYOF_OPTION_2
           bool "Select MCUX_COMPONENT_component.sm.imx95_cm7"
           select MCUX_COMPONENT_component.sm.imx95_cm7
-        
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_clock_DEPEND_ANYOF_OPTION_3
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_clock_DEPEND_ANYOF_OPTION_4
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core1
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_clock_DEPEND_ANYOF_OPTION_5
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_clock_DEPEND_ANYOF_OPTION_6
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core1
+
       endchoice
     endif
     
@@ -40,6 +57,22 @@ config MCUX_COMPONENT_component.sm_pinctrl
           bool "Select MCUX_COMPONENT_component.sm.imx95_cm7"
           select MCUX_COMPONENT_component.sm.imx95_cm7
         
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_pinctrl_DEPEND_ANYOF_OPTION_3
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_pinctrl_DEPEND_ANYOF_OPTION_4
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core1
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_pinctrl_DEPEND_ANYOF_OPTION_5
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_pinctrl_DEPEND_ANYOF_OPTION_6
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core1
+
       endchoice
     endif
     
@@ -61,8 +94,85 @@ config MCUX_COMPONENT_component.sm_power
           bool "Select MCUX_COMPONENT_component.sm.imx95_cm7"
           select MCUX_COMPONENT_component.sm.imx95_cm7
         
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_power_DEPEND_ANYOF_OPTION_3
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_power_DEPEND_ANYOF_OPTION_4
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core1
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_power_DEPEND_ANYOF_OPTION_5
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_power_DEPEND_ANYOF_OPTION_6
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core1
+
       endchoice
     endif
+
+config MCUX_COMPONENT_component.sm_reset
+    bool "Component component.sm_reset"
+    select MCUX_COMPONENT_component.sm.crc
+    select MCUX_COMPONENT_component.sm.scmi
+    select MCUX_COMPONENT_component.sm.smt
+
+    if MCUX_COMPONENT_component.sm_reset
+      choice
+        prompt "Component component.sm_reset anyOf 1"
+        default MCUX_DEPENDENCY_COMPONENT_component.sm_reset_DEPEND_ANYOF_OPTION_2
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_reset_DEPEND_ANYOF_OPTION_1
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_reset_DEPEND_ANYOF_OPTION_2
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm33_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm33_core1
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_reset_DEPEND_ANYOF_OPTION_3
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core0"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core0
+
+        config MCUX_DEPENDENCY_COMPONENT_component.sm_reset_DEPEND_ANYOF_OPTION_4
+          bool "Select MCUX_COMPONENT_component.sm.imx943_cm7_core1"
+          select MCUX_COMPONENT_component.sm.imx943_cm7_core1
+
+      endchoice
+    endif
+
+config MCUX_COMPONENT_component.sm.imx943_cm33_core0
+    bool "Component component.sm.imx943_cm33_core0"
+    select MCUX_COMPONENT_driver.mu1
+    select MCUX_COMPONENT_component.sm.smt
+    select MCUX_COMPONENT_component.sm.crc
+    select MCUX_COMPONENT_component.sm.scmi
+    depends on MCUX_HW_BOARD_imx943evk
+    
+config MCUX_COMPONENT_component.sm.imx943_cm33_core1
+    bool "Component component.sm.imx943_cm33_core1"
+    select MCUX_COMPONENT_driver.mu1
+    select MCUX_COMPONENT_component.sm.smt
+    select MCUX_COMPONENT_component.sm.crc
+    select MCUX_COMPONENT_component.sm.scmi
+    depends on MCUX_HW_BOARD_imx943evk
+    
+config MCUX_COMPONENT_component.sm.imx943_cm7_core0
+    bool "Component component.sm.imx943_cm7_core0"
+    select MCUX_COMPONENT_driver.mu1
+    select MCUX_COMPONENT_component.sm.smt
+    select MCUX_COMPONENT_component.sm.crc
+    select MCUX_COMPONENT_component.sm.scmi
+    depends on MCUX_HW_BOARD_imx943evk
+    
+config MCUX_COMPONENT_component.sm.imx943_cm7_core1
+    bool "Component component.sm.imx943_cm7_core1"
+    select MCUX_COMPONENT_driver.mu1
+    select MCUX_COMPONENT_component.sm.smt
+    select MCUX_COMPONENT_component.sm.crc
+    select MCUX_COMPONENT_component.sm.scmi
+    depends on MCUX_HW_BOARD_imx943evk
     
 config MCUX_COMPONENT_component.sm.imx95_cm33
     bool "Component component.sm.imx95_cm33"

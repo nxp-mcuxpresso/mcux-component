@@ -65,3 +65,5 @@ choice
         depends on MCUX_HAS_COMPONENT_driver.dsc_i2c
 
 endchoice
+
+rsource "muxes/Kconfig"

@@ -55,3 +55,4 @@ if (CONFIG_MCUX_COMPONENT_component.i2c_adapter_interface)
         INCLUDES ./
     )
 endif()
+mcux_add_cmakelists(${SdkRootDirPath}/components/i2c/muxes)

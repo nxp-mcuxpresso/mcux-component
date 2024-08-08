@@ -1,4 +1,5 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
+#
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_component.hal_power)
@@ -8,6 +9,15 @@ if (CONFIG_MCUX_COMPONENT_component.hal_power)
     )
     mcux_add_include(
         INCLUDES ./
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.hal_power.imx943)
+    mcux_add_source(
+        SOURCES porting/platform/imx943/hal_power_platform.h
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx943
     )
 endif()
 

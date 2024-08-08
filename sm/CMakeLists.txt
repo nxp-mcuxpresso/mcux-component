@@ -31,11 +31,63 @@ if (CONFIG_MCUX_COMPONENT_component.sm_power)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.sm_reset)
+    mcux_add_source(
+        SOURCES reset/sm_reset.h
+                reset/sm_reset.c
+    )
+    mcux_add_include(
+        INCLUDES reset
+    )
+endif()
+
+
+
+if (CONFIG_MCUX_COMPONENT_component.sm.imx943_cm33_core0)
+    mcux_add_source(
+        SOURCES porting/platform/imx943/cm33_core0/sm_platform.h
+                porting/platform/imx943/cm33_core0/sm_platform.c
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx943/cm33_core0
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.sm.imx943_cm33_core1)
+    mcux_add_source(
+        SOURCES porting/platform/imx943/cm33_core1/sm_platform.h
+                porting/platform/imx943/cm33_core1/sm_platform.c
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx943/cm33_core1
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.sm.imx943_cm7_core0)
+    mcux_add_source(
+        SOURCES porting/platform/imx943/cm7_core0/sm_platform.h
+                porting/platform/imx943/cm7_core0/sm_platform.c
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx943/cm7_core0
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.sm.imx943_cm7_core1)
+    mcux_add_source(
+        SOURCES porting/platform/imx943/cm7_core1/sm_platform.h
+                porting/platform/imx943/cm7_core1/sm_platform.c
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx943/cm7_core1
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.sm.imx95_cm33)
     mcux_add_source(
-        SOURCES sm_platform.h
+        SOURCES porting/platform/imx95/cm33/sm_platform.h
                 # TODO please change to relative dir
-                sm_platform.c
+                porting/platform/imx95/cm33/sm_platform.c
     )
     mcux_add_include(
         INCLUDES ./

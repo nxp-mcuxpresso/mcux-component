@@ -1,0 +1,12 @@
+/*!
+@defgroup HAL RESET Component
+@brief HAL RESET Component
+There are some macros: SM_RESET, SRC_RESET in hal_config.h
+@code
+#define SM_RESET 1
+@endcode
+or
+@code
+#define SRC_RESET 1
+@endcode
+*/
