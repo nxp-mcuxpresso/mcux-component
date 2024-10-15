@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.wireless_imu_adapter
-    bool "Component component.wireless_imu_adapter"
+    bool "wireless_imu"
     select MCUX_COMPONENT_driver.gdma
     select MCUX_COMPONENT_driver.imu
     select MCUX_COMPONENT_component.osa

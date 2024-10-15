@@ -2,5 +2,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_driver.sx1502
-    bool "Component driver.sx1502"
+    bool "sx1502"
     select MCUX_COMPONENT_component.i2c_adapter_interface

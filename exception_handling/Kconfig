@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.exception_handling_cm7
-    bool "Enable component.exception_handling_cm7"
+    bool "exception_handling_cm7"
     default n
     help
         Enable component.exception_handling_cm7 component

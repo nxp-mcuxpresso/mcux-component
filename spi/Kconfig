@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.spi_adapter
-    bool "Use spi adapter"
+    bool "spi"
     select MCUX_COMPONENT_driver.spi
     select MCUX_COMPONENT_driver.common
     depends on MCUX_HAS_COMPONENT_driver.spi
@@ -15,10 +15,8 @@ config MCUX_COMPONENT_component.spi_adapter
         #     bool "Driver spi_ADAPTER config demo 2"
     endif
 
-
-
 config MCUX_COMPONENT_component.dspi_adapter
-    bool "Use dspi adapter"
+    bool "dspi"
     select MCUX_COMPONENT_driver.dspi
     select MCUX_COMPONENT_driver.common
     depends on MCUX_HAS_COMPONENT_driver.dspi
@@ -30,10 +28,8 @@ config MCUX_COMPONENT_component.dspi_adapter
         #     bool "Driver dspi_ADAPTER config demo 2"
     endif
 
-
-
 config MCUX_COMPONENT_component.lpspi_adapter
-    bool "Use lpspi adapter"
+    bool "lpspi"
     select MCUX_COMPONENT_driver.lpspi
     select MCUX_COMPONENT_driver.common
     depends on MCUX_HAS_COMPONENT_driver.lpspi
@@ -45,10 +41,8 @@ config MCUX_COMPONENT_component.lpspi_adapter
         #     bool "Driver lpspi_ADAPTER config demo 2"
     endif
 
-
-
 config MCUX_COMPONENT_component.flexcomm_spi_adapter
-    bool "Use flexcomm_spi adapter"
+    bool "flexcomm_spi"
     select MCUX_COMPONENT_driver.flexcomm_spi
     select MCUX_COMPONENT_driver.common
     depends on MCUX_HAS_COMPONENT_driver.flexcomm_spi
@@ -59,4 +53,3 @@ config MCUX_COMPONENT_component.flexcomm_spi_adapter
         # config DRIVER_flexcomm_spi_ADAPTER_CONFIG_DEMO2
         #     bool "Driver flexcomm_spi_ADAPTER config demo 2"
     endif
-

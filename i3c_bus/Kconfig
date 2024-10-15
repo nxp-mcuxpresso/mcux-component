@@ -2,11 +2,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.i3c_bus
-    bool "Component component.i3c_bus"
+    bool "i3c_bus"
     select MCUX_COMPONENT_component.lists
-    
+
 config MCUX_COMPONENT_component.i3c_bus_adapter
-    bool "Component component.i3c_bus_adapter"
+    bool "i3c_bus_adapter"
     select MCUX_COMPONENT_driver.i3c
     select MCUX_COMPONENT_component.i3c_bus
-    

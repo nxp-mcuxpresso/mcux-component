@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.sm.crc
-    bool "Enable component.sm.crc"
+    bool "sm.crc"
     default n
     help
 	Enable component.sm.crc component

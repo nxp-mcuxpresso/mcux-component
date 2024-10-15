@@ -3,7 +3,7 @@
 
 config MCUX_COMPONENT_component.lists
     # depends on MCUX_COMPONENT_component.lists
-    bool "Use component lists"
+    bool "lists"
     select MCUX_COMPONENT_driver.common
 
 if MCUX_COMPONENT_component.lists

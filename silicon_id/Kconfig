@@ -4,7 +4,7 @@
 rsource "Kconfig.chip"
 
 config MCUX_COMPONENT_component.silicon_id
-    bool "Use component silicon_id"
+    bool "silicon_id"
     select MCUX_COMPONENT_driver.common
 
     select MCUX_COMPONENT_component.silicon_id_imxrt10xx if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT10XX

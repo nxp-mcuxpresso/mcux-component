@@ -3,7 +3,7 @@
 
 config MCUX_COMPONENT_component.led
     # depends on MCUX_COMPONENT_component.led
-    bool "Use component led"
+    bool "led"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_component.timer_manager
 
@@ -12,15 +12,15 @@ config MCUX_COMPONENT_component.led
             prompt "component.led anyof dependency"
             default MCUX_DEPENDENCY_COMPONENT_component.led_DEPEND_component.led_gpio_adapter
             config MCUX_DEPENDENCY_COMPONENT_component.led_DEPEND_component.led_gpio_adapter
-                bool "Select led component.gpio_adapter"
+                bool "gpio"
                 select MCUX_COMPONENT_component.gpio_adapter
                 depends on MCUX_HAS_COMPONENT_driver.gpio
             config MCUX_DEPENDENCY_COMPONENT_component.led_DEPEND_component.lpc_gpio_adapter
-                bool "Select led component.lpc_gpio_adapter"
+                bool "lpc_gpio"
                 select MCUX_COMPONENT_component.lpc_gpio_adapter
                 depends on MCUX_HAS_COMPONENT_driver.lpc_gpio
             config MCUX_DEPENDENCY_COMPONENT_component.led_DEPEND_component.igpio_adapter
-                bool "Select led component.igpio_adapter"
+                bool "igpio"
                 select MCUX_COMPONENT_component.igpio_adapter
                 depends on MCUX_HAS_COMPONENT_driver.igpio
         endchoice

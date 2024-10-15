@@ -1,13 +1,13 @@
 # Copyright 2024 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-menu "Flash Component"
+menu "Flash"
     rsource "mflash/Kconfig"
     config MCUX_COMPONENT_component.flash_nand_flexspi
         bool "Nand flash component based on flexspi"
         default n
         select MCUX_COMPONENT_driver.flexspi
-        
+
         if MCUX_COMPONENT_component.flash_nand_flexspi
 
         endif
@@ -17,7 +17,7 @@ menu "Flash Component"
         bool "Nand flash component based on semc"
         default n
         select MCUX_COMPONENT_driver.semc
-        
+
         if MCUX_COMPONENT_component.flash_nand_semc
 
         endif

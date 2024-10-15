@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 menuconfig MCUX_COMPONENT_driver.slcd_engine
-    bool "Component driver.slcd_engine"
+    bool "slcd_engine"
     if MCUX_COMPONENT_driver.slcd_engine
       choice
         prompt "SLCD selection"

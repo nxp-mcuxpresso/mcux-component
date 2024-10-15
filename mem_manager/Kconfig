@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.mem_manager
-    bool "Enable component.mem_manager"
+    bool "mem_manager"
     default n
     help
         Enable component.mem_manager component

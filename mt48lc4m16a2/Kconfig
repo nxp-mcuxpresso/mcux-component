@@ -2,6 +2,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_driver.mt48lc4m16a2
-    bool "Component driver.mt48lc4m16a2"
+    bool "mt48lc4m16a2"
     select MCUX_COMPONENT_driver.sdramc
-    

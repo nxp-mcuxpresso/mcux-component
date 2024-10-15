@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.reset_adapter
-    bool "Enable component.reset_adapter"
+    bool "reset"
     default n
     help
         Enable component.reset_adapter component
-    
+

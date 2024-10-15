@@ -2,5 +2,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_utility.notifier
-    bool "Component utility.notifier"
-    
+    bool "notifier"

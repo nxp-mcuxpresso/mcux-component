@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.messaging
-    bool "Enable component.messaging"
+    bool "messaging"
     select MCUX_COMPONENT_component.mem_manager
     select MCUX_COMPONENT_component.lists
     help

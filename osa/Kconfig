@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.osa_template_config
-    bool "Use te OSA template configuration header file"
+    bool "OSA template configuration header file"
     default n
     help
         Not generate fsl_os_abstraction_config.h, users need use default template fsl_os_abstraction_config.h.
-        
+
 config MCUX_COMPONENT_component.osa_interface
-    bool "Use component osa interface"
+    bool "osa interface"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_component.lists
     select MCUX_COMPONENT_component.osa_template_config
@@ -27,7 +27,7 @@ config MCUX_PRJSEG_component.osa_interface.osa_macro_used
     depends on MCUX_COMPONENT_component.osa_interface
     help
         Add OSA_USED macro for component osa.
-    
+
 if MCUX_PRJSEG_component.osa_interface.generated_config
     menu "OSA(fsl_os_abstraction_config.h)"
         config gMainThreadStackSize_c
@@ -47,19 +47,19 @@ if MCUX_PRJSEG_component.osa_interface.generated_config
             default 0
             help
                 No prefix in generated macro
-                
+
         config FSL_OSA_TASK_ENABLE
             bool "FSL_OSA_TASK_ENABLE"
             default y
             help
                 No prefix in generated macro
-                
+
         config FSL_OSA_MAIN_FUNC_ENABLE
             bool "FSL_OSA_MAIN_FUNC_ENABLE"
             default n
             help
                 No prefix in generated macro
-                
+
         config FSL_OSA_BM_TIMEOUT_ENABLE
             bool "FSL_OSA_BM_TIMEOUT_ENABLE"
             default n
@@ -75,7 +75,7 @@ if MCUX_PRJSEG_component.osa_interface.generated_config
 endif
 
 config MCUX_COMPONENT_component.osa
-    bool "Enable component.osa"
+    bool "osa"
     select MCUX_COMPONENT_component.osa_interface
     help
         Enable component.osa component

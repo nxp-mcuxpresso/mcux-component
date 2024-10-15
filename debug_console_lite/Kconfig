@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_utility.debug_console_lite
-    bool "Use utility.debug_console_lite"
+    bool "debug_console_lite"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_utility.str
 
     depends on !MCUX_COMPONENT_utility.debug_console
     depends on MCUX_HAS_COMPONENT_driver.lpuart || MCUX_HAS_COMPONENT_driver.uart || MCUX_HAS_COMPONENT_driver.flexcomm_usart || MCUX_HAS_COMPONENT_driver.lpsci || MCUX_HAS_COMPONENT_driver.iuart || MCUX_HAS_COMPONENT_driver.qsci || MCUX_HAS_COMPONENT_driver.lpc_miniusart || MCUX_HAS_COMPONENT_driver.vusart || MCUX_HAS_COMPONENT_driver.lpflexcomm_lpuart
-    
+
     if MCUX_COMPONENT_utility.debug_console_lite
 
     endif

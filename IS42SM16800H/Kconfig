@@ -2,6 +2,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_driver.IS42SM16800H
-    bool "Component driver.IS42SM16800H"
+    bool "IS42SM16800H"
     select MCUX_COMPONENT_driver.sdramc
-    

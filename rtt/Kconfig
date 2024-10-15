@@ -2,9 +2,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_driver.rtt.template
-    bool "Component driver.rtt.template"
-    
+    bool "rtt.template"
+
 config MCUX_COMPONENT_driver.rtt
-    bool "Component driver.rtt"
+    bool "rtt"
     select MCUX_COMPONENT_driver.rtt.template
-    

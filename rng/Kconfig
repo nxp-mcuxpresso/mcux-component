@@ -2,40 +2,39 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.rng_adapter
-    bool "Enable component.rng_adapter"
+    bool "rng"
     default n
     help
         Enable component.rng_adapter component
     select MCUX_COMPONENT_driver.rng
-    depends on MCUX_HAS_COMPONENT_driver.rng 
-    
+    depends on MCUX_HAS_COMPONENT_driver.rng
+
 config MCUX_COMPONENT_component.rnga_adapter
-    bool "Enable component.rnga_adapter"
+    bool "rnga"
     default n
     help
         Enable component.rnga_adapter component
     select MCUX_COMPONENT_driver.rnga
-    depends on MCUX_HAS_COMPONENT_driver.rnga 
-    
+    depends on MCUX_HAS_COMPONENT_driver.rnga
+
 config MCUX_COMPONENT_component.trng_adapter
-    bool "Enable component.trng_adapter"
+    bool "trng"
     default n
     help
         Enable component.trng_adapter component
     select MCUX_COMPONENT_driver.trng
-    depends on MCUX_HAS_COMPONENT_driver.trng 
-    
+    depends on MCUX_HAS_COMPONENT_driver.trng
+
 config MCUX_COMPONENT_component.JNrng_adapter
-    bool "Enable component.JNrng_adapter"
+    bool "JNrng"
     default n
     help
         Enable component.JNrng_adapter component
     select MCUX_COMPONENT_driver.jn_rng
-    depends on MCUX_HAS_COMPONENT_driver.jn_rng   
-    
+    depends on MCUX_HAS_COMPONENT_driver.jn_rng
+
 config MCUX_COMPONENT_component.software_rng_adapter
-    bool "Enable component.software_rng_adapter"
+    bool "software_rng"
     default n
     help
         Enable component.software_rng_adapter component
-    

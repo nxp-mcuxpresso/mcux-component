@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.gpio_adapter
-    bool "Enable component.gpio_adapter"
+    bool "gpio"
     default n
     help
         Enable component.gpio_adapter component
@@ -25,7 +25,7 @@ config MCUX_COMPONENT_component.gpio_adapter
 
 
 config MCUX_COMPONENT_component.lpc_gpio_adapter
-    bool "Enable component.lpc_gpio_adapter"
+    bool "lpc_gpio"
     default n
     help
         Enable component.lpc_gpio_adapter component
@@ -35,7 +35,7 @@ config MCUX_COMPONENT_component.lpc_gpio_adapter
     depends on MCUX_HAS_COMPONENT_driver.lpc_gpio
 
 config MCUX_COMPONENT_component.igpio_adapter
-    bool "Enable component.igpio_adapter"
+    bool "igpio"
     default n
     help
         Enable component.igpio_adapter component
@@ -43,7 +43,7 @@ config MCUX_COMPONENT_component.igpio_adapter
     depends on MCUX_HAS_COMPONENT_driver.igpio
 
 config MCUX_COMPONENT_component.gint_adapter
-    bool "Enable component.gint_adapter"
+    bool "gint"
     default n
     help
         Enable component.gint_adapter component
@@ -51,7 +51,7 @@ config MCUX_COMPONENT_component.gint_adapter
     depends on MCUX_HAS_COMPONENT_driver.gint
 
 config MCUX_COMPONENT_component.dsc_gpio_adapter
-    bool "Enable component.dsc_gpio_adapter"
+    bool "dsc_gpio"
     default n
     help
         Enable component.dsc_gpio_adapter component
@@ -60,7 +60,7 @@ config MCUX_COMPONENT_component.dsc_gpio_adapter
 
 
 config MCUX_COMPONENT_component.rgpio_adapter
-    bool "Enable component.rgpio_adapter"
+    bool "rgpio"
     default n
     help
         Enable component.rgpio_adapter component
@@ -68,7 +68,7 @@ config MCUX_COMPONENT_component.rgpio_adapter
     depends on MCUX_HAS_COMPONENT_driver.rgpio
 
 config MCUX_COMPONENT_component.rt_gpio_adapter
-    bool "Enable component.rt_gpio_adapter"
+    bool "rt_gpio"
     default n
     help
         Enable component.rt_gpio_adapter component
