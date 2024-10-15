@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_utility.format
-    bool "Component utility.format"
+    bool "format"
     if MCUX_COMPONENT_utility.format
     endif

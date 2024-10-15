@@ -2,14 +2,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_driver.conn_fwloader
-    bool "Component driver.conn_fwloader"
+    bool "conn_fwloader"
     select MCUX_COMPONENT_driver.ocotp_rw61x
     select MCUX_COMPONENT_component.osa
     select MCUX_COMPONENT_component.mflash_offchip
     
 config MCUX_COMPONENT_driver.conn_fwloader_ns
-    bool "Component driver.conn_fwloader_ns"
-
+    bool "conn_fwloader_ns"
+    
 config MCUX_COMPONENT_driver.conn_fwloader.monolithic
     bool "Monolithic applicationf"
     select gPlatformMonolithicApp_d

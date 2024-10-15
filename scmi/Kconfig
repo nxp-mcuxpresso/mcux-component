@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.sm.scmi
-    bool "Enable component.sm.scmi"
+    bool "sm.scmi"
     default n
     help
 	Enable component.sm.scmi component

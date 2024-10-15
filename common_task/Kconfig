@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.common_task
-    bool "Enable component.common_task"
+    bool "common_task"
     default n
     help
         Enable component.common_task component
     select MCUX_COMPONENT_component.osa
-    
+

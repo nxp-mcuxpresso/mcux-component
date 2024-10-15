@@ -2,25 +2,25 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_utility.assert_lite
-    bool "Use utility.assert_lite"
+    bool "assert_lite"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_utility.debug_console_lite
 
     depends on !MCUX_COMPONENT_utility.assert
-    
+
     if MCUX_COMPONENT_utility.assert_lite
 
     endif
 
 config MCUX_COMPONENT_utility.assert
-    bool "Use utility.assert"
+    bool "assert"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_utility.debug_console
-    
+
     if MCUX_COMPONENT_utility.assert
 
     endif
 
 config MCUX_COMPONENT_utility.assert_lite_min
-    bool "Use utility.assert_lite_min"
+    bool "assert_lite_min"
     depends on MCUX_HW_CORE_DSP56800EX || MCUX_HW_CORE_DSP56800EF

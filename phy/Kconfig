@@ -6,41 +6,41 @@ config MCUX_COMPONENT_component.eth_phy_common
     select MCUX_COMPONENT_driver.common
 
 config MCUX_COMPONENT_component.phyrtl8211f
-    bool "Use phyrtl8211f"
+    bool "rtl8211f"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phyaqr113c
-    bool "Use phyaqr113c"
+    bool "aqr113c"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phyksz8081
-    bool "Use phyksz8081"
+    bool "ksz8081"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phydp83848
-    bool "Use phydp83848"
+    bool "dp83848"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phyksz8041
-    bool "Use phyksz8041"
+    bool "ksz8041"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phyar8031
-    bool "Use phyar8031"
+    bool "ar8031"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phylan8720a
-    bool "Use phylan8720a"
+    bool "lan8720a"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phyvsc8541
-    bool "Use phyvsc8541"
+    bool "vsc8541"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phyrtl8201
-    bool "Use phyrtl8201"
+    bool "rtl8201"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phylan8741
-    bool "Use phylan8741"
+    bool "lan8741"
     select MCUX_COMPONENT_component.eth_phy_common

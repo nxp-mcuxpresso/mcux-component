@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.panic
-    bool "Enable component.panic"
+    bool "panic"
     default n
     help
         Enable component.panic component
-    

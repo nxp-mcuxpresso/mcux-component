@@ -2,25 +2,25 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.rtc_adapter
-    bool "Enable component.rtc_adapter"
+    bool "rtc"
     default n
     help
         Enable component.rtc_adapter component
     select MCUX_COMPONENT_driver.rtc
-    depends on MCUX_HAS_COMPONENT_driver.rtc    
-    
+    depends on MCUX_HAS_COMPONENT_driver.rtc
+
 config MCUX_COMPONENT_component.lpcrtc
-    bool "Enable component.lpcrtc"
+    bool "lpcrtc"
     default n
     help
         Enable component.lpcrtc component
     select MCUX_COMPONENT_driver.lpc_rtc
-    depends on MCUX_HAS_COMPONENT_driver.lpc_rtc  
-    
+    depends on MCUX_HAS_COMPONENT_driver.lpc_rtc
+
 config MCUX_COMPONENT_component.rtc_bbnsm_adapter
-    bool "Enable component.rtc_bbnsm_adapter"
+    bool "rtc_bbnsm"
     default n
     help
         Enable component.rtc_bbnsm_adapter component
     select MCUX_COMPONENT_driver.bbnsm
-    depends on MCUX_HAS_COMPONENT_driver.bbnsm      
+    depends on MCUX_HAS_COMPONENT_driver.bbnsm

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.iuart_adapter
-    bool "Use iuart adapter"
+    bool "iuart"
     select MCUX_COMPONENT_driver.iuart
     depends on MCUX_HAS_COMPONENT_driver.iuart
     if MCUX_COMPONENT_component.iuart_adapter
@@ -15,7 +15,7 @@ config MCUX_COMPONENT_component.iuart_adapter
 
 
 config MCUX_COMPONENT_component.lpsci_adapter
-    bool "Use lpsci adapter"
+    bool "lpsci"
     select MCUX_COMPONENT_driver.lpsci
     depends on MCUX_HAS_COMPONENT_driver.lpsci
     if MCUX_COMPONENT_component.lpsci_adapter
@@ -28,7 +28,7 @@ config MCUX_COMPONENT_component.lpsci_adapter
 
 
 config MCUX_COMPONENT_component.lpuart_adapter
-    bool "Use lpuart adapter"
+    bool "lpuart"
     select MCUX_COMPONENT_driver.lpuart if MCUX_HAS_COMPONENT_driver.lpuart
     select MCUX_COMPONENT_driver.lpflexcomm_lpuart if MCUX_HAS_COMPONENT_driver.lpflexcomm_lpuart
     depends on MCUX_HAS_COMPONENT_driver.lpuart || MCUX_HAS_COMPONENT_driver.lpflexcomm_lpuart
@@ -42,7 +42,7 @@ config MCUX_COMPONENT_component.lpuart_adapter
 
 
 config MCUX_COMPONENT_component.lpuart_dma_adapter
-    bool "Use lpuart_dma adapter"
+    bool "lpuart_dma"
     select MCUX_COMPONENT_component.lpuart_adapter
     select MCUX_COMPONENT_component.timer_manager
     depends on MCUX_HAS_COMPONENT_driver.lpuart
@@ -60,15 +60,15 @@ config MCUX_COMPONENT_component.lpuart_dma_adapter
                 bool "driver.lpuart_edma"
                 select MCUX_COMPONENT_driver.edma
             config DEPENDENCY_COMPONENT_lpuart_dma_adapter_DEPEND_driver.dma
-                bool "driver.lpuart_dma"    
+                bool "driver.lpuart_dma"
                 select MCUX_COMPONENT_driver.dma
-        endchoice                
+        endchoice
     endif
 
 
 
 config MCUX_COMPONENT_component.miniusart_adapter
-    bool "Use miniusart adapter"
+    bool "miniusart"
     select MCUX_COMPONENT_driver.lpc_miniusart
     depends on MCUX_HAS_COMPONENT_driver.lpc_miniusart
     if MCUX_COMPONENT_component.miniusart_adapter
@@ -82,7 +82,7 @@ config MCUX_COMPONENT_component.miniusart_adapter
 
 
 config MCUX_COMPONENT_component.uart_adapter
-    bool "Use uart adapter"
+    bool "uart"
     select MCUX_COMPONENT_driver.uart
     depends on MCUX_HAS_COMPONENT_driver.uart
     if MCUX_COMPONENT_component.uart_adapter
@@ -95,7 +95,7 @@ config MCUX_COMPONENT_component.uart_adapter
 
 
 config MCUX_COMPONENT_component.usart_adapter
-    bool "Use usart adapter"
+    bool "usart"
     select MCUX_COMPONENT_driver.flexcomm_usart
     select MCUX_COMPONENT_driver.flexcomm
     depends on MCUX_HAS_COMPONENT_driver.flexcomm_usart
@@ -109,7 +109,7 @@ config MCUX_COMPONENT_component.usart_adapter
 
 
 config MCUX_COMPONENT_component.usart_dma_adapter
-    bool "Use usart_dma adapter"
+    bool "usart_dma"
     select MCUX_COMPONENT_component.usart_adapter
     select MCUX_COMPONENT_component.timer_manager
     select MCUX_COMPONENT_driver.flexcomm_usart_dma
@@ -119,12 +119,12 @@ config MCUX_COMPONENT_component.usart_dma_adapter
         #     bool "Driver usart_dma_ADAPTER config demo 1"
 
         # config DRIVER_usart_dma_ADAPTER_CONFIG_DEMO2
-        #     bool "Driver usart_dma_ADAPTER config demo 2"              
+        #     bool "Driver usart_dma_ADAPTER config demo 2"
     endif
 
 
 config MCUX_COMPONENT_component.vusart_adapter
-    bool "Use vusart adapter"
+    bool "vusart"
     select MCUX_COMPONENT_driver.vusart
     depends on MCUX_HAS_COMPONENT_driver.vusart
     if MCUX_COMPONENT_component.vusart_adapter
@@ -138,7 +138,7 @@ config MCUX_COMPONENT_component.vusart_adapter
 
 
 config MCUX_COMPONENT_component.qsci_adapter
-    bool "Use qsci adapter"
+    bool "qsci"
     select MCUX_COMPONENT_driver.qsci
     depends on MCUX_HAS_COMPONENT_driver.qsci
     if MCUX_COMPONENT_component.qsci_adapter

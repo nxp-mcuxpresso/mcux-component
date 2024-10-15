@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.sdu_adapter
-    bool "Component component.sdu_adapter"
+    bool "sdu"
     select MCUX_COMPONENT_driver.sdu
     select MCUX_COMPONENT_component.osa
-    

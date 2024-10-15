@@ -3,104 +3,107 @@
 
 menu "SRTM Services Components"
     config MCUX_COMPONENT_component.srtm_i2c_service
-        bool "SRTM I2C Service"
+        bool "I2C"
 
     config MCUX_COMPONENT_component.srtm_audio_service
-        bool "SRTM Audio Service"
+        bool "Audio"
+
     if MCUX_COMPONENT_component.srtm_audio_service
         config MCUX_COMPONENT_component.srtm_i2c_codec_adapter
-            bool "SRTM I2C Codec Adapter"
+            bool "I2C Codec"
             imply MCUX_COMPONENT_component.codec_i2c
 
         config MCUX_COMPONENT_component.srtm_pdm_edma_adapter
-            bool "SRTM Pdm Edma Adapter"
+            bool "Pdm Edma"
             imply MCUX_COMPONENT_driver.pdm_edma
 
         config MCUX_COMPONENT_component.srtm_pdm_sdma_adapter
-            bool "SRTM Pdm Sdma Adapter"
+            bool "Pdm Sdma"
             imply MCUX_COMPONENT_driver.pdm_sdma
 
         config MCUX_COMPONENT_component.srtm_sai_edma_adapter
-            bool "SRTM Sai Edma Adapter"
+            bool "Sai Edma"
             imply MCUX_COMPONENT_driver.sai_edma
 
         config MCUX_COMPONENT_component.srtm_sai_sdma_adapter
-            bool "SRTM Sai Sdma Adapter"
+            bool "Sai Sdma"
             imply MCUX_COMPONENT_driver.sai_sdma
 
         config MCUX_COMPONENT_component.srtm_wm8524_adapter
-            bool "SRTM Wm8524 Adapter"
+            bool "Wm8524"
             imply MCUX_COMPONENT_component.wm8524_adapter
     endif
 
     config MCUX_COMPONENT_component.srtm_auto_service
-        bool "SRTM Auto Service"
+        bool "Auto"
 
     config MCUX_COMPONENT_component.srtm_io_service
-        bool "SRTM IO Service"
+        bool "IO"
 
     config MCUX_COMPONENT_component.srtm_keypad_service
-        bool "SRTM Keypad Service"
+        bool "Keypad"
 
     config MCUX_COMPONENT_component.srtm_lfcl_service
-        bool "SRTM Lifecycle Service"
+        bool "Lifecycle"
 
     config MCUX_COMPONENT_component.srtm_netc_service
-        bool "SRTM Netc Service"
+        bool "Netc"
 
     config MCUX_COMPONENT_component.srtm_pmic_service
-        bool "SRTM Pmic Service"
+        bool "Pmic"
+
     if MCUX_COMPONENT_component.srtm_pmic_service
         config MCUX_COMPONENT_component.srtm_pf1550_adapter
-            bool "SRTM Pf1550 Adapter"
+            bool "Pf1550"
             imply MCUX_COMPONENT_driver.pf1550
     endif
 
     config MCUX_COMPONENT_component.srtm_pwm_service
-        bool "SRTM Pwm Service"
+        bool "pwm"
         imply MCUX_COMPONENT_component.srtm_pwm_adapter
+
     if MCUX_COMPONENT_component.srtm_pwm_service
         config MCUX_COMPONENT_component.srtm_pwm_adapter
-            bool "SRTM Pwm Adapter"
+            bool "pwm"
             choice
                 prompt "Select one from multiple pwm adapters"
                 default MCUX_DEPENDENCY_COMPONENT_pwm_adapter_DEPEND_COMPONENT_pwm_tpm_adapter
                 config MCUX_DEPENDENCY_COMPONENT_pwm_adapter_DEPEND_COMPONENT_pwm_tpm_adapter
-                    bool "Select pwm tpm adapter"
+                    bool "tpm"
                     select MCUX_COMPONENT_component.pwm_tpm_adapter
                 config MCUX_DEPENDENCY_COMPONENT_pwm_adapter_DEPEND_COMPONENT_pwm_ftm_adapter
-                    bool "Select pwm ftm adapter"
+                    bool "ftm"
                     select MCUX_COMPONENT_component.pwm_ftm_adapter
                 config MCUX_DEPENDENCY_COMPONENT_pwm_adapter_DEPEND_COMPONENT_pwm_ctimer_adapter
-                    bool "Select pwm ftm adapter"
+                    bool "ctimer"
                     select MCUX_COMPONENT_component.pwm_ctimer_adapter
             endchoice
     endif
 
     config MCUX_COMPONENT_component.srtm_rtc_service
-        bool "SRTM Rtc service"
-	default n
+        bool "rtc"
+    default n
 
     config MCUX_COMPONENT_component.srtm_rtc_adapter
-        bool "SRTM Rtc Adapter"
-	    if MCUX_COMPONENT_component.srtm_rtc_adapter
+        bool "SRTM Rtc"
+        if MCUX_COMPONENT_component.srtm_rtc_adapter
             choice
                 prompt "Select one from multiple rtc adapters"
                 default MCUX_DEPENDENCY_COMPONENT_rtc_adapter_DEPEND_COMPONENT_rtc_bbnsm_adapter
                 config MCUX_DEPENDENCY_COMPONENT_rtc_adapter_DEPEND_COMPONENT_rtc_bbnsm_adapter
-                    bool "Select rtc bbnsm adapter"
+                    bool "bbnsm"
                     select MCUX_COMPONENT_component.rtc_bbnsm_adapter
                 config MCUX_DEPENDENCY_COMPONENT_rtc_adapter_DEPEND_COMPONENT_lpcrtc_adapter
-                    bool "Select rtc lpcrtc adapter"
+                    bool "lpcrtc"
                     select MCUX_COMPONENT_component.rtc_lpcrtc_adapter
                 config MCUX_DEPENDENCY_COMPONENT_rtc_adapter_DEPEND_COMPONENT_rtc_adapter
-                    bool "Select rtc rtc adapter"
+                    bool "rtc"
                     select MCUX_COMPONENT_component.rtc_adapter
             endchoice
-	endif
+    endif
 
     config MCUX_COMPONENT_component.srtm_sensor_service
-        bool "SRTM Sensor Service"
+        bool "Sensor"
 
     config MCUX_COMPONENT_component.srtm_snvs_lp_rtc_adapter
         bool "SRTM Snvs Lp Rtc adapter"

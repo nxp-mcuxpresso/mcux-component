@@ -3,7 +3,7 @@
 
 menu "wifi_bt_module"
     config MCUX_COMPONENT_component.wifi_bt_module.tx_pwr_limits
-        bool "Component component.wifi_bt_module.tx_pwr_limits"
+        bool "tx_pwr_limits"
     config MCUX_COMPONENT_component.wifi_bt_module.config
-        bool "Component component.wifi_bt_module.config"
+        bool "config"
 endmenu

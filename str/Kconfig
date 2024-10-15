@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_utility.str
-    bool "Use utility.str"
+    bool "str"
     select MCUX_COMPONENT_driver.common
-    
+
     if MCUX_COMPONENT_utility.str
 
     endif

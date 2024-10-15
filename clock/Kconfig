@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.hal_clock
-    bool "Component component.hal_clock"
+    bool "hal_clock"
     select MCUX_COMPONENT_driver.clock
     select MCUX_COMPONENT_component.sm_clock
     

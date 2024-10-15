@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.sm.smt
-    bool "Enable component.sm.smt"
+    bool "sm.smt"
     default n
     help
 	Enable component.sm.smt component

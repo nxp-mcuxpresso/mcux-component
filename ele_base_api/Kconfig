@@ -4,7 +4,7 @@
 menu "ELE Base API"
 
     config MCUX_COMPONENT_component.ele_base_api
-        bool "Component component.ele_base_api"
+        bool "ele_base_api"
         select MCUX_COMPONENT_driver.s3mu
 
 endmenu

@@ -2,25 +2,25 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.pwm_ctimer_adapter
-    bool "Enable component.pwm_ctimer_adapter"
+    bool "pwm_ctimer"
     default n
     help
         Enable component.pwm_ctimer_adapter component
     select MCUX_COMPONENT_driver.ctimer
-    depends on MCUX_HAS_COMPONENT_driver.ctimer    
-    
+    depends on MCUX_HAS_COMPONENT_driver.ctimer
+
 config MCUX_COMPONENT_component.pwm_ftm_adapter
-    bool "Enable component.pwm_ftm_adapter"
+    bool "pwm_ftm"
     default n
     help
         Enable component.pwm_ftm_adapter component
     select MCUX_COMPONENT_driver.ftm
-    depends on MCUX_HAS_COMPONENT_driver.ftm    
-    
+    depends on MCUX_HAS_COMPONENT_driver.ftm
+
 config MCUX_COMPONENT_component.pwm_tpm_adapter
-    bool "Enable component.pwm_tpm_adapter"
+    bool "pwm_tpm"
     default n
     help
         Enable component.pwm_tpm_adapter component
     select MCUX_COMPONENT_driver.tpm
-    depends on MCUX_HAS_COMPONENT_driver.tpm 
+    depends on MCUX_HAS_COMPONENT_driver.tpm

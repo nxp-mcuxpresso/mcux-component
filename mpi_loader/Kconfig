@@ -2,5 +2,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.mpi_loader
-    bool "Component component.mpi_loader"
-    
+    bool "mpi_loader"

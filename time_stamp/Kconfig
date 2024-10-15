@@ -2,55 +2,55 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.pit_time_stamp_adapter
-    bool "Enable component.pit_time_stamp_adapter"
+    bool "pit_time_stamp"
     default n
     help
         Enable component.pit_time_stamp_adapter component
     select MCUX_COMPONENT_driver.pit
     depends on MCUX_HAS_COMPONENT_driver.pit
-    
-    
+
+
 config MCUX_COMPONENT_component.lpit_time_stamp_adapter
-    bool "Enable component.lpit_time_stamp_adapter"
+    bool "lpit_time_stamp"
     default n
     help
         Enable component.lpit_time_stamp_adapter component
     select MCUX_COMPONENT_driver.lpit
     depends on MCUX_HAS_COMPONENT_driver.lpit
-    
-    
+
+
 config MCUX_COMPONENT_component.lptmr_time_stamp_adapter
-    bool "Enable component.lptmr_time_stamp_adapter"
+    bool "lptmr_time_stamp"
     default n
     help
         Enable component.lptmr_time_stamp_adapter component
     select MCUX_COMPONENT_driver.lptmr
     depends on MCUX_HAS_COMPONENT_driver.lptmr
-    
-    
+
+
 config MCUX_COMPONENT_component.ctimer_time_stamp_adapter
-    bool "Enable component.ctimer_time_stamp_adapter"
+    bool "ctimer_time_stamp"
     default n
     help
         Enable component.ctimer_time_stamp_adapter component
     select MCUX_COMPONENT_driver.ctimer
     depends on MCUX_HAS_COMPONENT_driver.ctimer
-    
-    
+
+
 config MCUX_COMPONENT_component.ostimer_time_stamp_adapter
-    bool "Enable component.ostimer_time_stamp_adapter"
+    bool "ostimer_time_stamp"
     default n
     help
         Enable component.ostimer_time_stamp_adapter component
     select MCUX_COMPONENT_driver.ostimer
     depends on MCUX_HAS_COMPONENT_driver.ostimer
-    
-    
+
+
 config MCUX_COMPONENT_component.gpt_time_stamp_adapter
-    bool "Enable component.gpt_time_stamp_adapter"
+    bool "gpt_time_stamp"
     default n
     help
         Enable component.gpt_time_stamp_adapter component
     select MCUX_COMPONENT_driver.gpt
     depends on MCUX_HAS_COMPONENT_driver.gpt
-    
+
