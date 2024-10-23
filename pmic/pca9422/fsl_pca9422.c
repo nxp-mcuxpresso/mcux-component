@@ -11,6 +11,12 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+#if (defined(PCA9422_DEVIC_ID_PCA9422A) && PCA9422_DEVIC_ID_PCA9422A != 0U)
+#define DEVICE_ID_PCA9422A
+#else
+#define DEVICE_ID_PCA9422B
+#endif /* PCA9422_DEVIC_ID */
+
 #if defined(FSL_DEBUG_PMIC_DRIVER) && (FSL_DEBUG_PMIC_DRIVER != 0U)
 #include "fsl_debug_console.h"
 #define LOG_INFO PRINTF
@@ -75,8 +81,8 @@ void PCA9422_GetChargerDefaultConfig(pca9422_charger_config_t *config)
     config->I2C_SendFunc    = NULL;
     config->I2C_ReceiveFunc = NULL;
 
-    /* Precharge current set to 20% of fast charge current. */
-    config->prechgI = kPCA9422_PrechgI20percent;
+    /* Precharge current set to 17% of fast charge current. */
+    config->prechgI = kPCA9422_PrechgI17percent;
     /* Current step is 2.5mA. */
     config->chgIStep = kPCA9422_ChgIStep2p5mA;
     /* Top-off current is 2.5% of fast charge current. */
@@ -115,8 +121,8 @@ void PCA9422_GetChargerDefaultConfig(pca9422_charger_config_t *config)
     config->warmPlusIVbat = kPCA9422_NewIVbat50C_StayIFastchg;
     /* AICL threshold on CHGIN is 4.5V. */
     config->aiclV = kPCA9422_AICLV4p5V;
-    /* Input current limit on CHGIN is 470mA. */
-    config->icl = kPCA9422_ChgInIlim_470mA;
+    /* Input current limit on VIN is 470mA. */
+    config->icl = kPCA9422_VinIlim_470mA;
     /* VSYS regulation voltage is 4550mV. */
     config->vsysReg = 4550U;
     /* AMUX wait time */
@@ -135,7 +141,7 @@ void PCA9422_GetChargerDefaultConfig(pca9422_charger_config_t *config)
 
 void PCA9422_InitCharger(pca9422_handle_t *handle, const pca9422_charger_config_t *config)
 {
-    uint8_t chgCntl[11], chgInCntl[4], regVal;
+    uint8_t chgCntl[11], vinCntl[4], regVal;
     bool result;
 
     assert(handle);
@@ -173,11 +179,11 @@ void PCA9422_InitCharger(pca9422_handle_t *handle, const pca9422_charger_config_
         assert(false);
     }
 
-    chgInCntl[0] = (uint8_t)PCA9422_CHGIN_CNTL_O_CHGIN_PD_EN;
-    chgInCntl[1] = (uint8_t)((uint8_t)config->aiclV | PCa9422_CHGIN_CNTL_1_AICL_EN);
-    chgInCntl[2] = (uint8_t)(config->icl);
-    chgInCntl[3] = (uint8_t)(PCA9422_VSYS_REG(config->vsysReg) << MASK2SHIFT(PCA9422_CHGIN_CNTL_3_VSYS_REG));
-    result       = PCA9422_WriteRegs(handle, PCA9422_CHGIN_CNTL_0, chgInCntl, sizeof(chgInCntl));
+    vinCntl[0] = (uint8_t)PCA9422_VIN_CNTL_0_VIN_PD_EN;
+    vinCntl[1] = (uint8_t)((uint8_t)config->aiclV | PCa9422_VIN_CNTL_1_AICL_EN);
+    vinCntl[2] = (uint8_t)(config->icl);
+    vinCntl[3] = (uint8_t)(PCA9422_VSYS_REG(config->vsysReg) << MASK2SHIFT(PCA9422_VIN_CNTL_3_VSYS_REG));
+    result       = PCA9422_WriteRegs(handle, PCA9422_VIN_CNTL_0, vinCntl, sizeof(vinCntl));
     if (!result)
     {
         assert(false);
@@ -650,8 +656,8 @@ bool PCA9422_SetVBATRegulation(pca9422_handle_t *handle, uint16_t vFloat)
     }
     /* Convert vSys to reg value */
     regVal = (uint8_t)PCA9422_VSYS_REG(vSys);
-    result = PCA9422_ModifyRegReadback(handle, PCA9422_CHGIN_CNTL_3, PCA9422_CHGIN_CNTL_3_VSYS_REG,
-                                       regVal << MASK2SHIFT(PCA9422_CHGIN_CNTL_3_VSYS_REG));
+    result = PCA9422_ModifyRegReadback(handle, PCA9422_VIN_CNTL_3, PCA9422_VIN_CNTL_3_VSYS_REG,
+                                       regVal << MASK2SHIFT(PCA9422_VIN_CNTL_3_VSYS_REG));
     if (result == false)
     {
         goto error;
@@ -801,9 +807,15 @@ uint8_t PCA9422_GetChargeState(pca9422_handle_t *handle)
 {
     uint8_t chgSts = 0U;
     uint8_t regVal[4];
+    bool result = true;
 
     /* Read CHARGER_0_STS ~ CHARGER_3_STS */
-    (void)PCA9422_ReadRegs(handle, PCA9422_CHARGER_0_STS, regVal, 4U);
+    result = PCA9422_ReadRegs(handle, PCA9422_CHARGER_0_STS, regVal, 4U);
+    if (result == false)
+    {
+        chgSts = 0x00U;
+        goto error;
+    }
 
     /* Check CHARGER_0_STS */
     if ((regVal[0] & PCA9422_INT_CHARGER_0_CHG_QUAL_OK) != 0U)
@@ -836,22 +848,35 @@ uint8_t PCA9422_GetChargeState(pca9422_handle_t *handle)
         chgSts = 0x00U;
     }
 
+error:
     return chgSts;
 }
 
 void PCA9422_SelectAMUXChannel(pca9422_handle_t *handle, pca9422_amux_channel_t amuxCh)
 {
     uint8_t regVal;
-
+    bool result = true;
     /* Write CHARGER_LOCK bit */
     regVal = PCA9422_CHARGER_LOCK_UNLOCK;
-    (void)PCA9422_WriteRegs(handle, PCA9422_CHG_CNTL0, &regVal, 1U);
+    result = PCA9422_WriteRegs(handle, PCA9422_CHG_CNTL0, &regVal, 1U);
+    if (!result)
+    {
+        LOG_INFO("I2C operation error in %s\r\n", __func__);
+    }
 
-    (void)PCA9422_ModifyReg(handle, PCA9422_CHG_CNTL10, PCA9422_CHARGER_CNTL_10_AMUX_CHANNEL, (uint8_t)amuxCh);
+    result = PCA9422_ModifyReg(handle, PCA9422_CHG_CNTL10, PCA9422_CHARGER_CNTL_10_AMUX_CHANNEL, (uint8_t)amuxCh);
+    if (!result)
+    {
+        LOG_INFO("I2C operation error in %s\r\n", __func__);
+    }
 
     /* Write CHARGER_LOCK bit */
     regVal = PCA9422_CHARGER_LOCK_LOCK;
-    (void)PCA9422_WriteRegs(handle, PCA9422_CHG_CNTL0, &regVal, 1U);
+    result = PCA9422_WriteRegs(handle, PCA9422_CHG_CNTL0, &regVal, 1U);
+    if (!result)
+    {
+        LOG_INFO("I2C operation error in %s\r\n", __func__);
+    }
 }
 
 void PCA9422_SetAMUXMode(pca9422_handle_t *handle, pca9422_amux_mode_t mode)
@@ -1082,7 +1107,11 @@ void PCA9422_GetDefaultBuckConfig(pca9422_buck_config_t *buckCfg)
     buckCfg[1].activeDischg = kPCA9422_BxADEnabled;
     buckCfg[1].fpwmEn       = kPCA9422_BxAutoPFMandPWM;
     buckCfg[1].enMode       = kPCA9422_EnmodeOnAll;
+#if defined(DEVICE_ID_PCA9422A)
+    buckCfg[1].dvsVout[0]   = 1000000U; /* 1.0V */
+#else
     buckCfg[1].dvsVout[0]   = 1100000U; /* 1.1V */
+#endif
     buckCfg[1].dvsVout[1]   = 1000000U; /* 1.0V */
     buckCfg[1].dvsVout[2]   = 1000000U; /* 1.0V */
     buckCfg[1].dvsVout[3]   = 1000000U; /* 1.0V */
@@ -1091,19 +1120,27 @@ void PCA9422_GetDefaultBuckConfig(pca9422_buck_config_t *buckCfg)
     buckCfg[1].dvsVout[6]   = 1000000U; /* 1.0V */
     buckCfg[1].dvsVout[7]   = 1000000U; /* 1.0V */
     buckCfg[1].stbyVout     = 1000000U; /* 1.0V */
+#if defined(DEVICE_ID_PCA9422A)
+    buckCfg[1].maxVout      = 1200000U;	/* 1.2V */
+#else
     buckCfg[1].maxVout      = 1400000U; /* 1.4V */
+#endif
     buckCfg[1].sleepVout    = 400000U;  /* 0.4V */
 
     /* BUCK3 default configuration */
     buckCfg[2].dvsUpStep    = 0U; /* 25mV */
     buckCfg[2].dvsDnStep    = 0U; /* 25mV */
-    buckCfg[2].dvsCtrl      = (uint8_t)kPCA9422_DVS0thrI2CInActiveAndSleep;
+    buckCfg[2].dvsCtrl      = kPCA9422_DVS0thrI2CInActiveAndSleep;
     buckCfg[2].rampSpeed    = kPCA9422_BxRamp_25mVp2us;
     buckCfg[2].lpMode       = kPCA9422_BxLPmodeNormal;
     buckCfg[2].activeDischg = kPCA9422_BxADEnabled;
     buckCfg[2].fpwmEn       = kPCA9422_BxAutoPFMandPWM;
     buckCfg[2].enMode       = kPCA9422_EnmodeOnAll;
+#if defined(DEVICE_ID_PCA9422A)
+    buckCfg[2].dvsVout[0]   = 1800000U; /* 1.8V */
+#else
     buckCfg[2].dvsVout[0]   = 1000000U; /* 1.0V */
+#endif
     buckCfg[2].dvsVout[1]   = 1000000U; /* 1.0V */
     buckCfg[2].dvsVout[2]   = 1000000U; /* 1.0V */
     buckCfg[2].dvsVout[3]   = 1000000U; /* 1.0V */
@@ -1112,7 +1149,11 @@ void PCA9422_GetDefaultBuckConfig(pca9422_buck_config_t *buckCfg)
     buckCfg[2].dvsVout[6]   = 1000000U; /* 1.0V */
     buckCfg[2].dvsVout[7]   = 1000000U; /* 1.0V */
     buckCfg[2].stbyVout     = 1000000U; /* 1.0V */
+#if defined(DEVICE_ID_PCA9422A)
+    buckCfg[2].maxVout      = 1975000U; /* 1.975V */
+#else
     buckCfg[2].maxVout      = 1200000U; /* 1.2V */
+#endif
     buckCfg[2].sleepVout    = 400000U;  /* 0.4V */
 }
 
@@ -1168,7 +1209,11 @@ void PCA9422_GetDefaultBBConfig(pca9422_bb_config_t *bbCfg)
     bbCfg->enMode     = kPCA9422_BBEnmodeOnAll;
     bbCfg->lpMode     = kPCA9422_BBLPmodeNormal;
 
+#if defined(DEVICE_ID_PCA9422A)
+    bbCfg->vout      = 5000000U; /* 5.0V */
+#else
     bbCfg->vout      = 1800000U; /* 1.8V */
+#endif
     bbCfg->stdyVout  = 1800000U; /* 1.8V */
     bbCfg->maxVout   = 5000000U; /* 5.0V */
     bbCfg->minVout   = 1800000U; /* 1.8V */
@@ -1210,6 +1255,26 @@ void PCA9422_GetRegulatorDefaultConfig(pca9422_regulator_config_t *RegConfig)
     RegConfig->ldo1            = ldo1;
     RegConfig->buckBoost       = buckBoost;
     RegConfig->slaveAddress    = PCA9422_DEFAULT_I2C_ADDR;
+}
+
+uint8_t PCA9422_GetDeviceID(pca9422_handle_t *handle)
+{
+    uint8_t regVal, regAddr, devID;
+    bool result;
+
+    /* Read Device ID */
+    regAddr = PCA9422_DEV_INFO;
+    result = PCA9422_ReadRegs(handle, regAddr, &regVal, 1U);
+    if (result == false)
+    {
+        LOG_INFO("Error I2C data Read[0x%2X]\r\n", regAddr);
+        devID = 0xFFU;
+    }
+    else
+    {
+        devID = (regVal & PCA9422_DEV_ID) >> 3U;
+    }
+    return devID;
 }
 
 void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_config_t *config)
@@ -1630,12 +1695,21 @@ void PCA9422_GetDefaultPowerModeConfig(pca9422_modecfg_t *config)
 {
     /* SW1 output set to 1.0V. */
     config->sw1OutVolt = 1000000U;
+#if defined(DEVICE_ID_PCA9422A)
+    /* SW2 output set to 1.0V. */
+    config->sw2OutVolt = 1000000U;
+    /* SW3 output set to 1.8V. */
+    config->sw3OutVolt = 1800000U;
+    /* SW4 output set to 5.0V. */
+    config->sw4OutVolt = 5000000U;
+#else
     /* SW2 output set to 1.1V. */
     config->sw2OutVolt = 1100000U;
     /* SW3 output set to 1.0V. */
     config->sw3OutVolt = 1000000U;
     /* SW4 output set to 1.8V. */
     config->sw4OutVolt = 1800000U;
+#endif
     /* LDO1 output set to 1.8V. */
     config->ldo1OutVolt = 1800000U;
     /* LDO2 output set to 1.8V. */

@@ -147,10 +147,10 @@
 #define PCA9422_CHARGER_2_STS      (0x6C)
 #define PCA9422_CHARGER_3_STS      (0x6D)
 
-#define PCA9422_CHGIN_CNTL_0 (0x6E)
-#define PCA9422_CHGIN_CNTL_1 (0x6F)
-#define PCA9422_CHGIN_CNTL_2 (0x70)
-#define PCA9422_CHGIN_CNTL_3 (0x71)
+#define PCA9422_VIN_CNTL_0 (0x6E)
+#define PCA9422_VIN_CNTL_1 (0x6F)
+#define PCA9422_VIN_CNTL_2 (0x70)
+#define PCA9422_VIN_CNTL_3 (0x71)
 
 #define PCA9422_CHG_CNTL0  (0x72U)
 #define PCA9422_CHG_CNTL1  (0x73U)
@@ -220,21 +220,21 @@
 #define PCA9422_TOP_CNTL3_SW_GLOBAL_RST    (0x04U)
 #define PCA9422_TOP_CNTL3_ON_GLT_LONG      (0x03U)
 
-#define PCA9422_TOP_CNTL4_WE_TIMER_CLR (0x07U)
+#define PCA9422_TOP_CNTL4_WD_TIMER_CLR (0x07U)
 
 /*! @brief Define the Register Masks - Battery Charger Register. */
-#define PCA9422_INT_DEVICE_0_CHGIN_SAFE_0V (0x04U)
-#define PCA9422_INT_DEVICE_0_CHGIN_NOK     (0x02U)
-#define PCA9422_INT_DEVICE_0_CHGIN_OK      (0x01U)
+#define PCA9422_INT_DEVICE_0_VIN_SAFE_0V (0x04U)
+#define PCA9422_INT_DEVICE_0_VIN_NOK     (0x02U)
+#define PCA9422_INT_DEVICE_0_VIN_OK      (0x01U)
 
-#define PCA9422_INT_DEVICE_1_CHGIN_I_LIMIT        (0x80U)
+#define PCA9422_INT_DEVICE_1_VIN_I_LIMIT          (0x80U)
 #define PCA9422_INT_DEVICE_1_VSYS_SUPPLEMENT_EXIT (0x40U)
 #define PCA9422_INT_DEVICE_1_VSYS_SUPPLEMENT      (0x20U)
 #define PCA9422_INT_DEVICE_1_VSYS_OVER_LOAD       (0x10U)
-#define PCA9422_INT_DEVICE_1_CHGIN_AICL_RELEASE   (0x08U)
-#define PCA9422_INT_DEVICE_1_CHGIN_AICL           (0x04U)
-#define PCA9422_INT_DEVICE_1_CHGIN_OVP_EXIT       (0x02U)
-#define PCA9422_INT_DEVICE_1_CHGIN_OVP            (0x01U)
+#define PCA9422_INT_DEVICE_1_VIN_AICL_RELEASE     (0x08U)
+#define PCA9422_INT_DEVICE_1_VIN_AICL             (0x04U)
+#define PCA9422_INT_DEVICE_1_VIN_OVP_EXIT         (0x02U)
+#define PCA9422_INT_DEVICE_1_VIN_OVP              (0x01U)
 
 #define PCA9422_INT_CHARGER_0_TOPOFF       (0x80U)
 #define PCA9422_INT_CHARGER_0_CV_MODE      (0x40U)
@@ -265,15 +265,15 @@
 
 #define PCA9422_INT_CHARGER_3_VBAT_OCP (0x01U)
 
-#define PCA9422_CHGIN_CNTL_O_CHGIN_PD_EN (0x02U)
+#define PCA9422_VIN_CNTL_0_VIN_PD_EN (0x02U)
 
-#define PCA9422_CHGIN_CNTL_1_FORCE_DISCHARGE_VSYS_EN (0x08U)
-#define PCA9422_CHGIN_CNTL_1_AICL_V                  (0x06U)
-#define PCa9422_CHGIN_CNTL_1_AICL_EN                 (0x01U)
+#define PCA9422_VIN_CNTL_1_FORCE_DISCHARGE_VSYS_EN (0x08U)
+#define PCA9422_VIN_CNTL_1_AICL_V                  (0x06U)
+#define PCa9422_VIN_CNTL_1_AICL_EN                 (0x01U)
 
-#define PCA9422_CHGIN_CNTL_2_CHGIN_IN_LIMIT (0x1FU)
+#define PCA9422_VIN_CNTL_2_VIN_I_LIMIT (0x1FU)
 
-#define PCA9422_CHGIN_CNTL_3_VSYS_REG (0xF0U)
+#define PCA9422_VIN_CNTL_3_VSYS_REG (0xF0U)
 
 #define PCA9422_CHARGER_CNTL_0_CHARGER_LOCK (0x30U)
 
@@ -334,14 +334,18 @@
 
 #define PCA9422_SW_RST_SW_RST_KEY (0xFFU)
 
-#define PCA9422_PWR_SEQ_CTRL_PSQ_TON_STEP  (0x0CU)
-#define PCA9422_PWR_SEQ_CTRL_PSQ_TOFF_STEP (0x03U)
+#define PCA9422_PWR_SEQ_CTRL_ON_CFG          (0x80U)
+#define PCA9422_PWR_SEQ_CTRL_MODE_SEL_BY_PIN (0x40U)
+#define PCA9422_PWR_SEQ_CTRL_MODE_I2C        (0x30U)
+#define PCA9422_PWR_SEQ_CTRL_PSQ_TON_STEP    (0x0CU)
+#define PCA9422_PWR_SEQ_CTRL_PSQ_TOFF_STEP   (0x03U)
 
-#define PCA9422_SYS_CFG1_STANDBY_CTRL (0x40U)
-#define PCA9422_SYS_CFG1_STANDBY_CFG  (0x20U)
-#define PCA9422_SYS_CFG1_DVS_CTRL2_EN (0x04U)
-#define PCA9422_SYS_CFG1_TFLT_SD_WAIT (0x02U)
-#define PCA9422_SYS_CFG1_THERM_SD_DIS (0x01U)
+#define PCA9422_SYS_CFG1_VIN_VALID_CFG (0x80U)
+#define PCA9422_SYS_CFG1_STANDBY_CTRL  (0x40U)
+#define PCA9422_SYS_CFG1_STANDBY_CFG   (0x20U)
+#define PCA9422_SYS_CFG1_DVS_CTRL2_EN  (0x04U)
+#define PCA9422_SYS_CFG1_TFLT_SD_WAIT  (0x02U)
+#define PCA9422_SYS_CFG1_THERM_SD_DIS  (0x01U)
 
 #define PCA9422_SYS_CFG2_PWR_SAVE        (0x30U)
 #define PCA9422_SYS_CFG2_GPIO_PULLUP_CFG (0x08U)
@@ -453,8 +457,8 @@
 
 #define PCA9422_SW4_BB_CFG3_BB_VOUT             (0xFFU)
 #define PCA9422_SW4_BB_CFG4_BB_VOUT_STBY        (0xFFU)
-#define PCA9422_SW4_BB_MAX_LIMIT_BB_MAX_LIMIT   (0xFFU)
-#define PCA9422_SW4_BB_MIM_LIMIT_BB_MIM_LIMIT   (0xFFU)
+#define PCA9422_SW4_BB_MAX_LIMIT_BB_MAX_LMT     (0xFFU)
+#define PCA9422_SW4_BB_MIM_LIMIT_BB_MIM_LMT     (0xFFU)
 #define PCA9422_SW4_BB_VOUT_SLEEP_BB_VOUT_SLEEP (0xFFU)
 
 /* LED */
@@ -484,6 +488,7 @@
 #define PCA9422_REGULATOR_EN_L3_ENABLE (0x02U)
 #define PCA9422_REGULATOR_EN_L4_ENABLE (0x01U)
 
+/* Wakeup Sequence */
 #define PCA9422_WAKEUP_SEQ1_BB_WAKEUP_GR (0xC0U)
 #define PCA9422_WAKEUP_SEQ1_B3_WAKEUP_GR (0x30U)
 #define PCA9422_WAKEUP_SEQ1_B2_WAKEUP_GR (0x0CU)
@@ -497,10 +502,12 @@
 #define PCA94R22_REG_LOCK_UNLOCK_KEY (0xFFU)
 
 /*! @brief PCA9422 Device information */
+/*! @brief PCA9422 Device revision */
 typedef enum _pca9422_dev_rev
 {
     kPCA9422_DevRevA0 = 0x00U, /* Device revision A0 */
     kPCA9422_DevRevB0 = 0x01U, /* Device revision B0 */
+    kPCA9422_DevRevB1 = 0x02U, /* Device revision B1 */
 } pca9422_dev_rev_t;
 
 /*! @brief PCA9422 Top level function definition. */
@@ -514,7 +521,7 @@ typedef enum _pca9422_wd_timer
 } pca9422_wd_timer_t;
 
 /*! @brief PCA9422 Battery Charger definition. */
-/*! @brief PCA9422 AICL threshold on CHGIN definition. */
+/*! @brief PCA9422 AICL threshold on VIN definition. */
 typedef enum _pca9422_aicl_v
 {
     kPCA9422_AICLV4p5V = 0x00U, /* AICL Threshould on VIN is 4.5V */
@@ -523,42 +530,42 @@ typedef enum _pca9422_aicl_v
     kPCA9422_AICLV4p8V = 0x06U, /* AICL Threshould on VIN is 4.8V */
 } pca9422_aicl_v_t;
 
-/*! @brief PCA9422 Input Current Limit on CHGIN definition. */
-typedef enum _pca9422_chgin_ilim
+/*! @brief PCA9422 Input Current Limit on VIN definition. */
+typedef enum _pca9422_vin_ilim
 {
-    kPCA9422_ChgInIlim_45mA   = 0x00U,
-    kPCA9422_ChgInIlim_70mA   = 0x01U,
-    kPCA9422_ChgInIlim_95mA   = 0x02U,
-    kPCA9422_ChgInIlim_120mA  = 0x03U,
-    kPCA9422_ChgInIlim_145mA  = 0x04U,
-    kPCA9422_ChgInIlim_170mA  = 0x05U,
-    kPCA9422_ChgInIlim_195mA  = 0x06U,
-    kPCA9422_ChgInIlim_220mA  = 0x07U,
-    kPCA9422_ChgInIlim_245mA  = 0x08U,
-    kPCA9422_ChgInIlim_270mA  = 0x09U,
-    kPCA9422_ChgInIlim_295mA  = 0x0AU,
-    kPCA9422_ChgInIlim_320mA  = 0x0BU,
-    kPCA9422_ChgInIlim_345mA  = 0x0CU,
-    kPCA9422_ChgInIlim_370mA  = 0x0DU,
-    kPCA9422_ChgInIlim_395mA  = 0x0EU,
-    kPCA9422_ChgInIlim_420mA  = 0x0FU,
-    kPCA9422_ChgInIlim_445mA  = 0x10U,
-    kPCA9422_ChgInIlim_470mA  = 0x11U,
-    kPCA9422_ChgInIlim_495mA  = 0x12U,
-    kPCA9422_ChgInIlim_520mA  = 0x13U,
-    kPCA9422_ChgInIlim_545mA  = 0x14U,
-    kPCA9422_ChgInIlim_570mA  = 0x15U,
-    kPCA9422_ChgInIlim_595mA  = 0x16U,
-    kPCA9422_ChgInIlim_620mA  = 0x17U,
-    kPCA9422_ChgInIlim_645mA  = 0x18U,
-    kPCA9422_ChgInIlim_670mA  = 0x19U,
-    kPCA9422_ChgInIlim_695mA  = 0x1AU,
-    kPCA9422_ChgInIlim_795mA  = 0x1BU,
-    kPCA9422_ChgInIlim_895mA  = 0x1CU,
-    kPCA9422_ChgInIlim_995mA  = 0x1DU,
-    kPCA9422_ChgInIlim_1095mA = 0x1EU,
-    kPCA9422_ChgInIlim_1195mA = 0x1FU,
-} pca9422_chgin_ilim_t;
+    kPCA9422_VinIlim_45mA   = 0x00U,
+    kPCA9422_VinIlim_70mA   = 0x01U,
+    kPCA9422_VinIlim_95mA   = 0x02U,
+    kPCA9422_VinIlim_120mA  = 0x03U,
+    kPCA9422_VinIlim_145mA  = 0x04U,
+    kPCA9422_VinIlim_170mA  = 0x05U,
+    kPCA9422_VinIlim_195mA  = 0x06U,
+    kPCA9422_VinIlim_220mA  = 0x07U,
+    kPCA9422_VinIlim_245mA  = 0x08U,
+    kPCA9422_VinIlim_270mA  = 0x09U,
+    kPCA9422_VinIlim_295mA  = 0x0AU,
+    kPCA9422_VinIlim_320mA  = 0x0BU,
+    kPCA9422_VinIlim_345mA  = 0x0CU,
+    kPCA9422_VinIlim_370mA  = 0x0DU,
+    kPCA9422_VinIlim_395mA  = 0x0EU,
+    kPCA9422_VinIlim_420mA  = 0x0FU,
+    kPCA9422_VinIlim_445mA  = 0x10U,
+    kPCA9422_VinIlim_470mA  = 0x11U,
+    kPCA9422_VinIlim_495mA  = 0x12U,
+    kPCA9422_VinIlim_520mA  = 0x13U,
+    kPCA9422_VinIlim_545mA  = 0x14U,
+    kPCA9422_VinIlim_570mA  = 0x15U,
+    kPCA9422_VinIlim_595mA  = 0x16U,
+    kPCA9422_VinIlim_620mA  = 0x17U,
+    kPCA9422_VinIlim_645mA  = 0x18U,
+    kPCA9422_VinIlim_670mA  = 0x19U,
+    kPCA9422_VinIlim_695mA  = 0x1AU,
+    kPCA9422_VinIlim_795mA  = 0x1BU,
+    kPCA9422_VinIlim_895mA  = 0x1CU,
+    kPCA9422_VinIlim_995mA  = 0x1DU,
+    kPCA9422_VinIlim_1095mA = 0x1EU,
+    kPCA9422_VinIlim_1195mA = 0x1FU,
+} pca9422_vin_ilim_t;
 
 /*! @brief PCA9422 VSYS Regulation voltage definition. */
 #define PCA9422_VSYS_REG_MIN      (4425U)
@@ -592,8 +599,8 @@ typedef enum _pca9422_v_warm_45c
 /*! @brief PCA9422 Precharge Current definition. */
 typedef enum _pca9422_prechg_i
 {
-    kPCA9422_PrechgI10percent = 0x00U, /* Precharge current is 10% of Fast charge current. */
-    kPCA9422_PrechgI20percent = 0x02U, /* Precharge current is 20% of Fast charge current. */
+    kPCA9422_PrechgI7p5percent = 0x00U, /* Precharge current is 7.5% of Fast charge current. */
+    kPCA9422_PrechgI17percent  = 0x02U, /* Precharge current is 17% of Fast charge current. */
 } pca9422_prechg_i_t;
 
 /*! @brief PCA9422 current step on battery charge current definition. */
@@ -602,9 +609,6 @@ typedef enum _pca9422_chg_i_step
     kPCA9422_ChgIStep2p5mA = 0x00U, /* Battery charge current step is 2.5mA. */
     kPCA9422_ChgIStep5p0mA = 0x01U, /* Battery charge current step is 5.0mA. */
 } pca9422_chg_i_step_t;
-
-/*! @brief PCA9422 fast charge current default value definition. */
-#define PCA9422_I_FAST_CHG_DFT (0x27U)
 
 /*! @brief PCA9422 VBAT floating voltage definition. */
 #define PCA9422_VBAT_REG_MIN    (3600U)
@@ -642,7 +646,7 @@ typedef enum _pca9422_precharge_timer
 } pca9422_precharge_timer_t;
 
 /*! @brief PCA9422 charger control 5 register default value definition. */
-#define PCA9422_CHARGER_CNTL_5_DFT (0x01U)
+#define PCA9422_CHARGER_CNTL_5_DFT (0x41U) /* Enable THERM function */
 
 /*! @brief PCA9422 V_HOT_60C threshold definition. */
 typedef enum _pca9422_v_hot_60c
@@ -683,34 +687,28 @@ typedef enum _pca9422_fast_chg_timer
 /*! @brief PCA9422 New charge current at COOL(10C) condition definition. */
 typedef enum _pca9422_new_i_vbat_10c
 {
-    kPCA9422_NewIVbat10C_StayIFastchg = 0x00U,       /* Stays a current IFAST_CHG */
-    kPCA9422_NewIVbat10C_0p75percentIFastchg =
-        0x04U,                                       /* Set [2.5mA or 5.0mA + 0.75 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
-    kPCA9422_NewIVbat10C_0p5percentIFastchg = 0x08U, /* Set [2.5mA or 5.0mA + 0.50 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
-    kPCA9422_NewIVbat10C_0p25percentIFastchg =
-        0x0CU,                                       /* Set [2.5mA or 5.0mA + 0.25 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat10C_StayIFastchg = 0x00U, /* Stays a current IFAST_CHG */
+    kPCA9422_NewIVbat10C_0p75IFastchg = 0x04U, /* Set [2.5mA or 5.0mA + 0.75 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat10C_0p50IFastchg = 0x08U, /* Set [2.5mA or 5.0mA + 0.50 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat10C_0p25IFastchg = 0x0CU, /* Set [2.5mA or 5.0mA + 0.25 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
 } pca9422_new_i_vbat_10c_t;
 
 /*! @brief PCA9422 New charge current at WARM Plus(50C) condition definition. */
 typedef enum _pca9422_new_i_vbat_50c
 {
-    kPCA9422_NewIVbat50C_StayIFastchg = 0x00U,       /* Stays a current IFAST_CHG */
-    kPCA9422_NewIVbat50C_0p75percentIFastchg =
-        0x10U,                                       /* Set [2.5mA or 5.0mA + 0.75 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
-    kPCA9422_NewIVbat50C_0p5percentIFastchg = 0x20U, /* Set [2.5mA or 5.0mA + 0.50 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
-    kPCA9422_NewIVbat50C_0p25percentIFastchg =
-        0x30U,                                       /* Set [2.5mA or 5.0mA + 0.25 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat50C_StayIFastchg = 0x00U, /* Stays a current IFAST_CHG */
+    kPCA9422_NewIVbat50C_0p75IFastchg = 0x10U, /* Set [2.5mA or 5.0mA + 0.75 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat50C_0p50IFastchg = 0x20U, /* Set [2.5mA or 5.0mA + 0.50 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat50C_0p25IFastchg = 0x30U, /* Set [2.5mA or 5.0mA + 0.25 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
 } pca9422_new_i_vbat_50c_t;
 
 /*! @brief PCA9422 New charge current at WARM(45C) condition definition. */
 typedef enum _pca9422_new_i_vbat_45c
 {
-    kPCA9422_NewIVbat45C_StayIFastchg = 0x00U,       /* Stays a current IFAST_CHG */
-    kPCA9422_NewIVbat45C_0p75percentIFastchg =
-        0x04U,                                       /* Set [2.5mA or 5.0mA + 0.75 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
-    kPCA9422_NewIVbat45C_0p5percentIFastchg = 0x08U, /* Set [2.5mA or 5.0mA + 0.50 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
-    kPCA9422_NewIVbat45C_0p25percentIFastchg =
-        0x0CU,                                       /* Set [2.5mA or 5.0mA + 0.25 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat45C_StayIFastchg = 0x00U, /* Stays a current IFAST_CHG */
+    kPCA9422_NewIVbat45C_0p75IFastchg = 0x04U, /* Set [2.5mA or 5.0mA + 0.75 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat45C_0p50IFastchg = 0x08U, /* Set [2.5mA or 5.0mA + 0.50 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
+    kPCA9422_NewIVbat45C_0p25IFastchg = 0x0CU, /* Set [2.5mA or 5.0mA + 0.25 *I_FAST_CHG[6:0] x 2.5mA or 5.0mA] */
 } pca9422_new_i_vbat_45c_t;
 
 /*! @brief PCA9422 New VBAT_REG at WARM condition, WARM_45C or WARM_50C, definition. */
@@ -1168,7 +1166,7 @@ typedef enum _pca9422_reg_lock
     kPCA9422_RegLockLockKey   = 0x00U,
 } pca9422_reg_lock_t;
 
-/*! @brief PCA9422 Mode Configuration definition. */
+/*! @brief PCA9422 Mode Configuration definition. - Power Mode Setting Voltage */
 typedef struct _pca9422_modecfg
 {
     uint32_t sw1OutVolt;  /* uV */
@@ -1288,7 +1286,7 @@ typedef struct _pca9422_charger_config
     /* AICL threshold */
     pca9422_aicl_v_t aiclV;
     /* Input current limit */
-    pca9422_chgin_ilim_t icl;
+    pca9422_vin_ilim_t icl;
     /* VSYS regulation voltage */
     uint16_t vsysReg;
     /* AMUX wait time */
@@ -1418,7 +1416,7 @@ extern "C" {
 
  *   config->I2C_SendFunc     = NULL;
  *   config->I2C_ReceiveFunc  = NULL;
- *   config->prechgI          = kPCA9422_PrechgI20percent;
+ *   config->prechgI          = kPCA9422_PrechgI17percent;
  *   config->chgIStep         = kPCA9422_ChgIStep2p5mA;
  *   config->topoffI          = kPCA9422_TopoffI2p5percent;
  *   config->fastI            = 100U;
@@ -1438,7 +1436,7 @@ extern "C" {
  *   config->warmIVbat        = kPCA9422_NewIVbat45C_StayIFastchg;
  *   config->warmPlusIVbat    = kPCA9422_NewIVbat50C_StayIFastchg;
  *   config->aiclV            = kPCA9422_AICLV4p5V;
- *   config->icl              = kPCA9422_ChgInIlim_470mA;
+ *   config->icl              = kPCA9422_VinIlim_470mA;
  *   config->vsysReg          = 4550U;
  *   config->amuxWaitTime     = kPCA9422_AMUXAutoOffWait_256us;
  *   config->amuxMode         = kPCA9422_AMUXModeManual;
@@ -1680,6 +1678,16 @@ bool PCA9422_SetUSBSuspendMode(pca9422_handle_t *handle, bool enable);
  * @param RegConfig Pointer to the PCA9422 configuration structure for regulator.
  */
 void PCA9422_GetRegulatorDefaultConfig(pca9422_regulator_config_t *RegConfig);
+
+/*!
+ * @brief Gets the device ID
+ *
+ * This function gets the PCA9422 device ID.
+ *
+ * @param handle PCA9422 Handle.
+ * @return PCA9422 Device ID value.
+ */
+uint8_t PCA9422_GetDeviceID(pca9422_handle_t *handle);
 
 /*!
  * @brief Initializes a PCA9422 instance.
