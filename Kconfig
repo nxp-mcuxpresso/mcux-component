@@ -84,6 +84,7 @@ menu "Component Configuration"
         orsource "ele_crypto/Kconfig"
         orsource "ele_base_api/Kconfig"
         orsource "psa_crypto_driver/Kconfig"
+        orsource "crypto_benchmark/Kconfig"
     endmenu
 
     menu "Power"
