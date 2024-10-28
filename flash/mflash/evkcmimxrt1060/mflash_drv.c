@@ -341,9 +341,11 @@ static int32_t mflash_drv_init_internal(void)
     /* Configure flash settings according to serial flash feature. */
     FLEXSPI_SetFlashConfig(MFLASH_FLEXSPI, &deviceconfig, kFLEXSPI_PortA1);
 #endif
+    uint32_t tmpLUT[CUSTOM_LUT_LENGTH] = {0x00U};
 
+    memcpy(tmpLUT, customLUT, sizeof(tmpLUT));
     /* Update LUT table. */
-    FLEXSPI_UpdateLUT(MFLASH_FLEXSPI, 0, customLUT, CUSTOM_LUT_LENGTH);
+    FLEXSPI_UpdateLUT(MFLASH_FLEXSPI, 0, tmpLUT, CUSTOM_LUT_LENGTH);
 
 #ifndef XIP_EXTERNAL_FLASH
     /* Enter quad mode. */
