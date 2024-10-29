@@ -1,0 +1,51 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+menu "Touch panel driver"
+
+config MCUX_COMPONENT_driver.gt911
+    bool "Enable driver for touch panel gt911"
+    default n
+    help
+        Enable driver for touch panel gt911 component
+
+config MCUX_COMPONENT_driver.ft6x06
+    bool "Enable driver for touch panel ft6x06"
+    default n
+    help
+        Enable driver for touch panel ft6x06 component
+    select MCUX_COMPONENT_CMSIS_Driver_Include.I2C
+
+config MCUX_COMPONENT_driver.ft3267
+    bool "Enable driver for touch panel ft3267"
+    default n
+    help
+        Enable driver for touch panel ft3267 component
+
+config MCUX_COMPONENT_driver.ektf2k
+    bool "Enable driver for touch panel ektf2k"
+    default n
+    help
+        Enable driver for touch panel ektf2k component
+
+config MCUX_COMPONENT_driver.ft5406
+    bool "Enable driver for touch panel ft5406"
+    default n
+    help
+        Enable driver for touch panel ft5406 component
+
+config MCUX_COMPONENT_driver.ft5406_rt
+    bool "Enable driver for touch panel ft5406_rt"
+    default n
+    help
+        Enable driver for touch panel ft5406_rt component
+    select MCUX_COMPONENT_driver.lpi2c if MCUX_HAS_COMPONENT_driver.lpi2c
+    select MCUX_COMPONENT_driver.lpflexcomm_lpi2c if MCUX_HAS_COMPONENT_driver.lpflexcomm_lpi2c
+
+config MCUX_COMPONENT_driver.tma525b
+    bool "Enable driver for touch panel tma525b"
+    default n
+    help
+        Enable driver for touch panel tma525b component
+
+endmenu

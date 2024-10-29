@@ -1,0 +1,15 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.audio_flexcomm_i2s_dma_adapter
+    bool "Component component.audio_flexcomm_i2s_dma_adapter"
+    select MCUX_COMPONENT_driver.flexcomm_i2s_dma
+    
+config MCUX_COMPONENT_component.audio_sai_dma_adapter
+    bool "Component component.audio_sai_dma_adapter"
+    select MCUX_COMPONENT_driver.sai_dma
+    
+config MCUX_COMPONENT_component.audio_sai_edma_adapter
+    bool "Component component.audio_sai_edma_adapter"
+    select MCUX_COMPONENT_driver.sai_edma
+    

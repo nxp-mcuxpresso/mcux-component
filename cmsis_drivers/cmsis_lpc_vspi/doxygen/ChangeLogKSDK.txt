@@ -1,0 +1,20 @@
+/*!
+@page driver_log Driver Change Log
+
+@section spi_cmsis SPI_CMSIS
+  Current spi_cmsis driver version is 2.2
+
+  - 2.2
+    - Bug Fixes
+      - Remove DMA_Init from SPI_DMAPowerControl.
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the bug that, the parameter num of APIs ARM_SPI_Transfer, ARM_SPI_Send and ARM_SPI_Receive,
+        and the return value of API ARM_SPI_GetDataCount should be the number of data item defined
+        by datawidth, rather than the number of byte.
+
+  - 2.0
+    - Initial version.
+*/
+

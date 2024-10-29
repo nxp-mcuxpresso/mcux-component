@@ -1,0 +1,10 @@
+/*!
+@page component_log Component Change Log
+
+@section sx1502 SX1502
+  The current SX1502 component version is 2.0.0.
+
+  - 2.0.0
+    - Initial version
+
+*/

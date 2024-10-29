@@ -1,0 +1,76 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.gpio_adapter
+    bool "Enable component.gpio_adapter"
+    default n
+    help
+        Enable component.gpio_adapter component
+
+    select MCUX_COMPONENT_driver.gpio
+    depends on MCUX_HAS_COMPONENT_driver.gpio
+    if MCUX_COMPONENT_component.gpio_adapter
+        choice
+            prompt "MCUX_COMPONENT_component.gpio_adapter option 1"
+            default MCUX_DEPENDENCY_COMPONENT_component.gpio_adapter_DEPEND_COMPONENT_OPTION_1 if !MCUX_HW_DEVICE_ID_MIMXRT798S
+            default MCUX_DEPENDENCY_COMPONENT_component.gpio_adapter_DEPEND_COMPONENT_OPTION_2 if MCUX_HW_DEVICE_ID_MIMXRT798S
+            config MCUX_DEPENDENCY_COMPONENT_component.gpio_adapter_DEPEND_COMPONENT_OPTION_1
+                bool "Select driver.port"
+                select MCUX_COMPONENT_driver.port
+            config MCUX_DEPENDENCY_COMPONENT_component.gpio_adapter_DEPEND_COMPONENT_OPTION_2
+                bool "Select MIMXRT798S"
+                depends on MCUX_HW_DEVICE_ID_MIMXRT798S
+        endchoice
+    endif
+
+
+config MCUX_COMPONENT_component.lpc_gpio_adapter
+    bool "Enable component.lpc_gpio_adapter"
+    default n
+    help
+        Enable component.lpc_gpio_adapter component
+    select MCUX_COMPONENT_driver.lpc_gpio
+    select MCUX_COMPONENT_driver.inputmux
+    select MCUX_COMPONENT_driver.pint
+    depends on MCUX_HAS_COMPONENT_driver.lpc_gpio
+
+config MCUX_COMPONENT_component.igpio_adapter
+    bool "Enable component.igpio_adapter"
+    default n
+    help
+        Enable component.igpio_adapter component
+    select MCUX_COMPONENT_driver.igpio
+    depends on MCUX_HAS_COMPONENT_driver.igpio
+
+config MCUX_COMPONENT_component.gint_adapter
+    bool "Enable component.gint_adapter"
+    default n
+    help
+        Enable component.gint_adapter component
+    select MCUX_COMPONENT_driver.gint
+    depends on MCUX_HAS_COMPONENT_driver.gint
+
+config MCUX_COMPONENT_component.dsc_gpio_adapter
+    bool "Enable component.dsc_gpio_adapter"
+    default n
+    help
+        Enable component.dsc_gpio_adapter component
+    select MCUX_COMPONENT_driver.dsc_gpio
+    depends on MCUX_HAS_COMPONENT_driver.dsc_gpio
+
+
+config MCUX_COMPONENT_component.rgpio_adapter
+    bool "Enable component.rgpio_adapter"
+    default n
+    help
+        Enable component.rgpio_adapter component
+    select MCUX_COMPONENT_driver.rgpio
+    depends on MCUX_HAS_COMPONENT_driver.rgpio
+
+config MCUX_COMPONENT_component.rt_gpio_adapter
+    bool "Enable component.rt_gpio_adapter"
+    default n
+    help
+        Enable component.rt_gpio_adapter component
+    select MCUX_COMPONENT_driver.lpc_gpio
+    depends on MCUX_HAS_COMPONENT_driver.lpc_gpio

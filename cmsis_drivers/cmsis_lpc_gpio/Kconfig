@@ -1,0 +1,7 @@
+config MCUX_COMPONENT_driver.cmsis_lpc_gpio
+    bool "Use driver cmsis_lpc_gpio"
+    select MCUX_COMPONENT_driver.lpc_gpio
+    select MCUX_COMPONENT_driver.pint
+    select MCUX_COMPONENT_CMSIS_Driver_Include.GPIO
+    select MCUX_COMPONENT_device.RTE
+    depends on MCUX_HAS_COMPONENT_driver.lpc_gpio || MCUX_HAS_COMPONENT_driver.pint

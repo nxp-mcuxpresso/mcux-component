@@ -1,0 +1,20 @@
+/*!
+@defgroup debugconsole_rtt Debug Console Based on SEGGER's RTT
+
+With SEGGER's RTT (Real Time Transfer), it is possible to output information
+from the target microcontroller as well as sending input to the application at
+a very high speed without affecting the target's real time behavior. The data
+transmission is based on J-Link and MCU debug port, UART is not required.
+
+MCUXpresso SDK integrates the RTT, and provides a thin wrap layer, so that
+MCUXpresso SDK projects could use RTT functions. By calling function DbgConsole_Init,
+the debug console is initialized and ready to work. The macros PRINTF, PUTCHAR,
+and GETCHAR can be used the same as printf, putchar, getchar. Note that SCANF
+and scanf is not supported when using RTT.
+
+If RTT debug information is necessary, please set SDK_DEBUGCONSOLE to
+DEBUGCONSOLE_REDIRECT_TO_SDK, and use J-Link RTT Viewer to communicate with MCU.
+If RTT debug information is not used, please set SDK_DEBUGCONSOLE to
+DEBUGCONSOLE_DISABLE.
+
+/*! @} */

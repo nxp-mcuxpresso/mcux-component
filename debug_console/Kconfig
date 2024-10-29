@@ -1,0 +1,189 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_PRJSEG_utility.debug_console_transfer_non_blocking
+    bool "Use debug_console_transfer_non_blocking mode"
+    default n
+    help
+        If Non-blocking mode is needed, please define set CONFIG_MCUX_PRJSEG_utility.debug_console_transfer_non_blocking=y in prj.conf,
+        otherwise blocking mode is the default transfer mode.
+        Warning: If you want to use non-blocking transfer,please make sure the corresponding
+        IO interrupt is enable, otherwise there is no output.
+        And non-blocking is combine with buffer, no matter bare-metal or rtos.
+
+config MCUX_COMPONENT_utility.debug_console_template_config
+    bool "Use debug_console template configuration header file"
+    default n
+    help
+        Not generate fsl_debug_console_conf.h, users need use default template fsl_debug_console_conf.h.
+        
+config MCUX_COMPONENT_utility.debug_console
+    bool "Use utility.debug_console"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_utility.str
+    select MCUX_COMPONENT_component.serial_manager
+    help
+        If Non-blocking mode is needed, please define it at project setting,
+        otherwise blocking mode is the default transfer mode.
+        Warning: If you want to use non-blocking transfer,please make sure the corresponding
+        IO interrupt is enable, otherwise there is no output.
+        And non-blocking is combine with buffer, no matter bare-metal or rtos.
+        Below shows how to configure in your project if you want to use non-blocking mode.
+        For IAR, right click project and select "Options", define it in "C/C++ Compiler->Preprocessor->Defined symbols".
+        For KEIL, click "Options for Target, define it in "C/C++->Preprocessor Symbols->Define".
+        For ARMGCC, open CmakeLists.txt and add the following lines,
+        "SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG_CONSOLE_TRANSFER_NON_BLOCKING")" for debug target.
+        "SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DDEBUG_CONSOLE_TRANSFER_NON_BLOCKING")" for release target.
+        For MCUxpresso, right click project and select "Properties", define it in "C/C++ Build->Settings->MCU C
+        Complier->Preprocessor".
+        
+        Note: When MCUX_COMPONENT_utility.debug_console is selected, you also need to ensure that MCUX_COMPONENT_utility.assert
+             is selected, otherwise there will be a condition conflict warning.
+      
+
+config MCUX_PRJSEG_utility.debug_console.generated_config
+    bool "Generate debug_console configuration header"
+    default y
+    depends on MCUX_COMPONENT_utility.debug_console
+    help
+        Generate the fsl_debug_console_conf.h, otherwise users need to provide their
+        own fsl_debug_console_conf.h.
+        
+    if MCUX_PRJSEG_utility.debug_console.generated_config
+        menu "DEBUG_CONSOLE(fsl_debug_console_conf.h)"
+            config DEBUG_CONSOLE_TRANSMIT_BUFFER_LEN
+                string "DEBUG_CONSOLE_TRANSMIT_BUFFER_LEN"
+                default "512U"        
+                help
+                    Define the transmit buffer length which is used to store the multi task log, buffer is enabled automatically
+                    when non-blocking transfer is using,
+                    This value will affect the RAM's ultilization, should be set per paltform's capability and software requirement.
+                    If it is configured too small, log maybe missed , because the log will not be
+                    buffered if the buffer is full, and the print will return immediately with -1.
+                    And this value should be multiple of 4 to meet memory alignment.
+                    No prefix in generated macro
+
+            config DEBUG_CONSOLE_RECEIVE_BUFFER_LEN
+                string "DEBUG_CONSOLE_RECEIVE_BUFFER_LEN"
+                default "1024U"
+                help
+                    Define the receive buffer length which is used to store the user input, buffer is enabled automatically when
+                    non-blocking transfer is using,
+                    This value will affect the RAM's ultilization, should be set per paltform's capability and software requirement.
+                    If it is configured too small, log maybe missed, because buffer will be overwrited if buffer is too small.
+                    And this value should be multiple of 4 to meet memory alignment.
+                    No prefix in generated macro
+                    
+            config DEBUG_CONSOLE_TX_RELIABLE_ENABLE
+                bool "DEBUG_CONSOLE_TX_RELIABLE_ENABLE"
+                default y
+                help
+                    Whether enable the reliable TX function
+                    If the macro is zero, the reliable TX function of the debug console is disabled.
+                    When the macro is zero, the string of PRINTF will be thrown away after the transmit buffer is full.
+                    No prefix in generated macro
+                    
+            config DEBUG_CONSOLE_RX_ENABLE
+                bool "DEBUG_CONSOLE_RX_ENABLE"
+                default y
+                help
+                    Whether enable the RX function
+                    If the macro is zero, the receive function of the debug console is disabled.
+                    No prefix in generated macro
+                    
+            config DEBUG_CONSOLE_PRINTF_MAX_LOG_LEN
+                string "DEBUG_CONSOLE_PRINTF_MAX_LOG_LEN"
+                default "128U"
+                help
+                    Define the MAX log length debug console support , that is when you call printf("log", x);, the log
+                    length can not bigger than this value.
+                    This macro decide the local log buffer length, the buffer locate at stack, the stack maybe overflow if
+                    the buffer is too big and current task stack size not big enough.
+                    No prefix in generated macro
+
+            config DEBUG_CONSOLE_SCANF_MAX_LOG_LEN
+                string "DEBUG_CONSOLE_SCANF_MAX_LOG_LEN"
+                default "20U"
+                help
+                    Define the buffer support buffer scanf log length, that is when you call scanf("log", &x);, the log
+                    length can not bigger than this value.
+                    As same as the DEBUG_CONSOLE_BUFFER_PRINTF_MAX_LOG_LEN.
+                    No prefix in generated macro
+                    
+            config DEBUG_CONSOLE_SYNCHRONIZATION_BM
+                int "DEBUG_CONSOLE_SYNCHRONIZATION_BM"
+                default 0
+                help
+                    synchronization for baremetal software
+                    User should not change these macro for synchronization mode, but add the
+                    corresponding synchronization mechanism per different software environment.
+                    Such as, if another RTOS is used,
+                    add:
+                    #define DEBUG_CONSOLE_SYNCHRONIZATION_XXXX 3
+                    in this configuration file and implement the synchronization in fsl.log.c.
+                    No prefix in generated macro
+
+            config DEBUG_CONSOLE_SYNCHRONIZATION_FREERTOS
+                int "DEBUG_CONSOLE_SYNCHRONIZATION_FREERTOS"
+                default 1
+                help
+                    synchronization for freertos software
+                    User should not change these macro for synchronization mode, but add the
+                    corresponding synchronization mechanism per different software environment.
+                    Such as, if another RTOS is used,
+                    add:
+                    #define DEBUG_CONSOLE_SYNCHRONIZATION_XXXX 3
+                    in this configuration file and implement the synchronization in fsl.log.c.
+                    No prefix in generated macro
+                    
+            config DEBUG_CONSOLE_DISABLE_RTOS_SYNCHRONIZATION
+                bool "DEBUG_CONSOLE_DISABLE_RTOS_SYNCHRONIZATION"
+                default n
+                help
+                    RTOS synchronization mechanism disable
+                    If not defined, default is enable, to avoid multitask log print mess.
+                    If other RTOS is used, you can implement the RTOS's specific synchronization mechanism in fsl.log.c
+                    If synchronization is disabled, log maybe messed on terminal.
+                    No prefix in generated macro
+                                    
+            config DEBUG_CONSOLE_ENABLE_ECHO_FUNCTION
+                bool "DEBUG_CONSOLE_ENABLE_ECHO_FUNCTION"
+                default y if DEBUG_CONSOLE_ENABLE_ECHO
+                default n
+                help
+                    Echo function support
+                    If you want to use the echo function,please define DEBUG_CONSOLE_ENABLE_ECHO
+                    at your project setting.
+                    No prefix in generated macro
+
+            config BOARD_USE_VIRTUALCOM
+                bool "BOARD_USE_VIRTUALCOM"
+                default n
+                help
+                    Definition to select virtual com(USB CDC) as the debug console.
+                    No prefix in generated macro                
+        endmenu
+        choice MCUX_DEPENDENCY_COMPONENT_utility.debug_console_selection
+            prompt "debug_console_synchronization_mode select"
+            default MCUX_DEPENDENCY_COMPONENT_utility.debug_console_bm
+            config MCUX_DEPENDENCY_COMPONENT_utility.debug_console_bm
+                bool "DEBUG_CONSOLE_SYNCHRONIZATION_BM"
+                depends on !MCUX_PRJSEG_utility.debug_console_transfer_non_blocking || !MCUX_COMPONENT_middleware.freertos-kernel 
+            config MCUX_DEPENDENCY_COMPONENT_utility.debug_console_free_rtos
+                bool "DEBUG_CONSOLE_SYNCHRONIZATION_FREERTOS"
+                depends on MCUX_COMPONENT_middleware.freertos-kernel
+                depends on MCUX_PRJSEG_utility.debug_console_transfer_non_blocking
+        endchoice
+
+    config DEBUG_CONSOLE_SYNCHRONIZATION_MODE
+        int "DEBUG_CONSOLE_SYNCHRONIZATION_MODE"
+        depends on MCUX_COMPONENT_utility.debug_console  && !MCUX_COMPONENT_utility.debug_console_template_config
+        default DEBUG_CONSOLE_SYNCHRONIZATION_BM if MCUX_DEPENDENCY_COMPONENT_utility.debug_console_bm
+        default DEBUG_CONSOLE_SYNCHRONIZATION_FREERTOS if MCUX_DEPENDENCY_COMPONENT_utility.debug_console_free_rtos
+        help
+            RTOS synchronization mechanism disable
+            If not defined, default is enable, to avoid multitask log print mess.
+            If other RTOS is used, you can implement the RTOS's specific synchronization mechanism in fsl.log.c
+            If synchronization is disabled, log maybe messed on terminal.
+            No prefix in generated macro
+    endif

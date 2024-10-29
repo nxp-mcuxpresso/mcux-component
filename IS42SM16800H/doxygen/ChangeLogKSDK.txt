@@ -1,0 +1,14 @@
+/*!
+@page component_log Component Change Log
+
+@section SDRAM SDRAM
+  The current SDRAM component version is 2.0.1.
+
+  - 2.0.1
+    - Bug Fixes
+      - Fixed MISRA C-2012 issues: 10.1, 10.4.
+
+  - 2.0.0
+    - Initial version
+
+*/

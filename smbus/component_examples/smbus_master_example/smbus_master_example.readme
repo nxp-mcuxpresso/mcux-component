@@ -1,0 +1,8 @@
+Overview
+========
+The smbus_b2b_transfer example shows how to use SMBUS components as slave/master to do board to board transfer.
+
+In this example, one SMBUS act asa slave or Master based on the other board configuration. Master sends a
+piece of data to slave, and receive a piece of data from slave. This example checks if the data received from
+slave is correct.
+

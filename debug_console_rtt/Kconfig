@@ -1,0 +1,7 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_utility.debug_console_rtt
+    bool "Component utility.debug_console_rtt"
+    select MCUX_COMPONENT_driver.rtt
+    

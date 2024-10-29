@@ -1,0 +1,53 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    bool "Use i2c target interface to communicate with the host system"
+    select MCUX_COMPONENT_driver.flexcomm_i2c if MCUX_HAS_COMPONENT_driver.flexcomm_i2c
+    select MCUX_COMPONENT_driver.i2c if MCUX_HAS_COMPONENT_driver.i2c
+    select MCUX_COMPONENT_driver.ii2c if MCUX_HAS_COMPONENT_driver.ii2c
+    select MCUX_COMPONENT_driver.lpc_i2c if MCUX_HAS_COMPONENT_driver.lpc_i2c
+    select MCUX_COMPONENT_driver.lpc_i2c_1 if MCUX_HAS_COMPONENT_driver.lpc_i2c_1
+    select MCUX_COMPONENT_driver.lpi2c if MCUX_HAS_COMPONENT_driver.lpi2c
+    select MCUX_COMPONENT_driver.lpflexcomm_lpi2c if MCUX_HAS_COMPONENT_driver.lpflexcomm_lpi2c
+
+menu "Pmic driver"
+
+config MCUX_COMPONENT_driver.pca9420
+    bool "Select pmic pca9420 driver"
+    select MCUX_COMPONENT_driver.power
+    select MCUX_COMPONENT_driver.common
+    select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    help
+      Say yes here to select pca9420 driver.
+
+config MCUX_COMPONENT_driver.pca9422
+    bool "Select pmic pca9422 driver"
+    select MCUX_COMPONENT_driver.power
+    select MCUX_COMPONENT_driver.common
+    select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    help
+      Say yes here to select pca9422 driver.
+
+config MCUX_COMPONENT_driver.pf1550
+    bool "Select pmic pf1550 driver"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    help
+      Say yes here to select pf1550 driver.
+
+config MCUX_COMPONENT_driver.pf3000
+    bool "Select pmic pf3000 driver"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    help
+      Say yes here to select pf3000 driver.
+
+config MCUX_COMPONENT_driver.pf5020
+    bool "Select pmic pf5020 driver"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    help
+      Say yes here to select pf5020 driver.
+
+endmenu

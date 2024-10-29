@@ -1,0 +1,43 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    bool "Use i2c target interface to communicate with the host system"
+    select MCUX_COMPONENT_driver.flexcomm_i2c if MCUX_HAS_COMPONENT_driver.flexcomm_i2c
+    select MCUX_COMPONENT_driver.i2c if MCUX_HAS_COMPONENT_driver.i2c
+    select MCUX_COMPONENT_driver.ii2c if MCUX_HAS_COMPONENT_driver.ii2c
+    select MCUX_COMPONENT_driver.lpc_i2c if MCUX_HAS_COMPONENT_driver.lpc_i2c
+    select MCUX_COMPONENT_driver.lpc_i2c_1 if MCUX_HAS_COMPONENT_driver.lpc_i2c_1
+    select MCUX_COMPONENT_driver.lpflexcomm_lpi2c if MCUX_HAS_COMPONENT_driver.lpflexcomm_lpi2c
+    select MCUX_COMPONENT_driver.lpi2c if MCUX_HAS_COMPONENT_driver.lpi2c
+
+menuconfig MCUX_ABSTRACT_COMPONENT_component_expander
+	bool "Expander drivers support"
+    select MCUX_COMPONENT_driver.common
+	select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+	help
+      Say yes here to select expander drivers.
+
+if MCUX_ABSTRACT_COMPONENT_component_expander
+
+config MCUX_COMPONENT_driver.pca6416a
+    bool "Select expander pca6416a driver"
+    help
+      Say yes here to select pca6416a driver.
+
+config MCUX_COMPONENT_driver.pcal6408
+    bool "Select expander pcal6408 driver"
+    help
+      Say yes here to select pcal6408 driver.
+
+config MCUX_COMPONENT_driver.pcal6524
+    bool "Select expander pcal6524 driver"
+    help
+      Say yes here to select pcal6524 driver.
+
+config MCUX_COMPONENT_driver.adp5585
+    bool "Select expander adp5585 driver"
+    help
+      Say yes here to select adp5585 driver.
+
+endif

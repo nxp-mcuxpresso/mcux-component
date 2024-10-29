@@ -1,0 +1,93 @@
+/*
+@page driver_log Driver Change Log
+
+@section i2c cmsis I2C CMSIS
+  Current I2C CMSIS driver version is 2.3
+
+   - 2.3
+    - Bug Fixes
+      - Fixed bug that the status ARM_I2C_EVENT_ADDRESS_NACK and ARM_I2C_EVENT_BUS_ERROR are not checked
+        and returned in master interrupt callback.
+
+   - 2.2
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.4, 8.6, 10.1, 10.3, 10.4, 11.1, 11.8, 11.9, 14.4, 16.1, 16.3, 16.4, 20.7, 20.9.
+
+  - 2.1
+    - Bug fixes
+      - Fixed the issue that slave interrupt transfer could not do proper clock stretch.
+        The slave must be configured with proper CLKDIV to provide sufficient data setup
+        time for the master before releasing the stretched clock. Currently driver provides
+        250ns clock set-up time.
+      - Fixed Coverity issue of uninitialized scalar variable in I2C_InterruptGetStatus.
+
+  - 2.0
+    - Initial version.
+
+*/
+
+@section usart cmsis USART CMSIS
+  Current USART CMSIS driver version is 2.4
+
+  - 2.4
+    - Other Changes
+      - Remove the ARM_USART_CONTROL_TX/ARM_USART_CONTROL_RX support, the USART
+        driver doesn't support enable or disable TX/RX, the TX/RX are always
+        enabled after set to ARM_POWER_FULL state.
+
+  - 2.3
+    - Bug Fixes
+      - Fixed bug that the status ARM_USART_EVENT_RX_OVERFLOW, ARM_USART_EVENT_TX_UNDERFLOW, ARM_USART_EVENT_RX_FRAMING_ERROR
+        and ARM_USART_EVENT_RX_PARITY_ERROR are not checked and returned in interrupt callback.
+
+  - 2.2
+    - Bug Fixes
+      - Fixed the violations of MISRA C-2012 rules: 8.4,8.6,10.1,10.3,10.4,11.1,11.9,14.4,15.7,16.1,16.3,16.6,17.7,20.9.
+
+  - 2.1
+    - New Features
+      - Added support for more instances(USART10, USART11, USART12, USART13).
+
+  - 2.0
+    - Initial version.
+
+*/
+
+@section cmsis spi  CMSIS SPI
+  Current CMSIS SPI driver version is 2.5
+
+   - 2.5
+    - Bug Fixes
+      - Remove DMA_Init from SPI_DMAPowerControl.
+
+  - 2.4
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.4, 8.6, 10.1, 10.3, 10.4, 10.8, 11.8, 11.9, 14.4, 16.1, 16.3, 16.4, 17.7,  20.9.
+
+  - 2.3
+    - Bug Fixes
+      - Fixed the bug that, the parameter num of APIs ARM_SPI_Transfer, ARM_SPI_Send and ARM_SPI_Receive,
+        and the return value of API ARM_SPI_GetDataCount should be the number of data item defined
+        by datawidth, rather than the number of byte.
+
+  - 2.2
+    - New Features
+      - Added support for more instances(SPI10, SPI11, SPI12, SPI13).
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the wrong clock polarity assignment in driver. For ARM_SPI_CPOL0_CPHA0 and other
+        frame format parameters, CPOL = 0 means kSPI_ClockPolarityActiveHigh rather than
+        kSPI_ClockPolarityActiveLow in driver.
+      - Fixed compiling error by deleting the definition and every usage of s_spiResetInstance in
+        fsl_spi_cmsis.c, since peripheral reset is performed in FLEXCOMM_Init.
+    - New Features
+      - Added code to allow user to set up the default Transmit value by using
+        ARM_SPI_SET_DEFAULT_TX_VALUE.
+
+  - 2.0
+    - Initial version.
+
+*/

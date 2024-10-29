@@ -1,0 +1,12 @@
+/*!
+@defgroup HAL CLOCK Component
+@brief HAL CLOCK Component
+There are some macros: SM_CLOCK, CCM_CLOCK in hal_config.h
+@code
+#define SM_CLOCK 1
+@endcode
+or
+@code
+#define CCM_CLOCK 1
+@endcode
+*/

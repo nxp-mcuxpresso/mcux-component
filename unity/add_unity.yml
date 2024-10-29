@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=../../../../../../bin/generator/sdk_generator/data/sdk_data_schema/v3/software_set_and_project_schema.json
+
+utilities.unity:
+  section-type: component
+  contents:
+    repo_base_path: components/unity
+    package_base_path: devices/${platform_devices_soc_name}/utilities/unity
+    project_base_path: utilities/unity
+    cc-include:
+    - repo_relative_path: "./"
+    files:
+    - source: linkscripts/main_text.ldt
+      toolchains: mcux
+    - source: unity.c
+    - source: unity.h
+    - source: unity_internals.h
+    - source: gcov_support.c
+    - source: gcov_support.h
+    configuration:
+      tools:
+        mcux:
+          cc-define:
+            UNITY_DUMP_RESULT: 
+            NDEBUG: 
+  belong_to: set.device.${platform_devices_soc_name}
+  section_info:
+    version: 2.1.0
+    full_name: Utilities unity
+    description: Simple Unit Testing for C
+    type: utilities
+    taxonomy:
+      csub: unity
+      belong_to: utilities
+    product:
+      cmsis_pack:
+        scr:
+          - scr.unity
+      kex_package:
+        scr:
+          - scr.unity
+    display_name: unity
+
+license.unity:
+  section-type: license
+  belong_to: set.device.${platform_devices_soc_name}
+  contents:
+    url: https://github.com/ThrowTheSwitch/Unity/
+  section_info:
+    Outgoing License: MIT
+
+scr.unity:
+  section-type: scr
+  belong_to: set.device.${platform_devices_soc_name}
+  contents:
+    license:
+    - license.unity
+    Name: Unity
+    Version: 2.1.0
+    Format: source code
+    Description: Simple Unit Testing for C
+    Location: devices/<device>/utilities/unity
+    Origin: ThrowTheSwitch.org (MIT)
+    Url: https://github.com/ThrowTheSwitch/Unity/

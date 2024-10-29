@@ -1,0 +1,9 @@
+/*!
+@page component_hal_power Component Change Log
+
+@section HAL POWER
+  The current HAL POWER component version is 1.0.0.
+
+  - 1.0.0
+    - Initial version
+*/

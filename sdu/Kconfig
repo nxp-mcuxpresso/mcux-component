@@ -1,0 +1,8 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.sdu_adapter
+    bool "Component component.sdu_adapter"
+    select MCUX_COMPONENT_driver.sdu
+    select MCUX_COMPONENT_component.osa
+    

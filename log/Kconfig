@@ -1,0 +1,43 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.log
+    # depends on MCUX_COMPONENT_component.log
+    bool "Use component log"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_utility.str
+
+if MCUX_COMPONENT_component.log
+
+endif
+config MCUX_COMPONENT_component.log.backend.debug_console
+    # depends on MCUX_COMPONENT_component.log.backend.debug_console
+    bool "Use component log backend debug_console"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_component.log
+    select MCUX_COMPONENT_utility.debug_console
+
+if MCUX_COMPONENT_component.log.backend.debug_console
+
+endif
+
+config MCUX_COMPONENT_component.log.backend.debug_console_lite
+    # depends on MCUX_COMPONENT_component.log.backend.debug_console_lite
+    bool "Use component log backend debug_console_lite"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_component.log
+    select MCUX_COMPONENT_utility.debug_console_lite
+
+if MCUX_COMPONENT_component.log.backend.debug_console_lite
+
+endif
+
+config MCUX_COMPONENT_component.log.backend.ringbuffer
+    # depends on MCUX_COMPONENT_component.log.backend.ringbuffer
+    bool "Use component log backend ringbuffer"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_component.log
+
+if MCUX_COMPONENT_component.log.backend.ringbuffer
+
+endif

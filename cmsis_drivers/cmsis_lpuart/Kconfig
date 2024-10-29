@@ -1,0 +1,11 @@
+config MCUX_HAS_COMPONENT_driver.cmsis_lpuart
+    bool
+    default y if MCUX_HW_IP_DriverType_LPUART || MCUX_HW_IP_DriverType_LPFLEXCOMM_LPUART
+
+config MCUX_COMPONENT_driver.cmsis_lpuart
+    bool "Use driver cmsis_lpuart"
+    select MCUX_COMPONENT_driver.lpuart if MCUX_HW_IP_DriverType_LPUART
+    select MCUX_COMPONENT_driver.lpflexcomm_lpuart if MCUX_HW_IP_DriverType_LPFLEXCOMM_LPUART
+    select MCUX_COMPONENT_CMSIS_Driver_Include.USART
+    select MCUX_COMPONENT_device.RTE
+    depends on MCUX_HAS_COMPONENT_driver.cmsis_lpuart

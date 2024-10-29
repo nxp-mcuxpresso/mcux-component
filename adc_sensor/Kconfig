@@ -1,0 +1,11 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.cns_adc_sensor_adapter
+    bool "Component component.cns_adc_sensor_adapter"
+    select MCUX_COMPONENT_driver.cns_adc
+    
+config MCUX_COMPONENT_component.lpadc_sensor_adapter
+    bool "Component component.lpadc_sensor_adapter"
+    select MCUX_COMPONENT_driver.lpadc
+    

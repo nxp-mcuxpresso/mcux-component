@@ -1,0 +1,10 @@
+config MCUX_HAS_COMPONENT_driver.cmsis_ecspi
+    bool
+    default y if MCUX_HW_IP_DriverType_ECSPI
+
+config MCUX_COMPONENT_driver.cmsis_ecspi
+    bool "Use driver cmsis_ecspi"
+    select MCUX_COMPONENT_driver.ecspi
+    select MCUX_COMPONENT_CMSIS_Driver_Include.SPI
+    select MCUX_COMPONENT_device.RTE
+    depends on MCUX_HAS_COMPONENT_driver.cmsis_ecspi

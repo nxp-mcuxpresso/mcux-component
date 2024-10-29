@@ -1,0 +1,4 @@
+/*!
+@defgroup System Manager Component
+@brief The System Manager Component is used by SCMI Agent
+*/

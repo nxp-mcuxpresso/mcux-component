@@ -1,0 +1,13 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_utilities.misc_utilities
+    bool "Use utilities.misc_utilities"
+
+    if MCUX_COMPONENT_utilities.misc_utilities
+    endif
+
+config MCUX_COMPONENT_utility.incbin
+    bool "utility.incbin"
+    help
+         Used to include slave core binary into master core binary.

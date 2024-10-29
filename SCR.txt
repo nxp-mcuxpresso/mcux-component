@@ -1,0 +1,26 @@
+NXP Software Content Register
+
+Package: mcux-component
+Version: 1.0.0
+Outgoing License: LA_OPT_Online_Code_Hosting
+License File: LICENSE
+Type of content: source code, header files
+Description and comments:
+      SDK components and board peripheral drivers, for example, flash and codec drivers.
+      CMSIS Peripheral drivers are designed to provide hardware independent APIs which make application reusable across a wide range of supported microcontroller devices.
+      Simple Unit Testing for C.
+      Host driver middleware and API's for connecting to MW320 Wi-Fi co-processor with on-board TCP/IP stack.
+      SEGGER Real Timer Transfer.
+      Wi-Fi module Tx power limits.
+      CRC32 code written by Gary S. Brown.
+Release Location: https://github.com/nxp-mcuxpresso/mcux-component
+Origin:
+      NXP (proprietary)
+      NXP (BSD-3-Clause)
+      ITE (BSD-3-Clause)
+      cmsis_drivers - ARM (Apache-2.0) - https://github.com/ARM-software/CMSIS_6/tree/v6.1.0
+      unity - ThrowTheSwitch.org (MIT) - https://github.com/ThrowTheSwitch/Unity
+      rtt - SEGGER Microcontroller (single-clause) - https://github.com/SEGGERMicro/RTT
+      wifi_bt_module - Murata Manufacturing Co., Ltd. (BSD-3-Clause) - https://github.com/murata-wireless/nxp-freertos-calibration
+      CRC32-GS - Gary S. Brown (BSD-3-Clause)
+      FreeRTOSConfig - Amazon (MIT) - https://github.com/FreeRTOS/FreeRTOS-Kernel

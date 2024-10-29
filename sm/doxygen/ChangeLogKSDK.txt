@@ -1,0 +1,19 @@
+/*!
+@page component_sm Component Change Log
+
+@section SM_Clock SM_CLOCK
+  The current sm_clock component version is 1.0.0.
+  Note: The component bases on components/imx_sm.
+
+  - 1.0.0
+    - Initial version
+
+@section SM_Pinctrl SM_PINCTRL
+  The current sm_pinctrl component version is 1.0.0.
+  Note: The component bases on components/imx_sm.
+
+  - 1.0.0
+    - Initial version
+
+
+*/

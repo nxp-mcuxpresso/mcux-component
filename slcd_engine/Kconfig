@@ -1,0 +1,14 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+menuconfig MCUX_COMPONENT_driver.slcd_engine
+    bool "Component driver.slcd_engine"
+    if MCUX_COMPONENT_driver.slcd_engine
+      choice
+        prompt "SLCD selection"
+        config MCUX_COMPONENT_driver.slcd_gdh_1247wp
+          bool "GDH_1247WP"
+        config MCUX_COMPONENT_driver.slcd_lcd_s401m16kr
+          bool "LCD S401M16KR"
+      endchoice
+    endif

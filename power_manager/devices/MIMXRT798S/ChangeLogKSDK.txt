@@ -1,0 +1,10 @@
+/*!
+@page component_log Component Change Log
+
+@section PowerManager POWERMANAGER
+  The current PowerManager component version is 2.0.0.
+
+  - 2.0.0
+    - Initial version
+
+*/

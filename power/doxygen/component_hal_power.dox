@@ -1,0 +1,12 @@
+/*!
+@defgroup HAL POWER Component
+@brief HAL POWER Component
+There are some macros: SM_POWER, CCMSRCGPC_POWER in hal_config.h
+@code
+#define SM_POWER 1
+@endcode
+or
+@code
+#define CCMSRCGPC_POWER 1
+@endcode
+*/

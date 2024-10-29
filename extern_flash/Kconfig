@@ -1,0 +1,30 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.eeprom_AT45DBxxxx
+    bool "Enable component.eeprom_AT45DBxxxx"
+    default n
+    help
+        Enable component.eeprom_AT45DBxxxx component
+    select MCUX_COMPONENT_component.spi_adapter
+    select MCUX_COMPONENT_component.gpio_adapter
+	depends on MCUX_HW_BOARD_frdmkw38
+    
+    
+config MCUX_COMPONENT_component.eeprom_InternalFlash
+    bool "Enable component.eeprom_InternalFlash"
+    default n
+    help
+        Enable component.eeprom_InternalFlash component
+    select MCUX_COMPONENT_component.flash_adapter
+    depends on MCUX_HW_BOARD_frdmkw38
+    
+    
+config MCUX_COMPONENT_component.eeprom_AT25Fxxxx
+    bool "Enable component.eeprom_AT25Fxxxx"
+    default n
+    help
+        Enable component.eeprom_AT25Fxxxx component
+    select MCUX_COMPONENT_component.spi_adapter
+    depends on MCUX_HW_BOARD_frdmkw38
+    

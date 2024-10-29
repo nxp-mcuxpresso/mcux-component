@@ -1,0 +1,26 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.power_manager_framework
+    bool "Power manager framework"
+    default n
+    select MCUX_COMPONENT_component.lists
+    select MCUX_COMPONENT_driver.common if MCUX_HAS_COMPONENT_driver.common
+    select MCUX_COMPONENT_driver.spc if MCUX_HAS_COMPONENT_driver.spc
+    select MCUX_COMPONENT_driver.cmc if MCUX_HAS_COMPONENT_driver.cmc
+    select MCUX_COMPONENT_driver.wuu if MCUX_HAS_COMPONENT_driver.wuu
+    select MCUX_COMPONENT_driver.crc if MCUX_HAS_COMPONENT_driver.crc
+    select MCUX_COMPONENT_driver.dcdc_soc if MCUX_HAS_COMPONENT_driver.dcdc_soc
+    select MCUX_COMPONENT_driver.gpc_3 if MCUX_HAS_COMPONENT_driver.gpc_3
+    select MCUX_COMPONENT_driver.pgmc if MCUX_HAS_COMPONENT_driver.pgmc
+    select MCUX_COMPONENT_driver.soc_src if MCUX_HAS_COMPONENT_driver.soc_src
+    select MCUX_COMPONENT_driver.pmu_1 if MCUX_HAS_COMPONENT_driver.pmu_1
+    select MCUX_COMPONENT_driver.ssarc if MCUX_HAS_COMPONENT_driver.ssarc
+    select MCUX_COMPONENT_driver.mcx_spc if MCUX_HAS_COMPONENT_driver.mcx_spc
+    select MCUX_COMPONENT_driver.mcx_cmc if MCUX_HAS_COMPONENT_driver.mcx_cmc
+    select MCUX_COMPONENT_driver.mcx_vbat if MCUX_HAS_COMPONENT_driver.mcx_vbat
+    select MCUX_COMPONENT_driver.vbat if MCUX_HAS_COMPONENT_driver.vbat
+
+    if  MCUX_COMPONENT_component.power_manager_framework
+
+    endif

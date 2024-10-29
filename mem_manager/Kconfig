@@ -1,0 +1,23 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.mem_manager
+    bool "Enable component.mem_manager"
+    default n
+    help
+        Enable component.mem_manager component
+    select MCUX_COMPONENT_component.lists
+    if MCUX_COMPONENT_component.mem_manager
+        choice MCUX_COMPONENT_component.mem_manager_selection
+            prompt "Mem_manager selection"
+            default MCUX_COMPONENT_component.mem_manager_freertos if MCUX_COMPONENT_middleware.freertos-kernel
+            default MCUX_COMPONENT_component.mem_manager_light
+            config MCUX_COMPONENT_component.mem_manager_legacy
+                bool "Select component mem_manager_legacy"
+            config MCUX_COMPONENT_component.mem_manager_light
+                bool "Select component mem_manager_light"
+            config MCUX_COMPONENT_component.mem_manager_freertos
+                bool "Select component mem_manager_freertos"
+                depends on MCUX_COMPONENT_middleware.freertos-kernel
+        endchoice
+    endif

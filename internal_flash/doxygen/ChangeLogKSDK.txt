@@ -1,0 +1,16 @@
+/*!
+@page component_log Component Change Log
+
+@section FLASH_Adapter FLASH_ADAPTER
+  The current FLASH_Adapter component version is 1.0.2.
+
+  - 1.0.2
+    - Add flexspi_nor_flash adapter.
+
+  - 1.0.1
+    - Add prefixing fsl_adapter_xxx.
+
+  - 1.0.0
+    - Initial version
+
+*/

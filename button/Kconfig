@@ -1,0 +1,61 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.button
+    bool "Enable component.button"
+    default n
+    help
+        Enable component.button component
+            
+    select MCUX_COMPONENT_component.timer_manager
+            
+    if MCUX_COMPONENT_component.button
+        menu "button config"                    
+            config BUTTON_SHORT_PRESS_THRESHOLD
+                string "BUTTON_SHORT_PRESS_THRESHOLD"
+                default "200U"
+                help
+                    Definition of button short press threshold,unit is ms.
+                    No prefix in generated macro
+                    
+            config BUTTON_LONG_PRESS_THRESHOLD
+                string "BUTTON_LONG_PRESS_THRESHOLD"
+                default "500U"
+                help
+                    Definition of button long press threshold,unit is ms.
+                    No prefix in generated macro
+                    
+            config BUTTON_DOUBLE_CLICK_THRESHOLD
+                string "BUTTON_DOUBLE_CLICK_THRESHOLD"
+                default "200U"
+                help
+                    Definition of button double click threshold,unit is ms.
+                    No prefix in generated macro               
+        endmenu
+        choice
+            prompt "MCUX_COMPONENT_component.button option 1"
+            default MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_1
+            config MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_1
+                bool "Select component.gpio_adapter"
+                select MCUX_COMPONENT_component.gpio_adapter
+                depends on MCUX_HAS_COMPONENT_driver.gpio
+            config MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_2
+                bool "Select component.lpc_gpio_adapter"
+                select MCUX_COMPONENT_component.lpc_gpio_adapter
+                depends on MCUX_HAS_COMPONENT_driver.lpc_gpio\
+                           && !MCUX_HW_BOARD_evkmimxrt595 && !MCUX_HW_BOARD_evkmimxrt685 && !MCUX_HW_BOARD_mimxrt685audevk 
+            config MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_3
+                bool "Select component.rt_gpio_adapter"
+                select MCUX_COMPONENT_component.rt_gpio_adapter
+                depends on MCUX_HAS_COMPONENT_driver.lpc_gpio\
+                           || MCUX_HW_BOARD_evkmimxrt595 || MCUX_HW_BOARD_evkmimxrt685 || MCUX_HW_BOARD_mimxrt685audevk 
+            config MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_4
+                bool "Select component.igpio_adapter"
+                select MCUX_COMPONENT_component.igpio_adapter
+                depends on MCUX_HAS_COMPONENT_driver.igpio
+            config MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_5
+                bool "Select component.rgpio_adapter"
+                select MCUX_COMPONENT_component.rgpio_adapter
+                depends on MCUX_HAS_COMPONENT_driver.rgpio
+        endchoice
+    endif

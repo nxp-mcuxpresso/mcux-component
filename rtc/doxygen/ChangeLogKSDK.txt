@@ -1,0 +1,13 @@
+/*!
+@page component_log Component Change Log
+
+@section RTC_Adapter RTC_ADAPTER
+  The current RTC_Adapter component version is 1.0.1.
+
+  - 1.0.1
+    - Add prefixing fsl_adapter_xxx.
+
+  - 1.0.0
+    - Initial version
+
+*/

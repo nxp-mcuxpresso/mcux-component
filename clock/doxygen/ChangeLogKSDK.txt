@@ -1,0 +1,9 @@
+/*!
+@page component_hal_clock Component Change Log
+
+@section HAL CLOCK
+  The current HAL CLOCK component version is 1.0.0.
+
+  - 1.0.0
+    - Initial version
+*/

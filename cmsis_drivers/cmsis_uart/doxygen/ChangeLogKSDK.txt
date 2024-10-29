@@ -1,0 +1,17 @@
+/*!
+@page driver_log Driver Change Log
+
+@section uart cmsis  UART CMSIS
+  The current UART CMSIS driver version is 2.2
+  - 2.2
+    - Imporvement
+      - Added support for devices which have 2 UART and 3 LPUART instances.
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.4，8.6，10.1，10.3，10.4，11.1，11.9，14.4，15.7，16.1，16.3，16.4，16.6，17.7，20.7，20.9.
+  - 2.0
+    - Initial version.
+
+*/

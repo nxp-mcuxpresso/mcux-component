@@ -1,0 +1,32 @@
+/*!
+@page driver_log Driver Change Log
+
+@section lpi2c_cmsis LPI2C_CMSIS
+  Current LPI2C_CMSIS driver version is 2.5
+
+  - 2.5
+    - Bug Fixes
+      - Fixed MISRA rule 10.3 in LPI2Cx_EdmaResource, use uint16_t force the essential Type.
+
+  - 2.4
+    - Bug Fixes
+      - Fixed rule 10.3 in LPI2C_Master_EdmaInitialize.
+
+  - 2.3
+    - Imporvement
+      - Changed DMA_Type to void for different platform dma.
+
+  - 2.2
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 10.3.
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.4, 8.6, 10.1, 10.3, 10.4, 11.1, 11.8, 14.4, 16.1, 16.3, 17.7, 17.3, 17.7, 20.9.
+
+  - 2.0
+    - Initial version.
+
+*/

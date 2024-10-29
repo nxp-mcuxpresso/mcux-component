@@ -1,0 +1,15 @@
+/*!
+@page component_log Component Change Log
+
+@section PowerManager POWERMANAGER
+  The current PowerManager component version is 1.0.1.
+
+  - 1.0.1
+    - Bug Fixes
+      - Disable WUU_IRQn for external pin wakeup source only when all
+      pins are disabled.
+
+  - 1.0.0
+    - Initial version
+
+*/

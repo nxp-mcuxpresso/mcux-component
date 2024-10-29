@@ -1,0 +1,15 @@
+/*!
+@page component_log Component Change Log
+
+@section GPIO_Adapter GPIO_ADAPTER
+  The current GPIO_Adapter component version is 1.0.2.
+  - 1.0.2
+	- Support driver without port module.
+
+  - 1.0.1
+    - Add prefixing fsl_adapter_xxx.
+
+  - 1.0.0
+    - Initial version
+
+*/

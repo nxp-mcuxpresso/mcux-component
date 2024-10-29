@@ -1,0 +1,19 @@
+/*!
+@page component_log Component Change Log
+
+@section I2C_Adapter I2C_ADAPTER
+  The current I2C_Adapter component version is 1.0.3.
+
+  - 1.0.3
+    - Update HAL_I2C_MASTER_HANDLE_SIZE for LPI2C on aarch64.
+
+  - 1.0.2
+    - Make driver to be aarch64 compatible.
+
+  - 1.0.1
+    - Add prefixing fsl_adapter_xxx.
+
+  - 1.0.0
+    - Initial version
+
+*/

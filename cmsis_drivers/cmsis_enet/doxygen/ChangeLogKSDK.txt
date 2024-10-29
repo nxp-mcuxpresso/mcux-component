@@ -1,0 +1,22 @@
+/*!
+@page driver_log Driver Change Log
+
+@section enet cmsis ENET CMSIS
+  Current ENET CMSIS driver version is 2.3
+
+  - 2.3
+    - Bug Fixes
+      - Updated the driver capabilities aligned with the actual situation.
+
+  - 2.2
+    - New Features
+      - Added code to deal with 1G enet and RGMII interface configuration in cmsis enet driver.
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the wrong logic to control cache macro.
+
+  - 2.0
+    - Initial version.
+
+*/

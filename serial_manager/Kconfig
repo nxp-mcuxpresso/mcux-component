@@ -1,0 +1,201 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_PRJSEG_component.serial_manager.generated_config
+    bool "Generate serial_manager configuration header"
+    default n
+    depends on MCUX_COMPONENT_component.serial_manager
+    help
+        Generate the config file; otherwise, users will need to provide their own configuration
+        in preinclude.h if they want to change the default values.
+        
+config MCUX_COMPONENT_component.serial_manager
+    bool "Use component serial manager"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_component.lists
+
+    if MCUX_COMPONENT_component.serial_manager
+        menu "serial manager config"
+            config SERIAL_MANAGER_NON_BLOCKING_MODE
+                bool "SERIAL_MANAGER_NON_BLOCKING_MODE"
+                default y if MCUX_PRJSEG_utility.debug_console_transfer_non_blocking
+                default n
+                help
+                    Enable or disable serial manager non-blocking mode (1 - enable, 0 - disable).
+                    No prefix in generated macro
+        endmenu
+        if MCUX_PRJSEG_component.serial_manager.generated_config            
+            menu "serial manager task config"                 
+                config SERIAL_MANAGER_TASK_PRIORITY
+                    string "SERIAL_MANAGER_TASK_PRIORITY"
+                    default "2U"
+                    help
+                        Macro to set serial manager task priority.
+                        No prefix in generated macro
+                        
+                config SERIAL_MANAGER_TASK_STACK_SIZE
+                    string "SERIAL_MANAGER_TASK_STACK_SIZE"
+                    default "1000U"
+                    help
+                        Macro to set serial manager task stack size.
+                        No prefix in generated macro
+                        
+                config SERIAL_MANAGER_TASK_HANDLE_RX_AVAILABLE_NOTIFY
+                    bool "SERIAL_MANAGER_TASK_HANDLE_RX_AVAILABLE_NOTIFY"
+                    default n
+                    help
+                        Enable or disable SerialManager_Task() handle RX data available notify.
+                        No prefix in generated macro
+                        
+                config SERIAL_MANAGER_RING_BUFFER_FLOWCONTROL
+                    bool "SERIAL_MANAGER_RING_BUFFER_FLOWCONTROL"
+                    default n
+                    help
+                        Enable or ring buffer flow control (1 - enable, 0 - disable)
+                        No prefix in generated macro
+            endmenu
+        endif
+
+        choice
+            prompt "component.serial_manager anyof dependency"
+            default MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_uart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_uart
+                bool "component.serial_manager_uart"
+                select MCUX_COMPONENT_component.serial_manager_uart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_usb_cdc
+                bool "component.serial_manager_usb_cdc"    
+                select MCUX_COMPONENT_component.serial_manager_usb_cdc
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_virtual
+                bool "component.serial_manager_virtual"
+                select MCUX_COMPONENT_component.serial_manager_virtual    
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_swo
+                bool "component.serial_manager_swo" 
+                select MCUX_COMPONENT_component.serial_manager_swo  
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_rpmsg
+                bool "component.serial_manager_rpmsg"    
+                select MCUX_COMPONENT_component.serial_manager_rpmsg
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_spi
+                bool "component.serial_manager_spi"                                                                                                           
+                select MCUX_COMPONENT_component.serial_manager_spi
+        endchoice
+    endif
+
+
+config MCUX_COMPONENT_component.serial_manager_uart
+    bool "Use component serial manager uart"
+
+    if MCUX_COMPONENT_component.serial_manager_uart
+        choice MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.selection
+            prompt "component.serial_manager_uart anyof dependency"
+            default MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.uart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.lpflexcomm_lpuart
+                bool "driver.lpflexcomm_lpuart"
+                select MCUX_COMPONENT_driver.lpflexcomm_lpuart
+                depends on MCUX_HAS_COMPONENT_driver.lpflexcomm_lpuart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.flexcomm_usart
+                bool "driver.flexcomm_usart"
+                select MCUX_COMPONENT_driver.flexcomm_usart
+                depends on MCUX_HAS_COMPONENT_driver.flexcomm_usart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.lpsci
+                bool "driver.lpsci"    
+                select MCUX_COMPONENT_driver.lpsci
+                depends on MCUX_HAS_COMPONENT_driver.lpsci
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.lpuart
+                bool "driver.lpuart"    
+                select MCUX_COMPONENT_driver.lpuart
+                depends on MCUX_HAS_COMPONENT_driver.lpuart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.uart
+                bool "driver.uart"   
+                select MCUX_COMPONENT_driver.uart
+                depends on MCUX_HAS_COMPONENT_driver.uart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.iuart
+                bool "driver.iuart"    
+                select MCUX_COMPONENT_driver.iuart
+                depends on MCUX_HAS_COMPONENT_driver.iuart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.lpc_miniusart
+                bool "driver.lpc_miniusart"
+                select MCUX_COMPONENT_driver.lpc_miniusart
+                depends on MCUX_HAS_COMPONENT_driver.lpc_miniusart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.vusart
+                bool "driver.vusart"    
+                select MCUX_COMPONENT_driver.vusart
+                depends on MCUX_HAS_COMPONENT_driver.vusart
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.qsci
+                bool "driver.qsci"                                                                                                             
+                select MCUX_COMPONENT_driver.qsci
+                depends on MCUX_HAS_COMPONENT_driver.qsci
+        endchoice
+            
+    endif
+
+
+config MCUX_COMPONENT_component.serial_manager_spi
+    # depends on MCUX_COMPONENT_component.serial_manager
+    bool "Use component serial manager spi"
+
+    if MCUX_COMPONENT_component.serial_manager_spi
+        choice MCUX_DEPENDENCY_COMPONENT_component.serial_manager_spi_DEPEND_COMPONENT_driver.selection
+            prompt "component.serial_manager_spi anyof dependency"
+            default MCUX_DEPENDENCY_COMPONENT_component.serial_manager_spi_anyof_allof1
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_spi_anyof_allof1
+                bool "Select driver.dspi and component.dspi_adapter"
+                select MCUX_COMPONENT_driver.dspi
+                select MCUX_COMPONENT_component.dspi_adapter    
+                depends on MCUX_HAS_COMPONENT_driver.dspi
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_spi_anyof_allof2
+                bool "Select driver.flexcomm_spi and component.flexcomm_spi_adapter"
+                select MCUX_COMPONENT_driver.flexcomm_spi
+                select MCUX_COMPONENT_component.flexcomm_spi_adapter  
+                depends on MCUX_HAS_COMPONENT_driver.flexcomm_spi
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_spi_anyof_allof3
+                bool "Select driver.lpspi and component.lpspi_adapter"
+                select MCUX_COMPONENT_driver.lpspi
+                select MCUX_COMPONENT_component.lpspi_adapter
+                depends on MCUX_HAS_COMPONENT_driver.lpspi
+            config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_spi_anyof_allof4
+                bool "Select driver.spi and component.spi_adapter"
+                select MCUX_COMPONENT_driver.spi
+                select MCUX_COMPONENT_component.spi_adapter                                                                                                                                 
+                depends on MCUX_HAS_COMPONENT_driver.spi
+        endchoice        
+    endif
+
+
+config MCUX_COMPONENT_component.serial_manager_usb_cdc
+    # depends on MCUX_COMPONENT_component.serial_manager
+    bool "Use component serial manager usb cdc"
+    # select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_middleware.usb.common_header
+    select MCUX_COMPONENT_middleware.usb.device.common_header
+    select MCUX_COMPONENT_middleware.usb.device.cdc
+        
+    if MCUX_COMPONENT_component.serial_manager_usb_cdc
+
+    endif
+
+
+config MCUX_COMPONENT_component.serial_manager_virtual
+    # depends on MCUX_COMPONENT_component.serial_manager
+    bool "Use component serial manager virtual"
+    # select MCUX_COMPONENT_driver.common
+
+    if MCUX_COMPONENT_component.serial_manager_virtual
+    endif
+
+
+config MCUX_COMPONENT_component.serial_manager_swo
+    # depends on MCUX_COMPONENT_component.serial_manager
+    bool "Use component serial manager swo"
+    # select MCUX_COMPONENT_driver.common
+
+    if MCUX_COMPONENT_component.serial_manager_swo
+    endif
+
+
+config MCUX_COMPONENT_component.serial_manager_rpmsg
+    # depends on MCUX_COMPONENT_component.serial_manager
+    bool "Use component serial manager rpmsg"
+    # select MCUX_COMPONENT_driver.common
+
+    if MCUX_COMPONENT_component.serial_manager_rpmsg
+    endif

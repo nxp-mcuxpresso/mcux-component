@@ -1,0 +1,70 @@
+/*!
+@page driver_log Driver Change Log
+
+@section lpspi_cmsis LPSPI_CMSIS
+  Current LPSPI_CMSIS driver version is 2.10
+
+  - 2.10
+    - Bug Fixes
+      - Fixed reading of TCR register
+      - Workaround for errata ERR050606
+
+  - 2.9
+    - Bug Fixes
+      - Fixed rule 10.3 in cmsis_lpspi_edma_resource_t value RTE_SPIx_DMA_TX_PERI_SEL.
+
+  - 2.8
+    - Bug Fixes
+      - Fixed rule 10.3 in LPSPI_EdmaPowerControl.
+
+  - 2.7
+    - Imporvement
+      - Changed DMA_Type to void for different platform dma.
+
+  - 2.6
+    - Bug Fixes
+      - Fixed wrong state busy flag, use the state of Handle instead of RemainingByteCount.
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 10.3.
+
+  - 2.5
+    - Bug Fixes
+      - Fixed wrong configuration of setting the bytes to be swapped during transfer when the transfer
+        width is more than 8.
+      - Update the edma request source to support more than 0xFF request sources.
+
+  - 2.4
+    - Bug Fixes
+      - Update driver to fix warnings reported by IAR v9.
+
+  - 2.3
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.4, 8.6, 10.1, 10.3, 10.4, 11.1, 11.8, 14.4, 16.1, 16.3, 17.7, 17.3, 17.7, 20.9.
+
+  - 2.2
+    - Bug Fixes
+      - Fixed the bug that, the parameter num of APIs ARM_SPI_Transfer, ARM_SPI_Send and ARM_SPI_Receive,
+        and the return value of API ARM_SPI_GetDataCount should be the number of data item defined
+        by datawidth, rather than the number of byte.
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the incorrect clock polarity assignment in the driver.
+        For ARM_SPI_CPOL0_CPHA0 and other frame format parameters, CPOL = 0 means kSPI_ClockPolarityActiveHigh
+        not kSPI_ClockPolarityActiveLow in driver.
+    - New features
+      - Allowed user to set up the default transmit value by using ARM_SPI_SET_DEFAULT_TX_VALUE.
+        Please note that this is not supported in slave interrupts, because the pin will stay tristated if tX
+        buffer is NULL.
+      - Enabled slave select mode. Note this has no effect when user sets any of them because the driver can only
+        support the hardware control function.
+      - Enabled 3-Wire mode, user can use ARM_SPI_MODE_MASTER_SIMPLEX/ARM_SPI_MODE_SLAVE_SIMPLEX to enable this
+        feature. For ARM_SPI_MODE_MASTER_SIMPLEX mode, the SOUT pin is selected as the input/output pin,
+        and for ARM_SPI_MODE_SLAVE_SIMPLEX, the SIN pin is selected as the input/output pin.
+
+  - 2.0
+    - Initial version.
+
+*/
+

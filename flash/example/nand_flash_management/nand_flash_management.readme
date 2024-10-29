@@ -1,0 +1,19 @@
+Overview
+===============
+
+Nand flash management demo demonstrates the use of a open source nand flash middleware and nand flash componet in KSDK.
+The demo combine a open source nand flash middleware which include:
+---wear leveling,
+---bad block management,
+---power fail safe,
+---garbage collection - user should be carefully with this function, there is a GC_RATIO in the middleware, the bigger value of the ratio, ---the more nand flash memory will be avaliable to user, but it will cause the write amplification.
+with fatfs and freertos.
+The demo use shell to support multiple file operation command, such as
+write -  write a new file
+read -  read a file
+list -  list the file in the directory
+free - check the free cluster of current file system
+..., user can get detail information by command "help".
+There are two tasks in the demo, shell task is used to recieve and process user command, another task is garbage collection task. The gc task priority is bigger than shell task to reduce the write amplification.
+
+

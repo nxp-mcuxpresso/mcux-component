@@ -1,0 +1,31 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.rpmsg_adapter
+    bool "Use rpmsg adapter"
+    default n
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_middleware.multicore.rpmsg-lite
+    help
+        Enable component.rpmsg_adapter component
+    if MCUX_COMPONENT_component.rpmsg_adapter
+      choice
+        prompt "Component component.rpmsg_adapter anyOf 1"
+        default MCUX_DEPENDENCY_COMPONENT_component.rpmsg_adapter_framework_rpmsg_config
+        config MCUX_DEPENDENCY_COMPONENT_component.rpmsg_adapter_framework_rpmsg_config
+            bool "Component MCUX_DEPENDENCY_COMPONENT_component.rpmsg_adapter_framework_rpmsg_config"
+            depends on MCUX_HW_BOARD_kw45b41zevk || MCUX_HW_BOARD_k32w148evk || MCUX_HW_BOARD_kw45b41zloc || MCUX_HW_BOARD_kw47evk || MCUX_HW_BOARD_frdmmcxw7x
+            
+        config MCUX_DEPENDENCY_COMPONENT_component.rpmsg_adapter.generated_rpmsg_config
+            bool "Component MCUX_DEPENDENCY_COMPONENT_component.rpmsg_adapter.generated_rpmsg_config"         
+
+      endchoice
+      menu "RPMSG adapter config" 
+        config HAL_RPMSG_SELECT_ROLE
+            bool "HAL_RPMSG_SELECT_ROLE"
+            default y
+            help
+                RPMSG Msaster/Remote role definition (0 - Master, 1 - Remote)
+                No prefix in generated macro
+      endmenu
+    endif

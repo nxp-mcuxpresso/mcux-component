@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=../../../../../../bin/generator/sdk_generator/data/sdk_data_schema/v3/software_set_and_project_schema.json
+
+utilities.gcov:
+  section-type: component
+  contents:
+    repo_base_path: "./"
+    project_base_path: utilities/unity
+    cc-include:
+    - repo_relative_path: components/unity/
+    - repo_relative_path: boards/src/unit_tests/sdmmc/tools/
+    files:
+    - source: components/unity/linkscripts/main_text.ldt
+      toolchains: armgcc mcux
+    - source: components/unity/unity.c
+      project_relative_path: "./"
+    - source: components/unity/unity.h
+      project_relative_path: "./"
+    - source: components/unity/unity_internals.h
+      project_relative_path: "./"
+    - source: components/unity/gcov_support.c
+      project_relative_path: "./"
+    - source: components/unity/gcov_support.h
+      project_relative_path: "./"
+    - source: components/unity/gcov_func.c
+      project_relative_path: "./"
+    - source: components/unity/gcov_func.h
+      project_relative_path: "./"
+    - source: boards/src/unit_tests/sdmmc/tools/segger_semihosting.c
+      project_relative_path: "./"
+    - source: boards/src/unit_tests/sdmmc/tools/segger_semihosting.h
+      project_relative_path: "./"
+    configuration:
+      cc-define:
+        UNITY_DUMP_RESULT: 
+        UNITY_CUSTOM_OUTPUT_CHAR: 
+        UNITY_DUMP_CASE_RESULT_ONLY: 
+        MCUX_SEGGER_SEMIHOSTING: 
+        GCOV_DO_COVERAGE: 1
+        UNIT_TEST_COMBINE: 
+        NDEBUG: 
+      ad-flags:
+          - "-Xlinker --defsym=__stack_size__=0x1000"
+          - "-Xlinker --defsym=__heap_size__=0x4000"
+          - "--coverage"
+  belong_to: set.device.${platform_devices_soc_name}
+  target_cmd:
+  - debug
+  section_info:
+    version: 1.0.0
+    full_name: Utilities gcov
+    description: Utilities gcov
+    type: utilities
+    debug_support: true
+    display_name: gcov

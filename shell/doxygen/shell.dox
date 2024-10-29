@@ -1,0 +1,60 @@
+/*!
+@defgroup SHELL Shell
+@details This section describes the programming interface of the Shell middleware.
+
+Shell controls MCUs by commands via the specified communication peripheral based on the debug console driver.
+
+# Function groups {#ShellFunGrps}
+
+## Initialization {#ShellInit}
+
+To initialize the Shell middleware, call the <span style="color:red">SHELL_Init()</span> function with these parameters.
+This function automatically enables the middleware.
+
+~~~~~{.c}
+shell_status_t SHELL_Init(shell_handle_t shellHandle, serial_handle_t serialHandle, char *prompt);
+~~~~~
+
+Then, after the initialization was successful, call a command to control MCUs.
+
+This example shows how to call the SHELL_Init() given the user configuration structure.
+
+~~~~~{.c}
+SHELL_Init(s_shellHandle, s_serialHandle, "Test@SHELL>");
+~~~~~
+
+## Advanced Feature {#ShellAdvFeature}
+
++ Support to get a character from standard input devices.
+~~~~~{.c
+static shell_status_t SHELL_GetChar(shell_context_handle_t *shellContextHandle, uint8_t *ch);
+~~~~~
+
+<div style="width:800px;">
+    <table>
+        <tr>
+            <th>Commands </th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td> help </td>
+            <td> List all the registered commands.
+            </td>
+        </tr>
+        <tr>
+            <td> exit </td>
+            <td> Exit program.
+            </td>
+        </tr>
+    </table>
+</div>
+
+## Shell Operation{#SHELLOper}
+
+~~~~~{.c}
+    SHELL_Init(s_shellHandle, s_serialHandle, "Test@SHELL>");
+    SHELL_Task((s_shellHandle);
+~~~~~
+
+*/
+/*! @} */

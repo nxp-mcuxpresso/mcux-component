@@ -1,0 +1,10 @@
+/*!
+@page component_log Component Change Log
+
+@section fsl_component_log log
+  The current log component version is 1.0.0.
+
+  - 1.0.0
+    - Initial version
+
+*/

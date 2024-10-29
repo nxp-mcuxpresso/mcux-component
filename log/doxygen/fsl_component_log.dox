@@ -1,0 +1,64 @@
+/*!
+@defgroup fsl_component_log Log
+@details This chapter describes the programming interface of the log component.
+There are three steps should be followed to use the log component in specfic module,
+
+  step 1, define the macro LOG_ENABLE, likes as,
+    @code
+    #define LOG_ENABLE 1
+    @endcode
+    @note LOG_ENABLE could be re-defined as a MODULE enabled flag such as,
+    @code
+    #define LOG_ENABLE module_LOG_ENABLED_FLAG
+    @endcode
+
+  step 2, include the log component header file, likes as,
+    @code
+    #include "fsl_component_log.h"
+    @endcode
+  step 3, define the log module by using macro LOG_MODULE_DEFINE, likes as,
+    @code
+    LOG_MODULE_DEFINE(<module name>, <module log level>);
+    @endcode
+
+@note The code block should be placed at the end of the header file including of the source code.
+
+  For example,
+  In source file 1,
+    @code
+    #define LOG_ENABLE MODULE1_CONFIG_LOG_ENABLE
+    #include "fsl_component_log.h"
+    LOG_MODULE_DEFINE(module1, kLOG_LevelTrace);
+    @endcode
+  In source file 2,
+    @code
+    #define LOG_ENABLE MODULE2_CONFIG_LOG_ENABLE
+    #include "fsl_component_log.h"
+    LOG_MODULE_DEFINE(module2, kLOG_LevelDebug);
+    @endcode
+*/
+
+/*!
+@defgroup fsl_component_log_config Log configuration
+@ingroup fsl_component_log
+@details This chapter describes the configurations of the log component.
+*/
+
+/*!
+@defgroup fsl_component_log_backend_debug_console Log backend debug console
+@ingroup fsl_component_log
+@details This chapter describes the log backend debug console.
+ All APIs provided by the component should be called explicitly by up layer.
+ For examples, if the debug console is used as backend of the log component,
+ the function LOG_InitBackendDebugconsole should be called explicitly.
+*/
+
+/*!
+@defgroup fsl_component_log_backend_ring_buffer Log backend ring buffer
+@ingroup fsl_component_log
+@details This chapter describes the log backend ring buffer.
+ All APIs provided by the component should be called explicitly by up layer.
+ For examples, if the ring buffer is used as backend of the log component,
+ the function LOG_InitBackendRingbuffer should be called explicitly.
+*/
+

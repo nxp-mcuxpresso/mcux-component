@@ -1,0 +1,9 @@
+Overview
+========
+The log Demo application demonstrates to prompt LOG with level by commands.
+Note: Please input one character at a time. If you input too many characters each time, the receiver may overflow
+because the low level UART uses simple polling way for receiving. If you want to try inputting many characters each time,
+just define DEBUG_CONSOLE_TRANSFER_NON_BLOCKING in your project to use the advanced debug console utility.
+Besides, the demo does not support semihosting mode. The log demo is based on shell, debug console and 
+serial manager. When semihosting is used, debug console and serial manager are bypassed. So the log demo cannot
+work with semihosting.

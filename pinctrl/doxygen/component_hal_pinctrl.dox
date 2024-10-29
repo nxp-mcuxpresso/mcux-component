@@ -1,0 +1,12 @@
+/*!
+@defgroup HAL PINCTRL Component
+@brief HAL PINCTRL Component
+There are some macros: SM_PINCTRL, IOMUXC_PINCTRL in hal_config.h
+@code
+#define SM_PINCTRL 1
+@endcode
+or
+@code
+#define IOMUXC_PINCTRL 1
+@endcode
+*/

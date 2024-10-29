@@ -1,0 +1,14 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_utility.shell
+    # depends on MCUX_COMPONENT_utility.shell
+    bool "Use component utility shell"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_utility.str
+    select MCUX_COMPONENT_component.lists
+
+if MCUX_COMPONENT_utility.shell
+
+endif
+

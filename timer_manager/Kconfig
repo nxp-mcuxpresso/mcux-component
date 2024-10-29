@@ -1,0 +1,93 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.timer_manager
+    bool "Enable component.timer_manager"
+    default n
+    help
+        Enable component.timer_manager component
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_component.lists
+
+    if MCUX_COMPONENT_component.timer_manager
+        choice
+            prompt "component.timer_manager anyof dependency"
+            default MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_lptmr
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_ctimer
+                bool "Select component.ctimer_adapter"
+                select MCUX_COMPONENT_component.ctimer_adapter
+                depends on MCUX_HAS_COMPONENT_driver.ctimer
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_ftm
+                bool "Select timer_manager component.ftm_adapter"
+                select MCUX_COMPONENT_component.ftm_adapter
+                depends on MCUX_HAS_COMPONENT_driver.ftm
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_gpt
+                bool "Select timer_manager component.gpt_adapter"
+                select MCUX_COMPONENT_component.gpt_adapter
+                depends on MCUX_HAS_COMPONENT_driver.gpt
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_lpit
+                bool "Select timer_manager component.lpit_adapter"
+                select MCUX_COMPONENT_component.lpit_adapter
+                depends on MCUX_HAS_COMPONENT_driver.lpit
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_lptmr
+                bool "Select timer_manager component.lptmr_adapter"
+                select MCUX_COMPONENT_component.lptmr_adapter
+                depends on MCUX_HAS_COMPONENT_driver.lptmr
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_mrt
+                bool "Select timer_manager component.mrt_adapter"
+                select MCUX_COMPONENT_component.mrt_adapter
+                depends on MCUX_HAS_COMPONENT_driver.mrt
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_pit
+                bool "Select timer_manager component.pit_adapter"
+                select MCUX_COMPONENT_component.pit_adapter
+                depends on MCUX_HAS_COMPONENT_driver.pit
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_tpm
+                bool "Select timer_manager component.tpm_adapter"
+                select MCUX_COMPONENT_component.tpm_adapter
+                depends on MCUX_HAS_COMPONENT_driver.tpm
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_dsc_pit
+                bool "Select timer_manager component.dsc_pit_adapter"
+                select MCUX_COMPONENT_component.dsc_pit_adapter
+                depends on MCUX_HAS_COMPONENT_driver.dsc_pit
+            config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_ostimer
+                bool "Select timer_manager component.ostimer_adapter"
+                select MCUX_COMPONENT_component.ostimer_adapter
+                depends on MCUX_HAS_COMPONENT_driver.ostimer
+        endchoice
+    endif
+    
+config MCUX_PRJSEG_configure.timer_manager_enable_time_stamp
+    bool "Use timer manager enable timestamp"
+    depends on MCUX_COMPONENT_component.timer_manager
+    help
+        If need use timer manager time stamp, please define set CONFIG_MCUX_PRJSEG_configure.timer_manager_enable_time_stamp=y in prj.conf,
+    if MCUX_PRJSEG_configure.timer_manager_enable_time_stamp
+        choice
+            prompt "component.timer_manager_enable_time_stamp anyof dependency"
+            default MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_lptmr
+            config MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_ctimer
+                bool "Select component.ctimer_time_stamp_adapter"
+                select MCUX_COMPONENT_component.ctimer_time_stamp_adapter
+                depends on MCUX_HAS_COMPONENT_driver.ctimer
+            config MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_gpt
+                bool "Select timer_manager component.gpt_time_stamp_adapter"
+                select MCUX_COMPONENT_component.gpt_time_stamp_adapter
+                depends on MCUX_HAS_COMPONENT_driver.gpt
+            config MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_lpit
+                bool "Select timer_manager component.lpit_time_stamp_adapter"
+                select MCUX_COMPONENT_component.lpit_time_stamp_adapter
+                depends on MCUX_HAS_COMPONENT_driver.lpit
+            config MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_lptmr
+                bool "Select timer_manager component.lptmr_time_stamp_adapter"
+                select MCUX_COMPONENT_component.lptmr_time_stamp_adapter
+                depends on MCUX_HAS_COMPONENT_driver.lptmr
+            config MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_pit
+                bool "Select timer_manager component.pit_time_stamp_adapter"
+                select MCUX_COMPONENT_component.pit_time_stamp_adapter
+                depends on MCUX_HAS_COMPONENT_driver.pit
+            config MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_ostimer
+                bool "Select timer_manager component.ostimer_time_stamp_adapter"
+                select MCUX_COMPONENT_component.ostimer_time_stamp_adapter
+                depends on MCUX_HAS_COMPONENT_driver.ostimer
+        endchoice
+    endif

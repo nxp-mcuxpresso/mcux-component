@@ -1,0 +1,9 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.messaging
+    bool "Enable component.messaging"
+    select MCUX_COMPONENT_component.mem_manager
+    select MCUX_COMPONENT_component.lists
+    help
+        Enable component.messaging component

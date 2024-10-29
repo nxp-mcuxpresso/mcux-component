@@ -1,0 +1,14 @@
+/*!
+@page driver_log Driver Change Log
+
+@section uart cmsis  UART CMSIS
+  The current UART CMSIS driver version is 2.1
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the violations of MISRA C-2012 rules: 10.1,10.3,10.4,11.1,11.9,14.4,15.7,16.1,16.6,20.9.
+
+  - 2.0
+    - Initial version.
+
+*/

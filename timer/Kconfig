@@ -1,0 +1,92 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.ctimer_adapter
+    bool "Enable component.ctimer_adapter"
+    default n
+    help
+        Enable component.ctimer_adapter component
+    select MCUX_COMPONENT_driver.ctimer
+	depends on MCUX_HAS_COMPONENT_driver.ctimer
+    
+    
+config MCUX_COMPONENT_component.ftm_adapter
+    bool "Enable component.ftm_adapter"
+    default n
+    help
+        Enable component.ftm_adapter component
+    select MCUX_COMPONENT_driver.ftm
+    depends on MCUX_HAS_COMPONENT_driver.ftm
+    
+    
+config MCUX_COMPONENT_component.gpt_adapter
+    bool "Enable component.gpt_adapter"
+    default n
+    help
+        Enable component.gpt_adapter component
+    select MCUX_COMPONENT_driver.gpt
+    depends on MCUX_HAS_COMPONENT_driver.gpt
+    
+    
+config MCUX_COMPONENT_component.lpit_adapter
+    bool "Enable component.lpit_adapter"
+    default n
+    help
+        Enable component.lpit_adapter component
+    select MCUX_COMPONENT_driver.lpit
+    depends on MCUX_HAS_COMPONENT_driver.lpit
+    
+    
+config MCUX_COMPONENT_component.lptmr_adapter
+    bool "Enable component.lptmr_adapter"
+    default n
+    help
+        Enable component.lptmr_adapter component
+    select MCUX_COMPONENT_driver.lptmr
+    depends on MCUX_HAS_COMPONENT_driver.lptmr
+    
+    
+config MCUX_COMPONENT_component.mrt_adapter
+    bool "Enable component.mrt_adapter"
+    default n
+    help
+        Enable component.mrt_adapter component
+    select MCUX_COMPONENT_driver.mrt
+    depends on MCUX_HAS_COMPONENT_driver.mrt
+    
+    
+config MCUX_COMPONENT_component.pit_adapter
+    bool "Enable component.pit_adapter"
+    default n
+    help
+        Enable component.pit_adapter component
+    select MCUX_COMPONENT_driver.pit
+    depends on MCUX_HAS_COMPONENT_driver.pit
+    
+    
+config MCUX_COMPONENT_component.tpm_adapter
+    bool "Enable component.tpm_adapter"
+    default n
+    help
+        Enable component.tpm_adapter component
+    select MCUX_COMPONENT_driver.tpm
+    depends on MCUX_HAS_COMPONENT_driver.tpm
+    
+    
+config MCUX_COMPONENT_component.dsc_pit_adapter
+    bool "Enable component.dsc_pit_adapter"
+    default n
+    help
+        Enable component.dsc_pit_adapter component
+    select MCUX_COMPONENT_driver.dsc_pit
+    depends on MCUX_HAS_COMPONENT_driver.dsc_pit
+    
+    
+config MCUX_COMPONENT_component.ostimer_adapter
+    bool "Enable component.ostimer_adapter"
+    default n
+    help
+        Enable component.ostimer_adapter component
+    select MCUX_COMPONENT_driver.ostimer
+    depends on MCUX_HAS_COMPONENT_driver.ostimer
+ 

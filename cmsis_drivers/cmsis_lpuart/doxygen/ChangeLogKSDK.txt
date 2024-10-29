@@ -1,0 +1,36 @@
+/*!
+@page driver_log Driver Change Log
+
+@section lpuart_cmsis  LPUART_CMSIS
+  Current LPUART_CMSIS driver version is 2.6
+
+  - 2.6
+    - Imporvement
+      - Added support of UART6-UART12 in fsl_lpuart_cmsis.c.
+
+  - 2.5
+    - Imporvement
+      - Changed DMA_Type to void for different platform dma.
+
+  - 2.4
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 10.3.
+
+  - 2.3
+    - Other Changes
+      - Update the edma request source to support more than 0xFF request sources.
+
+  - 2.2
+    - Bug Fixes
+      - Update driver to fix warnings reported by IAR v9.
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.4, 8.6, 10.1, 10.3, 10.4, 11.1, 11.8, 14.4, 16.1, 16.3, 17.7, 17.3, 17.7, 20.9.
+
+  - 2.0
+    - Initial version.
+
+*/

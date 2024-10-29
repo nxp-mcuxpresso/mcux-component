@@ -1,0 +1,27 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.crc_adapter
+    bool "Enable component.crc_adapter"
+    default n
+    help
+        Enable component.crc_adapter component
+    select MCUX_COMPONENT_driver.crc
+    depends on MCUX_HAS_COMPONENT_driver.crc
+    
+    
+config MCUX_COMPONENT_component.lpc_crc_adapter
+    bool "Enable component.lpc_crc_adapter"
+    default n
+    help
+        Enable component.lpc_crc_adapter component
+    select MCUX_COMPONENT_driver.lpc_crc
+    depends on MCUX_HAS_COMPONENT_driver.lpc_crc
+    
+    
+config MCUX_COMPONENT_component.software_crc_adapter
+    bool "Enable component.software_crc_adapter"
+    default n
+    help
+        Enable component.software_crc_adapter component
+    

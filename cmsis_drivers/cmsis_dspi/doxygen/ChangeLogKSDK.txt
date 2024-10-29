@@ -1,0 +1,32 @@
+/*!
+@page driver_log Driver Change Log
+
+@section dspi_cmsis DSPI_CMSIS
+  Current dspi_cmsis driver version is 2.3
+
+  - 2.3
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.4, 8.6, 10.1, 10.3, 10.4, 11.1, 11.8, 14.4, 16.1, 16.3, 17.7, 17.3, 17.7, 20.9.
+
+  - 2.2
+    - Bug Fixes
+      - Fixed the bug that, the parameter num of APIs ARM_SPI_Transfer, ARM_SPI_Send and ARM_SPI_Receive,
+        and the return value of API ARM_SPI_GetDataCount should be the number of data item defined
+        by datawidth, rather than the number of byte.
+
+  - 2.1
+    - Bug Fixes
+      - Fixed the wrong clock polarity assignment in driver.
+        For ARM_SPI_CPOL0_CPHA0 and other frame format parameters, CPOL = 0 means kSPI_ClockPolarityActiveHigh
+        not kSPI_ClockPolarityActiveLow in driver.
+
+    - New Features
+      - Allowed user to set up the default transmit value by using ARM_SPI_SET_DEFAULT_TX_VALUE.
+      - Enabled slave select mode. Note this has no effect when user sets any of them because
+        the driver can only support the hardware control function.
+
+  - 2.0
+    - Initial version.
+
+*/

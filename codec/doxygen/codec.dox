@@ -1,0 +1,216 @@
+/*
+@page drv_err Driver errors status
+ - #kStatus_CODEC_NotSupport = 14800
+ - #kStatus_CODEC_DeviceNotRegistered = 14801
+ - #kStatus_CODEC_I2CBusInitialFailed = 14802
+ - #kStatus_CODEC_I2CCommandTransferFailed = 14803
+*/
+
+/*!
+@defgroup codec CODEC Driver
+@details The MCUXpresso SDK provides a codec abstraction driver interface to access codec register.
+*/
+
+/*!
+@defgroup codec_common CODEC Common Driver
+@details The codec common driver provides a codec control abstraction interface.
+@ingroup codec
+*/
+
+/*!
+@defgroup codec_i2c CODEC I2C Driver
+@details The codec common driver provides a codec control abstraction interface.
+@ingroup codec
+*/
+
+/*!
+@if dox_section_codec_adapter
+@defgroup codec_adapter CODEC Adapter
+@details The codec adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_ak4458
+@defgroup ak4458 AK4458 Driver
+@details The ak4458 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_ak4458_adapter
+@defgroup ak4458_adapter AK4458 Adapter
+@details The ak4458 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_ak4497
+@defgroup ak4497 AK4497 Driver
+@details The ak4497 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_ak4497_adapter
+@defgroup ak4497_adapter AK4497 Adapter
+@details The ak4497 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_cs42888
+@defgroup cs42888 CS42888 Driver
+@details The cs42888 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_cs42888_adapter
+@defgroup cs42888_adapter CS42888 Adapter
+@details The cs42888 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_da7212
+@defgroup da7212 DA7212 Driver
+@details The da7212 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_da7212_adapter
+@defgroup da7212_adapter DA7212 Adapter
+@details The da7212 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_sgtl5000
+@defgroup sgtl5000 SGTL5000 Driver
+@details The sgtl5000 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_sgtl5000_adapter
+@defgroup sgtl5000_adapter SGTL5000 Adapter
+@details The sgtl5000 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_tfa9896
+@defgroup tfa9896 TFA9896 Driver
+@details The tfa9896 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_tfa9896_adapter
+@defgroup tfa9896_adapter TFA9896 Adapter
+@details The tfa9896 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_tfa9xxx
+@defgroup tfa9xxx TFA9xxx Driver
+@details The tfa9xxx driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_tfa9xxx_adapter
+@defgroup tfa9xxx_adapter TFA9xxx Adapter
+@details The tfa9xxx adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_wm8960
+@defgroup wm8960 WM8960 Driver
+@details The wm8960 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_wm8960_adapter
+@defgroup wm8960_adapter WM8960 Adapter
+@details The wm8960 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_wm8904
+@defgroup wm8904 WM8904 Driver
+@details The wm8904 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_wm8904_adapter
+@defgroup wm8904_adapter WM8904 Adapter
+@details The wm8904 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_wm8524
+@defgroup wm8524 WM8524 Driver
+@details The wm8524 driver provides a codec control interface.
+@ingroup codec
+@endif
+*/
+
+/*!
+@if dox_section_wm8524_adapter
+@defgroup wm8524_adapter WM8524 Adapter
+@details The wm8524 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_wm8962_adapter
+@defgroup wm8962_adapter WM8962 Adapter
+@details The wm8962 adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_pcm186x_adapter
+@defgroup pcm186x_adapter PCM186X Adapter
+@details The pcm186x adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/
+
+/*!
+@if dox_section_pcm512x_adapter
+@defgroup pcm512x_adapter PCM512X Adapter
+@details The pcm512x adapter provides a codec unify control interface.
+@ingroup codec_common
+@endif
+*/

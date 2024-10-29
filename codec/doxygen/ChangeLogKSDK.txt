@@ -1,0 +1,452 @@
+/*!
+@page component_log Component Change Log
+
+@section codec CODEC
+  The current codec common driver version is 2.3.1.
+  - 2.3.1
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 16.1,16.3.
+
+  - 2.3.0
+    - Improvements
+      - Added enum _codec_volume_capability for CODEC_SetVolume/CODEC_SetMute to cover more volume configurations.
+
+  - 2.2.2
+    - Bug Fixes
+      - Fixed the typo in codec common driver.
+
+  - 2.2.1
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.3, 8.3, 10.7, 17.7.
+
+  - 2.2.0
+    - Improvements
+      - Used HAL_CODEC_HANDLER_SIZE which is determined by low level driver instead of use CODEC_HANDLE_SIZE for the codec device handle definition.
+
+  - 2.1.1
+    - Improvements
+      - Supported all of the codec in the codec adapter.
+      - Modified the codec handle definition to improve user experience.
+      - Modified the capability member type from entity to pointer in codec handle.
+    - Bug Fixes
+      - Fixed the Coverity issue regrading array compared agaist 0.
+
+  - 2.1.0
+    - Deprecated APIs
+      - CODEC_GetMappedFormatBits
+      - CODEC_I2C_WriteReg
+      - CODEC_I2C_ReadReg
+      - CODEC_I2C_ModifyReg
+      - CODEC_SetEncoding
+    - new APIs
+      - CODEC_SetPower
+      - CODEC_SetVolume
+      - CODEC_SetMute
+      - CODEC_SetPlay
+      - CODEC_SetRecord
+      - CODEC_SetRecordChannel
+      - CODEC_ModuleControl
+    - new features
+      - Removed duplicate members in codec_handle_t and codec_config_t.
+      - Added codec_config_t pointer in codec_handle_t.
+      - Added codec capability flag in codec_handle_t.
+      - Used codec adapter instead of function opinter in codec common driver.
+
+  - 2.0.1
+    - Added delayMs function pointer in codec handle.
+
+  - 2.0.0
+    - Initial version.
+
+@if dox_section_wm8904
+@section wm8904 WM8904
+  The current wm8904 driver version is 2.5.1.
+
+  - 2.5.1
+    - Bug Fixes
+      - Fixed invalid clock divider issue generated form WM8904_SetMasterClock api
+      - Replace ‘__REV16’ with general implementation to swap bytes in a short variable.
+
+  - 2.5.0
+    - Improvements
+      - Added master clock configuration support in function WM8904_SetAudioFormat.
+      - Align the sysclk paramter definition for the WM8904_SetAudioFormat/WM8904_SetMasterClock.
+      - Added api WM8904_SetDACVolume to support adjust DAC volume.
+      - Fixed the MISRA-2012 violation of 12.2, 10.3.
+
+  - 2.4.4
+    - Bug Fixes
+      - Added the 11.025kHz/22.05kHz/44.1kHz samplerate support on codec WM8904.
+      - Fixed the MISRA-2012 violation of 4.7.
+
+  - 2.4.3
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.6, 9.3, 10.1, 10.3, 10.4, 10.7, 10.8, 11.8, 11.9, 14.4, 16.1, 16.3, 16.4, 17.7,  20.9.
+
+  - 2.4.2
+    - Bug Fixes
+      - Corrected the volume setting function behavior in wm8904 driver, support range align with its specification range.
+      - Corrected the volume setting function behavior in wm8904 adapter, support range 0 - 100, 0 for mute, 100 for maximum volume.
+
+  - 2.4.1
+    - Bug Fixes
+      - Fixed the bit width reigster field overwritten issue.
+
+  - 2.4.0
+    - New features
+      - Added fll support in wm8904 driver.
+
+  - 2.3.0
+    - Improvements
+      - Added new API WM8904_SetMasterClock to support BCLK/LRCLK output mode.
+
+  - 2.1.0
+    - new APIs
+      - WM8904_ReadRegister
+      - WM8904_WriteRegister
+      - WM8904_ModifyRegister
+      - WM8904_SetRecord
+      - WM8904_SetPlay
+      - WM8904_SetRecordChannel
+      - WM8904_SetModulePower
+      - WM8904_SetChannelVolume
+      - WM8904_SetChannelMute
+    - New features
+      - Removed dependency on codec common driver.
+      - Added dependency on codec i2c.
+    - Bug Fixes
+      - Fixed unchecked return value in WM8904_Deinit.
+      - Fixed the alignment fault issue by adding __NOP between continuous memory access.
+
+  - 2.0.3
+    - Bug Fixes
+      - Fixed issue that wm8904 register access function truncated return value.
+
+  - 2.0.2
+    - Bug Fixes
+      - Fixed using uninitialized value format.fsRatio when calling WM8904_UpdateFormate.
+
+  - 2.0.1
+    - Added WM8904_CheckAudioFormat API.
+    - Changed the second parameter's name of WM8904_SetAudioFormat to sysclk.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_wm8524
+@section wm8524 WM8524
+  The current wm8524 driver version is 2.1.1.
+
+  - 2.1.1
+    - Bug Fixes
+      - Fixed the MISRA-2012 violation of 14.4.
+
+  - 2.1.0
+    - New features
+      - Removed dependency of gpio driver.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_wm8960_adapter
+@subsection wm8960 WM8960
+  The current wm8960 driver version is 2.2.4.
+
+  - 2.2.4
+    - Improvements
+      - Remove CODEC_I2C_Deinit in WM8960_Deinit.
+
+  - 2.2.3
+    - Improvements
+      - Reinitialise I2C in Deinit function.
+
+  - 2.2.2
+    - Bug fixes
+      - Fixed violations of MISRA C-2012 rule 10.3.
+
+  - 2.2.1
+    - Bug fixes
+      - Improved the internal PLL fatctor calculation formula.
+
+  - 2.2.0
+    - Improvements
+      - Added masterClock member in wm8960_config_t to support wm8960 master mode.
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 4.7, 5.8, 10.3, 10.4,  12.2, 14.4.
+      - Added the bit clock divider configuration when wm8960 act as master.
+
+  - 2.1.3
+    - Bug Fixes
+      - Fixed the issue that WM8960 had no ack when performing write register by updating the byte count to be written.
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.3, 8.3, 10.7, 17.7.
+
+  - 2.1.2
+    - Improvements
+      - Enabled the class D output in WM8960_Init.
+    - Bug Fixes
+      - Corrected the volume setting function behavior in wm8960 driver, support range aligned with its specification range.
+      - Corrected the volume setting function behavior in wm8960 adapter, support range 0 - 100, 0 for mute, 100 for maximum volume.
+
+  - 2.1.1
+    - Improvements
+      - Removed useless bit clock divider configuration in function WM8960_ConfigDataFormat.
+
+  - 2.1.0
+    - Improvements
+      - Added new API WM8960_SetPlay.
+      - Fixed error status overwrite issue in WM8960_ConfigDataFormat function.
+      - Removed dependency on codec common driver.
+      - Added dependency on codec i2c.
+    - Bug Fixes
+      - Fixed the alignment fault issue by adding __NOP between continuous memory access.
+
+  - 2.0.2
+    - Removed bit width hard code setting in function WM8960_SetProtocol.
+
+  - 2.0.1
+    - Corrected the bclk divider calculation.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_sgtl5000
+@section sgtl5000 SGTL5000
+  The current sgtl5000 driver version is 2.1.1.
+  - 2.1.1
+    - Improvements
+      - Corrected the volume setting function behavior in SGTL5000 driver, support range align with its specification range.
+      - Corrected the volume setting function behavior in SGTL5000 adapter, support range 0 - 100, 0 for mute, 100 for maximum volume.
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.3, 8.3, 10.7, 17.7.
+
+  - 2.1.0
+    - Improvements
+      - Added API SGTL_SetPlay/SGTL_SetRecord.
+      - Removed dependency on codec common driver.
+      - Added dependency on codec i2c.
+      - Fixed divison or modulo by zero issue in SGTL_ConfigDataFormat function.
+    - Bug Fixes
+      - Fixed the alignment fault issue by adding __NOP between continuous memory access.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_da7212
+@section da7212 DA7212
+  The current da7212 driver version is 2.3.1.
+
+  - 2.3.1
+    - Improvements
+      - Disable ramp setting in init function.
+
+  - 2.3.0
+    - Improvements
+      - Add input sourece select in init function.
+
+  - 2.2.3
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.4, 4.7.
+
+  - 2.2.2
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 8.6, 9.3, 10.1, 10.3, 10.4, 10.7, 10.9, 11.1, 11.8, 14.4, 16.1, 16.3, 17.7, 17.3, 17.7, 20.9.
+
+  - 2.2.1
+    - Improvements
+      - Corrected the volume setting function behavior in DA7212 driver, support range align with its specification range.
+      - Corrected the volume setting function behavior in DA7212 adapter, support range 0 - 100, 0 for mute, 100 for maximum volume.
+
+  - 2.2.0
+    - Improvements
+      - Added bclk invert parameter in the format structure.
+      - Added API DA7212_SetMasterModeBits/DA7212_SetPLLConfig.
+      - Added pll/sysClkSource parameters in the da7212 configuration structure.
+      - Disbaled PLL by default.
+
+  - 2.1.0
+    - Improvements
+      - Removed dependency on codec common driver.
+      - Added dependency on codec i2c.
+    - Bug Fixes
+      - Fixed the alignment fault issue by adding __NOP between continuous memory access.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_cs42888
+@section cs42888 CS42888
+  The current cs42888 driver version is 2.1.3
+
+  - 2.1.3
+    - Improvements
+      - Removed the assertion for codec reset function pointer.
+
+  - 2.1.2
+    - Improvements
+      - Corrected the volume setting function behavior in CS42888 adapter, support range 0 - 100, 0 for mute, 100 for maximum volume.
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 4.7, 10.3, 8.3, 10.7, 17.7.
+      - Corrected the channel index during setting AIN volume in CS42888_Init.
+
+  - 2.1.1
+    - Improvements
+      - Used software delay with delayMs pointer not provided by application.
+      - Fixed error status overwrite issue in CS42888_Init function.
+      - Removed dependency on codec common driver.
+      - Added API CS42888_SelectFunctionalMode/CS42888_SetChannelMute.
+      - Added dependency on codec i2c.
+
+  - 2.1.0
+    - Improvements
+      - Unified CS42888 codec driver interface.
+    - Bug Fixes
+      - Corrected the ADC/DAC functional mode macro definitaion.
+      - Added TDM and OLM mode support in the function CS42888_SetProtocol.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_cs42448
+@section cs42448 CS42448
+  The current cs42448 driver version is 2.0.1
+
+  - 2.0.1
+    - Bug Fixes
+      - Fixed cs42448 too long delay problem by modifying CS42448_DelayMs API.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_tfa9896
+@section tfa9896 TFA9896
+  The current TFA9896 driver version is 6.0.2.
+
+  - 6.0.2
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.4, 16.1, 16.3.
+
+  - 6.0.1
+    - Bug Fixes
+      - Fixed the coverity issue of error code overwritten.
+
+  - 6.0.0
+    - Initial version.
+@endif
+
+@if dox_section_tfa9894
+@section tfa9894 TFA9894
+  The current TFA9894 driver version is 2.0.0.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_wm8962
+@section wm8962 WM8962
+  The current wm8962 driver version is 2.2.0.
+
+  - 2.2.0
+    - Improvements
+      - Remove CODEC_I2C_Deinit in WM8962_Deinit.
+    - Bug Fixes
+      - Fixed min volume value can not completely set mute issue.
+      - Fixed the original volume cannot be restored after unmute issue.
+
+  - 2.1.2
+    - Improvements
+      - Converted to arm64 compatible.
+
+  - 2.1.1
+    - Bug Fixes
+      - Fixed the MCLK_RATE did not configured in WM8962_ConfigDataFormat issue.
+
+  - 2.1.0
+    - Improvements
+      - Enabled the mute setting function in WM8962 adapter.
+
+  - 2.0.3
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.7, 10.8.
+
+  - 2.0.2
+    - Improvements
+      - Added default setting for Headphone volume.
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.1, 10.3, 10.4, 10.7, 14.3, 14.4, 16.4.
+
+  - 2.0.1
+    - Bug Fixes
+      - Fixed initialization function can not select protocol to PCMB or PCMA issue.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_ak4497
+@section ak4497 AK4497
+  The current ak4497 driver version is 2.1.2.
+
+  - 2.1.2
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.3, 8.3, 10.7, 17.7.
+
+  - 2.1.1
+    - Improvements
+      - Enabled the volume setting function in AK4497 adapter.
+
+  - 2.1.0
+    - Improvements
+      - Added AK4497_ModuleControl API.
+      - Removed dependency on codec common driver.
+      - Added dependency on codec i2c.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_ak4458
+@section ak4458 AK4458
+  The current ak4458 driver version is 2.1.0.
+  - 2.1.0
+    - Improvements
+      - Added codec_dev_ops definition.
+      - Used i2c send/receive function pointer in handle directly instead of
+        calling codec common driver.
+      - Added AK4458_ModuleControl API.
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_pcm186x
+@section pcm186x PCM186X
+  The current pcm186x driver version is 2.0.1.
+
+  - 2.0.1
+    - Improvements
+      - Remove CODEC_I2C_Deinit in PCM186x_Deinit.
+
+  - 2.0.0
+    - Initial version.
+@endif
+
+@if dox_section_pcm512x
+@section pcm512x PCM512X
+  The current pcm512x driver version is 2.0.1.
+
+  - 2.0.1
+    - Improvements
+      - Remove CODEC_I2C_Deinit in PCM186x_Deinit.
+  - 2.0.0
+    - Initial version.
+@endif
+*/

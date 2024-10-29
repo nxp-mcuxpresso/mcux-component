@@ -1,0 +1,22 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.hal_clock
+    bool "Component component.hal_clock"
+    select MCUX_COMPONENT_driver.clock
+    select MCUX_COMPONENT_component.sm_clock
+    
+    if MCUX_COMPONENT_component.hal_clock
+      choice
+        prompt "Component component.hal_clock anyOf 1"
+        default MCUX_DEPENDENCY_COMPONENT_component.hal_clock_DEPEND_ANYOF_OPTION_1
+        config MCUX_DEPENDENCY_COMPONENT_component.hal_clock_DEPEND_ANYOF_OPTION_1
+          bool "Select MCUX_COMPONENT_component.hal_clock.imx95"
+          select MCUX_COMPONENT_component.hal_clock.imx95
+      endchoice
+    endif
+    
+config MCUX_COMPONENT_component.hal_clock.imx95
+    bool "Component component.hal_clock.imx95"
+    depends on MCUX_HW_BOARD_imx95lpd5evk19 || MCUX_HW_BOARD_imx95lp4xevk15 || MCUX_HW_BOARD_imx95verdinevk
+    

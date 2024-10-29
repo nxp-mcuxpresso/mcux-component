@@ -1,0 +1,9 @@
+/*!
+@page component_hal_pinctrl Component Change Log
+
+@section HAL PINCTRL
+  The current HAL PINCTRL component version is 1.0.0.
+
+  - 1.0.0
+    - Initial version
+*/

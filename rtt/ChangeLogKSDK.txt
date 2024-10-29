@@ -1,0 +1,10 @@
+/**
+@page middleware_log Middleware Change Log
+
+@section rtt SEGGER RTT
+Current version is RTT 7.22.
+
+  - 7.22.0_rev0
+    - Initial version. No code change from SEGGER RTT package.
+
+*/

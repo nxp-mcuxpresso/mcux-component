@@ -1,0 +1,33 @@
+/*!
+@defgroup flash_adapter Flash_Adapter
+*/
+
+/*!
+@defgroup nand_flash_component Nand Flash Component
+@ingroup flash_adapter
+*/
+
+/*!
+@defgroup flexspi_nand_flash Flexspi Nand Flash 
+@ingroup nand_flash_component
+*/
+
+/*!
+@defgroup semc_nand_flash Semc Nand Flash 
+@ingroup nand_flash_component
+*/
+
+/*!
+@defgroup nor_flash_component Nor Flash Component
+@ingroup flash_adapter
+*/
+
+/*!
+@defgroup spifi_nor_flash Spifi Nor Flash
+@ingroup nor_flash_component
+*/
+
+/*!
+@defgroup fsl_nor_flash_old_driver Old Nor Flash
+@ingroup nor_flash_component
+*/

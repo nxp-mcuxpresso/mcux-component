@@ -1,0 +1,50 @@
+/*!
+@page component_log Component Change Log
+
+@section I3C_Bus I3C_BUS
+  The current I3C_Bus component version is 1.1.0.
+
+  - 1.1.0
+    - New Features
+      - Added hot-join support for secondary master.
+
+  - 1.0.1
+    - Improvements
+      - Previous I3C_BusMasterResetDAA only sends reset command but not clear dynamic address in local data structure.
+        Now free those addresses in this function, not let user to deal with it.
+
+  - 1.0.0
+    - Initial version.
+
+@section I3C_Bus_Adapter I3C_BUS_ADAPTER
+  The current I3C_Bus_Adapter component version is 1.1.1.
+
+  - 1.1.2
+    - New Features
+      - Added hot-join support for secondary master.
+
+  - 1.1.1
+    - Bug Fixes
+      - Fixed wrong BCR setting when target takes over controller.
+    - Improvements
+      - Disabled the low power target address match interrupt which introduces unnecessary operation. Will open it when low power flow is enabled.
+      - Wait the CTRL DONE status after controller ack the target request.
+
+  - 1.1.0
+    - Improvements
+      - Masked slow clock parameter if some Socs don't support related configurations.
+
+  - 1.0.2
+    - Bug Fixes
+      - According to design, master can't set RDTERM when doing I3C CCC transfer.
+    - Improvements
+      - Improved ENTDAA process to wait until all Rx data is read out from FIFO after master control done flag is set.
+
+  - 1.0.1
+    - Improvements
+      - Updated I3C components with CRR update.
+
+  - 1.0.0
+    - Initial version.
+
+*/

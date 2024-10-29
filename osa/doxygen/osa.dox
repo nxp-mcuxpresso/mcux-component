@@ -1,0 +1,14 @@
+/*!
+@defgroup osa_adapter OSA_Adapter: Operatin System Abstraction Adapter
+*/
+
+/*!
+@defgroup os_abstraction_bm OSA BM
+@ingroup osa_adapter
+*/
+
+/*!
+@defgroup os_abstraction_free_rtos OSA FreeRTOS
+@ingroup osa_adapter
+*/
+

@@ -1,0 +1,9 @@
+# Copyright 2024 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_utilities.unity
+    bool "Component utilities.unity"
+config MCUX_COMPONENT_utilities.gcov.board_init
+    bool "Component utilities.gcov.board_init"
+config MCUX_COMPONENT_utilities.gcov
+    bool "Component utilities.gcov"
