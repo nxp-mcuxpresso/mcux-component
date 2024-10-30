@@ -5,12 +5,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#if defined(__GNUC__)
-#include <stdint.h>
-#include <errno.h>
-#include <sys/stat.h>
-#endif
-
 /*
  * This file defines the libnosys.a syscall functions.
  * After upgraded to ARMGCC 12.2.1 with binutils 2.39, there are build warnings
@@ -37,6 +31,10 @@
 #if defined(__GNUC__)
 
 #if SDK_USE_SYSCALL_STUB
+
+#include <stdint.h>
+#include <errno.h>
+#include <sys/stat.h>
 
 /*
  * When SDK_DEBUGCONSOLE_UART defined, the _write and _read will be defined in
