@@ -45,7 +45,6 @@ static bool IsWakeupSource(pm_wakeup_source_t *ws);
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-AT_ALWAYS_ON_DATA_INIT(extern resource_recode_t resourceDB[PM_CONSTRAINT_COUNT]);
 AT_ALWAYS_ON_DATA_INIT(cmc_power_domain_config_t g_mainWakePDConfig) = {
     .clock_mode = kCMC_GateAllSystemClocksEnterLowPowerMode,
     /* we chose to put the main and wake domain in retention (deep sleep) by default if no constraints are set */
