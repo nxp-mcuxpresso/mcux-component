@@ -90,8 +90,10 @@ serial_manager_status_t Serial_SwoInit(serial_handle_t serialHandle, void *confi
         return kStatus_SerialManager_Error;
     }
 
+#if defined(__CORTEX_M) && (__CORTEX_M >= 3U) && (__CORTEX_M <= 7U)
     /* Lock access */
     ITM->LAR = 0xC5ACCE55U;
+#endif
     /* Disable ITM */
     ITM->TER &= ~(1UL << swoConfig->port);
     ITM->TCR = 0U;
