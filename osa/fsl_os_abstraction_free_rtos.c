@@ -35,7 +35,7 @@
 #define __WEAK_FUNC __attribute__((weak))
 #endif
 
-#define millisecToTicks(millisec) (((millisec)*configTICK_RATE_HZ + 999U) / 1000U)
+#define millisecToTicks(millisec) (((millisec)*(uint32_t)(configTICK_RATE_HZ) + 999U) / 1000U)
 
 #ifdef DEBUG_ASSERT
 #define OS_ASSERT(condition) \
@@ -981,7 +981,7 @@ osa_status_t OSA_EventWait(osa_event_handle_t eventHandle,
     }
     else
     {
-        timeoutTicks = millisec / portTICK_PERIOD_MS;
+        timeoutTicks = millisec / (uint32_t)(portTICK_PERIOD_MS);
     }
 
     clearMode = (pEventStruct->autoClear != 0U) ? pdTRUE : pdFALSE;
