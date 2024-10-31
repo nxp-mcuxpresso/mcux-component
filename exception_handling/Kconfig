@@ -7,4 +7,4 @@ config MCUX_COMPONENT_component.exception_handling_cm7
     help
         Enable component.exception_handling_cm7 component
     select MCUX_COMPONENT_utility.debug_console
-    
+    select MCUX_COMPONENT_utility.assert
