@@ -102,7 +102,7 @@ flexspi_device_config_t s_deviceconfig = {
     .AHBWriteWaitInterval = 20,
 };
 
-const uint32_t customLUT[CUSTOM_LUT_LENGTH] = {
+uint32_t customLUT[CUSTOM_LUT_LENGTH] = {
     /* Read Data */
     [4 * HYPERFLASH_CMD_LUT_SEQ_IDX_READDATA] =
         FLEXSPI_LUT_SEQ(kFLEXSPI_Command_DDR, kFLEXSPI_8PAD, 0xA0, kFLEXSPI_Command_RADDR_DDR, kFLEXSPI_8PAD, 0x18),
