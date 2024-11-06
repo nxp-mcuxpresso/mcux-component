@@ -164,7 +164,7 @@ if (${board} STREQUAL evkbimxrt1050)
     mcux_set_variable(drv_folder mimxrt1052)
 endif()
 
-if ((${board} STREQUAL evkmimxrt1060) OR (${board} STREQUAL evkbmimxrt1060))
+if ((${board} STREQUAL evkbmimxrt1060))
     mcux_set_variable(drv_folder mimxrt1062)
 endif()
 
