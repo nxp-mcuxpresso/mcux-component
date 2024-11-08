@@ -202,6 +202,7 @@ config MCUX_COMPONENT_driver.camera-device-sccb
     select MCUX_COMPONENT_driver.lpc_i2c if MCUX_HAS_COMPONENT_driver.lpc_i2c
     select MCUX_COMPONENT_driver.lpc_i2c_1 if MCUX_HAS_COMPONENT_driver.lpc_i2c_1
     select MCUX_COMPONENT_driver.lpi2c if MCUX_HAS_COMPONENT_driver.lpi2c
+    select MCUX_COMPONENT_driver.lpflexcomm_lpi2c if MCUX_HAS_COMPONENT_driver.lpflexcomm_lpi2c
 
 menu "Camera Device Drivers"
 config MCUX_COMPONENT_driver.camera-device-ov5640
