@@ -1,0 +1,57 @@
+#
+# Copyright 2024 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+
+
+config MCUX_COMPONENT_middleware.iot_reference.kvstore
+    bool "Component middleware.iot_reference.kvstore"
+    select MCUX_COMPONENT_middleware.freertos-kernel
+
+config MCUX_COMPONENT_middleware.iot_reference.logging
+    bool "Component middleware.iot_reference.logging"
+    select MCUX_COMPONENT_middleware.freertos-kernel
+
+config MCUX_COMPONENT_middleware.iot_reference.mqtt_agent
+    bool "Component middleware.iot_reference.mqtt_agent"
+    select MCUX_COMPONENT_middleware.freertos-kernel
+    select MCUX_COMPONENT_middleware.freertos.backoffalgorithm
+    select MCUX_COMPONENT_middleware.freertos.coremqtt-agent
+    select MCUX_COMPONENT_middleware.freertos.corepkcs11
+    select MCUX_COMPONENT_middleware.iot_reference.kvstore
+    select MCUX_COMPONENT_middleware.iot_reference.mqtt_agent_interface
+
+config MCUX_COMPONENT_middleware.iot_reference.mqtt_agent_interface
+    bool "Component middleware.iot_reference.mqtt_agent_interface"
+    select MCUX_COMPONENT_middleware.freertos.coremqtt-agent
+    select MCUX_COMPONENT_middleware.freertos-kernel
+    select configSUPPORT_STATIC_ALLOCATION
+
+config MCUX_COMPONENT_middleware.iot_reference.transport_mbedtls
+    bool "Component middleware.iot_reference.transport_mbedtls"
+    select MCUX_COMPONENT_middleware.freertos.coremqtt
+    select MCUX_COMPONENT_middleware.freertos.corepkcs11
+    select MCUX_COMPONENT_middleware.pkcs11
+    select MCUX_COMPONENT_middleware.lwip
+    select MCUX_COMPONENT_middleware.mbedtls
+
+config MCUX_COMPONENT_middleware.iot_reference.transport_mbedtls3x
+    bool "Component middleware.iot_reference.transport_mbedtls3x"
+    select MCUX_COMPONENT_middleware.freertos.corepkcs11
+    select MCUX_COMPONENT_middleware.pkcs11
+    select MCUX_COMPONENT_middleware.lwip
+    select MCUX_COMPONENT_middleware.mbedtls3x
+
+config MCUX_COMPONENT_middleware.iot_reference.transport_mbedtls_psa
+    bool "Component middleware.iot_reference.transport_mbedtls_psa"
+    select MCUX_COMPONENT_middleware.lwip
+    select MCUX_COMPONENT_middleware.iot_reference.logging
+
+config MCUX_COMPONENT_middleware.iot_reference.transport_mbedtls_wifi_serial
+    bool "Component middleware.iot_reference.transport_mbedtls_wifi_serial"
+    select MCUX_COMPONENT_middleware.freertos.coremqtt
+    select MCUX_COMPONENT_middleware.freertos.corepkcs11
+    select MCUX_COMPONENT_middleware.pkcs11
+    select MCUX_COMPONENT_middleware.mbedtls
+    select MCUX_COMPONENT_component.serial_mwm

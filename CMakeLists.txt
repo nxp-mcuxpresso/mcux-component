@@ -4,6 +4,7 @@
 ##### cmakelists.txt start
 mcux_add_cmakelists(${SdkRootDirPath}/components/assert)
 mcux_add_cmakelists(${SdkRootDirPath}/components/audio)
+mcux_add_cmakelists(${SdkRootDirPath}/components/aws_iot)
 mcux_add_cmakelists(${SdkRootDirPath}/components/button)
 mcux_add_cmakelists(${SdkRootDirPath}/components/common_task)
 mcux_add_cmakelists(${SdkRootDirPath}/components/crc)

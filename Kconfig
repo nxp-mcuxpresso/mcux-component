@@ -3,6 +3,10 @@
 
 menu "Component Configuration"
 
+    menu "AWS IoT"
+        rsource "aws_iot/Kconfig"
+    endmenu
+
     menu "CMSIS Drivers"
         rsource "cmsis_drivers/cmsis_enet/Kconfig"
         rsource "cmsis_drivers/cmsis_lpc_vusart/Kconfig"
