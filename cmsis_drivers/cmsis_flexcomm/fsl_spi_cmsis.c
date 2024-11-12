@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
- * Copyright (c) 2016, Freescale Semiconductor, Inc. Not a Contribution.
+ * Copyright 2016 Freescale Semiconductor, Inc. Not a Contribution.
  * Copyright 2016-2020 NXP. Not a Contribution.
  *
  * SPDX-License-Identifier: Apache-2.0
