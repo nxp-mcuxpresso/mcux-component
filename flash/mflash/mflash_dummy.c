@@ -1,3 +1,9 @@
+/*
+ * Copyright 2018-2020 NXP
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 #if defined(__CC_ARM) || defined(__ARMCC_VERSION) || defined(__GNUC__) || defined(__MCUXPRESSO) // ARMGCC and MCUXPRESSO
 __attribute__((section(".mflash_fs"), used))
 

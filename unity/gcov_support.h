@@ -1,4 +1,6 @@
 /**
+ * Copyright (c) 2016, Erich Styger
+ *
  * \file gcov_support.h
  * \brief Support helpers to use gcov for embedded targets.
  * \author Erich Styger
