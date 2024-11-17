@@ -13,6 +13,7 @@ Description and comments:
       SEGGER Real Timer Transfer.
       Wi-Fi module Tx power limits.
       CRC32 code written by Gary S. Brown.
+      gcov_support code written by Erich Styger
       AWS IoT.
 Release Location: https://github.com/nxp-mcuxpresso/mcux-component
 Origin:
@@ -24,5 +25,6 @@ Origin:
       rtt - SEGGER Microcontroller (single-clause) - https://github.com/SEGGERMicro/RTT
       wifi_bt_module - Murata Manufacturing Co., Ltd. (BSD-3-Clause) - https://github.com/murata-wireless/nxp-freertos-calibration
       CRC32-GS - Gary S. Brown (BSD-3-Clause)
+      mcuoneclipse - Erich Styger (BSD-2-Clause) - https://github.com/ErichStyger/mcuoneclipse/tree/SourceForgeRelease_29-12-2022
       FreeRTOSConfig - Amazon (MIT) - https://github.com/FreeRTOS/FreeRTOS-Kernel
       aws_iot - Amazon (MIT) - https://github.com/FreeRTOS/iot-reference-nxp-rt1060
