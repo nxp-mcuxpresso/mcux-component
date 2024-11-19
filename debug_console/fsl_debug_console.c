@@ -29,7 +29,7 @@
  *  Motorola assumes no responsibility for the maintenance and support
  *  of this software
 
- * Copyright 2015 Freescale Semiconductor, Inc.
+ * Copyright (c) 2015, Freescale Semiconductor, Inc.
  * Copyright 2016-2020, 2023 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause

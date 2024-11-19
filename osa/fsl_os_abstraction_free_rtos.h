@@ -1,6 +1,7 @@
 /*! *********************************************************************************
- * Copyright 2013-2014 Freescale Semiconductor, Inc.
+ * Copyright (c) 2013-2014, Freescale Semiconductor, Inc.
  * Copyright 2016-2017 NXP
+ * All rights reserved.
  *
  * ile
  *
