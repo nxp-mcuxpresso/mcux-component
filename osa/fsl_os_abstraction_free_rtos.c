@@ -1,7 +1,6 @@
 /*! *********************************************************************************
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
  * Copyright 2016-2017, 2019 NXP
- * All rights reserved.
  *
  *
  * This is the source file for the OS Abstraction layer for freertos.
