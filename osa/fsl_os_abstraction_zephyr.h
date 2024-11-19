@@ -1,7 +1,6 @@
 /*! *********************************************************************************
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
  * Copyright 2016-2024 NXP
- * All rights reserved.
  *
  *
  * This is the header file for the OS Abstraction layer for Zephyr.

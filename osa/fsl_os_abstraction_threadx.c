@@ -1,6 +1,5 @@
 /*! *********************************************************************************
  * Copyright 2020-2021, 2024 NXP
- * All rights reserved.
  *
  *
  * This is the source file for the OS Abstraction layer for thread.
