@@ -38,6 +38,9 @@ if ((${device} STREQUAL KW47B42ZB7) OR (${device} STREQUAL KW47B42Z83) OR (${dev
     mcux_set_variable(pm_device_foldername KW47B42ZB7)
 endif()
 
+if (${device} STREQUAL MCXA276)
+    mcux_set_variable(pm_device_foldername MCXA276)
+endif()
 
 if (CONFIG_MCUX_COMPONENT_component.power_manager_framework)
 
