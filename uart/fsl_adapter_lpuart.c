@@ -629,7 +629,7 @@ static void HAL_UartInterruptHandle(uint8_t instance)
 }
 #endif /* HAL_UART_TRANSFER_MODE */
 #if (defined(FSL_FEATURE_LPUART_IS_LPFLEXCOMM) && (FSL_FEATURE_LPUART_IS_LPFLEXCOMM > 0U))
-static void HAL_LpUartInterruptHandle_Wapper(uint32_t instance, void *handle)
+static void HAL_LpUartInterruptHandle_Wrapper(uint32_t instance, void *handle)
 {
     hal_uart_state_t *uartHandle = (hal_uart_state_t *)handle;
     HAL_UartInterruptHandle(uartHandle->instance);
@@ -717,7 +717,7 @@ hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t
 #else
         s_UartState[uartHandle->instance] = uartHandle;
 #if (defined(FSL_FEATURE_LPUART_IS_LPFLEXCOMM) && (FSL_FEATURE_LPUART_IS_LPFLEXCOMM > 0U))
-        LP_FLEXCOMM_SetIRQHandler(uart_config->instance, HAL_LpUartInterruptHandle_Wapper, handle,
+        LP_FLEXCOMM_SetIRQHandler(uart_config->instance, HAL_LpUartInterruptHandle_Wrapper, handle,
                                   LP_FLEXCOMM_PERIPH_LPUART);
 #endif /* FSL_FEATURE_LPUART_IS_LPFLEXCOMM */
 
@@ -2209,7 +2209,7 @@ hal_uart_dma_status_t HAL_UartDMATransferInstallCallback(hal_uart_handle_t handl
 
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
 #if (defined(FSL_FEATURE_LPUART_IS_LPFLEXCOMM) && (FSL_FEATURE_LPUART_IS_LPFLEXCOMM > 0U))
-    LP_FLEXCOMM_SetIRQHandler(uartHandle->instance, HAL_LpUartInterruptHandle_Wapper, handle,
+    LP_FLEXCOMM_SetIRQHandler(uartHandle->instance, HAL_LpUartInterruptHandle_Wrapper, handle,
                               LP_FLEXCOMM_PERIPH_LPUART);
 #endif /* FSL_FEATURE_LPUART_IS_LPFLEXCOMM */
 #endif /* UART_ADAPTER_NON_BLOCKING_MODE */
