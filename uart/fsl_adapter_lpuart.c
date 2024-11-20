@@ -1131,7 +1131,11 @@ void HAL_UartIsrFunction(hal_uart_handle_t handle)
     DisableIRQ(s_LpuartIRQ[uartHandle->instance]);
 #endif
 #endif
+#if (defined(FSL_FEATURE_LPUART_IS_LPFLEXCOMM) && (FSL_FEATURE_LPUART_IS_LPFLEXCOMM > 0U))
+    LPUART_TransferHandleIRQ(uartHandle->instance, &uartHandle->hardwareHandle);
+#else /* FSL_FEATURE_LPUART_IS_LPFLEXCOMM */
     LPUART_TransferHandleIRQ(s_LpuartAdapterBase[uartHandle->instance], &uartHandle->hardwareHandle);
+#endif /* FSL_FEATURE_LPUART_IS_LPFLEXCOMM */
 #if 0
 #if defined(FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ) && FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ
     NVIC_SetPriority((IRQn_Type)s_LpuartRxIRQ[uartHandle->instance], HAL_UART_ISR_PRIORITY);
