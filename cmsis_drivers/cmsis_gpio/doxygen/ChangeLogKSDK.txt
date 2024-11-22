@@ -1,0 +1,9 @@
+/*!
+@page driver_log Driver Change Log
+
+@section gpio cmsis  GPIO CMSIS
+  The current GPIO CMSIS driver version is 1.0
+  - 1.0
+    - Initial version.
+
+*/

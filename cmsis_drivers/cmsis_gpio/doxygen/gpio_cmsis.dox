@@ -1,0 +1,54 @@
+/*!
+@addtogroup gpio_cmsis_driver
+@details This section describes the programming interface of the GPIO Cortex Microcontroller Software 
+ Interface Standard (CMSIS) driver. And this driver defines generic peripheral driver interfaces for middleware
+ making it reusable across a wide range of supported microcontroller devices. The API connects microcontroller 
+ peripherals with middleware that implements for example communication stacks, file systems, or graphic user 
+ interfaces. 
+ More information and usage methord see http://www.keil.com/pack/doc/cmsis/Driver/html/index.html.
+
+Transactional APIs can be used to enable the peripheral quickly and in the
+application if the code size and performance of transactional APIs can satisfy the
+requirements. If the code size and performance are critical requirements please write 
+custom code. 
+
+# Typical use case {#GPIOTpyUC}
+
+~~~~~{.c}
+static void BUTTON_EventCallback(uint32_t pin, uint32_t event)
+{
+    if (pin == EXAMPLE_BUTTON_PIN && event == ARM_GPIO_TRIGGER_FALLING_EDGE)
+    {
+        g_ButtonPress = true;
+        PRINTF("\r\nBUTTON Pressed! \r\n");
+    }
+}
+
+    /* BUTTON pin set up */
+    EXAMPLE_BUTTON_GPIO_INTERFACE.Setup(EXAMPLE_BUTTON_PIN, BUTTON_EventCallback);
+    EXAMPLE_BUTTON_GPIO_INTERFACE.SetEventTrigger(EXAMPLE_BUTTON_PIN, ARM_GPIO_TRIGGER_FALLING_EDGE);
+    /* LED pin set up */
+    EXAMPLE_LED_GPIO_INTERFACE.Setup(EXAMPLE_LED_PIN, NULL);
+    EXAMPLE_LED_GPIO_INTERFACE.SetDirection(EXAMPLE_LED_PIN, ARM_GPIO_OUTPUT);
+    EXAMPLE_LED_GPIO_INTERFACE.SetOutput(EXAMPLE_LED_PIN, LOGIC_LED_OFF);
+
+    while (1)
+    {
+        if (g_ButtonPress)
+        {
+            if(LEDLevel == LOGIC_LED_OFF)
+            {
+                EXAMPLE_LED_GPIO_INTERFACE.SetOutput(EXAMPLE_LED_PIN, LOGIC_LED_ON);
+                LEDLevel = LOGIC_LED_ON;
+            }
+            else
+            {
+                EXAMPLE_LED_GPIO_INTERFACE.SetOutput(EXAMPLE_LED_PIN, LOGIC_LED_OFF);
+                LEDLevel = LOGIC_LED_OFF;
+            }
+            g_ButtonPress = false;
+        }
+    }
+~~~~~
+
+*/
