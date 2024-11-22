@@ -68,6 +68,7 @@ static const dc_fb_lcdif_pixel_foramt_map_t s_lcdifPixelFormatMap[] = {
     {kVIDEO_PixelFormatBGRX4444, kLCDIF_PixelFormatARGB4444, kLCDIF_PixelInputOrderBGRA},
     {kVIDEO_PixelFormatVYUY, kLCDIF_PixelFormatYUV422Tiled, kLCDIF_PixelInputOrderARGB},
     {kVIDEO_PixelFormatNV12, kLCDIF_PixelFormatYUV420Tiled, kLCDIF_PixelInputOrderARGB},
+    {kVIDEO_PixelFormatYUYV, kLCDIF_PixelFormatYUV422Tiled, kLCDIF_PixelInputOrderARGB},
 };
 #else
 static const dc_fb_lcdif_pixel_foramt_map_t s_lcdifPixelFormatMap[] = {
