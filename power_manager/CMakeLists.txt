@@ -41,6 +41,9 @@ endif()
 if (${device} STREQUAL MCXA276)
     mcux_set_variable(pm_device_foldername MCXA276)
 endif()
+if (${device} STREQUAL MCXN236)
+    mcux_set_variable(pm_device_foldername MCXN236)
+endif()
 
 if (CONFIG_MCUX_COMPONENT_component.power_manager_framework)
 
