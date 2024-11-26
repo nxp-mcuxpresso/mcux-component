@@ -7,6 +7,16 @@ config MCUX_COMPONENT_driver.ili9341
     bool "Use ili9341 display panel driver"
     select MCUX_COMPONENT_driver.common
 
+    if MCUX_COMPONENT_driver.ili9341
+
+    config ILI9341_USE_DBI_IFACE
+        bool "ILI9341 driver use unified DBI API"
+        help
+            No prefix in generated macro
+
+    endif
+
+
 config MCUX_COMPONENT_driver.st7796s
     bool "Use st7796s display panel driver"
     select MCUX_COMPONENT_driver.dbi
