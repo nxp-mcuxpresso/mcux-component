@@ -16,6 +16,16 @@ config MCUX_COMPONENT_driver.ft6x06
         Enable driver for touch panel ft6x06 component
     select MCUX_COMPONENT_CMSIS_Driver_Include.I2C
 
+    if MCUX_COMPONENT_driver.ft6x06
+
+    config FT6X06_USE_SIMPLE_I2C_API
+        bool "FT6X06 driver use simple I2C API'"
+        help
+            Select simple I2C API, otherwise use CMSIS I2C driver
+            No prefix in generated macro
+
+    endif
+
 config MCUX_COMPONENT_driver.ft3267
     bool "Enable driver for touch panel ft3267"
     default n

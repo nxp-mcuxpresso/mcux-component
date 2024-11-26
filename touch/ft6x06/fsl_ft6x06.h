@@ -19,8 +19,12 @@
  * Definitions
  ******************************************************************************/
 
+#ifndef FT6X06_USE_SIMPLE_I2C_API
+#define FT6X06_USE_SIMPLE_I2C_API 0
+#endif
+
 #ifndef FT6X06_USE_CMSIS_DRIVER
-#define FT6X06_USE_CMSIS_DRIVER 1
+#define FT6X06_USE_CMSIS_DRIVER (!FT6X06_USE_SIMPLE_I2C_API)
 #endif
 
 #if (FT6X06_USE_CMSIS_DRIVER)
