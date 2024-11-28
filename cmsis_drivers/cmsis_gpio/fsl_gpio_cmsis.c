@@ -123,9 +123,11 @@ static int32_t CMSIS_GPIO_SetPullResistor(gpio_cmsis_handle_t *handle, ARM_GPIO_
             handle->config->port_base->PCR[pin] = (handle->config->port_base->PCR[pin] & ~PORT_PCR_PE_MASK) | PORT_PCR_PE(0);
             break;
         case ARM_GPIO_PULL_UP:
+            handle->config->port_base->PCR[pin] = (handle->config->port_base->PCR[pin] & ~PORT_PCR_PE_MASK) | PORT_PCR_PE(1);
             handle->config->port_base->PCR[pin] = (handle->config->port_base->PCR[pin] & ~PORT_PCR_PS_MASK) | PORT_PCR_PS(1);
             break;
         case ARM_GPIO_PULL_DOWN:
+            handle->config->port_base->PCR[pin] = (handle->config->port_base->PCR[pin] & ~PORT_PCR_PE_MASK) | PORT_PCR_PE(1);
             handle->config->port_base->PCR[pin] = (handle->config->port_base->PCR[pin] & ~PORT_PCR_PS_MASK) | PORT_PCR_PS(0);
             break;
         default:
@@ -197,12 +199,12 @@ void CMSIS_GPIO_EventIRQ(gpio_cmsis_handle_t *handle)
     assert(handle != NULL);
 
     uint32_t pins;
-    uint32_t cb_event;
-    uint32_t pin = 0U;
+    uint32_t cb_event = 0U;
+    uint32_t pin      = 0U;
 
 #if (defined(FSL_FEATURE_PORT_HAS_NO_INTERRUPT) && FSL_FEATURE_PORT_HAS_NO_INTERRUPT) || \
     (!defined(FSL_FEATURE_SOC_PORT_COUNT))
-    gpio_interrupt_config_t event;
+    gpio_interrupt_config_t event = kGPIO_InterruptStatusFlagDisabled;
     pins = GPIO_GpioGetInterruptFlags(handle->config->gpio_base);
 
     while(pins >= 1U)
@@ -233,7 +235,7 @@ void CMSIS_GPIO_EventIRQ(gpio_cmsis_handle_t *handle)
 
     GPIO_GpioClearInterruptFlags(handle->config->gpio_base, (1U << pin));
 #else
-    port_interrupt_t event;
+    port_interrupt_t event = kPORT_InterruptOrDMADisabled;
     pins = GPIO_PortGetInterruptFlags(handle->config->gpio_base);
 
     while(pins >= 1U)
