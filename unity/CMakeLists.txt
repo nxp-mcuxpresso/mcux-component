@@ -18,8 +18,8 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
                 components/unity/gcov_support.h
                 components/unity/gcov_func.c
                 components/unity/gcov_func.h
-                examples_int/src/unit_tests/sdmmc/tools/segger_semihosting.c
-                examples_int/src/unit_tests/sdmmc/tools/segger_semihosting.h
+                examples_int/unit_tests/sdmmc/tools/segger_semihosting.c
+                examples_int/unit_tests/sdmmc/tools/segger_semihosting.h
         BASE_PATH ${SdkRootDirPath}/./
     )
     mcux_add_source(
@@ -29,7 +29,7 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
     )
     mcux_add_include(
         INCLUDES components/unity
-                 examples_int/src/unit_tests/sdmmc/tools
+                 examples_int/unit_tests/sdmmc/tools
         BASE_PATH ${SdkRootDirPath}/./
     )
 endif()
@@ -37,12 +37,12 @@ endif()
 if(CONFIG_MCUX_COMPONENT_utilities.gcov.board_init)
     mcux_component_version(1.0.0)
     mcux_add_source(
-        SOURCES examples/${board}/board_init_gcov.c
-                examples/${board}/board_init_gcov.h
+        SOURCES examples/_boards/${board}/board_init_gcov.c
+                examples/_boards/${board}/board_init_gcov.h
         BASE_PATH ${SdkRootDirPath}/./
     )
     mcux_add_include(
-        INCLUDES examples/${board}/
+        INCLUDES examples/_boards/${board}/
         BASE_PATH ${SdkRootDirPath}/./
     )
 endif()
