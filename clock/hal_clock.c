@@ -318,7 +318,7 @@ int32_t HAL_ClockGetParent(hal_clk_t *hal_clk, hal_clk_id_e *pclk_id)
     result = SM_ClockGetParent(&sm_clk, &parentId);
     if (result != SCMI_ERR_SUCCESS)
     {
-        status = kStatus_Fail;
+        return (int32_t)kStatus_Fail;
     }
     *pclk_id = (hal_clk_id_e)parentId;
 
