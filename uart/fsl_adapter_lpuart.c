@@ -2006,7 +2006,9 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
     dma_mux_configure_t *dmaMux = dmaConfig->dma_mux_configure;
     /* Set channel for LPUART */
     DMAMUX_Type *dmaMuxBases[] = DMAMUX_BASE_PTRS;
+#if (defined(HAL_UART_DMA_INIT_ENABLE) && (HAL_UART_DMA_INIT_ENABLE > 0U))
     DMAMUX_Init(dmaMuxBases[dmaMux->dma_dmamux_configure.dma_mux_instance]);
+#endif /* HAL_UART_DMA_INIT_ENABLE > 0 */
     DMAMUX_SetSource(dmaMuxBases[dmaMux->dma_dmamux_configure.dma_mux_instance], dmaConfig->tx_channel,
                      (int32_t)dmaMux->dma_dmamux_configure.tx_request);
     DMAMUX_SetSource(dmaMuxBases[dmaMux->dma_dmamux_configure.dma_mux_instance], dmaConfig->rx_channel,
