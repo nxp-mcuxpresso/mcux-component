@@ -1,0 +1,40 @@
+config MCUX_COMPONENT_component.zephyr_header.core
+    bool "Include Zephyr core headers"
+    help
+        Include Zephyr core headers
+
+config MCUX_COMPONENT_component.zephyr_header.drv_flash
+    bool "Include Zephyr flash driver headers"
+    select MCUX_COMPONENT_component.zephyr_header.core
+    help
+        Include Zephyr flash driver headers
+
+config MCUX_COMPONENT_component.zephyr_header.drv_clock_control
+    bool "Include Zephyr clock control driver headers"
+    select MCUX_COMPONENT_component.zephyr_header.core
+    help
+        Include Zephyr clock control driver headers
+
+config MCUX_COMPONENT_component.zephyr_header.drv_memc
+    bool "Include Zephyr memc driver headers"
+    select MCUX_COMPONENT_component.zephyr_header.core
+    help
+        Include Zephyr memc driver headers
+
+config MCUX_COMPONENT_component.zephyr_header.drv_pinctrl
+    bool "Include Zephyr pinctrl driver headers"
+    select MCUX_COMPONENT_component.zephyr_header.core
+    help
+        Include Zephyr pinctrl driver headers
+
+config MCUX_COMPONENT_component.zephyr_header.stream_flash
+    bool "Include Zephyr stream flash headers"
+    select MCUX_COMPONENT_component.zephyr_header.drv_flash
+    help
+        Include Zephyr stream flash headers
+
+config MCUX_COMPONENT_component.zephyr_header.flash_map
+    bool "Include Zephyr flash map headers"
+    select MCUX_COMPONENT_component.zephyr_header.drv_flash
+    help
+        Include Zephyr flash map headers

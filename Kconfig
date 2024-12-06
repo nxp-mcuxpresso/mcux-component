@@ -156,4 +156,19 @@ menu "Component Configuration"
         rsource "exception_handling/Kconfig"
     endmenu
 
+    menu "Zephyr Headers"
+        rsource "zephyr_headers/Kconfig"
+    endmenu
+
+    menu "Storage"
+        rsource "storage/Kconfig"
+    endmenu
+    
+    # menu "Debug"
+    #     rsource "debug/Kconfig"
+    # endmenu
+
+    menu "Generic Hal"
+        rsource "genHal/Kconfig"
+    endmenu
 endmenu

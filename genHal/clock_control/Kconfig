@@ -1,0 +1,35 @@
+config MCUX_COMPONENT_component.genHal.clock_control
+	bool "Memory controller drivers [EXPERIMENTAL]"
+	default n
+	select MCUX_COMPONENT_component.genHal.pinctrl
+	select MCUX_COMPONENT_component.zephyr_header.drv_clock_control
+
+
+config MCUX_COMPONENT_component.genHal.clock_control.mcux_syscon
+	bool
+	default y if DT_HAS_NXP_LPC_SYSCON_ENABLED && MCUX_COMPONENT_component.genHal.clock_control
+
+
+menuconfig CLOCK_CONTROL
+	bool 
+	default y if MCUX_COMPONENT_component.genHal.clock_control
+	help
+	  Enable support for hardware clock controller. Such hardware can
+	  provide clock for other subsystem, and thus can be also used for
+	  power efficiency by controlling their clock. Note that this has
+	  nothing to do with RTC.
+
+if CLOCK_CONTROL
+
+config CLOCK_CONTROL_INIT_PRIORITY
+	int "Clock control init priority"
+	default 50
+	help
+	  Clock control driver device initialization priority.
+
+module = CLOCK_CONTROL
+module-str = clock control
+
+rsource "Kconfig.mcux_syscon"
+
+endif  # CLOCK_CONTROL

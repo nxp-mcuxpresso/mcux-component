@@ -85,6 +85,10 @@ mcux_add_cmakelists(${SdkRootDirPath}/components/codec)
 mcux_add_cmakelists(${SdkRootDirPath}/components/expander)
 mcux_add_cmakelists(${SdkRootDirPath}/components/edgefast_wifi)
 mcux_add_cmakelists(${SdkRootDirPath}/components/eeprom_emulation)
+mcux_add_cmakelists(${SdkRootDirPath}/components/storage)
+# mcux_add_cmakelists(${SdkRootDirPath}/components/debug)
+mcux_add_cmakelists(${SdkRootDirPath}/components/zephyr_headers)
+mcux_add_cmakelists(${SdkRootDirPath}/components/genHal)
 mcux_load_all_cmakelists_in_directory(${SdkRootDirPath}/components/cmsis_drivers)
 ##### cmakelists.txt end
 

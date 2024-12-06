@@ -1,0 +1,2 @@
+rsource "stream/Kconfig"
+rsource "flash_map/Kconfig"
