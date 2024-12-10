@@ -26,3 +26,9 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.config)
         INCLUDES incl
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_rw61x)
+    mcux_add_macro(
+        "-DWIFI_BOARD_RW610"
+    )
+endif()
