@@ -197,7 +197,7 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
     status_t ret;
     uint32_t primask;
 
-    if ((phrase_addr % MFLASH_PHRASE_SIZE) != 0UL)
+    if ((phrase_addr % (uint32_t)MFLASH_PHRASE_SIZE) != 0UL)
     {
         return kStatus_InvalidArgument;
     }
@@ -216,7 +216,7 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
         goto cleanup;
     }
 
-    for (uint32_t i = 0UL; i < MFLASH_PHRASE_SIZE; i += 4UL)
+    for (uint32_t i = 0UL; i < (uint32_t)MFLASH_PHRASE_SIZE; i += 4UL)
     {
         *(uint32_t *)(phrase_addr + i) = ((uint32_t *)data)[i / 4UL];
     }
