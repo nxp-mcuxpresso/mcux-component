@@ -22,12 +22,12 @@ config MCUX_COMPONENT_component.mflash_offchip
     bool "Statically allocated file system for off chip mflash"
     default n
     imply MCUX_COMPONENT_driver.cache_lmem if MCUX_HAS_COMPONENT_driver.cache_lmem
-    select MCUX_COMPONENT_driver.qspi if MCUX_HAS_COMPONENT_driver.qspi
-    select MCUX_COMPONENT_driver.spifi if MCUX_HAS_COMPONENT_driver.spifi
-    select MCUX_COMPONENT_driver.flashiap if MCUX_HAS_COMPONENT_driver.flashiap
-    select MCUX_COMPONENT_driver.flexspi if MCUX_HAS_COMPONENT_driver.flexspi
+    imply MCUX_COMPONENT_driver.qspi if MCUX_HAS_COMPONENT_driver.qspi
+    imply MCUX_COMPONENT_driver.spifi if MCUX_HAS_COMPONENT_driver.spifi
+    imply MCUX_COMPONENT_driver.flashiap if MCUX_HAS_COMPONENT_driver.flashiap
+    imply MCUX_COMPONENT_driver.flexspi if MCUX_HAS_COMPONENT_driver.flexspi
     imply MCUX_COMPONENT_driver.cache_cache64 if MCUX_HAS_COMPONENT_driver.cache_cache64
-    select MCUX_COMPONENT_driver.romapi if MCUX_HAS_COMPONENT_driver.romapi
+    imply MCUX_COMPONENT_driver.romapi if MCUX_HAS_COMPONENT_driver.romapi
     imply MCUX_COMPONENT_driver.cache_armv7_m7 if MCUX_HAS_COMPONENT_driver.cache_armv7_m7
     imply MCUX_COMPONENT_driver.cache_xcache if MCUX_HAS_COMPONENT_driver.cache_xcache
-    select MCUX_COMPONENT_driver.xspi if MCUX_HAS_COMPONENT_driver.xspi
+    imply MCUX_COMPONENT_driver.xspi if MCUX_HAS_COMPONENT_driver.xspi
