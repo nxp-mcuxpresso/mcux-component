@@ -40,3 +40,11 @@ if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader_ns)
         INCLUDES include
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader.monolithic)
+    mcux_add_source(
+        BASE_PATH ${SdkRootDirPath}/examples/_boards/${board}
+        PREINCLUDE TRUE
+        SOURCES monolithic_config.h
+    )
+endif()
