@@ -78,7 +78,7 @@ static xspi_device_config_t deviceconfig = {
     .ptrDeviceRegInfo = NULL,                      /*!< Not used in this example. */
 };
 
-const uint32_t customLUT[CUSTOM_LUT_LENGTH] = {
+AT_QUICKACCESS_SECTION_DATA(static uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
     /*Read*/
     [5 * NOR_CMD_LUT_SEQ_IDX_READ] =
         XSPI_LUT_SEQ(kXSPI_Command_DDR, kXSPI_8PAD, 0xEE, kXSPI_Command_DDR, kXSPI_8PAD, 0x11),
@@ -415,12 +415,8 @@ static int32_t mflash_drv_init_internal(XSPI_Type *base, bool useOctal)
 
     /* Configure flash settings according to serial flash feature. */
     XSPI_SetDeviceConfig(base, &deviceconfig);
-
-    uint32_t tmpLUT[CUSTOM_LUT_LENGTH] = {0x00U};
-
-    memcpy(tmpLUT, customLUT, sizeof(tmpLUT));
     /* Update LUT*/
-    XSPI_UpdateLUT(base, 0, tmpLUT, CUSTOM_LUT_LENGTH);
+    XSPI_UpdateLUT(base, 0, customLUT, CUSTOM_LUT_LENGTH);
 
     if (useOctal)
     {

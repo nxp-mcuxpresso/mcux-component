@@ -50,7 +50,7 @@ static flexspi_device_config_t deviceconfig = {
     .AHBWriteWaitInterval = 0,
 };
 
-const uint32_t customLUT[CUSTOM_LUT_LENGTH] = {
+AT_QUICKACCESS_SECTION_DATA(static uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
     /* Normal read mode -SDR */
     [4 * NOR_CMD_LUT_SEQ_IDX_READ_NORMAL] =
         FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x13, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x20),
@@ -358,11 +358,8 @@ static int32_t mflash_drv_init_internal(void)
     /* Configure flash settings according to serial flash feature. */
     FLEXSPI_SetFlashConfig(MFLASH_FLEXSPI, &deviceconfig, FLASH_PORT);
 
-    uint32_t tmpLUT[CUSTOM_LUT_LENGTH] = {0x00U};
-
-    memcpy(tmpLUT, customLUT, sizeof(tmpLUT));
     /* Update LUT table. */
-    FLEXSPI_UpdateLUT(MFLASH_FLEXSPI, 0, tmpLUT, CUSTOM_LUT_LENGTH);
+    FLEXSPI_UpdateLUT(MFLASH_FLEXSPI, 0, customLUT, CUSTOM_LUT_LENGTH);
 
     (void)flexspi_nor_enable_quad_mode(MFLASH_FLEXSPI);
 
