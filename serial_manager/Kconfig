@@ -196,6 +196,7 @@ config MCUX_COMPONENT_component.serial_manager_rpmsg
     # depends on MCUX_COMPONENT_component.serial_manager
     bool "Use component serial manager rpmsg"
     # select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_component.rpmsg_adapter
 
     if MCUX_COMPONENT_component.serial_manager_rpmsg
     endif
