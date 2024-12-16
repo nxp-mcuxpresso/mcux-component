@@ -12,7 +12,9 @@
 
 #include <zephyr/types.h>
 #include <stddef.h>
+#ifdef __ZEPHYR__
 #include <sys/types.h>
+#endif /* __ZEPHYR__ */
 #include <zephyr/device.h>
 
 extern const struct flash_area *flash_map;

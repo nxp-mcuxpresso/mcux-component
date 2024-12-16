@@ -6,7 +6,16 @@ mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/clock_control)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/_boards/${board})
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/devices/${soc_portfolio}/${soc_series}/${device})
 
+mcux_add_include(
+    BASE_PATH ${SdkRootDirPath}/components/gen_hal
+    INCLUDES ./zephyr/include
+             ./zephyr/misc/generated
+             ./
+)
+
 mcux_add_source(
-    SOURCES
-        ./util_mcux_helper.c
+    BASE_PATH ${SdkRootDirPath}/components/gen_hal
+    SOURCES init.c
+            zephyr/kernel/device.c
+            sdk_integ/zephyr_mcux_helper.c
 )

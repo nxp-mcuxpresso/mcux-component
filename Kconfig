@@ -159,7 +159,7 @@ menu "Component Configuration"
     menu "Storage"
         rsource "storage/Kconfig"
     endmenu
-    
+
     menu "Debug"
         rsource "debug/Kconfig"
     endmenu

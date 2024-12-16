@@ -5,16 +5,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifdef __ZEPHYR__
 #define LOG_MODULE_NAME STREAM_FLASH
 #define LOG_LEVEL CONFIG_STREAM_FLASH_LOG_LEVEL
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_STREAM_FLASH_LOG_LEVEL);
-#endif
 
 #include <zephyr/types.h>
 #include <string.h>
 #include <zephyr/drivers/flash.h>
+#include <errno.h>
 
 #include <zephyr/storage/stream_flash.h>
 

@@ -1,4 +1,4 @@
-menu "HAL Configuration"
+menu "GEN HAL Configuration"
 	config DEVICE_DEPS
 		bool "Store device dependencies"
 		help
@@ -34,11 +34,10 @@ menu "HAL Configuration"
 		help
 		If enabled, the default linker will be replaced.
 
-	rsource "flash/Kconfig"
-	rsource "memc/Kconfig"
-	rsource "pinctrl/Kconfig"
-	rsource "clock_control/Kconfig"
+	rsource "zephyr/drivers/flash/Kconfig"
+	rsource "zephyr/drivers/memc/Kconfig"
+	rsource "zephyr/drivers/pinctrl/Kconfig"
+	rsource "zephyr/drivers/clock_control/Kconfig"
 	rsource "_boards/${board}/Kconfig"
 	rsource "include/Kconfig"
 endmenu
-

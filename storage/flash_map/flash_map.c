@@ -12,7 +12,9 @@
 
 #include <zephyr/types.h>
 #include <stddef.h>
+#ifdef __ZEPHYR__
 #include <sys/types.h>
+#endif /* __ZEPHYR__ */
 #include <zephyr/device.h>
 #include <zephyr/storage/flash_map.h>
 #include "flash_map_priv.h"
