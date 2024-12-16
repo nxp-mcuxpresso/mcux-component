@@ -164,9 +164,9 @@ menu "Component Configuration"
         rsource "storage/Kconfig"
     endmenu
     
-    # menu "Debug"
-    #     rsource "debug/Kconfig"
-    # endmenu
+    menu "Debug"
+        rsource "debug/Kconfig"
+    endmenu
 
     menu "Generic Hal"
         rsource "genHal/Kconfig"

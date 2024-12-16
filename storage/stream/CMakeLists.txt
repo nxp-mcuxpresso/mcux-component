@@ -5,7 +5,6 @@ if (CONFIG_MCUX_COMPONENT_component.storage_stream)
         BASE_PATH ${SdkRootDirPath}/components/storage/stream
         SOURCES
                 ./stream_flash.c
-                ./stream_flash.h
     )
 
     mcux_add_include(

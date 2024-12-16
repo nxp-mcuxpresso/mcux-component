@@ -99,7 +99,7 @@ typedef uint32_t ssize_t;
 #error Toolchain not supported
 #endif
 
-#define BUILD_ASSERT(EXPR, MSG...) (void) 0
+#define BUILD_ASSERT(EXPR, MSG...)
 
 #define Z_STRINGIFY(x) #x
 
@@ -126,5 +126,7 @@ typedef uint32_t ssize_t;
 	___in_section(seg, __FILE__, name)
 
 
+//struct k_thread {
+//};
           
 #endif /* _UTIL_MCUX_HELPER_H */

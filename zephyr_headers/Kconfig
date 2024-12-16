@@ -38,3 +38,7 @@ config MCUX_COMPONENT_component.zephyr_header.flash_map
     select MCUX_COMPONENT_component.zephyr_header.drv_flash
     help
         Include Zephyr flash map headers
+config MCUX_COMPONENT_component.zephyr_header.coredump
+    bool "Include Zephyr coredump headers"
+    help
+        Include Zephyr coredump headers

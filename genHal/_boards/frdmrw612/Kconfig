@@ -18,3 +18,15 @@ config DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED
 config ARCH_SUPPORTS_COREDUMP
     bool
     default y
+
+config ARM
+    bool
+    default y
+
+config CPU_CORTEX_M
+    bool
+    default y
+
+config CPU_CORTEX_M33
+    bool
+    default y

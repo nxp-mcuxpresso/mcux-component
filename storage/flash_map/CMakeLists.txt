@@ -5,6 +5,7 @@ if (CONFIG_MCUX_COMPONENT_component.storage_flash_map)
         SOURCES
                 ./flash_map.c
                 ./flash_map_default.c
+                ./flash_map_priv.h
     )
 
     mcux_add_include(

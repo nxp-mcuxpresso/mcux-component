@@ -3,6 +3,10 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_header.core)
         INCLUDES ./
     )
 
+    mcux_add_include(
+        INCLUDES ./kernel/include
+    )
+
     mcux_add_source(
         BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
         SOURCES device.h
@@ -13,6 +17,11 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_header.core)
                 kernel.h
                 irq.h
                 irq_multilevel.h
+                sys_clock.h
+                fatal_types.h
+                kernel_structs.h
+                kernel_includes.h
+                kernel_version.h
                 sys/util_internal_is_eq.h
                 sys/util_internal_util_dec.h
                 sys/util_internal_util_inc.h
@@ -29,11 +38,19 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_header.core)
                 sys/slist.h
                 sys/device_mmio.h
                 sys/time_units.h
+                sys/sys_io.h
+                sys/dlist.h
+                sys/sflist.h
+                sys/list_gen.h
                 pm/state.h
                 pm/device.h
                 linker/sections.h
                 devicetree/ordinals.h
                 logging/log.h
+                arch/cpu.h
+                arch/arm/thread.h
+                arch/arm/exception.h
+                arch/common/sys_io.h
     )
 
     mcux_add_source(
@@ -44,6 +61,12 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_header.core)
     mcux_add_source(
         BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/.
         SOURCES util_mcux_helper.h
+    )
+
+    mcux_add_source(
+        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/kernel/include/.
+        SOURCES kernel_internal.h
+                kernel_arch_interface.h
     )
 endif()
 
@@ -95,5 +118,14 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_header.flash_map)
         BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
         SOURCES
             storage/flash_map.h
+            devicetree/fixed-partitions.h
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.zephyr_header.coredump)
+    mcux_add_source(
+        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        SOURCES
+            debug/coredump.h
     )
 endif()

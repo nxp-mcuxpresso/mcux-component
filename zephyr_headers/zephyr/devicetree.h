@@ -3648,6 +3648,8 @@
 #define DT_NODE_HAS_COMPAT(node_id, compat) \
 	IS_ENABLED(DT_CAT3(node_id, _COMPAT_MATCHES_, compat))
 
+#define DT_TEST_NODE(node_id, compat) (IS_ENABLED(DT_CAT3(node_id, 1, compat)))
+          
 /**
  * @brief Does a devicetree node have a compatible and status?
  *
@@ -5162,8 +5164,9 @@
 #include <zephyr/devicetree/reset.h>
 #include <zephyr/devicetree/mbox.h>
 #else
-#include "devicetree/clocks.h"
-#include "devicetree/ordinals.h"
+#include <zephyr/devicetree/clocks.h>
+#include <zephyr/devicetree/ordinals.h>
+#include <zephyr/devicetree/fixed-partitions.h>
 #endif /* __ZEPHYR__ */
 
 #endif /* DEVICETREE_H */
