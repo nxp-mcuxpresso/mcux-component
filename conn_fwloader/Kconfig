@@ -11,8 +11,7 @@ config MCUX_COMPONENT_driver.conn_fwloader_ns
     bool "conn_fwloader_ns"
     
 config MCUX_COMPONENT_driver.conn_fwloader.monolithic
-    bool "Monolithic applicationf"
-    select gPlatformMonolithicApp_d
+    bool "Monolithic application"
     help
         Enable the monolithic property. This will embedd 
         the CPU1/CPU2 FW in the main application.
