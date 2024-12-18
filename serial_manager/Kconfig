@@ -56,7 +56,7 @@ config MCUX_COMPONENT_component.serial_manager
             endmenu
         endif
 
-        choice
+        choice MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.selection
             prompt "component.serial_manager anyof dependency"
             default MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_uart
             config MCUX_DEPENDENCY_COMPONENT_component.serial_manager_DEPEND_component.serial_manager_uart
