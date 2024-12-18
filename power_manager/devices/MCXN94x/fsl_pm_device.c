@@ -102,8 +102,8 @@ const pm_device_option_t g_devicePMOption = {
                 .exitLatency = 14U, /* 14 us */
                 .fixConstraintsMask =
                     {
-                        .rescMask[0U] = ~(PM_MASK_RESC_LOWEST_SLEEP0),
-                        .rescMask[1U] = ~(PM_MASK_RESC_LOWEST_SLEEP1),
+                        .rescMask[0U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_SLEEP0)),
+                        .rescMask[1U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_SLEEP1)),
                     },
                 .varConstraintsMask =
                     {
@@ -116,8 +116,8 @@ const pm_device_option_t g_devicePMOption = {
                 .exitLatency = 14U, /* 14 us */
                 .fixConstraintsMask =
                     {
-                        .rescMask[0U] = ~(PM_MASK_RESC_LOWEST_DEEP_SLEEP0),
-                        .rescMask[1U] = ~(PM_MASK_RESC_LOWEST_DEEP_SLEEP1),
+                        .rescMask[0U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_DEEP_SLEEP0)),
+                        .rescMask[1U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_DEEP_SLEEP1)),
                     },
                 .varConstraintsMask =
                     {
@@ -130,8 +130,8 @@ const pm_device_option_t g_devicePMOption = {
                 .exitLatency = 600U, /* 600 us */
                 .fixConstraintsMask =
                     {
-                        .rescMask[0U] = ~(PM_MASK_RESC_LOWEST_PDDS0),
-                        .rescMask[1U] = ~(PM_MASK_RESC_LOWEST_PDDS1),
+                        .rescMask[0U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_PDDS0)),
+                        .rescMask[1U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_PDDS1)),
                     },
                 .varConstraintsMask =
                     {
@@ -144,8 +144,8 @@ const pm_device_option_t g_devicePMOption = {
                 .exitLatency = 600U, /* 600 us */
                 .fixConstraintsMask =
                     {
-                        .rescMask[0U] = ~(PM_MASK_RESC_LOWEST_PDPD0),
-                        .rescMask[1U] = ~(PM_MASK_RESC_LOWEST_PDPD1),
+                        .rescMask[0U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_PDPD0)),
+                        .rescMask[1U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_PDPD1)),
                     },
                 .varConstraintsMask =
                     {
@@ -157,8 +157,8 @@ const pm_device_option_t g_devicePMOption = {
             {
                 .fixConstraintsMask =
                     {
-                        .rescMask[0U] = ~(PM_MASK_RESC_LOWEST_DPD0),
-                        .rescMask[1U] = ~(PM_MASK_RESC_LOWEST_DPD1),
+                        .rescMask[0U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_DPD0)),
+                        .rescMask[1U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_DPD1)),
                     },
                 .varConstraintsMask =
                     {
@@ -170,8 +170,8 @@ const pm_device_option_t g_devicePMOption = {
             {
                 .fixConstraintsMask =
                     {
-                        .rescMask[0U] = ~(PM_MASK_RESC_LOWEST_VBAT0),
-                        .rescMask[1U] = ~(PM_MASK_RESC_LOWEST_VBAT1),
+                        .rescMask[0U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_VBAT0)),
+                        .rescMask[1U] = (uint32_t)(~(PM_MASK_RESC_LOWEST_VBAT1)),
                     },
                 .varConstraintsMask =
                     {
@@ -392,7 +392,7 @@ static void SetSRAMOperateMode(uint8_t operateMode, resource_recode_t *pResource
     if (sramId <= (uint32_t)kResc_SRAM_RAMA3_8K)
     {
         sramId -= (uint32_t)kResc_SRAM_RAMA0_8K;
-        sramId = 1U << sramId;
+        sramId = 1UL << sramId;
 
         switch (operateMode)
         {
