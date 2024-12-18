@@ -113,6 +113,15 @@ void I2S0_Rx_IRQHandler(void)
 }
 #endif
 
+/* IRQHandler for SAI0 */
+#if defined(SAI0) && (FSL_FEATURE_SOC_I2S_COUNT > 0U)
+void SAI0_IRQHandler(void);
+void SAI0_IRQHandler(void)
+{
+    HAL_AudioFifoErrorIsr(SAI0);
+}
+#endif
+
 /* IRQHandler for SAI1 */
 #if defined(SAI1) && (FSL_FEATURE_SOC_I2S_COUNT > 0U)
 void SAI1_IRQHandler(void);
