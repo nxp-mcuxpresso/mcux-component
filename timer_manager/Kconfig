@@ -10,7 +10,7 @@ config MCUX_COMPONENT_component.timer_manager
     select MCUX_COMPONENT_component.lists
 
     if MCUX_COMPONENT_component.timer_manager
-        choice
+        choice MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer.selection
             prompt "component.timer_manager anyof dependency"
             default MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_lptmr
             config MCUX_DEPENDENCY_COMPONENT_component.timer_manager_DEPEND_component.timer_manager_ctimer
@@ -62,7 +62,7 @@ config MCUX_PRJSEG_configure.timer_manager_enable_time_stamp
     help
         If need use timer manager time stamp, please define set CONFIG_MCUX_PRJSEG_configure.timer_manager_enable_time_stamp=y in prj.conf,
     if MCUX_PRJSEG_configure.timer_manager_enable_time_stamp
-        choice
+        choice MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp.selection
             prompt "component.timer_manager_enable_time_stamp anyof dependency"
             default MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_lptmr
             config MCUX_DEPENDENCY_SETTING_component.timer_manager_DEPEND_component.timer_stamp_ctimer
