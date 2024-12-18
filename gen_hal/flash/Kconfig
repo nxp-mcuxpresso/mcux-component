@@ -1,16 +1,16 @@
-config MCUX_COMPONENT_component.genHal.flash
+config MCUX_COMPONENT_component.gen_hal.flash
 	bool "Flash drivers"
 	default n
 	help
 	  Enable support for the flash hardware.
-	select MCUX_COMPONENT_component.genHal.memc
-	select MCUX_COMPONENT_component.genHal.clock_control
+	select MCUX_COMPONENT_component.gen_hal.memc
+	select MCUX_COMPONENT_component.gen_hal.clock_control
 	select MCUX_COMPONENT_component.zephyr_header.drv_flash
 	select MCUX_COMPONENT_driver.flexspi if DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED
 
-config MCUX_COMPONENT_component.genHal.flash_flexspi_nor
+config MCUX_COMPONENT_component.gen_hal.flash_flexspi_nor
 	bool
-	default y if DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED && MCUX_COMPONENT_component.genHal.flash
+	default y if DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED && MCUX_COMPONENT_component.gen_hal.flash
 	select MCUX_COMPONENT_driver.flexspi
 
 
@@ -89,7 +89,7 @@ config FLASH_JESD216
 
 menuconfig FLASH
 	bool
-	default y if MCUX_COMPONENT_component.genHal.flash
+	default y if MCUX_COMPONENT_component.gen_hal.flash
 	help
 	  Enable support for the flash hardware.
 

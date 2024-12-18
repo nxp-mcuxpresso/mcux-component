@@ -28,8 +28,8 @@ menu "HAL Configuration"
 		each device. This allows you to use device_get_by_dt_nodelabel(),
 		device_get_dt_metadata(), etc.
 
-	config MCUX_PRJSEG_module.genHal.linker
-		bool "Linker for genHal projects"
+	config MCUX_PRJSEG_module.gen_hal.linker
+		bool "Linker for gen_hal projects"
 		default n
 		help
 		If enabled, the default linker will be replaced.
@@ -39,5 +39,6 @@ menu "HAL Configuration"
 	rsource "pinctrl/Kconfig"
 	rsource "clock_control/Kconfig"
 	rsource "_boards/${board}/Kconfig"
+	rsource "include/Kconfig"
 endmenu
 

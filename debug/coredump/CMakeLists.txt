@@ -8,6 +8,7 @@ if (CONFIG_MCUX_COMPONENT_component.debug_coredump_backend.flash_partition)
                 ./coredump_memory_regions.c
                 ./coredump.h
                 ./coredump_backend_flash_partition.c
+                ./coredump.c
     )
 
     mcux_add_include(

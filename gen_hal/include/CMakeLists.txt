@@ -8,7 +8,7 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_header.core)
     )
 
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES device.h
                 devicetree.h
                 init.h
@@ -54,17 +54,17 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_header.core)
     )
 
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/sys/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/sys/.
         SOURCES types.h
     )
 
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/.
         SOURCES util_mcux_helper.h
     )
 
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/kernel/include/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/kernel/include/.
         SOURCES kernel_internal.h
                 kernel_arch_interface.h
     )
@@ -72,7 +72,7 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.zephyr_header.drv_flash)
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES
             drivers/flash.h  
     )
@@ -80,7 +80,7 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.zephyr_header.drv_clock_control)
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES
             drivers/clock_control.h
             devicetree/clocks.h
@@ -89,7 +89,7 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.zephyr_header.drv_memc)
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES
             drivers/memc.h
     )
@@ -97,7 +97,7 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.zephyr_header.drv_pinctrl)
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES
             drivers/pinctrl.h
             devicetree/pinctrl.h
@@ -107,7 +107,7 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.zephyr_header.stream_flash)
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES
             storage/stream_flash.h
     )
@@ -115,7 +115,7 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.zephyr_header.flash_map)
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES
             storage/flash_map.h
             devicetree/fixed-partitions.h
@@ -124,7 +124,7 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.zephyr_header.coredump)
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/zephyr_headers/zephyr/.
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/include/zephyr/.
         SOURCES
             debug/coredump.h
     )

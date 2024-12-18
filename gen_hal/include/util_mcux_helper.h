@@ -12,6 +12,7 @@ typedef uint32_t ssize_t;
 #define __aligned(x)
 
 #define __ramfunc  __attribute__((section("RamFunction")))
+#define __weak     __attribute__((__weak__))
 
 
 #if (defined(__ICCARM__))
@@ -126,7 +127,10 @@ typedef uint32_t ssize_t;
 	___in_section(seg, __FILE__, name)
 
 
-//struct k_thread {
-//};
-          
+extern char _image_ram_start[];
+extern char _image_ram_end[];
+extern char _image_ram_size[];
+
+#define PR_EXC(...)  
+
 #endif /* _UTIL_MCUX_HELPER_H */

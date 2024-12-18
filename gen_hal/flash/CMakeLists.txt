@@ -1,17 +1,18 @@
-if (CONFIG_MCUX_COMPONENT_component.genHal.flash_flexspi_nor)
+if (CONFIG_MCUX_COMPONENT_component.gen_hal.flash_flexspi_nor)
     mcux_component_version(2.3.0)
 
     mcux_add_source(
-        BASE_PATH ${SdkRootDirPath}/components/genHal
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal
         SOURCES 
                 /flash/flash_mcux_flexspi_nor.c
+                /flash/flash_page_layout.c
                 /flash/jesd216.c
                 /flash/jesd216.h
                 /flash/spi_nor.h
     )
 
     mcux_add_include(
-        BASE_PATH ${SdkRootDirPath}/components/genHal
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal
         INCLUDES 
                  /flash/.
     )

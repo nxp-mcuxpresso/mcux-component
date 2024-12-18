@@ -1,6 +1,0 @@
-mcux_add_cmakelists(${SdkRootDirPath}/components/genHal/flash)
-mcux_add_cmakelists(${SdkRootDirPath}/components/genHal/memc)
-mcux_add_cmakelists(${SdkRootDirPath}/components/genHal/pinctrl)
-mcux_add_cmakelists(${SdkRootDirPath}/components/genHal/clock_control)
-mcux_add_cmakelists(${SdkRootDirPath}/components/genHal/_boards/${board})
-mcux_add_cmakelists(${SdkRootDirPath}/components/genHal/devices/${soc_portfolio}/${soc_series}/${device})

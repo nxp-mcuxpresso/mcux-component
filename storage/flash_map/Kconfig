@@ -10,7 +10,7 @@ config MCUX_COMPONENT_component.storage_flash_map
 	help
 	  Enable support of flash map abstraction.
 	select MCUX_COMPONENT_component.zephyr_header.flash_map
-	select MCUX_COMPONENT_component.genHal.flash
+	select MCUX_COMPONENT_component.gen_hal.flash
 
 
 menuconfig FLASH_MAP
