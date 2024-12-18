@@ -81,7 +81,7 @@ config MCUX_COMPONENT_component.osa
         Enable component.osa component
 
     if MCUX_COMPONENT_component.osa
-        choice
+        choice MCUX_COMPONENT_component.osa.selection
             prompt "OSA selection"
             config MCUX_COMPONENT_component.osa_bm
                 bool "component.osa_bm"
