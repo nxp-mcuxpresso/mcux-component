@@ -53,7 +53,7 @@ config MCUX_COMPONENT_component.lpuart_dma_adapter
         # config DRIVER_lpuart_dma_ADAPTER_CONFIG_DEMO2
         #     bool "Driver lpuart_dma_ADAPTER config demo 2"
 
-        choice
+        choice DEPENDENCY_COMPONENT_lpuart_dma_adapter_DEPEND_driver.selection
             prompt "component.lpuart_dma_adapter anyof dependency"
             default DEPENDENCY_COMPONENT_lpuart_dma_adapter_DEPEND_driver.edma
             config DEPENDENCY_COMPONENT_lpuart_dma_adapter_DEPEND_driver.edma
