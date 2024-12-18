@@ -32,7 +32,7 @@ config MCUX_COMPONENT_component.button
                     Definition of button double click threshold,unit is ms.
                     No prefix in generated macro               
         endmenu
-        choice
+        choice MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT.selection
             prompt "MCUX_COMPONENT_component.button option 1"
             default MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_1
             config MCUX_DEPENDENCY_COMPONENT_component.button_DEPEND_COMPONENT_OPTION_1
