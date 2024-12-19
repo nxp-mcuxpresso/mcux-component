@@ -215,6 +215,16 @@ config MCUX_COMPONENT_driver.camera-device-ov7670
     select MCUX_COMPONENT_driver.camera-device-common
     select MCUX_COMPONENT_driver.camera-device-sccb
 
+    if MCUX_COMPONENT_driver.camera-device-ov7670
+
+    config OV7670_FREERUNNING_PCLK
+    bool "Enable OV7670 freerunning PCLK"
+    default y if MCUX_COMPONENT_driver.flexio_camera
+    help
+        Enable OV7670 freerunning PCLK, otherwise PCLK is disabled in HBLANK period.
+
+    endif
+
 config MCUX_COMPONENT_driver.camera-device-ov7725
     bool "Use Camera Device for ov7725"
     select MCUX_COMPONENT_driver.camera-device-common
