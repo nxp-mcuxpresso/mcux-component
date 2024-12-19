@@ -15,6 +15,10 @@
 /*
  * Change log:
  *
+ *   1.0.3
+ *     - Add configuration CONFIG_OV7670_FREERUNNING_PCLK. If enabled, the PCLK
+ *       is in freerunning mode, otherwise PCLK is disabled in HBLANK period.
+ *
  *   1.0.2
  *     - Fixed dummy line setting bug.
  *     - Disable PCLK during BLANK.
@@ -29,6 +33,10 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+#ifndef CONFIG_OV7670_FREERUNNING_PCLK
+/* NOTE: Modify the definition in mcux_config.h to change this. */
+#define CONFIG_OV7670_FREERUNNING_PCLK 0
+#endif
 
 /*! @brief Register definitions for the OV7670.*/
 

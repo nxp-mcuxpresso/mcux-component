@@ -291,8 +291,10 @@ status_t OV7670_Configure(camera_device_handle_t *handle, const ov7670_config_t 
     (void)OV7670_SetWindow(handle, windowConfig);
     (void)OV7670_FrameRateAdjustment(handle, config->frameRate);
 
+#if !CONFIG_OV7670_FREERUNNING_PCLK
     /* configure Hsync/Vsync for EZH */
     (void)OV7670_WriteReg(handle, OV7670_COM10_REG, 0x20); /* no PCLK toggle during Hblank, mandatory! */
+#endif
 
     if (config->advancedConfig == NULL)
     {
