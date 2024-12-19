@@ -42,6 +42,11 @@ if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader_ns)
 endif()
 
 if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader.monolithic)
+    mcux_add_macro(
+        CC  "-DgPlatformMonolithicApp_d=1"
+        CX  "-DgPlatformMonolithicApp_d=1"
+    )
+
     mcux_add_source(
         BASE_PATH ${SdkRootDirPath}/examples/_boards/${board}
         PREINCLUDE TRUE
