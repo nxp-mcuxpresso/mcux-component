@@ -1,18 +1,13 @@
 config MCUX_COMPONENT_component.gen_hal.clock_control
-	bool "Memory controller drivers [EXPERIMENTAL]"
-	default n
-	select MCUX_COMPONENT_component.gen_hal.pinctrl
-	select MCUX_COMPONENT_component.zephyr_header.drv_clock_control
-
+	bool
 
 config MCUX_COMPONENT_component.gen_hal.clock_control.mcux_syscon
 	bool
-	default y if DT_HAS_NXP_LPC_SYSCON_ENABLED && MCUX_COMPONENT_component.gen_hal.clock_control
-
+	depends on DT_HAS_NXP_LPC_SYSCON_ENABLED
 
 menuconfig CLOCK_CONTROL
-	bool 
-	default y if MCUX_COMPONENT_component.gen_hal.clock_control
+	bool "Memory controller drivers [EXPERIMENTAL]"
+	select MCUX_COMPONENT_component.gen_hal.clock_control
 	help
 	  Enable support for hardware clock controller. Such hardware can
 	  provide clock for other subsystem, and thus can be also used for

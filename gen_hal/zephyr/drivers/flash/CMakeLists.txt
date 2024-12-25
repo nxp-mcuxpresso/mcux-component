@@ -9,6 +9,7 @@ if (CONFIG_MCUX_COMPONENT_component.gen_hal.flash_flexspi_nor)
                 flash/flash_util.c
                 flash/jesd216.c
                 flash/jesd216.h
+                flash/spi_nor.c
                 flash/spi_nor.h
     )
 

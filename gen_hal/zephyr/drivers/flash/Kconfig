@@ -1,18 +1,19 @@
+# Flash driver configuration options
+
+# Copyright (c) 2016 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+#
+# Flash driver
+#
+
 config MCUX_COMPONENT_component.gen_hal.flash
-	bool "Flash drivers"
-	default n
-	help
-	  Enable support for the flash hardware.
-	select MCUX_COMPONENT_component.gen_hal.memc
-	select MCUX_COMPONENT_component.gen_hal.clock_control
-	select MCUX_COMPONENT_component.zephyr_header.drv_flash
-	select MCUX_COMPONENT_driver.flexspi if DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED
+	bool
 
 config MCUX_COMPONENT_component.gen_hal.flash_flexspi_nor
 	bool
-	default y if DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED && MCUX_COMPONENT_component.gen_hal.flash
 	select MCUX_COMPONENT_driver.flexspi
-
+	depends on DT_HAS_NXP_IMX_FLEXSPI_ENABLED
 
 config FLASH_HAS_DRIVER_ENABLED
 	bool
@@ -88,8 +89,8 @@ config FLASH_JESD216
 	 devices to enable building a common support module.
 
 menuconfig FLASH
-	bool
-	default y if MCUX_COMPONENT_component.gen_hal.flash
+	bool "Flash drivers"
+	select MCUX_COMPONENT_component.gen_hal.flash
 	help
 	  Enable support for the flash hardware.
 

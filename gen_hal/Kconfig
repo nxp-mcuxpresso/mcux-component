@@ -1,32 +1,12 @@
-menu "GEN HAL Configuration"
-	config DEVICE_DEPS
-		bool "Store device dependencies"
-		help
-		When enabled, device dependencies will be stored so that they can be
-		queried at runtime. Device dependencies are typically inferred from
-		devicetree. Enabling this option will increase ROM usage (or RAM if
-		dynamic device dependencies are enabled).
+# Copyright 2024 NXP
+# SPDX-License-Identifier: Apache-2.0
 
-	config DEVICE_DEPS_DYNAMIC
-		bool "Dynamic device dependencies"
-		depends on DEVICE_DEPS
-		help
-		Option that makes it possible to manipulate device dependencies at
-		runtime.
+menuconfig MCUX_COMPONENT_component.gen_hal
+    bool "Generic HAL"
+    help
+      Generic HAL based on Zephyr
 
-	config DEVICE_MUTABLE
-		bool "Mutable devices [EXPERIMENTAL]"
-		select EXPERIMENTAL
-		help
-		Support mutable devices. Mutable devices are instantiated in SRAM
-		instead of Flash and are runtime modifiable in kernel mode.
-
-	config DEVICE_DT_METADATA
-		bool "Store additional devicetree metadata for each device"
-		help
-		If enabled, additional data from the devicetree will be stored for
-		each device. This allows you to use device_get_by_dt_nodelabel(),
-		device_get_dt_metadata(), etc.
+if MCUX_COMPONENT_component.gen_hal
 
 	config MCUX_PRJSEG_module.gen_hal.linker
 		bool "Linker for gen_hal projects"
@@ -39,4 +19,5 @@ menu "GEN HAL Configuration"
 	rsource "zephyr/drivers/pinctrl/Kconfig"
 	rsource "zephyr/drivers/clock_control/Kconfig"
 	rsource "_boards/${board}/Kconfig"
-endmenu
+
+endif

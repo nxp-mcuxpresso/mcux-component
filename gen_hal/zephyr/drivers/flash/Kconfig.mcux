@@ -52,6 +52,7 @@ config FLASH_MCUX_FLEXSPI_NOR
 	select FLASH_JESD216
 	select MEMC
 	select MEMC_MCUX_FLEXSPI
+	select MCUX_COMPONENT_component.gen_hal.flash_flexspi_nor
 
 config FLASH_MCUX_FLEXSPI_MX25UM51345G
 	bool "MCUX FlexSPI MX25UM51345G driver"
@@ -113,8 +114,8 @@ config FLASH_MCUX_FLEXSPI_HYPERFLASH_WRITE_BUFFER
 	  flash itself.
 
 # Avoid RWW hazards by defaulting logging to disabled
-choice FLASH_LOG_LEVEL_CHOICE
-	default FLASH_LOG_LEVEL_OFF if FLASH_MCUX_FLEXSPI_XIP
-endchoice
+# choice FLASH_LOG_LEVEL_CHOICE
+# 	default FLASH_LOG_LEVEL_OFF if FLASH_MCUX_FLEXSPI_XIP
+# endchoice
 
 endif # HAS_MCUX_FLEXSPI
