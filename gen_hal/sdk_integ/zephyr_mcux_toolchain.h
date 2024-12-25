@@ -12,6 +12,10 @@
 #define _device_list_start DEVICE_AREA$$Base
 #define _device_list_end   DEVICE_AREA$$Limit
 
+extern char _image_ram_start[];
+extern char _image_ram_end[];
+extern char _image_ram_size[];
+
 #elif defined(__CC_ARM) || defined(__ARMCC_VERSION)
 
 #define _device_list_start         Image$$ER_m_device_list_start$$Limit

@@ -44,6 +44,9 @@ define symbol m_text_end                       = 0x000BFFFF;
 define symbol m_data_start                     = 0x200C0000;
 define symbol m_data_end                       = 0x2012FFFF;
 
+define symbol _image_ram_start          = m_data_start;
+define symbol _image_ram_end            = m_data_end;
+
 define symbol m_boot_flash_start               = 0x00000000;
 
 define exported symbol __VECTOR_TABLE          = m_interrupts_start;
@@ -102,3 +105,5 @@ place in DATA_region                        { block ZI };
 place in DATA_region                        { block DEVICE_STATES };
 place in DATA_region                        { last block HEAP };
 place in CSTACK_region                      { block CSTACK };
+export symbol _image_ram_start;
+export symbol _image_ram_end;
