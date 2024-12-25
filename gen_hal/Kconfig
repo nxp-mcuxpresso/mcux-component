@@ -39,5 +39,4 @@ menu "GEN HAL Configuration"
 	rsource "zephyr/drivers/pinctrl/Kconfig"
 	rsource "zephyr/drivers/clock_control/Kconfig"
 	rsource "_boards/${board}/Kconfig"
-	rsource "include/Kconfig"
 endmenu

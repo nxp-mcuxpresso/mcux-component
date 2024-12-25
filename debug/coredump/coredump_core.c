@@ -5,7 +5,9 @@
  */
 
 #include <errno.h>
+#ifdef __ZEPHYR__
 #include <kernel_internal.h>
+#endif
 #include <zephyr/toolchain.h>
 #include <zephyr/debug/coredump.h>
 #include <zephyr/sys/byteorder.h>

@@ -11,6 +11,9 @@
 #include <stdint.h>
 #ifdef __ZEPHYR__
 #include <sys/types.h>
+#else
+#include <zephyr/errno.h>
+#include <zephyr/types.h>
 #endif
 
 /*
