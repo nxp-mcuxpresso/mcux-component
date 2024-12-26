@@ -356,7 +356,7 @@
 
 /* USD IW610 module */
 #elif defined(WIFI_IW610_BOARD_RD_USD)
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_NH_FCC.h"
+#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_NH.h"
 #define IW610
 #define SDMMCHOST_OPERATION_VOLTAGE_3V3
 #define SD_TIMING_MAX kSD_TimingDDR50Mode
@@ -368,7 +368,7 @@
 
 /* RD IW610 module with M2 interface */
 #elif defined(WIFI_IW610_BOARD_RD_M2)
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_NH_FCC.h"
+#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_NH.h"
 #define IW610
 #define SDMMCHOST_OPERATION_VOLTAGE_1V8
 #define SD_TIMING_MAX kSD_TimingDDR50Mode
