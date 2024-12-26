@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 NXP
+ * Copyright 2021,2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -23,13 +23,13 @@ typedef enum _pca6416a_reg_ops
 /*! @brief Read port registers value. */
 static status_t PCA6416A_ReadPort(pca6416a_handle_t *handle, uint8_t startReg, uint16_t *value)
 {
-    return handle->I2C_ReceiveFunc(handle->i2cAddr, startReg, 1U, (uint8_t *)value, 2U, 0U);
+    return handle->I2C_ReceiveFunc(handle->i2cBase, handle->i2cAddr, startReg, 1U, (uint8_t *)value, 2U, 0U);
 }
 
 /*! @brief Write port registers value. */
 static status_t PCA6416A_WritePort(pca6416a_handle_t *handle, uint8_t startReg, uint16_t value)
 {
-    return handle->I2C_SendFunc(handle->i2cAddr, startReg, 1U, (uint8_t *)&value, 2U, 0U);
+    return handle->I2C_SendFunc(handle->i2cBase, handle->i2cAddr, startReg, 1U, (uint8_t *)&value, 2U, 0U);
 }
 
 /*! @brief Modify PCA6416A port register bits. */
@@ -79,6 +79,7 @@ void PCA6416A_Init(pca6416a_handle_t *handle, const pca6416a_config_t *config)
     assert(NULL != handle);
     assert(NULL != config);
 
+    handle->i2cBase         = config->i2cBase;
     handle->i2cAddr         = config->i2cAddr;
     handle->I2C_SendFunc    = config->I2C_SendFunc;
     handle->I2C_ReceiveFunc = config->I2C_ReceiveFunc;

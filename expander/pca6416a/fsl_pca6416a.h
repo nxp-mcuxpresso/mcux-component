@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 NXP
+ * Copyright 2021,2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -46,7 +46,8 @@ typedef enum _pca6416a_dir
 } pca6416a_dir_t;
 
 /*! @brief PCA6416A I2C receive function. */
-typedef status_t (*pca6416a_i2c_receive_func_t)(uint8_t deviceAddress,
+typedef status_t (*pca6416a_i2c_receive_func_t)(void *base,
+                                                uint8_t deviceAddress,
                                                 uint32_t subAddress,
                                                 uint8_t subaddressSize,
                                                 uint8_t *rxBuff,
@@ -54,7 +55,8 @@ typedef status_t (*pca6416a_i2c_receive_func_t)(uint8_t deviceAddress,
                                                 uint32_t flags);
 
 /*! @brief PCA6416A I2C send function. */
-typedef status_t (*pca6416a_i2c_send_func_t)(uint8_t deviceAddress,
+typedef status_t (*pca6416a_i2c_send_func_t)(void *base,
+                                             uint8_t deviceAddress,
                                              uint32_t subAddress,
                                              uint8_t subaddressSize,
                                              const uint8_t *txBuff,
@@ -65,6 +67,7 @@ typedef status_t (*pca6416a_i2c_send_func_t)(uint8_t deviceAddress,
 typedef struct _pca6416a_config
 {
     uint8_t i2cAddr;                             /*!< I2C address. */
+    void *i2cBase;                               /*!< I2C Controller Base. */
     pca6416a_i2c_send_func_t I2C_SendFunc;       /*!< Function to send I2C data. */
     pca6416a_i2c_receive_func_t I2C_ReceiveFunc; /*!< Function to receive I2C data. */
 } pca6416a_config_t;
@@ -73,6 +76,7 @@ typedef struct _pca6416a_config
 typedef struct _pca6416a_handle
 {
     uint8_t i2cAddr;                             /*!< I2C address. */
+    void *i2cBase;                               /*!< I2C Controller Base. */
     pca6416a_i2c_send_func_t I2C_SendFunc;       /*!< Function to send I2C data. */
     pca6416a_i2c_receive_func_t I2C_ReceiveFunc; /*!< Function to receive I2C data. */
 } pca6416a_handle_t;
