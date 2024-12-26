@@ -80,7 +80,7 @@ int gcov_check(void);
 /*!
  * \brief Flush and write the coverage information collected so far
  */
-void gcov_write(void);
+void gcov_dump_data(void);
 
 /*!
  * \brief Initialize the coverage information/constructors. Need to call this at the start of main().

@@ -40,8 +40,12 @@
 
 /* If MCUXPresso IDE was selected, enable the gcov function. */
 #if defined(__GNUC__) && !(defined(__CC_ARM) || defined(__ARMCC_VERSION)) && !(defined(__XCC__))
+#if (__GNUC__ > 11) || (__GNUC__ == 11 && __GNUC_MINOR__ >= 0)
+void __gcov_reset(void);
+void __gcov_dump(void);
+#else
 void __gcov_flush(void); /* internal gcov function to write data */
-
+#endif
 int gcov_check(void)
 {
 #if GCOV_DO_COVERAGE && defined(__MCUXPRESSO)
@@ -61,7 +65,7 @@ int gcov_check(void)
 #endif
 }
 
-void gcov_write(void)
+void gcov_dump_data(void)
 {
 #if GCOV_USE_TCOV
     tcov_print_all(); /* print coverage information */
@@ -70,7 +74,12 @@ void gcov_write(void)
 
     gcov_exit();
 #elif GCOV_DO_COVERAGE
+#if __GNUC__ > 11 || (__GNUC__ == 11 && __GNUC_MINOR__ >= 0)
+    __gcov_dump();
+    __gcov_reset();
+#else
     __gcov_flush();
+#endif
 #endif
 }
 

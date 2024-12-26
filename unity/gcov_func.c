@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 NXP
+ * Copyright 2022, 2024 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -38,7 +38,7 @@ void NMI_Handler(void)
     PRINTF("GCOV START");
 #if defined(__ICCARM__)
 #else
-    gcov_write();
+    gcov_dump_data();
 #endif
     PRINTF("GCOV DONE");
 
