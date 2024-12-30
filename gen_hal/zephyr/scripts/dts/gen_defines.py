@@ -216,18 +216,18 @@ Binding (compatible = {node.matching_compat}):
 
 
 def relativize(path) -> Optional[str]:
-    # If 'path' is within $ZEPHYR_BASE, returns it relative to $ZEPHYR_BASE,
-    # with a "$ZEPHYR_BASE/..." hint at the start of the string. Otherwise,
+    # If 'path' is within $GENHAL_BASE, returns it relative to $GENHAL_BASE,
+    # with a "$GENHAL_BASE/..." hint at the start of the string. Otherwise,
     # returns 'path' unchanged.
 
-    zbase = os.getenv("ZEPHYR_BASE")
+    zbase = os.getenv("GENHAL_BASE")
     if zbase is None:
         return path
 
     try:
-        return str("$ZEPHYR_BASE" / pathlib.Path(path).relative_to(zbase))
+        return str("$GENHAL_BASE" / pathlib.Path(path).relative_to(zbase))
     except ValueError:
-        # Not within ZEPHYR_BASE
+        # Not within GENHAL_BASE
         return path
 
 
