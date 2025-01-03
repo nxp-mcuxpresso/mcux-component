@@ -6375,6 +6375,16 @@ void k_sys_runtime_stats_disable(void);
  */
 #define K_FOREVER Z_FOREVER
 
+/**
+ * @brief Maximum limit value allowed for a semaphore.
+ *
+ * This is intended for use when a semaphore does not have
+ * an explicit maximum limit, and instead is just used for
+ * counting purposes.
+ *
+ */
+#define K_SEM_MAX_LIMIT UINT_MAX
+
 struct k_sem
 {
 	unsigned int count;
@@ -6405,6 +6415,9 @@ __syscall void k_sem_give(struct k_sem *sem)
 {
 	(void)sem;
 }
+
+bool k_is_in_isr(void);
+
 #endif
 
 #endif /* ZEPHYR_INCLUDE_KERNEL_H_ */

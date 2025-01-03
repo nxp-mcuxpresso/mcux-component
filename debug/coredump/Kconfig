@@ -3,12 +3,11 @@
 
 config MCUX_COMPONENT_component.debug_coredump
 	bool "Core Dump"
-	default n
 	help Enable core dump so it can be used for offline debugging.
-	select MCUX_COMPONENT_component.zephyr_header.coredump
 
 choice MCUX_COMPONENT_component.debug_coredump_backend
 	prompt "Coredump backend"
+	depends on MCUX_COMPONENT_component.debug_coredump
 	default MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
 
 	config MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
@@ -20,7 +19,7 @@ endchoice
 
 menuconfig DEBUG_COREDUMP
 	bool
-	default y if MCUX_COMPONENT_component.debug_coredump && ARCH_SUPPORTS_COREDUMP
+	default y if (MCUX_COMPONENT_component.debug_coredump && ARCH_SUPPORTS_COREDUMP)
 
 if DEBUG_COREDUMP
 

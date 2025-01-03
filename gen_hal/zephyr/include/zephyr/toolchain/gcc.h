@@ -204,7 +204,7 @@ do {                                                                    \
 #elif defined(CONFIG_ARCH_HAS_RAMFUNC_SUPPORT)
 #if defined(CONFIG_ARM)
 #define __ramfunc	__attribute__((noinline))			\
-			__attribute__((long_call, section(".ramfunc")))
+			__attribute__((section(".ramfunc")))
 #else
 #define __ramfunc	__attribute__((noinline))			\
 			__attribute__((section(".ramfunc")))
@@ -214,7 +214,7 @@ do {                                                                    \
 #else /* !__ZEPHYR__ */
 
 #define __ramfunc	__attribute__((noinline))			\
-			__attribute__((long_call, section("RamFunction")))
+			__attribute__((section("RamFunction")))
 
 #endif
 

@@ -11159,7 +11159,7 @@
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_REG_IDX_0_VAL_ADDRESS 1075003392 /* 0x40134000 */
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_REG_IDX_0_VAL_SIZE 4096 /* 0x1000 */
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_REG_IDX_1_EXISTS 1
-#define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_REG_IDX_1_VAL_ADDRESS 402653184 /* 0x18000000 */
+#define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_REG_IDX_1_VAL_ADDRESS 134217728 /* 0x8000000 */
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_REG_IDX_1_VAL_SIZE 134217728 /* 0x8000000 */
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_RANGES_NUM 0
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_FOREACH_RANGE(fn) 
@@ -11183,13 +11183,13 @@
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_PINCTRL_NUM 0
 
 /* Generic property macros: */
-#define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg {1261568 /* 0x134000 */, 4096 /* 0x1000 */, 402653184 /* 0x18000000 */, 134217728 /* 0x8000000 */}
+#define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg {1261568 /* 0x134000 */, 4096 /* 0x1000 */, 134217728 /* 0x8000000 */, 134217728 /* 0x8000000 */}
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_0_EXISTS 1
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_0 1261568
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_1_EXISTS 1
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_1 4096
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_2_EXISTS 1
-#define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_2 402653184
+#define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_2 134217728
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_3_EXISTS 1
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_IDX_3 134217728
 #define DT_N_S_soc_S_peripheral_40000000_S_spi_134000_P_reg_EXISTS 1

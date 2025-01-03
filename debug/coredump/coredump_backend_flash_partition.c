@@ -206,7 +206,7 @@ static int data_read(off_t off, uint8_t *dst, size_t len,
 		remaining -= copy_sz;
 	}
 
-	if (cb != NULL) {
+	if ((ret == 0) && (cb != NULL)) {
 		ret = (*cb)(cb_arg, NULL, 0);
 	}
 

@@ -43,6 +43,19 @@ void z_coredump_start(void);
  */
 void z_coredump_end(void);
 
+#ifndef ZEPHYR
+/**
+ * @brief Architecture-specific handling during coredump
+ *
+ * This dumps architecture-specific information during coredump.
+ *
+ * @param esf Exception Stack Frame (arch-specific)
+ */
+void arch_coredump_info_dump(const struct arch_esf *esf);
+
+uint16_t arch_coredump_tgt_code_get(void);
+#endif
+
 /**
  * @endcond
  */

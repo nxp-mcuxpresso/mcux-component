@@ -7,13 +7,6 @@ menuconfig MCUX_COMPONENT_component.gen_hal
       Generic HAL based on Zephyr
 
 if MCUX_COMPONENT_component.gen_hal
-
-	config MCUX_PRJSEG_module.gen_hal.linker
-		bool "Linker for gen_hal projects"
-		default n
-		help
-		If enabled, the default linker will be replaced.
-
 	rsource "zephyr/drivers/flash/Kconfig"
 	rsource "zephyr/drivers/memc/Kconfig"
 	rsource "zephyr/drivers/pinctrl/Kconfig"

@@ -9,8 +9,7 @@ config MCUX_COMPONENT_component.storage_stream
 	default n
 	help
 	   Enable support of stream to flash API
-	select MCUX_COMPONENT_component.zephyr_header.stream_flash
-	select MCUX_COMPONENT_component.gen_hal.flash
+	select FLASH
 
 
 menuconfig STREAM_FLASH
