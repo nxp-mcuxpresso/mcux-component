@@ -1,0 +1,11 @@
+# Copyright 2025 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.gen_hal.pinctrl
+	bool
+
+config MCUX_COMPONENT_component.gen_hal.pinctrl.mci_io_mux
+	bool
+	select MCUX_COMPONENT_driver.io_mux
+	default y if (DT_HAS_NXP_MCI_IO_MUX_ENABLED && MCUX_COMPONENT_component.gen_hal.pinctrl)

@@ -1,15 +1,10 @@
 # Memory controller configuration options
 
 # Copyright (c) 2020 Teslabs Engineering S.L.
+# Copyright 2025 NXP
 # SPDX-License-Identifier: Apache-2.0
 
-config MCUX_COMPONENT_component.gen_hal.memc
-	bool
-
-config MCUX_COMPONENT_component.gen_hal.memc.flexspi
-	bool
-    depends on DT_HAS_NXP_IMX_FLEXSPI_ENABLED
-
+rsource "Kconfig.gen_hal"
 
 menuconfig MEMC
 	bool "Memory controller drivers [EXPERIMENTAL]"
@@ -22,10 +17,13 @@ if MEMC
 
 config MEMC_INIT_PRIORITY
 	int "Initialization priority"
+	default 80 if MSPI
 	default 0
 	help
 	  Memory controllers initialization priority.
 
 rsource "Kconfig.mcux"
 
+module = MEMC
+module-str = memc
 endif

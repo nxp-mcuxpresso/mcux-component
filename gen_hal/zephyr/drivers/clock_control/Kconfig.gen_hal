@@ -1,0 +1,10 @@
+# Copyright 2025 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.gen_hal.clock_control
+	bool
+
+config MCUX_COMPONENT_component.gen_hal.clock_control.mcux_syscon
+	bool
+	default y if (DT_HAS_NXP_LPC_SYSCON_ENABLED &&  MCUX_COMPONENT_component.gen_hal.clock_control)

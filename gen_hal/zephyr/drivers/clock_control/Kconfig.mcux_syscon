@@ -8,7 +8,6 @@ config CLOCK_CONTROL_MCUX_SYSCON
 	default y
 	depends on DT_HAS_NXP_LPC_SYSCON_ENABLED
 	select PINCTRL
-	select MCUX_COMPONENT_component.gen_hal.clock_control.mcux_syscon
 	help
 	  Enable support for mcux clock driver.
 

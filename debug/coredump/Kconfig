@@ -1,32 +1,21 @@
 # Copyright (c) 2020 Intel Corporation.
+# Copyright 2025 NXP
 # SPDX-License-Identifier: Apache-2.0
 
-config MCUX_COMPONENT_component.debug_coredump
-	bool "Core Dump"
-	help Enable core dump so it can be used for offline debugging.
-
-choice MCUX_COMPONENT_component.debug_coredump_backend
-	prompt "Coredump backend"
-	depends on MCUX_COMPONENT_component.debug_coredump
-	default MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
-
-	config MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
-		bool "Use flash partition for coredump"
-		select MCUX_COMPONENT_component.storage_stream
-		select MCUX_COMPONENT_component.storage_flash_map 
-endchoice
-
+rsource "Kconfig.mcux"
 
 menuconfig DEBUG_COREDUMP
-	bool
-	default y if (MCUX_COMPONENT_component.debug_coredump && ARCH_SUPPORTS_COREDUMP)
+	bool "Core Dump"
+	depends on ARCH_SUPPORTS_COREDUMP
+	select MCUX_COMPONENT_component.debug_coredump
+	help
+	  Enable core dump so it can be used for offline debugging.
 
 if DEBUG_COREDUMP
 
 choice DEBUG_COREDUMP_BACKEND
 	prompt "Coredump backend"
-	default DEBUG_COREDUMP_BACKEND_LOGGING if MCUX_COMPONENT_component.debug_coredump_backend.logging
-	default DEBUG_COREDUMP_BACKEND_FLASH_PARTITION if MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
+	default DEBUG_COREDUMP_BACKEND_LOGGING
 
 config DEBUG_COREDUMP_BACKEND_LOGGING
 	bool "Use Logging subsystem for coredump"
@@ -36,7 +25,7 @@ config DEBUG_COREDUMP_BACKEND_LOGGING
 
 config DEBUG_COREDUMP_BACKEND_FLASH_PARTITION
 	bool "Use flash partition for coredump"
-	# depends on FLASH
+	depends on FLASH
 	select FLASH_MAP
 	select STREAM_FLASH
 	help

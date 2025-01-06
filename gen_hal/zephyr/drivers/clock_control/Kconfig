@@ -1,12 +1,17 @@
-config MCUX_COMPONENT_component.gen_hal.clock_control
-	bool
+# Clock controller driver configuration options
 
-config MCUX_COMPONENT_component.gen_hal.clock_control.mcux_syscon
-	bool
-	depends on DT_HAS_NXP_LPC_SYSCON_ENABLED
+# Copyright (c) 2015 Intel Corporation
+# Copyright 2025 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+#
+# Clock controller drivers
+#
+
+rsource "Kconfig.gen_hal"
 
 menuconfig CLOCK_CONTROL
-	bool "Memory controller drivers [EXPERIMENTAL]"
+	bool "Clock controller drivers"
 	select MCUX_COMPONENT_component.gen_hal.clock_control
 	help
 	  Enable support for hardware clock controller. Such hardware can

@@ -1,12 +1,8 @@
 # Copyright (c) 2021 Nordic Semiconductor ASA
+# Copyright 2025 NXP
 # SPDX-License-Identifier: Apache-2.0
 
-config MCUX_COMPONENT_component.gen_hal.pinctrl
-	bool
-
-config MCUX_COMPONENT_component.gen_hal.pinctrl.mci_io_mux
-	bool
-	depends on DT_HAS_NXP_MCI_IO_MUX_ENABLED
+rsource "Kconfig.gen_hal"
 
 menuconfig PINCTRL
 	bool "Pin controller drivers"

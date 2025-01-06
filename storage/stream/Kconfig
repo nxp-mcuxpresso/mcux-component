@@ -5,17 +5,14 @@
 #
 
 config MCUX_COMPONENT_component.storage_stream
-	bool "Stream to flash"
-	default n
-	help
-	   Enable support of stream to flash API
-	select FLASH
-
+	bool
 
 menuconfig STREAM_FLASH
-	bool
-	default y if MCUX_COMPONENT_component.storage_stream
-
+	bool "Stream to flash"
+	select FLASH_PAGE_LAYOUT
+	select MCUX_COMPONENT_component.storage_stream
+	help
+	  Enable support of stream to flash API
 
 
 

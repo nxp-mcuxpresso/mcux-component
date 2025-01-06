@@ -1,0 +1,11 @@
+# Copyright 2025 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.gen_hal.flash
+	bool
+
+config MCUX_COMPONENT_component.gen_hal.flash_flexspi_nor
+	bool
+	select MCUX_COMPONENT_driver.flexspi
+	default y if (DT_HAS_NXP_IMX_FLEXSPI_ENABLED && MCUX_COMPONENT_component.gen_hal.flash)

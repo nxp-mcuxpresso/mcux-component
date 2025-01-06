@@ -52,7 +52,6 @@ config FLASH_MCUX_FLEXSPI_NOR
 	select FLASH_JESD216
 	select MEMC
 	select MEMC_MCUX_FLEXSPI
-	select MCUX_COMPONENT_component.gen_hal.flash_flexspi_nor
 
 config FLASH_MCUX_FLEXSPI_MX25UM51345G
 	bool "MCUX FlexSPI MX25UM51345G driver"
