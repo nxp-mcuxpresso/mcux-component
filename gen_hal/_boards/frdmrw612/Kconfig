@@ -1,7 +1,3 @@
-config LITTLE_ENDIAN
-    bool
-    default y
-    select CLOCK_CONTROL
 config DT_HAS_NXP_IMX_FLEXSPI_ENABLED
     bool
     default y
@@ -15,18 +11,4 @@ config DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED
     bool
     default y
 
-config ARCH_SUPPORTS_COREDUMP
-    bool
-    default y
-
-config ARM
-    bool
-    default y
-
-config CPU_CORTEX_M
-    bool
-    default y
-
-config CPU_CORTEX_M33
-    bool
-    default y
+select CLOCK_CONTROL
