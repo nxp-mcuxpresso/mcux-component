@@ -297,10 +297,16 @@ def gen_dts_kconfig_okay():
 def copy_result():
     # Copy the generated files to board directory
     board_dir = BOARD_DIR / args.board
+    if args.output_dir != "":
+        output_dir = Path(args.output_dir)
+    elif len(args.dtc_overlay_file) > 0:
+        output_dir = Path(args.dtc_overlay_file[0]).parent
+    else:
+        output_dir = board_dir
 
     for file in [DEVICETREE_GENERATED_H, DTS_OKAY_KCONFIG]:
-        print(f"Copy {file} to {board_dir}")
-        shutil.copy(file, board_dir)
+        print(f"Copy {file} to {output_dir}")
+        shutil.copy(file, output_dir)
 
 def parse_args():
     global args
@@ -344,6 +350,7 @@ def parse_args():
 
     parser.add_argument("--dts-preprocessor", default="",
                         help="C preprocessor to use for devicetree files")
+    parser.add_argument("--output-dir", nargs="?", default="", help="output dir of devicetree_generated.h and Kconfig.dts_okay in default they are generated in same folder of first overlay file")
 
     args = parser.parse_args()
 

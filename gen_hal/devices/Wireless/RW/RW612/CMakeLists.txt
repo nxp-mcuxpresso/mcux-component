@@ -1,4 +1,8 @@
-if (CONFIG_MCUX_PRJSEG_project.hw_app_project_folder)
+# Copyright 2025 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+if (CONFIG_MCUX_COMPONENT_component.gen_hal)
     mcux_add_include(
         INCLUDES ./
     )

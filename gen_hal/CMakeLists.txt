@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2025 NXP
 # SPDX-License-Identifier: Apache-2.0
 
 if (CONFIG_MCUX_COMPONENT_component.gen_hal)
@@ -7,16 +7,7 @@ mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/flash)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/memc)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/pinctrl)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/clock_control)
-mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/_boards/${board})
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/devices/${soc_portfolio}/${soc_series}/${device})
-
-mcux_add_include(
-    BASE_PATH ${SdkRootDirPath}/components/gen_hal
-    INCLUDES ./zephyr/include
-             ./zephyr/misc/generated
-             ./sdk_integ
-             ./
-)
 
 mcux_add_source(
     BASE_PATH ${SdkRootDirPath}/components/gen_hal
@@ -26,6 +17,9 @@ mcux_add_source(
             zephyr/misc/empty_file.c
 )
 
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.gen_hal_headers)
 # Header
 mcux_add_source(
     BASE_PATH ${SdkRootDirPath}/components/gen_hal
@@ -136,6 +130,14 @@ mcux_add_source(
             zephyr/include/zephyr/types.h
             zephyr/misc/generated/zephyr/*.h
             zephyr/misc/generated/zephyr/syscalls/*.h
+)
+
+mcux_add_include(
+    BASE_PATH ${SdkRootDirPath}/components/gen_hal
+    INCLUDES ./zephyr/include
+             ./zephyr/misc/generated
+             ./sdk_integ
+             ./
 )
 
 endif()

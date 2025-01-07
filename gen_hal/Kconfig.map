@@ -17,6 +17,18 @@ config ARM
     bool
     default y if CPU_CORTEX_M
 
+config CPU_HAS_ARM_SAU
+    bool
+    default y if MCUX_HW_SAU
+
+config CPU_HAS_FPU
+    bool
+    default y if MCUX_HW_FPU
+
 config ARCH_SUPPORTS_COREDUMP
     bool
     default y if ARM
+
+config HAS_MCUX_CACHE
+    bool
+    default y if MCUX_HW_IP_DriverType_CACHE64_CTRL

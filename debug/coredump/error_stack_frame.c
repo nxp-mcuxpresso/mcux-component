@@ -1,10 +1,8 @@
 /*
- * Copyright 2024 NXP
- * All rights reserved.
+ * Copyright 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "fsl_common.h"
 #include "zephyr/debug/coredump.h"
 
 /*******************************************************************************

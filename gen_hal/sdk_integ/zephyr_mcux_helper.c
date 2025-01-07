@@ -5,8 +5,9 @@
  */
 
 #include "fsl_common.h"
+#include "zephyr/toolchain.h"
 
-bool k_is_in_isr(void)
+__weak bool k_is_in_isr(void)
 {
   return (__get_IPSR()) ? (true) : (false);
 }

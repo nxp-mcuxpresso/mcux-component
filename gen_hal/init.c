@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2010-2014 Wind River Systems, Inc.
+ * Copyright 2025 NXP.
  *
  * SPDX-License-Identifier: Apache-2.0
  */

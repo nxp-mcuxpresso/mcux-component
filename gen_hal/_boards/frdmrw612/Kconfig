@@ -1,14 +1,5 @@
-config DT_HAS_NXP_IMX_FLEXSPI_ENABLED
-    bool
-    default y
-config DT_HAS_NXP_LPC_SYSCON_ENABLED
-    bool
-    default y
-config DT_HAS_NXP_MCI_IO_MUX_ENABLED
-    bool
-    default y
-config DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED
-    bool
-    default y
+# Copyright 2025 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
 
-select CLOCK_CONTROL
+osource "$(project_board_port_path)/Kconfig.dts_okay"
