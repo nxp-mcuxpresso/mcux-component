@@ -2,3 +2,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 rsource "coredump/Kconfig.mcux"
+rsource "memfault/Kconfig"

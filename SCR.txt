@@ -15,6 +15,7 @@ Description and comments:
       CRC32 code written by Gary S. Brown.
       gcov_support code written by Erich Styger
       AWS IoT.
+      MemFault integration.
 Release Location: https://github.com/nxp-mcuxpresso/mcux-component
 Origin:
       NXP (proprietary)
@@ -28,3 +29,4 @@ Origin:
       mcuoneclipse - Erich Styger (BSD-2-Clause) - https://github.com/ErichStyger/mcuoneclipse/tree/SourceForgeRelease_29-12-2022
       FreeRTOSConfig - Amazon (MIT) - https://github.com/FreeRTOS/FreeRTOS-Kernel
       aws_iot - Amazon (MIT) - https://github.com/FreeRTOS/iot-reference-nxp-rt1060
+      MemFault - Memfault, Inc (Apache-2.0) - https://github.com/memfault/memfault-firmware-sdk

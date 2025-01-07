@@ -1,0 +1,9 @@
+/*
+ * Copyright 2025 NXP
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#ifdef SDK_OS_FREE_RTOS
+#include "ports/freertos/config/memfault_metrics_heartbeat_freertos_config.def"
+#endif

@@ -1,0 +1,73 @@
+# Copyright 2024-2025 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+menuconfig MCUX_COMPONENT_component.memfault_sdk
+    bool "MemFault SDK"
+
+    if MCUX_COMPONENT_component.memfault_sdk
+
+    config MCUX_COMPONENT_component.memfault_sdk.http
+        bool "http"
+
+    config MCUX_COMPONENT_component.memfault_sdk.metrics
+        bool "metrics"
+        default y
+
+    config MCUX_COMPONENT_component.memfault_sdk.ports.freertos
+        bool "FreeRTOS port"
+
+    config MCUX_COMPONENT_component.memfault_sdk.ports.mcuxsdk
+        bool "NXP MCUXSDK Port"
+        default y
+
+        if MCUX_COMPONENT_component.memfault_sdk.ports.mcuxsdk
+
+        config MEMFAULT_DEVICE_SERIAL
+            string "Device Serial"
+            default "\"NXP_MCU\""
+            help
+              Device serial in show in device info.
+              Regular expression defining valid device serials: ^[-a-zA-Z0-9_]+$
+
+        config MEMFAULT_SW_TYPE
+            string "Firmware Name"
+            default "\"app-fw\""
+            help
+              A name to represent the firmware running on the MCU.
+              (i.e "ble-fw", "main-fw", or a codename for your project)
+
+        config MEMFAULT_SW_VERSION
+            string "Firmware Version"
+            default "\"1.0.0\""
+
+        config MEMFAULT_HW_VERSION
+            string "Hardware Version"
+            default "\"dvt1\""
+            help
+              The revision of hardware for the device. This value must remain
+              the same for a unique device.
+              (i.e evt, dvt, pvt, or rev1, rev2, etc)
+              Regular expression defining valid hardware versions: ^[-a-zA-Z0-9_\.\+]+$
+
+        config MEMFAULT_FLASH_SUPPORT_PAGE_REPROGRAM
+            bool "Flash support reprogram page"
+            default y
+            help
+              After the page is erased, the page can be reprogramed to update
+              the empty region.
+
+        config MEMFAULT_FLASH_BASE_OFFSET
+            hex "Backend flash offset"
+            default 0x001F8000
+            help
+              Offset of the backend flash used for memfault in whole flash
+
+        config MEMFAULT_FLASH_SIZE
+            hex "Backend flash size"
+            default 0x00008000
+            help
+              Memfault backend flash size
+
+        endif
+
+    endif
