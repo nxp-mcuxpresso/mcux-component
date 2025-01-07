@@ -1,5 +1,5 @@
 /*
- *  Copyright 2021-2024 NXP
+ *  Copyright 2021-2025 NXP
  *
  *  SPDX-License-Identifier: BSD-3-Clause
  */
@@ -366,8 +366,8 @@
         .ed_ctrl_2g = 0x1, .ed_offset_2g = 0xA, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0xA \
     }
 
-/* RD IW610 module with M2 interface */
-#elif defined(WIFI_IW610_BOARD_RD_M2)
+/* 2LL NightHawk module with M2 interface */
+#elif defined(WIFI_IW610_BOARD_MURATA_2LL_M2)
 #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_NH.h"
 #define IW610
 #define SDMMCHOST_OPERATION_VOLTAGE_1V8
