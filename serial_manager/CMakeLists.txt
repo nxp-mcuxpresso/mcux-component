@@ -127,3 +127,21 @@ if (CONFIG_MCUX_COMPONENT_component.serial_manager_rpmsg)
     )
 
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.serial_manager_ble_wu)
+    mcux_add_include(
+        INCLUDES .
+    )
+
+    mcux_add_source(
+        SOURCES
+            fsl_component_serial_port_ble_wu.h
+            fsl_component_serial_port_ble_wu.c
+    )
+
+    mcux_add_configuration(
+        CC "-DSERIAL_PORT_TYPE_BLE_WU=1"
+        CX "-DSERIAL_PORT_TYPE_BLE_WU=1"
+    )
+
+endif()
