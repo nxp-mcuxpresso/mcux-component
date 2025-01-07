@@ -1,1 +1,2 @@
 rsource "coredump/Kconfig"
+orsource "memfault-firmware-sdk/Kconfig.mcux"

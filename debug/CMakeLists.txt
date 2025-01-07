@@ -4,3 +4,4 @@
 
 
 mcux_add_cmakelists(${SdkRootDirPath}/components/debug/coredump)
+include(${SdkRootDirPath}/components/debug/memfault-firmware-sdk/mcux.cmake OPTIONAL)
