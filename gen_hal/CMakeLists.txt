@@ -130,6 +130,7 @@ mcux_add_source(
             zephyr/include/zephyr/types.h
             zephyr/misc/generated/zephyr/*.h
             zephyr/misc/generated/zephyr/syscalls/*.h
+            _boards/${board}/devicetree_generated.h
 )
 
 mcux_add_include(

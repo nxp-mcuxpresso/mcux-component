@@ -2,4 +2,4 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-osource "$(project_board_port_path)/Kconfig.dts_okay"
+rsource "Kconfig.dts_okay"

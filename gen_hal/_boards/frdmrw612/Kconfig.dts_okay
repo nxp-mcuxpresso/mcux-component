@@ -1,0 +1,28 @@
+# Generated devicetree Kconfig
+#
+# SPDX-License-Identifier: Apache-2.0
+
+config DT_HAS_ARM_V8M_NVIC_ENABLED
+    bool
+    default y
+
+config DT_HAS_NXP_IMX_FLEXSPI_ENABLED
+    bool
+    default y
+
+config DT_HAS_NXP_IMX_FLEXSPI_NOR_ENABLED
+    bool
+    default y
+
+config DT_HAS_NXP_LPC_SYSCON_ENABLED
+    bool
+    default y
+
+config DT_HAS_NXP_MCI_IO_MUX_ENABLED
+    bool
+    default y
+
+config DT_HAS_NXP_RW_SOC_CTRL_ENABLED
+    bool
+    default y
+

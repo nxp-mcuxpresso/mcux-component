@@ -299,8 +299,6 @@ def copy_result():
     board_dir = BOARD_DIR / args.board
     if args.output_dir != "":
         output_dir = Path(args.output_dir)
-    elif len(args.dtc_overlay_file) > 0:
-        output_dir = Path(args.dtc_overlay_file[0]).parent
     else:
         output_dir = board_dir
 
