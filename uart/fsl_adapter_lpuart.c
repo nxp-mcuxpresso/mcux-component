@@ -186,10 +186,16 @@ static const clock_ip_name_t s_LpuartAdapterClock[] = LPUART_CLOCKS;
 #if !(defined(HAL_UART_TRANSFER_MODE) && (HAL_UART_TRANSFER_MODE > 0U))
 /* Array of LPUART IRQ number. */
 #if defined(FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ) && FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ
+#if defined(LPUART_RX_IRQS)
 static const IRQn_Type s_LpuartRxIRQ[] = LPUART_RX_IRQS;
+#endif
+#if defined(LPUART_TX_IRQS)
 static const IRQn_Type s_LpuartTxIRQ[] = LPUART_TX_IRQS;
+#endif
 #else
+#if defined(LPUART_RX_TX_IRQS)
 static const IRQn_Type s_LpuartIRQ[] = LPUART_RX_TX_IRQS;
+#endif
 #endif
 #endif
 
@@ -723,13 +729,19 @@ hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t
 
 /* Enable interrupt in NVIC. */
 #if defined(FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ) && FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ
+#if defined(LPUART_RX_IRQS)
         NVIC_SetPriority((IRQn_Type)s_LpuartRxIRQ[uartHandle->instance], HAL_UART_ISR_PRIORITY);
         EnableIRQ(s_LpuartRxIRQ[uartHandle->instance]);
+#endif
+#if defined(LPUART_TX_IRQS)
         NVIC_SetPriority((IRQn_Type)s_LpuartTxIRQ[uartHandle->instance], HAL_UART_ISR_PRIORITY);
         EnableIRQ(s_LpuartTxIRQ[uartHandle->instance]);
+#endif
 #else
+#if defined(LPUART_RX_TX_IRQS)
         NVIC_SetPriority((IRQn_Type)s_LpuartIRQ[uartHandle->instance], HAL_UART_ISR_PRIORITY);
         (void)EnableIRQ(s_LpuartIRQ[uartHandle->instance]);
+#endif
 #endif
 #endif
 
@@ -834,13 +846,19 @@ hal_uart_status_t HAL_UartExitLowpower(hal_uart_handle_t handle)
     s_UartState[uartHandle->instance] = handle;
 /* Enable interrupt in NVIC. */
 #if defined(FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ) && FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ
+#if defined(LPUART_RX_IRQS)
     NVIC_SetPriority((IRQn_Type)s_LpuartRxIRQ[uartHandle->instance], HAL_UART_ISR_PRIORITY);
     EnableIRQ(s_LpuartRxIRQ[uartHandle->instance]);
+#endif
+#if defined(LPUART_TX_IRQS)
     NVIC_SetPriority((IRQn_Type)s_LpuartTxIRQ[uartHandle->instance], HAL_UART_ISR_PRIORITY);
     EnableIRQ(s_LpuartTxIRQ[uartHandle->instance]);
+#endif
 #else
+#if defined(LPUART_RX_TX_IRQS)
     NVIC_SetPriority((IRQn_Type)s_LpuartIRQ[uartHandle->instance], HAL_UART_ISR_PRIORITY);
     (void)EnableIRQ(s_LpuartIRQ[uartHandle->instance]);
+#endif
 #endif
     s_LpuartAdapterBase[uartHandle->instance]->CTRL |= LPUART_CTRL_RIE_MASK;
     HAL_UartIsrFunction(uartHandle);
@@ -2079,9 +2097,13 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
     /* Enable RX interrupt for detecting the IDLE line interrupt. */
     LPUART_EnableInterrupts(s_LpuartAdapterBase[uartHandle->instance], (uint32_t)kLPUART_IdleLineInterruptEnable);
 #if defined(FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ) && FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ
+#if defined(LPUART_RX_IRQS)
     (void)EnableIRQ(s_LpuartRxIRQ[uartHandle->instance]);
+#endif
 #else  /* FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ */
+#if defined(LPUART_RX_TX_IRQS)
     (void)EnableIRQ(s_LpuartIRQ[uartHandle->instance]);
+#endif
 #endif /* FSL_FEATURE_LPUART_HAS_SEPARATE_RX_TX_IRQ */
 #endif /* HAL_UART_DMA_USE_SOFTWARE_IDLELINE_DETECTION */
 
