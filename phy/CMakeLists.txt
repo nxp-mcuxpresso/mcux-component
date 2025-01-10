@@ -65,6 +65,19 @@ if (CONFIG_MCUX_COMPONENT_component.phydp83848)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.phygpy215)
+    mcux_add_include(
+        INCLUDES
+            ./device/phygpy215
+    )
+
+    mcux_add_source(
+        SOURCES
+            ./device/phygpy215/fsl_phygpy215.c
+            ./device/phygpy215/fsl_phygpy215.h
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.phyksz8041)
     mcux_add_include(
         INCLUDES

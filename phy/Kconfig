@@ -21,6 +21,10 @@ config MCUX_COMPONENT_component.phydp83848
     bool "dp83848"
     select MCUX_COMPONENT_component.eth_phy_common
 
+config MCUX_COMPONENT_component.phygpy215
+    bool "gpy215"
+    select MCUX_COMPONENT_component.eth_phy_common
+
 config MCUX_COMPONENT_component.phyksz8041
     bool "ksz8041"
     select MCUX_COMPONENT_component.eth_phy_common
