@@ -12,12 +12,12 @@ menuconfig MCUX_COMPONENT_component.gen_hal
     help
       Generic HAL based on Zephyr
 
-rsource "Kconfig.map"
-
 if MCUX_COMPONENT_component.gen_hal
+	rsource "Kconfig.map"
 	rsource "zephyr/drivers/flash/Kconfig"
 	rsource "zephyr/drivers/memc/Kconfig"
 	rsource "zephyr/drivers/pinctrl/Kconfig"
 	rsource "zephyr/drivers/clock_control/Kconfig"
 	osource "components/gen_hal/_boards/${board}/Kconfig"
+	rsource "devices/${soc_portfolio}/${soc_series}/Kconfig"
 endif

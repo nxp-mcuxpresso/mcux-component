@@ -1,0 +1,6 @@
+# Copyright 2025 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_SERIES_RW6XX
+	bool
+    default y if (MCUX_HW_DEVICE_ID_RW612 || MCUX_HW_DEVICE_ID_RW610)

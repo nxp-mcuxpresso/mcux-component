@@ -7,7 +7,8 @@ mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/flash)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/memc)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/pinctrl)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/clock_control)
-mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/devices/${soc_portfolio}/${soc_series}/${device})
+mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/devices/${soc_portfolio}/${soc_series})
+mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/_boards/${board})
 
 mcux_add_source(
     BASE_PATH ${SdkRootDirPath}/components/gen_hal
@@ -130,7 +131,6 @@ mcux_add_source(
             zephyr/include/zephyr/types.h
             zephyr/misc/generated/zephyr/*.h
             zephyr/misc/generated/zephyr/syscalls/*.h
-            _boards/${board}/devicetree_generated.h
 )
 
 mcux_add_include(

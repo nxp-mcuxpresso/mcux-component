@@ -1,0 +1,446 @@
+# Copyright 2025 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+menu "Modules"
+    config HAS_MCUX_12B1MSPS_SAR
+        bool
+        default y if MCUX_HW_IP_DriverType_ADC
+        help
+        Set if the 12B1MSPS SAR ADC module is present in the SoC.
+
+    config HAS_MCUX_ADC12
+        bool
+        default y if MCUX_HW_IP_DriverType_ADC12
+        help
+        Set if the 12-bit ADC (ADC12) module is present in the SoC.
+
+    config HAS_MCUX_ADC16
+        bool
+        default y if MCUX_HW_IP_DriverType_ADC16
+        help
+        Set if the 16-bit ADC (ADC16) module is present in the SoC.
+
+    config HAS_MCUX_LPADC
+        bool
+        default y if MCUX_HW_IP_DriverType_LPADC
+        help
+        Set if the LPADC module is present in the SoC.
+
+    config HAS_MCUX_CACHE
+        bool
+        default y if (MCUX_HW_IP_DriverType_CACHE64_CTRL || MCUX_HW_IP_DriverType_XCACHE || MCUX_HW_CORE_CM7F || MCUX_HW_IP_DriverType_M33_CACHE_MCM || MCUX_HW_IP_DriverType_AHB_LMEM || MCUX_HW_IP_DriverType_LPCAC || MCUX_HW_IP_DriverType_SYSCON_LPCAC || MCUX_HW_IP_DriverType_SYSCON_CMP_LPCAC || MCUX_HW_IP_DriverType_LPLMEM)
+        help
+        Set if the L1 or L2 cache is present in the SoC.
+
+    config HAS_MCUX_CCM
+        bool
+        default y if (MCUX_HW_IP_DriverType_CCM && MCUX_HW_IP_DriverType_CCM_ANALOG)
+        help
+        Set if the clock control module (CCM) module is present in the SoC.
+
+    config HAS_MCUX_CCM_REV2
+        bool
+        default y if MCUX_HW_IP_DriverType_CCM
+        help
+        Set if the revision 2 of clock control module (CCM) module is present in the SoC.
+        This is present in SoC's such as RT1170
+
+    config HAS_MCUX_SYSCON
+        bool
+        default y if (MCUX_HW_IP_DriverType_SYSCTL || MCUX_HW_IP_DriverType_LPC_ASYNC_SYSCON || MCUX_HW_IP_DriverType_LPC_SYSCTL0 || MCUX_HW_IP_DriverType_LPC_SYSCTL1)
+        help
+        Set if the syscon module is present in the SoC.
+
+    config HAS_MCUX_PCC
+        bool
+        default y if MCUX_HW_IP_DriverType_PCC
+        help
+        Set if the peripheral clock controller module (PCC) module is
+        present in the SoC.
+
+    config HAS_MCUX_ELCDIF
+        bool
+        default y if MCUX_HW_IP_DriverType_ELCDIF
+        help
+        Set if the enhanced LCD interface (eLCDIF) module is present in the
+        SoC.
+
+    config HAS_MCUX_MIPI_DSI
+        bool
+        help
+        Set if the MIPI DSI module is present in the SoC.
+
+    config HAS_MCUX_ENET
+        bool
+        default y if MCUX_HW_IP_DriverType_ENET
+        help
+        Set if the ethernet (ENET) module is present in the SoC.
+
+    config HAS_MCUX_FLEXCAN
+        bool
+        default y if MCUX_HW_IP_DriverType_FLEXCAN
+        help
+        Set if the FlexCAN module is presents in the SoC.
+
+    config HAS_MCUX_FLEXCOMM
+        bool
+        default y if MCUX_HW_IP_DriverType_FLEXCOMM
+        help
+        Set if the flexcomm (FLEXCOMM) module is present in the SoC.
+
+    config HAS_MCUX_FLEXSPI
+        bool
+        default y if MCUX_HW_IP_DriverType_FLEXSPI
+        help
+        Set if the flexible SPI (FlexSPI) module is present in the SoC.
+
+    config HAS_MCUX_FTFX
+        bool
+        default y if (MCUX_HW_IP_DriverType_FTFA || MCUX_HW_IP_DriverType_FTFE || MCUX_HW_IP_DriverType_FTFL)
+        help
+        Set if the flash memory (FTFA, FTFE, or FTFL) module is present in
+        the SoC.
+
+    config HAS_MCUX_FTM
+        bool
+        default y if MCUX_HW_IP_DriverType_FTM
+        help
+        Set if the FlexTimer (FTM) module is present in the SoC.
+
+    config HAS_MCUX_IAP
+        bool
+        default y if MCUX_HW_IP_DriverType_IAP_1
+        help
+        Set if the flash memory In Application Programming is present in
+        the LPC55xxx family SoCs.
+
+    config HAS_MCUX_IAP_LEGACY
+        bool
+        default y if MCUX_HW_IP_DriverType_IAP
+        help
+        Set if the flash memory In Application Programming is present in
+        the older LPC family SoCs (LPC54xxx, LPC11xxx).
+
+    config HAS_MCUX_IGPIO
+        bool
+        default y if MCUX_HW_IP_DriverType_IGPIO
+        help
+        Set if the iMX GPIO (IGPIO) module is present in the SoC.
+
+    config HAS_MCUX_IOMUXC
+        bool
+        default y if MCUX_HW_IP_DriverType_IOMUXC
+        help
+        Set if the iMX I/O mux controller (IOMUXC) is present in the SoC.
+
+    config HAS_MCUX_LPI2C
+        bool
+        default y if MCUX_HW_IP_DriverType_LPI2C
+        help
+        Set if the low power I2C (LPI2C) module is present in the SoC.
+
+    config HAS_MCUX_LPSCI
+        bool
+        default y if MCUX_HW_IP_DriverType_LPSCI
+        help
+        Set if the low power uart (LPSCI) module is present in the SoC.
+
+    config HAS_MCUX_LPSPI
+        bool
+        default y if MCUX_HW_IP_DriverType_LPSPI
+        help
+        Set if the low power SPI (LPSPI) module is present in the SoC.
+
+    config HAS_MCUX_LPUART
+        bool
+        default y if MCUX_HW_IP_DriverType_LPUART
+        help
+        Set if the low power uart (LPUART) module is present in the SoC.
+
+    config HAS_MCUX_GPT
+        bool
+        default y if MCUX_HW_IP_DriverType_GPT
+        help
+        Set if the general purpose timer (GPT) module is present in the SoC.
+
+    config HAS_MCUX_QTMR
+        bool
+        default y if MCUX_HW_IP_DriverType_TMR_1
+        help
+        Set if the quad timer (QTMR) module is present in the SoC.
+
+    config HAS_MCUX_GPC
+        bool
+        default y if MCUX_HW_IP_DriverType_GPC_1 || MCUX_HW_IP_DriverType_GPC_3 || MCUX_HW_IP_DriverType_GPC_CPU_CTRL
+        help
+        Set if the general power controller (GPC) module is present in the SoC.
+
+    config HAS_MCUX_PMU
+        bool
+        default y if MCUX_HW_IP_DriverType_PMU
+        help
+        Set if the power management unit (PMU) module is present in the SoC.
+
+    config HAS_MCUX_DCDC
+        bool
+        default y if MCUX_HW_IP_DriverType_DCDC_1
+        help
+        Set if the DCDC converter module is present in the SoC.
+
+    config HAS_MCUX_SNVS
+        bool
+        default y if MCUX_HW_IP_DriverType_SNVS
+        help
+        Set if the SNVS module is present on the SoC.
+
+    config HAS_MCUX_RNG
+        bool
+        default y if MCUX_HW_IP_DriverType_RNG_1
+        help
+        Set if the LPC specific random number generator (RNG) module is
+        present in the SoC.
+
+    config HAS_MCUX_RNGA
+        bool
+        default y if MCUX_HW_IP_DriverType_RNGA
+        help
+        Set if the random number generator accelerator (RNGA) module is
+        present in the SoC.
+
+    config HAS_MCUX_RTC
+        bool
+        default y if MCUX_HW_IP_DriverType_SRTC
+        help
+        Set if the real time clock (RTC) modules is present in the SoC.
+
+    config HAS_MCUX_LPC_RTC
+        bool
+        default y if MCUX_HW_IP_DriverType_RTC_LITE
+        help
+        Set if the LPC real time clock (RTC) modules is present in the SoC.
+
+    config HAS_MCUX_SCG
+        bool
+        default y if MCUX_HW_IP_DriverType_SCG
+        help
+        Set if the system clock generator (SCG) module is present in the
+        SoC.
+
+    config HAS_MCUX_SEMC
+        bool
+        default y if MCUX_HW_IP_DriverType_SEMC
+        help
+        Set if the smart external memory controller (SEMC) module is present
+        in the SoC.
+
+    config HAS_MCUX_SIM
+        bool
+        default y if MCUX_HW_IP_DriverType_SIM || MCUX_HW_IP_DriverType_SIM_COP
+        help
+        Set if the system integration module (SIM) module is present in the
+        SoC.
+
+    config HAS_MCUX_SRC
+        bool
+        default y if MCUX_HW_IP_DriverType_SRC
+        help
+        Set if the system reset controller (SRC) module is present in the
+        SoC.
+
+    config HAS_MCUX_SRC_V2
+        bool
+        default y if MCUX_HW_IP_DriverType_SRC_2
+        help
+        Set if version 2 of the system reset controller (SRC) module is
+        present in the SoC.
+
+    config HAS_MCUX_TRNG
+        bool
+        default y if MCUX_HW_IP_DriverType_TRNG
+        help
+        Set if the true random number generator (TRNG) module is present in
+        the SoC.
+
+    config HAS_MCUX_USB_EHCI
+        bool
+        default y if MCUX_HW_IP_DriverType_USB_PHY
+        help
+        Set if the USB controller EHCI module is present in the SoC.
+
+    config HAS_MCUX_USB_LPCIP3511
+        bool
+        default y if MCUX_HW_IP_DriverType_USB_DEVICE_IP3511HS
+        help
+        Set if the USB controller LPCIP3511 module is present in the SoC.
+
+    config HAS_MCUX_USDHC1
+        bool
+        default y if MCUX_HW_IP_DriverType_USDHC
+        help
+        Set if the USDHC instance 1 module is present in the SoC.
+
+    config HAS_MCUX_USDHC2
+        bool
+        default y if MCUX_HW_IP_DriverType_USDHC
+        help
+        Set if the USDHC2 instance 2 module is present in the SoC.
+
+    config HAS_MCUX_WDOG32
+        bool
+        default y if MCUX_HW_IP_DriverType_WDOG32
+        help
+        Set if the watchdog (WDOG32) module is present in the SoC.
+
+    config HAS_MCUX_WWDT
+        bool
+        default y if MCUX_HW_IP_DriverType_WWDT
+        help
+        Set if the watchdog (WWDT) module is present in the SoC.
+
+    config HAS_MCUX_PWM
+        bool
+        default y if MCUX_HW_IP_DriverType_PWM
+        help
+        Set if the PWM  module is present in the SoC.
+
+    config HAS_MCUX_SCTIMER
+        bool
+        default y if MCUX_HW_IP_DriverType_SCTIMER
+        help
+        Set if the sctimer module is present in the SoC.
+
+    config HAS_MCUX_SMC
+        bool
+        default y if MCUX_HW_IP_DriverType_SMC
+        help
+        Set if the SMC  module is present in the SoC.
+
+    config HAS_MCUX_LPTMR
+        bool
+        default y if MCUX_HW_IP_DriverType_LPTMR
+        help
+        Set if the Low Power Timer (LPTMR) module is present in the SoC.
+
+    config HAS_MCUX_DAC
+        bool
+        default y if MCUX_HW_IP_DriverType_DAC
+        help
+        Set if the Digital-to-Analog (DAC) module is present in the SoC.
+
+    config HAS_MCUX_DAC32
+        bool
+        default y if MCUX_HW_IP_DriverType_DAC32
+        help
+        Set if the Digital-to-Analog (DAC32) module is present in the SoC.
+
+    config HAS_MCUX_TPM
+        bool
+        default y if MCUX_HW_IP_DriverType_TPM
+        help
+        Set if the Timer/PWM Module is present in the SoC
+
+    config HAS_MCUX_EDMA
+        bool
+        default y if MCUX_HW_IP_DriverType_EDMA
+        help
+        Set if the EDMA module is present on the SoC.
+
+    config HAS_MCUX_LPC_DMA
+        bool
+        default y if MCUX_HW_IP_DriverType_SDMA
+        help
+        Set if the DMA module is present on the SoC.
+
+    config HAS_MCUX_RDC
+        bool
+        default y if MCUX_HW_IP_DriverType_RDC
+        help
+        Set if the RDC module is present in the SoC.
+
+    config HAS_MCUX_PIT
+        bool
+        default y if MCUX_HW_IP_DriverType_PIT
+        help
+        Set if the PIT module is present on the SoC.
+
+    config HAS_MCUX_OS_TIMER
+        bool
+        default y if MCUX_HW_IP_DriverType_OSTIMER
+        help
+        Set if the OS timer is used as a kernel timer on the SoC.
+
+    config HAS_MCUX_PWT
+        bool
+        default y if MCUX_HW_IP_DriverType_PWT
+        help
+        Set if the PWT module is present on the SoC.
+
+    config HAS_MCUX_RCM
+        bool
+        default y if MCUX_HW_IP_DriverType_RCM
+        help
+        Set if the Reset Control Module (RCM) module is present in
+        the SoC.
+
+    config HAS_MCUX_CTIMER
+        bool
+        default y if MCUX_HW_IP_DriverType_CTIMER
+        help
+        Set if the CTIMER module is present in the SoC.
+
+    config HAS_MCUX_I2S
+        bool
+        default y if MCUX_HW_IP_DriverType_SAI
+        help
+        Set if the I2S/SAI module is present on the Soc
+
+    config HAS_MCUX_MCAN
+        bool
+        default y if MCUX_HW_IP_DriverType_MCAN
+        help
+        Set if the MCAN module is present on the SoC.
+
+    config HAS_MCUX_ADC_ETC
+        bool
+        default y if MCUX_HW_IP_DriverType_ADC_ETC
+        help
+        Set if the ADC External Trigger Control module is present
+        on the SoC.
+
+    config HAS_MCUX_XBARA
+        bool
+        default y if MCUX_HW_IP_DriverType_XBARA
+        help
+        Set if the XBARA module is present on the SoC.
+
+    config HAS_NXP_MONOLITHIC_BT
+        bool
+        help
+        Set if the platform supports the monolithic build for BT applications.
+
+    config NXP_FW_LOADER
+        bool "Include firmware loader component"
+        help
+        The firmware loader is used to load firmwares to embedded tranceivers.
+        It is needed to enable connectivity features.
+
+    config NXP_MONOLITHIC_WIFI
+        bool "WiFi firmware monolithic build"
+        help
+        If enabled, the WiFi firmware used by the device will be linked with the
+        application directly.
+
+    config NXP_MONOLITHIC_BT
+        bool "BT firmware monolithic build"
+        depends on HAS_NXP_MONOLITHIC_BT
+        help
+        If enabled, the BT firmware used by the device will be linked with the
+        application directly.
+
+    config NXP_RF_IMU
+        bool "Include RF_IMU adapter for intercore messaging"
+        select EVENTS
+        help
+        RF_IMU adapter is needed for intercore messaging.
+
+endmenu
