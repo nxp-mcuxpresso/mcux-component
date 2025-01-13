@@ -75,6 +75,27 @@
 #define SM_PLATFORM_M70_ID (CPU_IDX_M7P_0)
 #define SM_PLATFORM_M71_ID (CPU_IDX_M7P_1)
 
+/* Domain id(same with components/power/porting/platform/imx943/hal_power_platform.h) */
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_ANA           0U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_AON           1U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_BBSM          2U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_M7_1          3U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_CCMSRCGPC     4U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_A55C0         5U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_A55C1         6U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_A55C2         7U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_A55C3         8U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_A55P          9U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_DDR           10U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_DISPLAY       11U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_M7_0          12U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_HSIO_TOP      13U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_HSIO_WAON     14U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_NETC          15U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_NOC           16U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_NPU           17U
+#define SM_POWER_PLATFORM_MIX_SLICE_IDX_WAKEUP        18U
+
 /*******************************************************************************
  * API
  ******************************************************************************/

@@ -62,6 +62,8 @@ void SM_Platform_Init(void)
     /* Enable FuSa notifications */
     SCMI_FusaFaultGroupNotify(SM_PLATFORM_A2P, SM_PLATFORM_FAULT_ID_FIRST, SM_PLATFORM_FAULT_MASK,
                               SM_PLATFORM_NOTIFY_ENABLE, NULL, NULL);
+
+    SCMI_PowerStateSet(SM_PLATFORM_A2P, SM_POWER_PLATFORM_MIX_SLICE_IDX_NETC, 0U, SCMI_POWER_DOMAIN_STATE_ON);
 #else
     /* Fix warning(s_muIrqs is not used) */
     (void)s_muIrqs;
