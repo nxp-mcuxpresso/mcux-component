@@ -19,5 +19,5 @@ if MCUX_COMPONENT_component.gen_hal
 	rsource "zephyr/drivers/pinctrl/Kconfig"
 	rsource "zephyr/drivers/clock_control/Kconfig"
 	osource "components/gen_hal/_boards/${board}/Kconfig"
-	rsource "devices/${soc_portfolio}/${soc_series}/Kconfig"
+	osource "components/gen_hal/devices/${soc_portfolio}/${soc_series}/Kconfig"
 endif
