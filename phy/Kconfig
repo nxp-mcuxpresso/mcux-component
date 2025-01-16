@@ -17,8 +17,8 @@ config MCUX_COMPONENT_component.phyksz8081
     bool "ksz8081"
     select MCUX_COMPONENT_component.eth_phy_common
 
-config MCUX_COMPONENT_component.phydp83848
-    bool "dp83848"
+config MCUX_COMPONENT_component.phydp8384x
+    bool "dp8384x"
     select MCUX_COMPONENT_component.eth_phy_common
 
 config MCUX_COMPONENT_component.phygpy215

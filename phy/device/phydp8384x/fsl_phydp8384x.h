@@ -1,25 +1,25 @@
 /*
- * Copyright 2020-2021 NXP
+ * Copyright 2020-2021,2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 /*****************************************************************************
- * PHY DP83848 driver change log
+ * PHY DP8384X driver change log
  *****************************************************************************/
 
 /*!
 @page driver_log Driver Change Log
 
-@section phydp83848 PHYDP83848
-  The current PHYDP83848 driver version is 2.0.0.
+@section phydp8384x PHYDP8384X
+  The current PHYDP8384X driver version is 2.0.0.
 
   - 2.0.0
     - Initial version.
 */
 
-#ifndef _FSL_PHYDP83848_H_
-#define _FSL_PHYDP83848_H_
+#ifndef _FSL_PHYDP8384X_H_
+#define _FSL_PHYDP8384X_H_
 
 #include "fsl_phy.h"
 
@@ -35,8 +35,14 @@
 /*! @brief PHY driver version */
 #define FSL_PHY_DRIVER_VERSION (MAKE_VERSION(2, 0, 0))
 
+typedef struct _phy_dp8384x_resource_t
+{
+    mdioWrite write;
+    mdioRead read;
+} phy_dp8384x_resource_t;
+
 /*! @brief PHY operations structure. */
-extern const phy_operations_t phydp83848_ops;
+extern const phy_operations_t phydp8384x_ops;
 
 /*******************************************************************************
  * API
@@ -61,7 +67,7 @@ extern "C" {
  * @retval kStatus_Fail  PHY initialization fails
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_Init(phy_handle_t *handle, const phy_config_t *config);
+status_t PHY_DP8384X_Init(phy_handle_t *handle, const phy_config_t *config);
 
 /*!
  * @brief PHY Write function.
@@ -73,7 +79,7 @@ status_t PHY_DP83848_Init(phy_handle_t *handle, const phy_config_t *config);
  * @retval kStatus_Success     PHY write success
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_Write(phy_handle_t *handle, uint8_t phyReg, uint16_t data);
+status_t PHY_DP8384X_Write(phy_handle_t *handle, uint8_t phyReg, uint16_t data);
 
 /*!
  * @brief PHY Read function.
@@ -85,7 +91,7 @@ status_t PHY_DP83848_Write(phy_handle_t *handle, uint8_t phyReg, uint16_t data);
  * @retval kStatus_Success  PHY read success
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_Read(phy_handle_t *handle, uint8_t phyReg, uint16_t *pData);
+status_t PHY_DP8384X_Read(phy_handle_t *handle, uint8_t phyReg, uint16_t *pData);
 
 /*!
  * @brief Gets the PHY auto-negotiation status.
@@ -97,7 +103,7 @@ status_t PHY_DP83848_Read(phy_handle_t *handle, uint8_t phyReg, uint16_t *pData)
  * @retval kStatus_Success   PHY gets status success
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_GetAutoNegotiationStatus(phy_handle_t *handle, bool *status);
+status_t PHY_DP8384X_GetAutoNegotiationStatus(phy_handle_t *handle, bool *status);
 
 /*!
  * @brief Gets the PHY link status.
@@ -109,7 +115,7 @@ status_t PHY_DP83848_GetAutoNegotiationStatus(phy_handle_t *handle, bool *status
  * @retval kStatus_Success   PHY gets link status success
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_GetLinkStatus(phy_handle_t *handle, bool *status);
+status_t PHY_DP8384X_GetLinkStatus(phy_handle_t *handle, bool *status);
 
 /*!
  * @brief Gets the PHY link speed and duplex.
@@ -123,7 +129,7 @@ status_t PHY_DP83848_GetLinkStatus(phy_handle_t *handle, bool *status);
  * @retval kStatus_Success   PHY gets link speed and duplex success
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_GetLinkSpeedDuplex(phy_handle_t *handle, phy_speed_t *speed, phy_duplex_t *duplex);
+status_t PHY_DP8384X_GetLinkSpeedDuplex(phy_handle_t *handle, phy_speed_t *speed, phy_duplex_t *duplex);
 
 /*!
  * @brief Sets the PHY link speed and duplex.
@@ -134,7 +140,7 @@ status_t PHY_DP83848_GetLinkSpeedDuplex(phy_handle_t *handle, phy_speed_t *speed
  * @retval kStatus_Success   PHY gets status success
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_SetLinkSpeedDuplex(phy_handle_t *handle, phy_speed_t speed, phy_duplex_t duplex);
+status_t PHY_DP8384X_SetLinkSpeedDuplex(phy_handle_t *handle, phy_speed_t speed, phy_duplex_t duplex);
 
 /*!
  * @brief Enables/disables PHY loopback.
@@ -148,7 +154,30 @@ status_t PHY_DP83848_SetLinkSpeedDuplex(phy_handle_t *handle, phy_speed_t speed,
  * @retval kStatus_Success  PHY loopback success
  * @retval kStatus_PHY_MDIOVisitTimeout  PHY MDIO visit time out
  */
-status_t PHY_DP83848_EnableLoopback(phy_handle_t *handle, phy_loop_t mode, phy_speed_t speed, bool enable);
+status_t PHY_DP8384X_EnableLoopback(phy_handle_t *handle, phy_loop_t mode, phy_speed_t speed, bool enable);
+
+/*!
+ * @brief Enables/Disables PHY link management interrupt.
+ *
+ * This function controls link status change interrupt.
+ * @note Based on previous test, this PHY's link up interrupt occurs after
+ * completing auto-negotiation.
+ *
+ * @param handle  PHY device handle.
+ * @param type    PHY interrupt type.
+ * @retval kStatus_Success  PHY enables/disables interrupt success
+ * @retval kStatus_Timeout  PHY MDIO visit time out
+ */
+status_t PHY_DP8384X_EnableLinkInterrupt(phy_handle_t *handle, phy_interrupt_type_t type);
+
+/*!
+ * @brief Clears PHY interrupt status.
+ *
+ * @param handle  PHY device handle.
+ * @retval kStatus_Success  PHY read and clear interrupt success
+ * @retval kStatus_Timeout  PHY MDIO visit time out
+ */
+status_t PHY_DP8384X_ClearInterrupt(phy_handle_t *handle);
 
 /*! @} */
 
@@ -158,4 +187,4 @@ status_t PHY_DP83848_EnableLoopback(phy_handle_t *handle, phy_loop_t mode, phy_s
 
 /*! @}*/
 
-#endif /* _FSL_PHYDP83848_H_ */
+#endif /* _FSL_PHYDP8384X_H_ */

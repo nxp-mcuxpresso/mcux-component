@@ -52,16 +52,16 @@ if (CONFIG_MCUX_COMPONENT_component.phyksz8081)
     )
 endif()
 
-if (CONFIG_MCUX_COMPONENT_component.phydp83848)
+if (CONFIG_MCUX_COMPONENT_component.phydp8384x)
     mcux_add_include(
         INCLUDES
-            ./device/phydp83848
+            ./device/phydp8384x
     )
 
     mcux_add_source(
         SOURCES
-            ./device/phydp83848/fsl_phydp83848.c
-            ./device/phydp83848/fsl_phydp83848.h
+            ./device/phydp8384x/fsl_phydp8384x.c
+            ./device/phydp8384x/fsl_phydp8384x.h
     )
 endif()
 
