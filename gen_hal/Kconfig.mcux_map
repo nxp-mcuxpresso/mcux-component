@@ -1,5 +1,5 @@
 # Copyright 2025 NXP
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: BSD-3-Clause
 
 menu "Modules"
     config HAS_MCUX_12B1MSPS_SAR

@@ -1,5 +1,5 @@
 # Copyright 2025 NXP
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_component.gen_hal)
 
