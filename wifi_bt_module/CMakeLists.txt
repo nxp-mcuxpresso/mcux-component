@@ -29,6 +29,145 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_rw61x)
     mcux_add_macro(
-        "-DWIFI_BOARD_RW610"
+        "-DWIFI_BOARD_RW610\
+         -DCONFIG_SOC_SERIES_RW6XX_REVISION_A2=1"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191ma)
+     mcux_add_macro(
+        "-DWIFI_88W8801_BOARD_AW_NM191MA"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191_usd)
+     mcux_add_macro(
+        "-DWIFI_88W8801_BOARD_AW_NM191_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_m2)
+     mcux_add_macro(
+        "-DWIFI_88W8801_BOARD_MURATA_2DS_M2"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_usd)
+     mcux_add_macro(
+        "-DWIFI_88W8801_BOARD_MURATA_2DS_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_ubx_lily_w1_usd)
+     mcux_add_macro(
+        "-DWIFI_88W8801_BOARD_UBX_LILY_W1_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_cm358ma)
+     mcux_add_macro(
+        "-DWIFI_88W8987_BOARD_AW_CM358MA"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_cm358_usd)
+     mcux_add_macro(
+        "-DWIFI_88W8987_BOARD_AW_CM358_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_1zm_m2)
+     mcux_add_macro(
+        "-DWIFI_88W8987_BOARD_MURATA_1ZM_M2"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_1zm_usd)
+     mcux_add_macro(
+        "-DWIFI_88W8987_BOARD_MURATA_1ZM_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w2_usd)
+     mcux_add_macro(
+        "-DWIFI_88W8987_BOARD_UBX_JODY_W2_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w5_m2)
+     mcux_add_macro(
+        "-DWIFI_AW611_BOARD_UBX_JODY_W5_M2"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w5_usd)
+     mcux_add_macro(
+        "-DWIFI_AW611_BOARD_UBX_JODY_W5_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_am457ma)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_AW_AM457MA"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_am457_usd)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_AW_AM457_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510ma)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_AW_AM510MA"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510_usd)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_AW_AM510_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_1xk_m2)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_MURATA_1XK_M2"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_1xk_usd)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_MURATA_1XK_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_ubx_maya_w1_usd)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_UBX_MAYA_W1_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2dl_m2)
+     mcux_add_macro(
+        "-DWIFI_IW611_BOARD_MURATA_2DL_M2"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2dl_usd)
+     mcux_add_macro(
+        "-DWIFI_IW611_BOARD_MURATA_2DL_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_m2)
+     mcux_add_macro(
+        "-DWIFI_IW612_BOARD_MURATA_2EL_M2"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_usd)
+     mcux_add_macro(
+        "-DWIFI_IW612_BOARD_MURATA_2EL_USD"
     )
 endif()
