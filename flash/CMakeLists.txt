@@ -232,7 +232,7 @@ if (${board} STREQUAL frdmmcxw71)
     mcux_set_variable(drv_folder k32w1)
 endif()
 
-if (${board} STREQUAL frdmmcxw23)
+if ((${board} STREQUAL frdmmcxw23) OR (${board} STREQUAL mcxw23evk))
     mcux_set_variable(drv_folder mcxw23x)
 endif()
 
