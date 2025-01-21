@@ -12,12 +12,20 @@ menu "wifi_bt_module"
 
         menu "Select RW61x chip"
             config MCUX_COMPONENT_component.wifi_bt_module.board_rw61x
-                bool "RW61x"
-                default y if MCUX_HW_DEVICE_RW612 || MCUX_HW_DEVICE_RW610
+                bool "NXP RW61x"
+                default y if MCUX_HW_BOARD_rdrw612bga
                 help
-                    Select this option if you have a NXP RW610-based
+                    Select this option if you have a NXP RW61X-based
                     Wireless chip. This option will enable support
-                    for NXP RW610-based series boards.
+                    for NXP RW61X-based series boards.
+
+            config MCUX_COMPONENT_component.wifi_bt_module.board_frdmrw61x
+                bool "NXP FRDM-RW61x"
+                default y if MCUX_HW_BOARD_frdmrw612
+                help
+                    Select this option if you have a NXP FRDMRW61X-based
+                    Wireless chip. This option will enable support
+                    for NXP FRDMRW61X-based series boards.
         endmenu
 
         menu "Select NXP 88W8801 module"

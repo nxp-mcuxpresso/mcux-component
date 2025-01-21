@@ -351,10 +351,20 @@
         .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x9, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0xC \
     }
 
-/* Redfinch */
+/* Redfinch RW61X */
 #elif defined(WIFI_BOARD_RW610)
 #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW_rw610.h"
 #define RW610
+#define WIFI_BT_USE_IMU_INTERFACE
+#define CONFIG_SOC_SERIES_RW6XX_REVISION_A2 1
+
+/* Redfinch FRDMRW61X */
+#elif defined(WIFI_BOARD_FRDMRW61X)
+#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW_rw610.h"
+#define RW610
+#define FRDMRW610
+#define WIFI_BT_USE_IMU_INTERFACE
+#define CONFIG_SOC_SERIES_RW6XX_REVISION_A2 1
 
 /* K32W061 transceiver */
 #elif defined(K32W061_TRANSCEIVER)

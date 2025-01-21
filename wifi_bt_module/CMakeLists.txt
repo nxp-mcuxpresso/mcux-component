@@ -29,8 +29,13 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_rw61x)
     mcux_add_macro(
-        "-DWIFI_BOARD_RW610\
-         -DCONFIG_SOC_SERIES_RW6XX_REVISION_A2=1"
+        "-DWIFI_BOARD_RW610"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_frdmrw61x)
+mcux_add_macro(
+        "-DWIFI_BOARD_FRDMRW61X"
     )
 endif()
 
