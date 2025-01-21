@@ -246,11 +246,6 @@ hal_timer_status_t HAL_TimerUpdateTimeout(hal_timer_handle_t halTimerHandle, uin
     s_halTimerState[HAL_TimerGetInstance(halTimerHandle)]->timeout = timeout;
     tickCount = (uint32_t)USEC_TO_COUNT((s_halTimerState[HAL_TimerGetInstance(halTimerHandle)]->timeout),
                                         (s_halTimerState[HAL_TimerGetInstance(halTimerHandle)]->timerClock_Hz));
-    if ((tickCount < 1U) || (tickCount > 0xfff0U))
-    {
-        return kStatus_HAL_TimerOutOfRanger;
-    }
-
     s_TPMBase[HAL_TimerGetInstance(halTimerHandle)]->CNT = 0;
     TPM_SetTimerPeriod(s_TPMBase[HAL_TimerGetInstance(halTimerHandle)], tickCount);
     return kStatus_HAL_TimerSuccess;
