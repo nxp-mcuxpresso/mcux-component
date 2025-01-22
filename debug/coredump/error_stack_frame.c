@@ -8,113 +8,38 @@
 /*******************************************************************************
  * Code
  ******************************************************************************/
-static inline struct arch_esf *get_esf(uint32_t msp, uint32_t psp, uint32_t exc_return, bool *nested_exc)
+static inline int get_esf(uint32_t msp, uint32_t psp, uint32_t exc_return, bool *nested_exc, struct arch_esf *ptr_esf)
 {
 	bool alternative_state_exc = false;
-	struct arch_esf *ptr_esf = NULL;
 
 	*nested_exc = false;
+        uint32_t nested_off = 0UL;
 
 	if ((exc_return & ((0xFFUL << 24UL))) !=
 			(0xFFUL << 24UL)) {
 		/* Invalid EXC_RETURN value. This is a fatal error. */
-		return NULL;
+		return -EFAULT;
 	}
 
-#if defined(CONFIG_ARM_SECURE_FIRMWARE)
-	if ((exc_return & EXC_RETURN_EXCEPTION_SECURE_Secure) == 0U) {
-		/* Secure Firmware shall only handle Secure Exceptions.
-		 * This is a fatal error.
-		 */
-		return NULL;
+	if (((SCB->ICSR) & SCB_ICSR_VECTACTIVE_Msk) > 3)
+	{
+		nested_off += sizeof(struct arch_esf);
+		*nested_exc = true;
 	}
-
-	if (exc_return & EXC_RETURN_RETURN_STACK_Secure) {
-		/* Exception entry occurred in Secure stack. */
-	} else {
-		/* Exception entry occurred in Non-Secure stack. Therefore,
-		 * msp/psp point to the Secure stack, however, the actual
-		 * exception stack frame is located in the Non-Secure stack.
-		 */
-		alternative_state_exc = true;
-
-		/* Dump the Secure stack before handling the actual fault. */
-		struct arch_esf *secure_esf;
-
-		if (exc_return & EXC_RETURN_SPSEL_PROCESS) {
-			/* Secure stack pointed by PSP */
-			secure_esf = (struct arch_esf *)psp;
-		} else {
-			/* Secure stack pointed by MSP */
-			secure_esf = (struct arch_esf *)msp;
-			*nested_exc = true;
-		}
-
-		SECURE_STACK_DUMP(secure_esf);
-
-		/* Handle the actual fault.
-		 * Extract the correct stack frame from the Non-Secure state
-		 * and supply it to the fault handing function.
-		 */
-		if (exc_return & EXC_RETURN_MODE_THREAD) {
-			ptr_esf = (struct arch_esf *)__TZ_get_PSP_NS();
-		} else {
-			ptr_esf = (struct arch_esf *)__TZ_get_MSP_NS();
-		}
-	}
-#elif defined(CONFIG_ARM_NONSECURE_FIRMWARE)
-	if (exc_return & EXC_RETURN_EXCEPTION_SECURE_Secure) {
-		/* Non-Secure Firmware shall only handle Non-Secure Exceptions.
-		 * This is a fatal error.
-		 */
-		return NULL;
-	}
-
-	if (exc_return & EXC_RETURN_RETURN_STACK_Secure) {
-		/* Exception entry occurred in Secure stack.
-		 *
-		 * Note that Non-Secure firmware cannot inspect the Secure
-		 * stack to determine the root cause of the fault. Fault
-		 * inspection will indicate the Non-Secure instruction
-		 * that performed the branch to the Secure domain.
-		 */
-		alternative_state_exc = true;
-
-		PR_FAULT_INFO("Exception occurred in Secure State");
-
-		if (exc_return & EXC_RETURN_SPSEL_PROCESS) {
-			/* Non-Secure stack frame on PSP */
-			ptr_esf = (struct arch_esf *)psp;
-		} else {
-			/* Non-Secure stack frame on MSP */
-			ptr_esf = (struct arch_esf *)msp;
-		}
-	} else {
-		/* Exception entry occurred in Non-Secure stack. */
-	}
-#else
-	/* The processor has a single execution state.
-	 * We verify that the Thread mode is using PSP.
-	 */
-	if ((exc_return & (1UL << 3UL)) &&
-		(!(exc_return & (1UL << 2UL)))) {
-		return NULL;
-	}
-#endif /* CONFIG_ARM_SECURE_FIRMWARE */
+        
 
 	if (!alternative_state_exc) {
-		if (exc_return & (1UL << 3UL)) {
+		if (exc_return & (1UL << 2UL)) {
 			/* Returning to thread mode */
-			ptr_esf =  (struct arch_esf *)psp;
+			*ptr_esf =  (*(struct arch_esf *)(psp + nested_off));
 
 		} else {
 			/* Returning to handler mode */
-			ptr_esf = (struct arch_esf *)msp;
-			*nested_exc = true;
+			*ptr_esf = (*(struct arch_esf *)(msp + nested_off));
 		}
 	}
 
-	return ptr_esf;
+	return 0;
 
 }
 
@@ -384,12 +309,12 @@ uint32_t fault_capture(uint32_t msp, uint32_t psp, uint32_t exc_return, struct a
     uint32_t reason = K_ERR_CPU_EXCEPTION;
     int fault = SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk;
     
-    memset(ptrEsf, sizeof(struct arch_esf), 0x0U);
+    memset(ptrEsf, 0x0U, sizeof(struct arch_esf));
 
-    ptrEsf = get_esf(msp, psp, exc_return, &nest);
-
-    //TODO
-    //z_arm_set_fault_sp(ptrEsf, exc_return);
+    if (get_esf(msp, psp, exc_return, &nest, ptrEsf) != 0)
+    {
+        return 0xFFFFFFFF;
+    }
 
     reason = fault_handle(ptrEsf, fault);
 
