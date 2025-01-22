@@ -6,11 +6,51 @@ menu "wifi_bt_module"
         bool "tx_pwr_limits"
     config MCUX_COMPONENT_component.wifi_bt_module.config
         bool "config"
-    choice
+    choice MCUX_COMPONENT_component.wifi_bt_module.selection
         prompt "Select WiFi-BT Module"
-        default MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_m2
+        help
+          Choose NXP Wi-Fi chip.
+        config MCUX_COMPONENT_component.wifi_bt_module.RW61X
+            bool "RW61X"
+            help
+              Select this option if you have a NXP RW610-based
+              Wireless chip. This option will enable support
+              for NXP RW610-based series boards.
 
-        menu "Select RW61x chip"
+        config MCUX_COMPONENT_component.wifi_bt_module.88W8987
+            bool "88W8987"
+            help
+              Enable NXP 88W8987 Wi-Fi connectivity,
+              More information about 88W8987 device you can find on
+              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-5-802-11ac-plus-bluetooth-5-2-solution:88W8987
+
+        config MCUX_COMPONENT_component.wifi_bt_module.IW416
+            bool "IW416"
+            help
+              Enable NXP IW416 Wi-Fi connectivity,
+              More information about IW416 device you can find on
+              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-4-802-11n-plus-bluetooth-5-2-solution:IW416
+
+        config MCUX_COMPONENT_component.wifi_bt_module.IW61X
+            bool "IW61X"
+            help
+              Enable NXP IW61X Wi-Fi connectivity,
+              More information about IW61X device you can find on
+              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5ghz-dual-band-1x1-wi-fi-6-802-11ax-plus-bluetooth-5-2-solution:IW611
+              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-6-802-11ax-plus-bluetooth-5-2-plus-802-15-4-tri-radio-solution:IW612
+
+        config MCUX_COMPONENT_component.wifi_bt_module.88W8801
+            bool "88W8801"
+            help
+              Enable NXP 88W8801 Wi-Fi connectivity,
+              More information about 88W8801 device you can find on
+              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-ghz-single-band-1x1-wi-fi-4-802-11n-solution:88W8801
+
+    endchoice
+
+    if MCUX_COMPONENT_component.wifi_bt_module.RW61X
+        choice RW61x_MODULE
+            prompt "Select RW61x chip"
             config MCUX_COMPONENT_component.wifi_bt_module.board_rw61x
                 bool "NXP RW61x"
                 default y if MCUX_HW_BOARD_rdrw612bga
@@ -18,7 +58,6 @@ menu "wifi_bt_module"
                     Select this option if you have a NXP RW61X-based
                     Wireless chip. This option will enable support
                     for NXP RW61X-based series boards.
-
             config MCUX_COMPONENT_component.wifi_bt_module.board_frdmrw61x
                 bool "NXP FRDM-RW61x"
                 default y if MCUX_HW_BOARD_frdmrw612
@@ -26,9 +65,12 @@ menu "wifi_bt_module"
                     Select this option if you have a NXP FRDMRW61X-based
                     Wireless chip. This option will enable support
                     for NXP FRDMRW61X-based series boards.
-        endmenu
+        endchoice
+    endif
 
-        menu "Select NXP 88W8801 module"
+    if MCUX_COMPONENT_component.wifi_bt_module.88W8801
+        choice 88W8801_MODULE
+            prompt "Select NXP 88W8801 module"
             config MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191ma
                 bool "NXP AW-NM191MA-M2"
                 help
@@ -74,9 +116,12 @@ menu "wifi_bt_module"
                 bool "NXP UBX-LILY-W1-USD"
                 help
                 https://www.u-blox.com/en/product/lily-w1-series
-        endmenu
+        endchoice
+    endif
 
-        menu "Select NXP 88W8987 module"
+    if MCUX_COMPONENT_component.wifi_bt_module.88W8987
+        choice 88W8987_MODULE
+            prompt "Select NXP 88W8987 module"
             config MCUX_COMPONENT_component.wifi_bt_module.board_aw_cm358ma
                 bool "NXP AW-CM358MA-M2"
                 help
@@ -133,8 +178,21 @@ menu "wifi_bt_module"
                     Detailed information about Jody module you can find on
                     https://www.u-blox.com/en/product/jody-w2-series
 
-        endmenu
-        menu "Select NXP IW416 module"
+            config MCUX_COMPONENT_component.wifi_bt_module.board_k32w061_transceiver
+                bool "NXP K32W061-TRANSCEIVER"
+                help
+                    High Performance and Ultra-Low-Power MCU for Zigbee®,Thread, and Bluetooth LE 5.0
+                    with Built-in NFC option.
+
+                    Detailed information about K32W061 module you can find on
+                    https://www.nxp.com/part/K32W061
+
+        endchoice
+    endif
+
+    if MCUX_COMPONENT_component.wifi_bt_module.IW416
+        choice IW416_MDOULE
+            prompt "Select NXP IW416 module"
             config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am457ma
                 bool "NXP IW416-AW-AM457MA-M2"
                 help
@@ -216,8 +274,12 @@ menu "wifi_bt_module"
                     Detailed information about Type MAYA W1 module you can find on
                     https://www.u-blox.com/en/product/maya-w1-series
 
-        endmenu
-        menu "Select NXP IW61X module"
+        endchoice
+    endif
+
+    if MCUX_COMPONENT_component.wifi_bt_module.IW61X
+        choice IW61X_MDOULE
+            prompt "Select NXP IW61X module"
             config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2dl_m2
                 bool "NXP IW611-MURATA-2DL-M2"
                 help
@@ -287,6 +349,7 @@ menu "wifi_bt_module"
 
                     Detailed information about Jody W5 module you can find on
                     https://www.u-blox.com/en/product/jody-w5-series
-        endmenu
-    endchoice
+        endchoice
+    endif
+
 endmenu

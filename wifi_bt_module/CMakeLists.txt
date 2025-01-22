@@ -176,3 +176,9 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_usd)
         "-DWIFI_IW612_BOARD_MURATA_2EL_USD"
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_k32w061_transceiver)
+     mcux_add_macro(
+        "-DK32W061_TRANSCEIVER"
+    )
+endif()
