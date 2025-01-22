@@ -14,7 +14,7 @@ config MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
 menu "Pmic driver"
 
 config MCUX_COMPONENT_driver.pca9420
-    bool "Select pmic pca9420 driver"
+    bool "pca9420"
     select MCUX_COMPONENT_driver.power
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
@@ -22,7 +22,7 @@ config MCUX_COMPONENT_driver.pca9420
       Say yes here to select pca9420 driver.
 
 config MCUX_COMPONENT_driver.pca9422
-    bool "Select pmic pca9422 driver"
+    bool "pca9422"
     select MCUX_COMPONENT_driver.power
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
@@ -30,21 +30,21 @@ config MCUX_COMPONENT_driver.pca9422
       Say yes here to select pca9422 driver.
 
 config MCUX_COMPONENT_driver.pf1550
-    bool "Select pmic pf1550 driver"
+    bool "pf1550"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
     help
       Say yes here to select pf1550 driver.
 
 config MCUX_COMPONENT_driver.pf3000
-    bool "Select pmic pf3000 driver"
+    bool "pf3000"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
     help
       Say yes here to select pf3000 driver.
 
 config MCUX_COMPONENT_driver.pf5020
-    bool "Select pmic pf5020 driver"
+    bool "pf5020"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
     help
