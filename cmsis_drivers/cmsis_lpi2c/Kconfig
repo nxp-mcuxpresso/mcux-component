@@ -3,7 +3,7 @@ config MCUX_HAS_COMPONENT_driver.cmsis_lpi2c
     default y if MCUX_HW_IP_DriverType_LPI2C || MCUX_HW_IP_DriverType_LPFLEXCOMM_LPI2C
 
 config MCUX_COMPONENT_driver.cmsis_lpi2c
-    bool "Use driver cmsis_lpi2c"
+    bool "lpi2c"
     select MCUX_COMPONENT_driver.lpi2c if MCUX_HW_IP_DriverType_LPI2C
     select MCUX_COMPONENT_driver.lpflexcomm_lpi2c if MCUX_HW_IP_DriverType_LPFLEXCOMM_LPI2C
     select MCUX_COMPONENT_CMSIS_Driver_Include.I2C

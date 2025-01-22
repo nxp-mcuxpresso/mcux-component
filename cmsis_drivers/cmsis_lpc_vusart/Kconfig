@@ -3,7 +3,7 @@ config MCUX_HAS_COMPONENT_driver.cmsis_vusart
     default y if MCUX_HW_IP_DriverType_LPC_USART
 
 config MCUX_COMPONENT_driver.cmsis_vusart
-    bool "Use driver cmsis_vusart"
+    bool "vusart"
     select MCUX_COMPONENT_driver.vusart
     select MCUX_COMPONENT_CMSIS_Driver_Include.USART
     select MCUX_COMPONENT_device.RTE

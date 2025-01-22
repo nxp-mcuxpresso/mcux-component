@@ -3,7 +3,7 @@ config MCUX_HAS_COMPONENT_driver.cmsis_iuart
     default y if MCUX_HW_IP_DriverType_IUART
 
 config MCUX_COMPONENT_driver.cmsis_iuart
-    bool "Use driver cmsis_iuart"
+    bool "iuart"
     select MCUX_COMPONENT_driver.iuart
     select MCUX_COMPONENT_CMSIS_Driver_Include.USART
     select MCUX_COMPONENT_device.RTE

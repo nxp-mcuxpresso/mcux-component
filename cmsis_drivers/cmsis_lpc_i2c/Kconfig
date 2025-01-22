@@ -1,5 +1,5 @@
 config MCUX_COMPONENT_driver.cmsis_lpc_i2c
-    bool "Use driver cmsis_lpc_i2c"
+    bool "lpc_i2c"
     select MCUX_COMPONENT_driver.lpc_i2c_dma
     select MCUX_COMPONENT_CMSIS_Driver_Include.I2C
     select MCUX_COMPONENT_device.RTE

@@ -7,7 +7,7 @@ config MCUX_HAS_COMPONENT_driver.cmsis_gpio
     default y if MCUX_HW_IP_DriverType_GPIO
 
 config MCUX_COMPONENT_driver.cmsis_gpio
-    bool "Use driver cmsis_gpio"
+    bool "gpio"
     select MCUX_COMPONENT_driver.gpio
     select MCUX_COMPONENT_CMSIS_Driver_Include.GPIO
     select MCUX_COMPONENT_device.RTE
