@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 menu "Sensor Drivers"
@@ -15,63 +15,63 @@ config MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
     select MCUX_COMPONENT_driver.dsc_lpi2c if MCUX_HAS_COMPONENT_driver.dsc_lpi2c
 
 config MCUX_COMPONENT_driver.fxas21002cq
-    bool "Use fxas21002cq sensor driver"
+    bool "fxas21002cq"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.fxls8974cf
-    bool "Use fxls8974cf sensor driver"
+    bool "fxls8974cf"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.fxos8700cq
-    bool "Use fxos8700cq sensor driver"
+    bool "fxos8700cq"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.htu21d
-    bool "Use htu21d sensor driver"
+    bool "htu21d"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.icm42688p
-    bool "Use icm42688p sensor driver"
+    bool "icm42688p"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.max30101
-    bool "Use max30101 sensor driver"
+    bool "max30101"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.mma8451q
-    bool "Use mma8451q sensor driver"
+    bool "mma8451q"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.mma8652fc
-    bool "Use mma8652fc sensor driver"
+    bool "mma8652fc"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.mpl3115a2
-    bool "Use mpl3115a2 sensor driver"
+    bool "mpl3115a2"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.timer_lptmr
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.p3t1755
-    bool "Use p3t1755 sensor driver"
+    bool "p3t1755"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.tsl2561
-    bool "Use tsl2561 sensor driver"
+    bool "tsl2561"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
 config MCUX_COMPONENT_driver.lsm6dso
-    bool "Use lsm6dso sensor driver"
+    bool "lsm6dso"
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 endmenu
