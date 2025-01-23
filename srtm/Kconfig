@@ -1,17 +1,23 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-menu "SRTM Basic Components"
+menuconfig MCUX_COMPONENT_driver.srtm
+    bool "srtm"
+    default n
+    select MCUX_COMPONENT_driver.srtm.freertos
+    select MCUX_COMPONENT_middleware.multicore.rpmsg-lite
+    select MCUX_COMPONENT_middleware.multicore.rpmsg-lite.ns
+    help
+        SRTM (Simplified Real Time Message) Application Protocol
+
+if MCUX_COMPONENT_driver.srtm
+    rsource "channels/Kconfig"
+
+    menu "Services"
+        rsource "services/Kconfig"
+    endmenu
+
     config MCUX_COMPONENT_driver.srtm.freertos
-        bool "Component driver.srtm.freertos"
-
-    config MCUX_COMPONENT_driver.srtm
-        bool "Component driver.srtm"
-        select MCUX_COMPONENT_driver.srtm.freertos
-        select MCUX_COMPONENT_middleware.multicore.rpmsg-lite
-        select MCUX_COMPONENT_middleware.multicore.rpmsg-lite.ns
-endmenu
-
-rsource "channels/Kconfig"
-rsource "services/Kconfig"
+        bool "SRTM FreeRTOS"
+endif
 

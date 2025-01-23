@@ -127,9 +127,7 @@ menu "Component Configuration"
         rsource "phy/Kconfig"
     endmenu
 
-    menu "SRTM(Simplified Real Time Message, Application Protocol) Components"
-        rsource "srtm/Kconfig"
-    endmenu
+    rsource "srtm/Kconfig"
 
     menu "SDIO"
         rsource "sdu/Kconfig"

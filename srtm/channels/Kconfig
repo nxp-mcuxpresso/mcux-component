@@ -1,19 +1,19 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-menu "SRTM Endpoint Components"
-    choice
-        prompt "Choose an option for SRTM Endpoint"
-        default MCUX_COMPONENT_component.rpmsg_endpoint
-        depends on MCUX_COMPONENT_driver.srtm
 
-        config MCUX_COMPONENT_component.rpmsg_endpoint
-            bool "SRTM RPMSG Endpoint"
+choice
+    prompt "Endpoints"
+    default MCUX_COMPONENT_component.rpmsg_endpoint
+    depends on MCUX_COMPONENT_driver.srtm
 
-        config MCUX_COMPONENT_component.mu_endpoint
-            bool "SRTM MU Endpoint"
+    config MCUX_COMPONENT_component.rpmsg_endpoint
+        bool "RPMSG"
 
-        config MCUX_COMPONENT_component.rpmsg_emu_endpoint
-            bool "SRTM RPMSG Emulate Endpoint"
-    endchoice
-endmenu
+    config MCUX_COMPONENT_component.rpmsg_emu_endpoint
+        bool "RPMSG Emulate"
+
+    config MCUX_COMPONENT_component.mu_endpoint
+        bool "MU"
+
+endchoice
