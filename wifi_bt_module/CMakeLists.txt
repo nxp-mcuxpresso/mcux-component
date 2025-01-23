@@ -27,6 +27,10 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.config)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.RW61X)
+# Fix "Depended component component.wifi_bt_module.RW61X is not loaded"
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x)
     mcux_add_macro(
         "-DWIFI_BOARD_RW610"
@@ -34,7 +38,7 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x)
 endif()
 
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x)
-mcux_add_macro(
+    mcux_add_macro(
         "-DWIFI_BOARD_FRDM_RW61X"
     )
 endif()
