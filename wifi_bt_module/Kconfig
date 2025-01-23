@@ -6,16 +6,18 @@ menu "wifi_bt_module"
         bool "tx_pwr_limits"
     config MCUX_COMPONENT_component.wifi_bt_module.config
         bool "config"
-    choice MCUX_COMPONENT_component.wifi_bt_module.selection
+    choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.selection
         prompt "Select WiFi-BT Module"
         help
           Choose NXP Wi-Fi chip.
         config MCUX_COMPONENT_component.wifi_bt_module.RW61X
             bool "RW61X"
             help
-              Select this option if you have a NXP RW610-based
-              Wireless chip. This option will enable support
-              for NXP RW610-based series boards.
+              Enable NXP RW61x Wi-Fi connectivity,
+              More information about RW61x device you can find on
+              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/wireless-mcu-with-integrated-tri-radio-1x1-wi-fi-6-plus-bluetooth-low-energy-5-4-802-15-4:RW612
+              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/wireless-mcu-with-integrated-radio-1x1-wi-fi-6-plus-bluetooth-low-energy-5-4-radios:RW610
+
 
         config MCUX_COMPONENT_component.wifi_bt_module.88W8987
             bool "88W8987"
@@ -49,22 +51,32 @@ menu "wifi_bt_module"
     endchoice
 
     if MCUX_COMPONENT_component.wifi_bt_module.RW61X
-        choice RW61x_MODULE
-            prompt "Select RW61x chip"
-            config MCUX_COMPONENT_component.wifi_bt_module.board_rw61x
-                bool "NXP RW61x"
-                default y if MCUX_HW_BOARD_rdrw612bga
+        choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.RW61X.selection
+            prompt "Select NXP RW61x board"
+            default MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x if MCUX_HW_BOARD_rdrw612bga
+            default MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x if MCUX_HW_BOARD_frdmrw612
+            config MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x
+                bool "NXP RD-RW61x"
                 help
-                    Select this option if you have a NXP RW61X-based
-                    Wireless chip. This option will enable support
-                    for NXP RW61X-based series boards.
-            config MCUX_COMPONENT_component.wifi_bt_module.board_frdmrw61x
-                bool "NXP FRDM-RW61x"
-                default y if MCUX_HW_BOARD_frdmrw612
+                    The RW612 is a highly integrated, low-power tri-radio wireless MCU with
+                    an integrated MCU and Wi-Fi® 6 + Bluetooth® Low Energy (LE) 5.4 / 802.15.4
+                    radios designed for a broad array of applications, including connected smart
+                    home devices, enterprise and industrial automation, smart accessories and
+                    smart energy.
+
+                    Detailed information about RD-RW61x-BGA board you can find on
+                    https://www.nxp.com/part/RW612ET
+                    https://www.nxp.com/part/RW610ET
+
+            config MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x
+                bool "NXP FRDM-RW612"
                 help
-                    Select this option if you have a NXP FRDMRW61X-based
-                    Wireless chip. This option will enable support
-                    for NXP FRDMRW61X-based series boards.
+                    FRDM-RW612 is a compact and scalable development board for rapid prototyping
+                    of the RW61x series of Wi-Fi 6 + Bluetooth Low Energy + 802.15.4 tri-radio
+                    wireless MCUs.
+
+                    Detailed information about FRDM-RW612 board you can find on
+                    https://www.nxp.com/part/FRDM-RW612
         endchoice
     endif
 
