@@ -1535,6 +1535,7 @@ status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_le
     sdu_buffer_t *send_buffer = NULL;
     status_t status = kStatus_Fail;
     sdio_header_t *sdio_hdr = NULL;
+    int retry_cnt = 3;
 
     if ((data_addr == NULL) || (data_len == 0U))
     {
@@ -1551,6 +1552,7 @@ status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_le
         return (status_t)kStatus_Fail;
     }
 
+retry:
     switch (type)
     {
         case SDU_TYPE_FOR_READ_CMD:
@@ -1569,17 +1571,28 @@ status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_le
 
     if (send_buffer == NULL)
     {
-        if (type == SDU_TYPE_FOR_READ_DATA)
+        if (retry_cnt != 0)
         {
-            ctrl_sdu.stat.drop_tx_data++;
+            retry_cnt--;
+            /* Allow the other thread to run and hence could get available sdio send buffer
+             * so that cmd/event/data can be sent by sdio */
+            OSA_TimeDelay(1);
+            goto retry;
         }
         else
         {
-            ctrl_sdu.stat.drop_tx_cmd++;
-        }
+            if (type == SDU_TYPE_FOR_READ_DATA)
+            {
+                ctrl_sdu.stat.drop_tx_data++;
+            }
+            else
+            {
+                ctrl_sdu.stat.drop_tx_cmd++;
+            }
 
-        sdu_d("%s: NO free_buffer for type %d!\r\n", __FUNCTION__, type);
-        return (status_t)kStatus_NoData;
+            sdu_d("%s: NO free_buffer for type %d!\r\n", __FUNCTION__, type);
+            return (status_t)kStatus_NoData;
+        }
     }
 
     if (data_len + sizeof(sdio_header_t) > send_buffer->buffer.data_size)
