@@ -1,3 +1,6 @@
+# Copyright 2024-2025 NXP
+# SPDX-License-Identifier: Apache-2.0
+
 config MCUX_HAS_COMPONENT_driver.cmsis_iuart
     bool
     default y if MCUX_HW_IP_DriverType_IUART

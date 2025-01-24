@@ -1,3 +1,6 @@
+# Copyright 2024-2025 NXP
+# SPDX-License-Identifier: Apache-2.0
+
 config MCUX_COMPONENT_driver.cmsis_lpc_gpio
     bool "lpc_gpio"
     select MCUX_COMPONENT_driver.lpc_gpio
