@@ -3,7 +3,11 @@
 
 config MCUX_COMPONENT_utilities.unity
     bool "unity"
-config MCUX_COMPONENT_utilities.gcov.board_init
-    bool "gcov.board_init"
-config MCUX_COMPONENT_utilities.gcov
+
+menuconfig MCUX_COMPONENT_utilities.gcov
     bool "gcov"
+
+if MCUX_COMPONENT_utilities.gcov
+    config MCUX_COMPONENT_utilities.gcov.board_init
+        bool "gcov.board_init"
+endif
