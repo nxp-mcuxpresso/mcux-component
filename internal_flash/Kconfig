@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.flash_adapter
@@ -33,7 +33,7 @@ config MCUX_COMPONENT_component.flash_adapter
             config MCUX_DEPENDENCY_COMPONENT_component.flash_adapter_anyof_allof6
                 bool "Select component.mcxw_flash_adapter"
                 select MCUX_COMPONENT_component.mcxw_flash_adapter                                                                                                                                 
-                depends on MCUX_HAS_COMPONENT_driver.rom_api
+                depends on MCUX_HAS_COMPONENT_driver.romapi
             config MCUX_DEPENDENCY_COMPONENT_component.flash_adapter_anyof_allof7
                 bool "Select component.flexspi_nor_flash_adapter_rt1060evkb"
                 select MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1060evkb                                                                                                                                 
@@ -136,7 +136,7 @@ config MCUX_COMPONENT_component.mcxw_flash_adapter
     default n
     help
         Enable component.mcxw_flash_adapter component
-    select MCUX_COMPONENT_driver.rom_api
+    select MCUX_COMPONENT_driver.romapi
     depends on MCUX_HAS_COMPONENT_driver.romapi
     
     
