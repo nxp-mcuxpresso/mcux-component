@@ -48,6 +48,15 @@ menu "wifi_bt_module"
               More information about 88W8801 device you can find on
               https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-ghz-single-band-1x1-wi-fi-4-802-11n-solution:88W8801
 
+        config MCUX_COMPONENT_component.wifi_bt_module.K32W061_transceiver
+                bool "NXP K32W061-TRANSCEIVER"
+                help
+                    High Performance and Ultra-Low-Power MCU for Zigbee®,Thread, and Bluetooth LE 5.0
+                    with Built-in NFC option.
+
+                    Detailed information about K32W061 module you can find on
+                    https://www.nxp.com/part/K32W061
+
     endchoice
 
     if MCUX_COMPONENT_component.wifi_bt_module.RW61X
@@ -189,15 +198,6 @@ menu "wifi_bt_module"
 
                     Detailed information about Jody module you can find on
                     https://www.u-blox.com/en/product/jody-w2-series
-
-            config MCUX_COMPONENT_component.wifi_bt_module.board_k32w061_transceiver
-                bool "NXP K32W061-TRANSCEIVER"
-                help
-                    High Performance and Ultra-Low-Power MCU for Zigbee®,Thread, and Bluetooth LE 5.0
-                    with Built-in NFC option.
-
-                    Detailed information about K32W061 module you can find on
-                    https://www.nxp.com/part/K32W061
 
         endchoice
     endif
