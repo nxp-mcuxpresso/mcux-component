@@ -1056,7 +1056,16 @@ void OSA_InterruptDisable(void)
  *END**************************************************************************/
 void OSA_EnableIRQGlobal(void)
 {
-    TX_RESTORE
+    if (s_osaState.interruptDisableCount > 0U)
+    {
+        s_osaState.interruptDisableCount--;
+
+        if (0U == s_osaState.interruptDisableCount)
+        {
+            TX_RESTORE
+        }
+        /* call core API to enable the global interrupt*/
+    }
 }
 
 /*FUNCTION**********************************************************************
@@ -1067,7 +1076,14 @@ void OSA_EnableIRQGlobal(void)
  *END**************************************************************************/
 void OSA_DisableIRQGlobal(void)
 {
-    TX_DISABLE
+    /* call API to disable the global interrupt*/
+    if (0U == s_osaState.interruptDisableCount)
+    {
+        TX_DISABLE
+    }
+
+    /* update counter*/
+    s_osaState.interruptDisableCount++;
 }
 
 /*FUNCTION**********************************************************************
