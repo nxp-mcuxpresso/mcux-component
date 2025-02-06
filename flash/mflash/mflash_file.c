@@ -77,7 +77,7 @@ bool mflash_is_initialized(void)
 }
 
 /* Store path string to directory record structure */
-static bool dir_path_store(mflash_dir_record_t *dr, char *path)
+static bool dir_path_store(mflash_dir_record_t *dr, const char *path)
 {
     assert(dr);
     assert(path);
@@ -105,7 +105,7 @@ static bool dir_path_store(mflash_dir_record_t *dr, char *path)
 }
 
 /* Match path string against directory record */
-static bool dir_path_match(mflash_dir_record_t *dr, char *path)
+static bool dir_path_match(mflash_dir_record_t *dr, const char *path)
 {
     assert(dr);
     assert(path);
@@ -310,7 +310,7 @@ static status_t mflash_file_check(mflash_fs_t *fs, mflash_dir_record_t *dr)
 }
 
 /* Searches for directory record with given path and retrieves a copy of it */
-static status_t mflash_dir_lookup(mflash_fs_t *fs, char *path, mflash_dir_record_t *dr_ptr)
+static status_t mflash_dir_lookup(mflash_fs_t *fs, const char *path, mflash_dir_record_t *dr_ptr)
 {
     uint32_t file_count     = fs->header.file_count;
     mflash_dir_record_t *dr = fs->records;
@@ -561,7 +561,7 @@ status_t mflash_init(const mflash_file_t *dir_template, bool init_drv)
 
 /* Save file */
 static status_t mflash_file_save_internal(
-    mflash_fs_t *fs, void *page_buf, mflash_dir_record_t *dr, uint8_t *data, uint32_t size)
+    mflash_fs_t *fs, void *page_buf, mflash_dir_record_t *dr, const uint8_t *data, uint32_t size)
 {
     status_t status;
 
@@ -588,7 +588,7 @@ static status_t mflash_file_save_internal(
          data_offset += MFLASH_PAGE_SIZE)
     {
         /* Pointer and size of the data portion to be programmed */
-        void *copy_ptr     = data + data_offset;
+        const void *copy_ptr = data + data_offset;
         uint32_t copy_size = size - data_offset;
         if (copy_size > MFLASH_PAGE_SIZE)
         {
@@ -629,7 +629,7 @@ static status_t mflash_file_save_internal(
 }
 
 /* API, save data to file with given path */
-status_t mflash_file_save(char *path, uint8_t *data, uint32_t size)
+status_t mflash_file_save(const char *path, const uint8_t *data, uint32_t size)
 {
     status_t status;
     mflash_dir_record_t dr;
@@ -670,7 +670,7 @@ status_t mflash_file_save(char *path, uint8_t *data, uint32_t size)
 }
 
 /* Get direct pointer to file data */
-static status_t mflash_file_mmap_internal(mflash_fs_t *fs, mflash_dir_record_t *dr, uint8_t **pdata, uint32_t *psize)
+static status_t mflash_file_mmap_internal(mflash_fs_t *fs, mflash_dir_record_t *dr, const uint8_t **pdata, uint32_t *psize)
 {
     status_t status;
     mflash_file_meta_t *meta;
@@ -690,7 +690,7 @@ static status_t mflash_file_mmap_internal(mflash_fs_t *fs, mflash_dir_record_t *
 }
 
 /* API, get direct pointer to data of file with given path */
-status_t mflash_file_mmap(char *path, uint8_t **pdata, uint32_t *psize)
+status_t mflash_file_mmap(const char *path, const uint8_t **pdata, uint32_t *psize)
 {
     status_t status;
     mflash_dir_record_t dr;
