@@ -4,7 +4,7 @@
 menu "Display panel driver"
 
 config MCUX_COMPONENT_driver.ili9341
-    bool "Use ili9341 display panel driver"
+    bool "ili9341"
     select MCUX_COMPONENT_driver.common
 
     if MCUX_COMPONENT_driver.ili9341
@@ -18,15 +18,15 @@ config MCUX_COMPONENT_driver.ili9341
 
 
 config MCUX_COMPONENT_driver.st7796s
-    bool "Use st7796s display panel driver"
+    bool "st7796s"
     select MCUX_COMPONENT_driver.dbi
 
 config MCUX_COMPONENT_driver.ssd1963
-    bool "Use ssd1963 display panel driver"
+    bool "ssd1963"
     select MCUX_COMPONENT_driver.dbi
 
 config MCUX_COMPONENT_driver.psp27801
-    bool "Use psp27801 display panel driver"
+    bool "psp27801"
     select MCUX_COMPONENT_driver.common
 
 endmenu

@@ -68,49 +68,49 @@ config DBI_USE_MIPI_PANEL #naming to be improved?
 
 menu "Display Controller Frame Buffer Adapters"
 config MCUX_COMPONENT_driver.dc-fb-dsi-cmd
-    bool "Use display controller frame buffer adapter for DSI command mode"
+    bool "DSI command mode"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
 config MCUX_COMPONENT_driver.dc-fb-elcdif
-    bool "Use display controller frame buffer adapter for elcdif"
+    bool "elcdif"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.elcdif
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
 config MCUX_COMPONENT_driver.dc-fb-lcdif
-    bool "Use display controller frame buffer adapter for lcdif"
+    bool "lcdif"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.lcdif
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
 config MCUX_COMPONENT_driver.dc-fb-lcdifv2
-    bool "Use display controller frame buffer adapter for lcdifv2"
+    bool "lcdifv2"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.lcdifv2
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
 config MCUX_COMPONENT_driver.dc-fb-lcdifv3
-    bool "Use display controller frame buffer adapter for lcdifv3"
+    bool "lcdifv3"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.lcdifv3
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
 config MCUX_COMPONENT_driver.dc-fb-dbi
-    bool "Use display controller frame buffer adapter for DBI bus controllers"
+    bool "DBI bus"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.dbi
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
 config MCUX_COMPONENT_driver.dc-fb-ssd1963
-    bool "Use display controller frame buffer adapter for SSD1963"
+    bool "SSD1963"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.ssd1963
     select MCUX_COMPONENT_driver.display-common
@@ -125,62 +125,62 @@ config MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 menu "Display Panel Driverss"
 config MCUX_COMPONENT_driver.display-hx8394
-    bool "Use display support for hx8394"
+    bool "hx8394"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-rm68191
-    bool "Use display support for rm68191"
+    bool "rm68191"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-rm68200
-    bool "Use display support for rm68200"
+    bool "rm68200"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-rm67191
-    bool "Use display support for rm67191"
+    bool "rm67191"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-rm67162
-    bool "Use display support for rm67162"
+    bool "rm67162"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-co5300
-    bool "Use display support for co5300"
+    bool "co5300"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-rm692c9
-    bool "Use display support for rm692c9"
+    bool "rm692c9"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-rpi
-    bool "Use display support for rpi"
+    bool "rpi"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.display-mipi-dsi-cmd
 
 config MCUX_COMPONENT_driver.display-adv7535
-    bool "Use display support for adv7535"
+    bool "adv7535"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.video-i2c
 
 config MCUX_COMPONENT_driver.display-sn65dsi83
-    bool "Use display support for sn65dsi83"
+    bool "sn65dsi83"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.video-i2c
 
 config MCUX_COMPONENT_driver.display-it6263
-    bool "Use display support for it6263"
+    bool "it6263"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.video-i2c
 
 config MCUX_COMPONENT_driver.display-it6161
-    bool "Use display support for it6161"
+    bool "it6161"
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.video-i2c
 endmenu
@@ -206,12 +206,12 @@ config MCUX_COMPONENT_driver.camera-device-sccb
 
 menu "Camera Device Drivers"
 config MCUX_COMPONENT_driver.camera-device-ov5640
-    bool "Use Camera Device for ov5640"
+    bool "ov5640"
     select MCUX_COMPONENT_driver.camera-device-common
     select MCUX_COMPONENT_driver.camera-device-sccb
 
 config MCUX_COMPONENT_driver.camera-device-ov7670
-    bool "Use Camera Device for ov7670"
+    bool "ov7670"
     select MCUX_COMPONENT_driver.camera-device-common
     select MCUX_COMPONENT_driver.camera-device-sccb
 
@@ -226,22 +226,22 @@ config MCUX_COMPONENT_driver.camera-device-ov7670
     endif
 
 config MCUX_COMPONENT_driver.camera-device-ov7725
-    bool "Use Camera Device for ov7725"
+    bool "ov7725"
     select MCUX_COMPONENT_driver.camera-device-common
     select MCUX_COMPONENT_driver.camera-device-sccb
 
 config MCUX_COMPONENT_driver.camera-device-mt9m114
-    bool "Use Camera Device for mt9m114"
+    bool "mt9m114"
     select MCUX_COMPONENT_driver.camera-device-common
     select MCUX_COMPONENT_driver.video-i2c
 
 config MCUX_COMPONENT_driver.camera-device-max9286
-    bool "Use Camera Device for max9286"
+    bool "max9286"
     select MCUX_COMPONENT_driver.camera-device-common
     select MCUX_COMPONENT_driver.video-i2c
 
 config MCUX_COMPONENT_driver.camera-device-ap1302
-    bool "Use Camera Device for ap1302"
+    bool "ap1302"
     select MCUX_COMPONENT_driver.camera-device-common
     select MCUX_COMPONENT_driver.video-i2c
 endmenu
@@ -252,17 +252,17 @@ config MCUX_COMPONENT_driver.camera-receiver-common
 
 menu "Camera Receiver Adapter"
 config MCUX_COMPONENT_driver.camera-receiver-csi
-    bool "Use Camera Receiver adapter for csi driver"
+    bool "csi driver adapter"
     select MCUX_COMPONENT_driver.camera-receiver-common
     select MCUX_COMPONENT_driver.csi
 
 config MCUX_COMPONENT_driver.camera-receiver-isi
-    bool "Use Camera Receiver adapter for isi driver"
+    bool "isi driver adapter"
     select MCUX_COMPONENT_driver.camera-receiver-common
     select MCUX_COMPONENT_driver.isi
 
 config MCUX_COMPONENT_driver.camera-receiver-flexio
-    bool "Use Camera Receiver adapter for flexio camera driver"
+    bool "flexio camera driver adapter"
     select MCUX_COMPONENT_driver.camera-receiver-common
     select MCUX_COMPONENT_driver.flexio_camera_edma
 endmenu
