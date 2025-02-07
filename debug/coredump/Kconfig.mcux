@@ -8,3 +8,25 @@ config MCUX_COMPONENT_component.debug_coredump
 config MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
 	bool
     default y if DEBUG_COREDUMP_BACKEND_FLASH_PARTITION
+
+config MCUX_COMPONENT_component.debug_coredump_backend.mflash
+	bool
+	default y if DEBUG_COREDUMP_BACKEND_OTHER
+	help
+	  Select mflash as debug coredump backend.
+
+if MCUX_COMPONENT_component.debug_coredump_backend.mflash
+
+config MFLASH_COREDUMP_REGION_START_ADDR
+	hex "Coredump region start address"
+	default 0x0
+	help
+      Should be the offset of flash address.
+
+config MFLASH_COREDUMP_REGION_SIZE
+	hex "Size of coredump region"
+	default 0x1000
+	help
+	  Should be times of block size.
+
+endif
