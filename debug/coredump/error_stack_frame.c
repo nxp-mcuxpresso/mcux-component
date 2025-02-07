@@ -32,10 +32,12 @@ static inline int get_esf(uint32_t msp, uint32_t psp, uint32_t exc_return, bool 
 		if (exc_return & (1UL << 2UL)) {
 			/* Returning to thread mode */
 			*ptr_esf =  (*(struct arch_esf *)(psp + nested_off));
+                        z_arm_coredump_fault_sp = psp + nested_off;
 
 		} else {
 			/* Returning to handler mode */
 			*ptr_esf = (*(struct arch_esf *)(msp + nested_off));
+                        z_arm_coredump_fault_sp = msp + nested_off;
 		}
 	}
 
@@ -316,6 +318,23 @@ uint32_t fault_capture(uint32_t msp, uint32_t psp, uint32_t exc_return, struct a
         return 0xFFFFFFFF;
     }
 
+#if defined(CONFIG_FPU) && defined(CONFIG_FPU_SHARING)
+	/* Assess whether thread had been using the FP registers and add size of additional
+	 * registers if necessary
+	 */
+	if ((exc_return & EXC_RETURN_STACK_FRAME_TYPE_STANDARD) ==
+			EXC_RETURN_STACK_FRAME_TYPE_EXTENDED) {
+		z_arm_coredump_fault_sp += sizeof(ptrEsf->fpu);
+	}
+#endif /* CONFIG_FPU && CONFIG_FPU_SHARING */
+
+#ifndef CONFIG_ARMV8_M_MAINLINE
+	if ((ptrEsf->basic.xpsr & SCB_CCR_STKALIGN_Msk) == SCB_CCR_STKALIGN_Msk) {
+		/* Adjust stack alignment after PSR bit[9] detected */
+		z_arm_coredump_fault_sp |= 0x4;
+	}
+#endif /* !CONFIG_ARMV8_M_MAINLINE */
+    
     reason = fault_handle(ptrEsf, fault);
 
     return reason;
