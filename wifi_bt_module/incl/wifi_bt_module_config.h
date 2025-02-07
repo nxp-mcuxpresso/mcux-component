@@ -79,6 +79,18 @@
         .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x9, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0xC \
     }
 
+/* AzureWave FRDM-IW416-AW-AM510 */
+#elif defined(WIFI_IW416_BOARD_AW_AM510_ARDUINO)
+#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW.h"
+#define SD8978
+#define SDMMCHOST_OPERATION_VOLTAGE_3V3
+#define CONFIG_BR_SCO_PCM_DIRECTION 1
+#define WIFI_BT_USE_ARDUINO_SHIELD
+#define WLAN_ED_MAC_CTRL                                                               \
+    {                                                                                  \
+        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x9, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0xC \
+    }
+
 /* AzureWave AW-CM358-uSD */
 #elif defined(WIFI_88W8987_BOARD_AW_CM358_USD)
 #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW.h"
