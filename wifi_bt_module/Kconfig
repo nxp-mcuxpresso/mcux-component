@@ -6,373 +6,374 @@ menu "wifi_bt_module"
         bool "tx_pwr_limits"
     config MCUX_COMPONENT_component.wifi_bt_module.config
         bool "config"
-    choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.selection
-        prompt "Select WiFi-BT Module"
-        help
-          Choose NXP Wi-Fi chip.
-        config MCUX_COMPONENT_component.wifi_bt_module.RW61X
-            bool "RW61X"
+    if MCUX_COMPONENT_component.wifi_bt_module.config
+        choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.selection
+            prompt "Select WiFi-BT Module"
             help
-              Enable NXP RW61x Wi-Fi connectivity,
-              More information about RW61x device you can find on
-              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/wireless-mcu-with-integrated-tri-radio-1x1-wi-fi-6-plus-bluetooth-low-energy-5-4-802-15-4:RW612
-              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/wireless-mcu-with-integrated-radio-1x1-wi-fi-6-plus-bluetooth-low-energy-5-4-radios:RW610
-
-
-        config MCUX_COMPONENT_component.wifi_bt_module.88W8987
-            bool "88W8987"
-            help
-              Enable NXP 88W8987 Wi-Fi connectivity,
-              More information about 88W8987 device you can find on
-              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-5-802-11ac-plus-bluetooth-5-2-solution:88W8987
-
-        config MCUX_COMPONENT_component.wifi_bt_module.IW416
-            bool "IW416"
-            help
-              Enable NXP IW416 Wi-Fi connectivity,
-              More information about IW416 device you can find on
-              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-4-802-11n-plus-bluetooth-5-2-solution:IW416
-
-        config MCUX_COMPONENT_component.wifi_bt_module.IW61X
-            bool "IW61X"
-            help
-              Enable NXP IW61X Wi-Fi connectivity,
-              More information about IW61X device you can find on
-              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5ghz-dual-band-1x1-wi-fi-6-802-11ax-plus-bluetooth-5-2-solution:IW611
-              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-6-802-11ax-plus-bluetooth-5-2-plus-802-15-4-tri-radio-solution:IW612
-
-        config MCUX_COMPONENT_component.wifi_bt_module.88W8801
-            bool "88W8801"
-            help
-              Enable NXP 88W8801 Wi-Fi connectivity,
-              More information about 88W8801 device you can find on
-              https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-ghz-single-band-1x1-wi-fi-4-802-11n-solution:88W8801
-
-        config MCUX_COMPONENT_component.wifi_bt_module.K32W061_transceiver
-                bool "NXP K32W061-TRANSCEIVER"
+              Choose NXP Wi-Fi chip.
+            config MCUX_COMPONENT_component.wifi_bt_module.RW61X
+                bool "RW61X"
                 help
-                    High Performance and Ultra-Low-Power MCU for Zigbee®,Thread, and Bluetooth LE 5.0
-                    with Built-in NFC option.
+                  Enable NXP RW61x Wi-Fi connectivity,
+                  More information about RW61x device you can find on
+                  https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/wireless-mcu-with-integrated-tri-radio-1x1-wi-fi-6-plus-bluetooth-low-energy-5-4-802-15-4:RW612
+                  https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/wireless-mcu-with-integrated-radio-1x1-wi-fi-6-plus-bluetooth-low-energy-5-4-radios:RW610
 
-                    Detailed information about K32W061 module you can find on
-                    https://www.nxp.com/part/K32W061
-
-    endchoice
-
-    if MCUX_COMPONENT_component.wifi_bt_module.RW61X
-        choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.RW61X.selection
-            prompt "Select NXP RW61x board"
-            default MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x if MCUX_HW_BOARD_rdrw612bga
-            default MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x if MCUX_HW_BOARD_frdmrw612
-            config MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x
-                bool "NXP RD-RW61x"
+            config MCUX_COMPONENT_component.wifi_bt_module.88W8987
+                bool "88W8987"
                 help
-                    The RW612 is a highly integrated, low-power tri-radio wireless MCU with
-                    an integrated MCU and Wi-Fi® 6 + Bluetooth® Low Energy (LE) 5.4 / 802.15.4
-                    radios designed for a broad array of applications, including connected smart
-                    home devices, enterprise and industrial automation, smart accessories and
-                    smart energy.
+                  Enable NXP 88W8987 Wi-Fi connectivity,
+                  More information about 88W8987 device you can find on
+                  https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-5-802-11ac-plus-bluetooth-5-2-solution:88W8987
 
-                    Detailed information about RD-RW61x-BGA board you can find on
-                    https://www.nxp.com/part/RW612ET
-                    https://www.nxp.com/part/RW610ET
-
-            config MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x
-                bool "NXP FRDM-RW612"
+            config MCUX_COMPONENT_component.wifi_bt_module.IW416
+                bool "IW416"
                 help
-                    FRDM-RW612 is a compact and scalable development board for rapid prototyping
-                    of the RW61x series of Wi-Fi 6 + Bluetooth Low Energy + 802.15.4 tri-radio
-                    wireless MCUs.
+                  Enable NXP IW416 Wi-Fi connectivity,
+                  More information about IW416 device you can find on
+                  https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-4-802-11n-plus-bluetooth-5-2-solution:IW416
 
-                    Detailed information about FRDM-RW612 board you can find on
-                    https://www.nxp.com/part/FRDM-RW612
-        endchoice
-    endif
-
-    if MCUX_COMPONENT_component.wifi_bt_module.88W8801
-        choice 88W8801_MODULE
-            prompt "Select NXP 88W8801 module"
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191ma
-                bool "NXP AW-NM191MA-M2"
+            config MCUX_COMPONENT_component.wifi_bt_module.IW61X
+                bool "IW61X"
                 help
-                    Azurewave Type NM191MA is a small high-performance module (integrated PCB
-                    antenna) based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
-                    up to 72.2 Mbps PHY data rate.
+                  Enable NXP IW61X Wi-Fi connectivity,
+                  More information about IW61X device you can find on
+                  https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5ghz-dual-band-1x1-wi-fi-6-802-11ax-plus-bluetooth-5-2-solution:IW611
+                  https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-5-ghz-dual-band-1x1-wi-fi-6-802-11ax-plus-bluetooth-5-2-plus-802-15-4-tri-radio-solution:IW612
 
-                    Detailed information about Murata Type AW NM191MA module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
-
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191_usd
-                bool "NXP AW-NM191-USD"
+            config MCUX_COMPONENT_component.wifi_bt_module.88W8801
+                bool "88W8801"
                 help
-                    Azurewave Type NM191 is a small high-performance module (integrated PCB
-                    antenna) based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
-                    up to 72.2 Mbps PHY data rate.
+                  Enable NXP 88W8801 Wi-Fi connectivity,
+                  More information about 88W8801 device you can find on
+                  https://www.nxp.com/products/wireless-connectivity/wi-fi-plus-bluetooth-plus-802-15-4/2-4-ghz-single-band-1x1-wi-fi-4-802-11n-solution:88W8801
 
-                    Detailed information about Murata Type AW NM191 module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
+            config MCUX_COMPONENT_component.wifi_bt_module.K32W061_transceiver
+                    bool "NXP K32W061-TRANSCEIVER"
+                    help
+                        High Performance and Ultra-Low-Power MCU for Zigbee®,Thread, and Bluetooth LE 5.0
+                        with Built-in NFC option.
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_m2
-                bool "NXP MURATA-2DS-M2"
-                help
-                    Murata Type 2DS is a small high-performance module (integrated PCB antenna)
-                    based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
-                    up to 72.2 Mbps PHY data rate.
-
-                    Detailed information about Murata Type 2DS module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ds
-
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_usd
-                bool "NXP MURATA-2DS-USD"
-                help
-                    Murata Type 2DS is a small high-performance module (integrated PCB antenna)
-                    based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
-                    up to 72.2 Mbps PHY data rate.
-
-                    Detailed information about Murata Type 2DS module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ds
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
-
-            config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_lily_w1_usd
-                bool "NXP UBX-LILY-W1-USD"
-                help
-                https://www.u-blox.com/en/product/lily-w1-series
-        endchoice
-    endif
-
-    if MCUX_COMPONENT_component.wifi_bt_module.88W8987
-        choice 88W8987_MODULE
-            prompt "Select NXP 88W8987 module"
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_cm358ma
-                bool "NXP AW-CM358MA-M2"
-                help
-                    Azurewave Type CM358MA module based on NXP 88W8987 combo LGA chipset
-                    which supports which supports Wi-Fi® 802.11a/b/g/n/ac +
-                    Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
-
-                    Detailed information about Murata Type AW CM358MA module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_cm358_usd
-                bool "NXP AW-CM358-USD"
-                help
-                    Azurewave Type CM358 module based on NXP 88W8987 combo LGA chipset
-                    which supports which supports Wi-Fi® 802.11a/b/g/n/ac +
-                    Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
-
-                    Detailed information about Azurewave Type AW CM358 module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1zm_m2
-                bool "NXP MURATA-1ZM-M2"
-                help
-                    Murata Type 1ZM is a small and very high performance module based on
-                    NXP 88W8987 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac +
-                    Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
-
-                    Detailed information about Murata Type 1ZM module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1zm
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1zm_usd
-                bool "NXP MURATA-1ZM-USD"
-                help
-                    Murata Type 1ZM is a small and very high performance module based on
-                    NXP 88W8987 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac +
-                    Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
-
-                    Detailed information about Murata Type 1ZM module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1zm
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
-
-            config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w2_usd
-                bool "NXP UBX-JODY-W2-USD"
-                help
-                    JODY-W2 is a compact module based on the NXP 88W8987 AEC-Q100 compliant chipset.
-                    It enables Wi-Fi, Bluetooth EDR, and Bluetooth low energy communications, and is
-                    thus ideal for in-vehicle infotainment and telematics, industrial applications
-                    such as machine control, and other applications requiring high data rates.
-                    The module is built to meet the requirements for operation in very high temperatures,
-                    such as telematics systems in cars. JODY-W2 supports 1x1 single-antenna 802.11ac
-                    Wi-Fi operation, with data rates up to 433 Mbit/s.
-
-                    Detailed information about Jody module you can find on
-                    https://www.u-blox.com/en/product/jody-w2-series
+                        Detailed information about K32W061 module you can find on
+                        https://www.nxp.com/part/K32W061
 
         endchoice
-    endif
 
-    if MCUX_COMPONENT_component.wifi_bt_module.IW416
-        choice IW416_MDOULE
-            prompt "Select NXP IW416 module"
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am457ma
-                bool "NXP IW416-AW-AM457MA-M2"
-                help
-                    Azurewave Type AM457MA is a small and high performance module based on
-                    NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
-                    Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
+        if MCUX_COMPONENT_component.wifi_bt_module.RW61X
+            choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.RW61X.selection
+                prompt "Select NXP RW61x board"
+                default MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x if MCUX_HW_BOARD_rdrw612bga
+                default MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x if MCUX_HW_BOARD_frdmrw612
+                config MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x
+                    bool "NXP RD-RW61x"
+                    help
+                        The RW612 is a highly integrated, low-power tri-radio wireless MCU with
+                        an integrated MCU and Wi-Fi® 6 + Bluetooth® Low Energy (LE) 5.4 / 802.15.4
+                        radios designed for a broad array of applications, including connected smart
+                        home devices, enterprise and industrial automation, smart accessories and
+                        smart energy.
 
-                    Detailed information about Type AW AM457MA module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
+                        Detailed information about RD-RW61x-BGA board you can find on
+                        https://www.nxp.com/part/RW612ET
+                        https://www.nxp.com/part/RW610ET
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am457_usd
-                bool "NXP IW416-AW-AM457-USD"
-                help
-                    Azurewave Type AM457 is a small and high performance module based on
-                    NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
-                    Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
+                config MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x
+                    bool "NXP FRDM-RW612"
+                    help
+                        FRDM-RW612 is a compact and scalable development board for rapid prototyping
+                        of the RW61x series of Wi-Fi 6 + Bluetooth Low Energy + 802.15.4 tri-radio
+                        wireless MCUs.
 
-                    Detailed information about Type AW AM457 module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
+                        Detailed information about FRDM-RW612 board you can find on
+                        https://www.nxp.com/part/FRDM-RW612
+            endchoice
+        endif
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510ma
-                bool "NXP IW416-AW-AM510-M2"
-                help
-                    Azurewave Type AM510 is a small and high performance module based on
-                    NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
-                    Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
+        if MCUX_COMPONENT_component.wifi_bt_module.88W8801
+            choice 88W8801_MODULE
+                prompt "Select NXP 88W8801 module"
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191ma
+                    bool "NXP AW-NM191MA-M2"
+                    help
+                        Azurewave Type NM191MA is a small high-performance module (integrated PCB
+                        antenna) based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
+                        up to 72.2 Mbps PHY data rate.
 
-                    Detailed information about Type AW AM457MA module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
+                        Detailed information about Murata Type AW NM191MA module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510_usd
-                bool "NXP IW416-AW-AM510-USD"
-                help
-                    Azurewave Type AM510 is a small and high performance module based on
-                    NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
-                    Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191_usd
+                    bool "NXP AW-NM191-USD"
+                    help
+                        Azurewave Type NM191 is a small high-performance module (integrated PCB
+                        antenna) based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
+                        up to 72.2 Mbps PHY data rate.
 
-                    Detailed information about Type AW AM510 module you can find on
-                    https://www.azurewave.com/wireless-modules-nxp.html
+                        Detailed information about Murata Type AW NM191 module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1xk_m2
-                bool "NXP IW416-MURATA-1XK-M2"
-                help
-                    Murata Type 1XK is a small and high performance module based on
-                    NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
-                    Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_m2
+                    bool "NXP MURATA-2DS-M2"
+                    help
+                        Murata Type 2DS is a small high-performance module (integrated PCB antenna)
+                        based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
+                        up to 72.2 Mbps PHY data rate.
 
-                    Detailed information about Type 1XK module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1xk
+                        Detailed information about Murata Type 2DS module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ds
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1xk_usd
-                bool "NXP IW416-MURATA-1XK-USD"
-                help
-                    Murata Type 1XK is a small and high performance module based on
-                    NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
-                    Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
-                    3Mbps PHY data rate on Bluetooth®.
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_usd
+                    bool "NXP MURATA-2DS-USD"
+                    help
+                        Murata Type 2DS is a small high-performance module (integrated PCB antenna)
+                        based on NXP 88W8801 chipset which supports Wi-Fi® 802.11b/g/n
+                        up to 72.2 Mbps PHY data rate.
 
-                    Detailed information about Type 1XK module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1xk
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
+                        Detailed information about Murata Type 2DS module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ds
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_maya_w1_usd
-                bool "NXP UBX-MAYA-W1-USD"
-                help
-                    The MAYA-W1 series are host-based Wi-Fi 4 and Bluetooth 5.2 multiradio
-                    modules designed for a wide range of industrial applications, such as
-                    industrial automation and smart manufacturing, EV charging infrastructures,
-                    professional appliances, tracking and telematics, point-of-sale and
-                    ticketing machines, building automation, and healthcare. The modules
-                    are designed and built to meet the high reliability and quality requirements
-                    of such applications.
+                config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_lily_w1_usd
+                    bool "NXP UBX-LILY-W1-USD"
+                    help
+                    https://www.u-blox.com/en/product/lily-w1-series
+            endchoice
+        endif
 
-                    Detailed information about Type MAYA W1 module you can find on
-                    https://www.u-blox.com/en/product/maya-w1-series
+        if MCUX_COMPONENT_component.wifi_bt_module.88W8987
+            choice 88W8987_MODULE
+                prompt "Select NXP 88W8987 module"
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_cm358ma
+                    bool "NXP AW-CM358MA-M2"
+                    help
+                        Azurewave Type CM358MA module based on NXP 88W8987 combo LGA chipset
+                        which supports which supports Wi-Fi® 802.11a/b/g/n/ac +
+                        Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-        endchoice
-    endif
+                        Detailed information about Murata Type AW CM358MA module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_cm358_usd
+                    bool "NXP AW-CM358-USD"
+                    help
+                        Azurewave Type CM358 module based on NXP 88W8987 combo LGA chipset
+                        which supports which supports Wi-Fi® 802.11a/b/g/n/ac +
+                        Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-    if MCUX_COMPONENT_component.wifi_bt_module.IW61X
-        choice IW61X_MDOULE
-            prompt "Select NXP IW61X module"
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2dl_m2
-                bool "NXP IW611-MURATA-2DL-M2"
-                help
-                    Murata Type 2DL is a small and very high performance module based on
-                    NXP IW611 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
-                    Bluetooth® 5.3 BR/EDR/LE up to 601Mbps PHY data rate on Wi-fi® and
-                    2Mbps PHY data rate on Bluetooth®.
+                        Detailed information about Azurewave Type AW CM358 module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1zm_m2
+                    bool "NXP MURATA-1ZM-M2"
+                    help
+                        Murata Type 1ZM is a small and very high performance module based on
+                        NXP 88W8987 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac +
+                        Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-                    Detailed information about Type 2DL module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2dl
+                        Detailed information about Murata Type 1ZM module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1zm
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1zm_usd
+                    bool "NXP MURATA-1ZM-USD"
+                    help
+                        Murata Type 1ZM is a small and very high performance module based on
+                        NXP 88W8987 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac +
+                        Bluetooth® 5.1 BR/EDR/LE up to 433Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2dl_usd
-                bool "NXP IW611-MURATA-2DL-USD"
-                help
-                    Murata Type 2DL is a small and very high performance module based on
-                    NXP IW611 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
-                    Bluetooth® 5.3 BR/EDR/LE up to 601Mbps PHY data rate on Wi-fi® and
-                    2Mbps PHY data rate on Bluetooth®.
+                        Detailed information about Murata Type 1ZM module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1zm
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
 
-                    Detailed information about Type 2DL module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2dl
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
+                config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w2_usd
+                    bool "NXP UBX-JODY-W2-USD"
+                    help
+                        JODY-W2 is a compact module based on the NXP 88W8987 AEC-Q100 compliant chipset.
+                        It enables Wi-Fi, Bluetooth EDR, and Bluetooth low energy communications, and is
+                        thus ideal for in-vehicle infotainment and telematics, industrial applications
+                        such as machine control, and other applications requiring high data rates.
+                        The module is built to meet the requirements for operation in very high temperatures,
+                        such as telematics systems in cars. JODY-W2 supports 1x1 single-antenna 802.11ac
+                        Wi-Fi operation, with data rates up to 433 Mbit/s.
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_m2
-                bool "NXP IW612-MURATA-2EL-M2"
-                help
-                    Murata Type 2EL is a small and very high performance module based on
-                    NXP IW612 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
-                    Bluetooth® 5.3 BR/EDR/LE + 802.15.4 up to 601Mbps PHY data rate on Wi-fi®
-                    and 2Mbps PHY data rate on Bluetooth®.
+                        Detailed information about Jody module you can find on
+                        https://www.u-blox.com/en/product/jody-w2-series
 
-                    Detailed information about Type 2EL module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2el
+            endchoice
+        endif
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_usd
-                bool "NXP IW612-MURATA-2EL-USD"
-                help
-                    Murata Type 2EL is a small and very high performance module based on
-                    NXP IW612 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
-                    Bluetooth® 5.3 BR/EDR/LE + 802.15.4 up to 601Mbps PHY data rate on Wi-fi®
-                    and 2Mbps PHY data rate on Bluetooth®.
+        if MCUX_COMPONENT_component.wifi_bt_module.IW416
+            choice IW416_MDOULE
+                prompt "Select NXP IW416 module"
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am457ma
+                    bool "NXP IW416-AW-AM457MA-M2"
+                    help
+                        Azurewave Type AM457MA is a small and high performance module based on
+                        NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
+                        Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-                    Detailed information about Type 2EL module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2el
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
+                        Detailed information about Type AW AM457MA module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ll_m2
-                bool "NXP IW610-MURATA-2LL-M2"
-                help
-                    Murata Type 2LL is a small and very high performance module based on NXP IW610G
-                    combo chipset which supports Wi-Fi™ 802.11a/b/g/n/ac/ax HE20 + Bluetooth®. 5.4
-                    Low Energy + 802.15.4 up to 114.7Mbps PHY data rate on Wi-Fi™ and 2Mbps PHY data
-                    rate on Bluetooth® Low Energy.
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am457_usd
+                    bool "NXP IW416-AW-AM457-USD"
+                    help
+                        Azurewave Type AM457 is a small and high performance module based on
+                        NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
+                        Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-                    Detailed information about Type 2EL module you can find on
-                    https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ll
+                        Detailed information about Type AW AM457 module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w5_m2
-                bool "NXP UBX-JODY-W5-M2"
-                help
-                    The M2-JODY-W5 card combines the maximum performance of the JODY-W5 Wi-Fi 6
-                    and Bluetooth 5.3 connectivity module with the flexibility and ease of use
-                    of a M.2 card. The card supports all features of the JODY-W5 series modules
-                    and is based on the NXP AW611 chipset. M2-JODY-W5 supports Wi‑Fi 6 dual-band
-                    single-stream at up to 600 Mbit/s data rate and dual-mode Bluetooth 5.3 Classic
-                    and LE including isochronous channels for LE Audio at up to 3 Mbit/s (LE 2 Mbit/s).
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510ma
+                    bool "NXP IW416-AW-AM510-M2"
+                    help
+                        Azurewave Type AM510 is a small and high performance module based on
+                        NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
+                        Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-                    Detailed information about Jody W5 module you can find on
-                    https://www.u-blox.com/en/product/m2-jody-w5-card
+                        Detailed information about Type AW AM457MA module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
 
-            config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w5_usd
-                bool "NXP UBX-JODY-W5-USD"
-                help
-                    JODY-W5 host-based modules for automotive applications provide Wi-Fi 6
-                    dual-band single-stream at up to 600 Mbit/s data rate and dual-mode
-                    Bluetooth 5.4 Classic and LE including isochronous channels for LE Audio
-                    at up to 3 Mbit/s (LE 2 Mbit/s).
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510_usd
+                    bool "NXP IW416-AW-AM510-USD"
+                    help
+                        Azurewave Type AM510 is a small and high performance module based on
+                        NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
+                        Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
 
-                    Detailed information about Jody W5 module you can find on
-                    https://www.u-blox.com/en/product/jody-w5-series
-        endchoice
+                        Detailed information about Type AW AM510 module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1xk_m2
+                    bool "NXP IW416-MURATA-1XK-M2"
+                    help
+                        Murata Type 1XK is a small and high performance module based on
+                        NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
+                        Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
+
+                        Detailed information about Type 1XK module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1xk
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1xk_usd
+                    bool "NXP IW416-MURATA-1XK-USD"
+                    help
+                        Murata Type 1XK is a small and high performance module based on
+                        NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
+                        Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
+
+                        Detailed information about Type 1XK module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type1xk
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_maya_w1_usd
+                    bool "NXP UBX-MAYA-W1-USD"
+                    help
+                        The MAYA-W1 series are host-based Wi-Fi 4 and Bluetooth 5.2 multiradio
+                        modules designed for a wide range of industrial applications, such as
+                        industrial automation and smart manufacturing, EV charging infrastructures,
+                        professional appliances, tracking and telematics, point-of-sale and
+                        ticketing machines, building automation, and healthcare. The modules
+                        are designed and built to meet the high reliability and quality requirements
+                        of such applications.
+
+                        Detailed information about Type MAYA W1 module you can find on
+                        https://www.u-blox.com/en/product/maya-w1-series
+
+            endchoice
+        endif
+
+        if MCUX_COMPONENT_component.wifi_bt_module.IW61X
+            choice IW61X_MDOULE
+                prompt "Select NXP IW61X module"
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2dl_m2
+                    bool "NXP IW611-MURATA-2DL-M2"
+                    help
+                        Murata Type 2DL is a small and very high performance module based on
+                        NXP IW611 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
+                        Bluetooth® 5.3 BR/EDR/LE up to 601Mbps PHY data rate on Wi-fi® and
+                        2Mbps PHY data rate on Bluetooth®.
+
+                        Detailed information about Type 2DL module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2dl
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2dl_usd
+                    bool "NXP IW611-MURATA-2DL-USD"
+                    help
+                        Murata Type 2DL is a small and very high performance module based on
+                        NXP IW611 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
+                        Bluetooth® 5.3 BR/EDR/LE up to 601Mbps PHY data rate on Wi-fi® and
+                        2Mbps PHY data rate on Bluetooth®.
+
+                        Detailed information about Type 2DL module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2dl
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_m2
+                    bool "NXP IW612-MURATA-2EL-M2"
+                    help
+                        Murata Type 2EL is a small and very high performance module based on
+                        NXP IW612 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
+                        Bluetooth® 5.3 BR/EDR/LE + 802.15.4 up to 601Mbps PHY data rate on Wi-fi®
+                        and 2Mbps PHY data rate on Bluetooth®.
+
+                        Detailed information about Type 2EL module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2el
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_usd
+                    bool "NXP IW612-MURATA-2EL-USD"
+                    help
+                        Murata Type 2EL is a small and very high performance module based on
+                        NXP IW612 combo chipset which supports Wi-Fi® 802.11a/b/g/n/ac/ax +
+                        Bluetooth® 5.3 BR/EDR/LE + 802.15.4 up to 601Mbps PHY data rate on Wi-fi®
+                        and 2Mbps PHY data rate on Bluetooth®.
+
+                        Detailed information about Type 2EL module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2el
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ll_m2
+                    bool "NXP IW610-MURATA-2LL-M2"
+                    help
+                        Murata Type 2LL is a small and very high performance module based on NXP IW610G
+                        combo chipset which supports Wi-Fi™ 802.11a/b/g/n/ac/ax HE20 + Bluetooth®. 5.4
+                        Low Energy + 802.15.4 up to 114.7Mbps PHY data rate on Wi-Fi™ and 2Mbps PHY data
+                        rate on Bluetooth® Low Energy.
+
+                        Detailed information about Type 2EL module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ll
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w5_m2
+                    bool "NXP UBX-JODY-W5-M2"
+                    help
+                        The M2-JODY-W5 card combines the maximum performance of the JODY-W5 Wi-Fi 6
+                        and Bluetooth 5.3 connectivity module with the flexibility and ease of use
+                        of a M.2 card. The card supports all features of the JODY-W5 series modules
+                        and is based on the NXP AW611 chipset. M2-JODY-W5 supports Wi‑Fi 6 dual-band
+                        single-stream at up to 600 Mbit/s data rate and dual-mode Bluetooth 5.3 Classic
+                        and LE including isochronous channels for LE Audio at up to 3 Mbit/s (LE 2 Mbit/s).
+
+                        Detailed information about Jody W5 module you can find on
+                        https://www.u-blox.com/en/product/m2-jody-w5-card
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w5_usd
+                    bool "NXP UBX-JODY-W5-USD"
+                    help
+                        JODY-W5 host-based modules for automotive applications provide Wi-Fi 6
+                        dual-band single-stream at up to 600 Mbit/s data rate and dual-mode
+                        Bluetooth 5.4 Classic and LE including isochronous channels for LE Audio
+                        at up to 3 Mbit/s (LE 2 Mbit/s).
+
+                        Detailed information about Jody W5 module you can find on
+                        https://www.u-blox.com/en/product/jody-w5-series
+            endchoice
+        endif
     endif
 
 endmenu
