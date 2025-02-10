@@ -96,7 +96,6 @@ menu "Component Configuration"
     menu "Power"
         rsource "pmic/Kconfig"
         rsource "power_manager/Kconfig"
-        rsource "power_manager_mcxw23/Kconfig"
     endmenu
 
     menu "I/O expander"
