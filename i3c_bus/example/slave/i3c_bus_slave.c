@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2023-2024 NXP
+ * Copyright 2020, 2023-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -15,21 +15,7 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#ifndef EXAMPLE_I2C_BAUDRATE
-#define EXAMPLE_I2C_BAUDRATE    400000U
-#endif
-#ifndef EXAMPLE_I3C_OD_BAUDRATE
-#define EXAMPLE_I3C_OD_BAUDRATE 2000000U
-#endif
-#ifndef EXAMPLE_I3C_PP_BAUDRATE
-#define EXAMPLE_I3C_PP_BAUDRATE 4000000U
-#endif
-#ifndef I3C_MASTER_SLAVE_ADDR_7BIT
 #define I3C_MASTER_SLAVE_ADDR_7BIT 0x1E
-#endif
-#ifndef EXAMPLE_EVENT_WAIT_DELAY_NS
-#define EXAMPLE_EVENT_WAIT_DELAY_NS 10000
-#endif
 
 /* Device 48-bit Provisioned ID. */
 #define I3C_NXP_VENDOR_ID              0x11BU
