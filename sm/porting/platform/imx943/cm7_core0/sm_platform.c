@@ -53,10 +53,12 @@ void SM_Platform_Init(void)
                    SCMI_LMM_NOTIFY_BOOT(1U) | SCMI_LMM_NOTIFY_SHUTDOWN(1U) | SCMI_LMM_NOTIFY_SUSPEND(1U) |
                        SCMI_LMM_NOTIFY_WAKE(1U));
 
+#if defined(SM_PLATFORM_RTC_NOTIFY) && SM_PLATFORM_RTC_NOTIFY
     /* Enable BBM notifications */
     SCMI_BbmRtcNotify(
         SM_PLATFORM_A2P, SM_PLATFORM_RTC_ID,
         SCMI_BBM_NOTIFY_RTC_UPDATED(1U) | SCMI_BBM_NOTIFY_RTC_ROLLOVER(1U) | SCMI_BBM_NOTIFY_RTC_ALARM(1U));
+#endif
     SCMI_BbmButtonNotify(SM_PLATFORM_A2P, SCMI_BBM_NOTIFY_BUTTON_DETECT(1U));
 
     /* Enable FuSa notifications */

@@ -63,6 +63,10 @@
 #define SM_PLATFORM_M33S_ID (CPU_IDX_M33P_S)
 #define SM_PLATFORM_M70_ID (CPU_IDX_M7P_0)
 #define SM_PLATFORM_M71_ID (CPU_IDX_M7P_1)
+
+#ifndef SM_PLATFORM_RTC_NOTIFY
+#define SM_PLATFORM_RTC_NOTIFY 0
+#endif
 /*******************************************************************************
  * API
  ******************************************************************************/

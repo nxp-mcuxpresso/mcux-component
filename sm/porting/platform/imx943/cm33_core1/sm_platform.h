@@ -96,6 +96,10 @@
 #define SM_POWER_PLATFORM_MIX_SLICE_IDX_NPU           17U
 #define SM_POWER_PLATFORM_MIX_SLICE_IDX_WAKEUP        18U
 
+#ifndef SM_PLATFORM_RTC_NOTIFY
+#define SM_PLATFORM_RTC_NOTIFY 0
+#endif
+
 /*******************************************************************************
  * API
  ******************************************************************************/
