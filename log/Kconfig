@@ -7,37 +7,33 @@ config MCUX_COMPONENT_component.log
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_utility.str
 
-if MCUX_COMPONENT_component.log
+    if MCUX_COMPONENT_component.log
+        config MCUX_COMPONENT_component.log.backend.debug_console
+            # depends on MCUX_COMPONENT_component.log.backend.debug_console
+            bool "log backend debug_console"
+            select MCUX_COMPONENT_driver.common
+            select MCUX_COMPONENT_utility.debug_console
 
-endif
-config MCUX_COMPONENT_component.log.backend.debug_console
-    # depends on MCUX_COMPONENT_component.log.backend.debug_console
-    bool "log backend debug_console"
-    select MCUX_COMPONENT_driver.common
-    select MCUX_COMPONENT_component.log
-    select MCUX_COMPONENT_utility.debug_console
+        if MCUX_COMPONENT_component.log.backend.debug_console
 
-if MCUX_COMPONENT_component.log.backend.debug_console
+        endif
 
-endif
+        config MCUX_COMPONENT_component.log.backend.debug_console_lite
+            # depends on MCUX_COMPONENT_component.log.backend.debug_console_lite
+            bool "log backend debug_console_lite"
+            select MCUX_COMPONENT_driver.common
+            select MCUX_COMPONENT_utility.debug_console_lite
 
-config MCUX_COMPONENT_component.log.backend.debug_console_lite
-    # depends on MCUX_COMPONENT_component.log.backend.debug_console_lite
-    bool "log backend debug_console_lite"
-    select MCUX_COMPONENT_driver.common
-    select MCUX_COMPONENT_component.log
-    select MCUX_COMPONENT_utility.debug_console_lite
+        if MCUX_COMPONENT_component.log.backend.debug_console_lite
 
-if MCUX_COMPONENT_component.log.backend.debug_console_lite
+        endif
 
-endif
+        config MCUX_COMPONENT_component.log.backend.ringbuffer
+            # depends on MCUX_COMPONENT_component.log.backend.ringbuffer
+            bool "log backend ringbuffer"
+            select MCUX_COMPONENT_driver.common
 
-config MCUX_COMPONENT_component.log.backend.ringbuffer
-    # depends on MCUX_COMPONENT_component.log.backend.ringbuffer
-    bool "log backend ringbuffer"
-    select MCUX_COMPONENT_driver.common
-    select MCUX_COMPONENT_component.log
+        if MCUX_COMPONENT_component.log.backend.ringbuffer
 
-if MCUX_COMPONENT_component.log.backend.ringbuffer
-
-endif
+        endif
+    endif

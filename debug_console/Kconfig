@@ -1,22 +1,6 @@
 # Copyright 2024 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-config MCUX_PRJSEG_utility.debug_console_transfer_non_blocking
-    bool "debug_console_transfer_non_blocking mode"
-    default n
-    help
-        If Non-blocking mode is needed, please define set CONFIG_MCUX_PRJSEG_utility.debug_console_transfer_non_blocking=y in prj.conf,
-        otherwise blocking mode is the default transfer mode.
-        Warning: If you want to use non-blocking transfer,please make sure the corresponding
-        IO interrupt is enable, otherwise there is no output.
-        And non-blocking is combine with buffer, no matter bare-metal or rtos.
-
-config MCUX_COMPONENT_utility.debug_console_template_config
-    bool "debug_console template configuration header file"
-    default n
-    help
-        Not generate fsl_debug_console_conf.h, users need use default template fsl_debug_console_conf.h.
-
 config MCUX_COMPONENT_utility.debug_console
     bool "debug_console"
     select MCUX_COMPONENT_driver.common
@@ -40,6 +24,23 @@ config MCUX_COMPONENT_utility.debug_console
         Note: When MCUX_COMPONENT_utility.debug_console is selected, you also need to ensure that MCUX_COMPONENT_utility.assert
              is selected, otherwise there will be a condition conflict warning.
 
+config MCUX_PRJSEG_utility.debug_console_transfer_non_blocking
+    bool "debug_console_transfer_non_blocking mode"
+    default n
+    depends on MCUX_COMPONENT_utility.debug_console
+    help
+        If Non-blocking mode is needed, please define set CONFIG_MCUX_PRJSEG_utility.debug_console_transfer_non_blocking=y in prj.conf,
+        otherwise blocking mode is the default transfer mode.
+        Warning: If you want to use non-blocking transfer,please make sure the corresponding
+        IO interrupt is enable, otherwise there is no output.
+        And non-blocking is combine with buffer, no matter bare-metal or rtos.
+
+config MCUX_COMPONENT_utility.debug_console_template_config
+    bool "debug_console template configuration header file"
+    default n
+    depends on MCUX_COMPONENT_utility.debug_console
+    help
+        Not generate fsl_debug_console_conf.h, users need use default template fsl_debug_console_conf.h.
 
 config MCUX_PRJSEG_utility.debug_console.generated_config
     bool "Generate debug_console configuration header"

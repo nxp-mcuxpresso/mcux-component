@@ -1,20 +1,22 @@
 # Copyright 2024 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-config MCUX_PRJSEG_component.serial_manager.generated_config
-    bool "Generate serial_manager configuration header"
-    default n
-    depends on MCUX_COMPONENT_component.serial_manager
-    help
-        Generate the config file; otherwise, users will need to provide their own configuration
-        in preinclude.h if they want to change the default values.
+
         
 config MCUX_COMPONENT_component.serial_manager
-    bool "Use component serial manager"
+    bool "serial manager"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_component.lists
 
     if MCUX_COMPONENT_component.serial_manager
+        config MCUX_PRJSEG_component.serial_manager.generated_config
+            bool "Generate serial_manager configuration header"
+            default n
+            depends on MCUX_COMPONENT_component.serial_manager
+            help
+                Generate the config file; otherwise, users will need to provide their own configuration
+                in preinclude.h if they want to change the default values.
+
         menu "serial manager config"
             config SERIAL_MANAGER_NON_BLOCKING_MODE
                 bool "SERIAL_MANAGER_NON_BLOCKING_MODE"
@@ -85,7 +87,7 @@ config MCUX_COMPONENT_component.serial_manager
 
 
 config MCUX_COMPONENT_component.serial_manager_uart
-    bool "Use component serial manager uart"
+    bool "serial manager uart"
 
     if MCUX_COMPONENT_component.serial_manager_uart
         choice MCUX_DEPENDENCY_COMPONENT_component.serial_manager_uart_DEPEND_COMPONENT_driver.selection
@@ -134,7 +136,7 @@ config MCUX_COMPONENT_component.serial_manager_uart
 
 config MCUX_COMPONENT_component.serial_manager_spi
     # depends on MCUX_COMPONENT_component.serial_manager
-    bool "Use component serial manager spi"
+    bool "serial manager spi"
 
     if MCUX_COMPONENT_component.serial_manager_spi
         choice MCUX_DEPENDENCY_COMPONENT_component.serial_manager_spi_DEPEND_COMPONENT_driver.selection
@@ -166,7 +168,7 @@ config MCUX_COMPONENT_component.serial_manager_spi
 
 config MCUX_COMPONENT_component.serial_manager_usb_cdc
     # depends on MCUX_COMPONENT_component.serial_manager
-    bool "Use component serial manager usb cdc"
+    bool "serial manager usb cdc"
     # select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_middleware.usb.common_header
     select MCUX_COMPONENT_middleware.usb.device.common_header
@@ -179,7 +181,7 @@ config MCUX_COMPONENT_component.serial_manager_usb_cdc
 
 config MCUX_COMPONENT_component.serial_manager_virtual
     # depends on MCUX_COMPONENT_component.serial_manager
-    bool "Use component serial manager virtual"
+    bool "serial manager virtual"
     # select MCUX_COMPONENT_driver.common
 
     if MCUX_COMPONENT_component.serial_manager_virtual
@@ -188,7 +190,7 @@ config MCUX_COMPONENT_component.serial_manager_virtual
 
 config MCUX_COMPONENT_component.serial_manager_swo
     # depends on MCUX_COMPONENT_component.serial_manager
-    bool "Use component serial manager swo"
+    bool "serial manager swo"
     # select MCUX_COMPONENT_driver.common
 
     if MCUX_COMPONENT_component.serial_manager_swo
@@ -197,7 +199,7 @@ config MCUX_COMPONENT_component.serial_manager_swo
 
 config MCUX_COMPONENT_component.serial_manager_rpmsg
     # depends on MCUX_COMPONENT_component.serial_manager
-    bool "Use component serial manager rpmsg"
+    bool "serial manager rpmsg"
     # select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_component.rpmsg_adapter
 
@@ -205,7 +207,7 @@ config MCUX_COMPONENT_component.serial_manager_rpmsg
     endif
 
 config MCUX_COMPONENT_component.serial_manager_ble_wu
-    bool "Use component serial manager ble_wu"
+    bool "serial manager ble_wu"
 
     if MCUX_COMPONENT_component.serial_manager_ble_wu
     endif
