@@ -35,7 +35,7 @@ void * _sbrk(ptrdiff_t incr)
 
     prev_heap_end = heap_end;
 
-    if ((&heap_limit) - heap_end > incr)
+    if ((&heap_limit) - heap_end < incr)
     {
         errno = ENOMEM;
 
