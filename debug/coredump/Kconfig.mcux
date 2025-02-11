@@ -4,6 +4,7 @@
 
 config MCUX_COMPONENT_component.debug_coredump
 	bool
+	select MCUX_COMPONENT_component.zephyr_headers.debug_coredump
 
 config MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
 	bool
