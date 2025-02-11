@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.flash_adapter
-    bool "Enable component.flash_adapter"
+    bool "flash_adapter"
     default n
     help
         Enable component.flash_adapter component
@@ -78,7 +78,7 @@ config MCUX_COMPONENT_component.flash_adapter
     endif
     
 config MCUX_COMPONENT_component.Legacy_flash_adapter
-    bool "Enable component.Legacy_flash_adapter"
+    bool "Legacy_flash_adapter"
     default n
     help
         Enable component.Legacy_flash_adapter component
@@ -86,7 +86,7 @@ config MCUX_COMPONENT_component.Legacy_flash_adapter
     depends on MCUX_HAS_COMPONENT_driver.flash
     
 config MCUX_COMPONENT_component.JNflash_adapter
-    bool "Enable component.JNflash_adapter"
+    bool "JNflash_adapter"
     default n
     help
         Enable component.JNflash_adapter component
@@ -95,7 +95,7 @@ config MCUX_COMPONENT_component.JNflash_adapter
     
     
 config MCUX_COMPONENT_component.flashiap_adapter
-    bool "Enable component.flashiap_adapter"
+    bool "flashiap_adapter"
     default n
     help
         Enable component.flashiap_adapter component
@@ -103,7 +103,7 @@ config MCUX_COMPONENT_component.flashiap_adapter
     depends on MCUX_HAS_COMPONENT_driver.flashiap
     
 config MCUX_COMPONENT_component.k4_flash_adapter
-    bool "Enable component.k4_flash_adapter"
+    bool "k4_flash_adapter"
     default n
     help
         Enable component.k4_flash_adapter component
@@ -123,7 +123,7 @@ config MCUX_COMPONENT_component.k4_flash_adapter
     endif   
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1060
-    bool "Enable component.flexspi_nor_flash_adapter_rt1060"
+    bool "flexspi_nor_flash_adapter_rt1060"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt1060 component
@@ -132,7 +132,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1060
     
     
 config MCUX_COMPONENT_component.mcxw_flash_adapter
-    bool "Enable component.mcxw_flash_adapter"
+    bool "mcxw_flash_adapter"
     default n
     help
         Enable component.mcxw_flash_adapter component
@@ -141,7 +141,7 @@ config MCUX_COMPONENT_component.mcxw_flash_adapter
     
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1060evkb
-    bool "Enable component.flexspi_nor_flash_adapter_rt1060evkb"
+    bool "flexspi_nor_flash_adapter_rt1060evkb"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt1060evkb component
@@ -149,7 +149,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1060evkb
     depends on MCUX_HW_BOARD_evkbmimxrt1060    
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1170
-    bool "Enable component.flexspi_nor_flash_adapter_rt1170"
+    bool "flexspi_nor_flash_adapter_rt1170"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt1170 component
@@ -157,7 +157,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1170
     depends on MCUX_HW_BOARD_evkmimxrt1170      
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1170evkb
-    bool "Enable component.flexspi_nor_flash_adapter_rt1170evkb"
+    bool "flexspi_nor_flash_adapter_rt1170evkb"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt1170evkb component
@@ -165,7 +165,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1170evkb
     depends on MCUX_HW_BOARD_evkbmimxrt1170     
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt685evk
-    bool "Enable component.flexspi_nor_flash_adapter_rt685evk"
+    bool "flexspi_nor_flash_adapter_rt685evk"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt685evk component
@@ -173,7 +173,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt685evk
     depends on MCUX_HW_BOARD_evkmimxrt685
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt595evk
-    bool "Enable component.flexspi_nor_flash_adapter_rt595evk"
+    bool "flexspi_nor_flash_adapter_rt595evk"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt595evk component
@@ -181,7 +181,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt595evk
     depends on MCUX_HW_BOARD_evkmimxrt595    
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1040evk
-    bool "Enable component.flexspi_nor_flash_adapter_rt1040evk"
+    bool "flexspi_nor_flash_adapter_rt1040evk"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt1040evk component
@@ -189,7 +189,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1040evk
     depends on MCUX_HW_BOARD_evkmimxrt1040    
     
 config MCUX_COMPONENT_component.flexspi_hyper_flash_adapter_rt1050
-    bool "Enable component.flexspi_hyper_flash_adapter_rt1050"
+    bool "flexspi_hyper_flash_adapter_rt1050"
     default n
     help
         Enable component.flexspi_hyper_flash_adapter_rt1050 component
@@ -197,7 +197,7 @@ config MCUX_COMPONENT_component.flexspi_hyper_flash_adapter_rt1050
     depends on MCUX_HW_BOARD_evkmimxrt1050    
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rw61x
-    bool "Enable component.flexspi_nor_flash_adapter_rw61x"
+    bool "flexspi_nor_flash_adapter_rw61x"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rw61x component
@@ -205,7 +205,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rw61x
     depends on MCUX_HW_DEVICE_RW610 || MCUX_HW_DEVICE_RW612    
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1020
-    bool "Enable component.flexspi_nor_flash_adapter_rt1020"
+    bool "flexspi_nor_flash_adapter_rt1020"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt1020 component
@@ -213,7 +213,7 @@ config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1020
     depends on MCUX_HW_BOARD_evkmimxrt1020      
     
 config MCUX_COMPONENT_component.flexspi_nor_flash_adapter_rt1160
-    bool "Enable component.flexspi_nor_flash_adapter_rt1160"
+    bool "flexspi_nor_flash_adapter_rt1160"
     default n
     help
         Enable component.flexspi_nor_flash_adapter_rt1160 component

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.button
-    bool "Enable component.button"
+    bool "button"
     default n
     help
         Enable component.button component
