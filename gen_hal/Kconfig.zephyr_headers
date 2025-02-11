@@ -1,0 +1,72 @@
+
+config MCUX_COMPONENT_component.zephyr_headers.toolchain
+    bool
+
+
+config MCUX_COMPONENT_component.zephyr_headers.linkers
+    bool
+
+config MCUX_COMPONENT_component.zephyr_headers.types
+    bool
+
+config MCUX_COMPONENT_component.zephyr_headers.assert
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.toolchain
+
+config MCUX_COMPONENT_component.zephyr_headers.sys_until
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.assert
+    select MCUX_COMPONENT_component.zephyr_headers.types
+
+config MCUX_COMPONENT_component.zephyr_headers.sys_byteorder
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.assert
+    select MCUX_COMPONENT_component.zephyr_headers.types
+
+config MCUX_COMPONENT_component.zephyr_headers.arch
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.toolchain
+    select MCUX_COMPONENT_component.zephyr_headers.types
+    select MCUX_COMPONENT_component.zephyr_headers.sys_until
+
+config MCUX_COMPONENT_component.zephyr_headers.atomic
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.sys_until
+    select MCUX_COMPONENT_component.zephyr_headers.toolchain
+    select MCUX_COMPONENT_component.zephyr_headers.types
+
+config MCUX_COMPONENT_component.zephyr_headers.logging
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.atomic
+    select MCUX_COMPONENT_component.zephyr_headers.assert
+    select MCUX_COMPONENT_component.zephyr_headers.toolchain
+    select MCUX_COMPONENT_component.zephyr_headers.sys_until
+
+config MCUX_COMPONENT_component.zephyr_headers.kernel
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.arch
+    select MCUX_COMPONENT_component.zephyr_headers.toolchain
+    select MCUX_COMPONENT_component.zephyr_headers.types
+    select MCUX_COMPONENT_component.zephyr_headers.assert
+    select MCUX_COMPONENT_component.zephyr_headers.sys_until
+    select MCUX_COMPONENT_component.zephyr_headers.linkers
+    select MCUX_COMPONENT_component.zephyr_headers.atomic
+
+config MCUX_COMPONENT_component.zephyr_headers.device
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.sys_until
+    select MCUX_COMPONENT_component.zephyr_headers.linkers
+    select MCUX_COMPONENT_component.zephyr_headers.logging
+
+config MCUX_COMPONENT_component.zephyr_headers.debug_coredump
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.sys_byteorder
+    select MCUX_COMPONENT_component.zephyr_headers.arch
+
+config MCUX_COMPONENT_component.zephyr_headers.storage_flash_map
+    bool
+    select MCUX_COMPONENT_component.zephyr_headers.types
+    select MCUX_COMPONENT_component.zephyr_headers.device
+
+config MCUX_COMPONENT_component.zephyr_headers.storage_stream_flash
+    bool

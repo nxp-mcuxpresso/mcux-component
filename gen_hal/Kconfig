@@ -1,23 +1,27 @@
 # Copyright 2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-config MCUX_COMPONENT_component.gen_hal_headers
+config MCUX_COMPONENT_component.zephyr_headers
 	bool "Zephyr Headers"
 	help
 	  Zephyr Headers Adapted to the SDK Environment
 
 menuconfig MCUX_COMPONENT_component.gen_hal
     bool "Generic HAL"
-	select MCUX_COMPONENT_component.gen_hal_headers
+	select MCUX_COMPONENT_component.zephyr_headers
     help
       Generic HAL based on Zephyr
 
 if MCUX_COMPONENT_component.gen_hal
-	rsource "Kconfig.map"
 	rsource "zephyr/drivers/flash/Kconfig"
 	rsource "zephyr/drivers/memc/Kconfig"
 	rsource "zephyr/drivers/pinctrl/Kconfig"
 	rsource "zephyr/drivers/clock_control/Kconfig"
 	osource "components/gen_hal/_boards/${board}/Kconfig"
 	osource "components/gen_hal/devices/${soc_portfolio}/${soc_series}/Kconfig"
+endif
+
+if MCUX_COMPONENT_component.zephyr_headers
+	rsource "Kconfig.zephyr_headers"
+	rsource "Kconfig.map"
 endif

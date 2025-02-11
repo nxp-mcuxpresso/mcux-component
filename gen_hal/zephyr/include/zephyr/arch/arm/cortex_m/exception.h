@@ -12,7 +12,7 @@
 #ifndef ZEPHYR_INCLUDE_ARCH_ARM_CORTEX_M_EXCEPTION_H_
 #define ZEPHYR_INCLUDE_ARCH_ARM_CORTEX_M_EXCEPTION_H_
 
-#include <zephyr/devicetree.h>
+//#include <zephyr/devicetree.h>
 
 #include <zephyr/arch/arm/cortex_m/nvic.h>
 
