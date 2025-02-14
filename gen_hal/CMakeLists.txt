@@ -24,7 +24,6 @@ if (CONFIG_MCUX_COMPONENT_component.gen_hal)
                 ./zephyr/misc
                 ./sdk_integ
                 ./
-                ./zephyr/include/zephyr
     )
 endif()
 
@@ -58,7 +57,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.device)
                  ./zephyr/misc
                  ./sdk_integ
                  ./
-                 ./zephyr/include/zephyr
     )
 endif()
 
