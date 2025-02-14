@@ -211,6 +211,19 @@ if (CONFIG_MCUX_COMPONENT_driver.dc-fb-lcdifv3)
 
 endif()
 
+if (CONFIG_MCUX_COMPONENT_driver.dc-fb-dcif)
+
+    mcux_add_source(
+        SOURCES display/dc/dcif/fsl_dc_fb_dcif.h
+                display/dc/dcif/fsl_dc_fb_dcif.c
+    )
+
+    mcux_add_include(
+        INCLUDES ./display/dc/dcif
+    )
+
+endif()
+
 if (CONFIG_MCUX_COMPONENT_driver.dc-fb-dbi)
 
     mcux_add_source(

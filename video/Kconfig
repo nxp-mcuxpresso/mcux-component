@@ -107,6 +107,13 @@ config MCUX_COMPONENT_driver.dc-fb-lcdifv3
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
+config MCUX_COMPONENT_driver.dc-fb-dcif
+    bool "Use display controller frame buffer adapter for dcif"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_driver.dcif
+    select MCUX_COMPONENT_driver.display-common
+    select MCUX_COMPONENT_driver.dc-fb-common
+
 config MCUX_COMPONENT_driver.dc-fb-dbi
     bool "DBI bus"
     select MCUX_COMPONENT_driver.common
