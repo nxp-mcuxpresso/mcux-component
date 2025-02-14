@@ -32,8 +32,6 @@
 #include <zephyr/kernel_structs.h>
 #include <zephyr/kernel_version.h>
 #include <zephyr/syscall.h>
-
-#ifdef __ZEPHYR__
 #include <zephyr/sys/printk.h>
 #include <zephyr/arch/cpu.h>
 #include <zephyr/sys/rb.h>
@@ -47,13 +45,5 @@
 #include <zephyr/kernel/thread.h>
 /* FIXME This needs to be removed. Exposes some private APIs to SOF */
 #include <zephyr/kernel/internal/smp.h>
-
-#else /* !__ZEPHYR__ */
-
-#include <zephyr/arch/cpu.h>
-#include <zephyr/sys_clock.h>
-#include <zephyr/irq.h>
-#include <zephyr/sys/kobject.h>
-#endif /* __ZEPHYR__ */
 
 #endif /* ZEPHYR_INCLUDE_KERNEL_INCLUDES_H_ */

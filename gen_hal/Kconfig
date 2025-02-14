@@ -22,6 +22,12 @@ if MCUX_COMPONENT_component.gen_hal
 endif
 
 if MCUX_COMPONENT_component.zephyr_headers
-	rsource "Kconfig.zephyr_headers"
 	rsource "Kconfig.map"
+	rsource "Kconfig.zephyr_headers"
 endif
+
+config MCUX_COMPONENT_component.gen_hal.osa
+	bool "OSA to support Zephyr Kernel related features"
+	select MCUX_COMPONENT_component.zephyr_headers.kernel
+	help
+		OSA to support Zephyr kernel features such as thread.

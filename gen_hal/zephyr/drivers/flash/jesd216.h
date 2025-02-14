@@ -7,11 +7,7 @@
 #ifndef ZEPHYR_DRIVERS_FLASH_JESD216_H_
 #define ZEPHYR_DRIVERS_FLASH_JESD216_H_
 
-#ifdef __ZEPHYR__
 #include <errno.h>
-#else
-#include <zephyr/errno.h>
-#endif
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/types.h>

@@ -313,5 +313,7 @@ do {                                                                    \
 
 #define FUNC_NO_STACK_PROTECTOR
 
+#define __asm__ __asm          
+          
 #endif /* !_LINKER */
 #endif /* ZEPHYR_INCLUDE_TOOLCHAIN_IAR_H_ */

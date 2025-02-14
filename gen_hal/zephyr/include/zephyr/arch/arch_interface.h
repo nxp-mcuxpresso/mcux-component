@@ -32,9 +32,7 @@
 #include <stddef.h>
 #include <zephyr/types.h>
 #include <zephyr/arch/cpu.h>
-#ifdef __ZEPHYR__
 #include <zephyr/irq_offload.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -266,22 +264,14 @@ bool arch_cpu_active(int cpu_num);
  *
  * @see irq_lock()
  */
-#ifdef __ZEPHYR__
 static inline unsigned int arch_irq_lock(void);
-#else /* !__ZEPHYR__ */
-unsigned int arch_irq_lock(void);
-#endif /* __ZEPHYR__ */
 
 /**
  * Unlock interrupts on the current CPU
  *
  * @see irq_unlock()
  */
-#ifdef __ZEPHYR__
 static inline void arch_irq_unlock(unsigned int key);
-#else /* !__ZEPHYR__ */
-unsigned int arch_irq_unlock(unsigned int key);
-#endif /* __ZEPHYR__ */
 
 /**
  * Test if calling arch_irq_unlock() with this key would unlock irqs

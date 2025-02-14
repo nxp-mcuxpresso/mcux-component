@@ -5,11 +5,7 @@
  */
 
 #define DT_DRV_COMPAT nxp_lpc_syscon
-#ifdef __ZEPHYR__
 #include <errno.h>
-#else
-#include <zephyr/errno.h>
-#endif
 #include <zephyr/drivers/clock_control.h>
 #include <zephyr/dt-bindings/clock/mcux_lpc_syscon_clock.h>
 #include <soc.h>

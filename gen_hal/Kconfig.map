@@ -1,6 +1,38 @@
 # Copyright 2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
+menu "Configuration (ZephyrMap_Gen.h)"
 
-rsource "Kconfig.arch_map"
-rsource "Kconfig.mcux_map"
+	rsource "Kconfig.arch_map"
+	rsource "Kconfig.mcux_map"
+	rsource "Kconfig.osa_map"
+
+
+	config CBPRINTF_PACKAGE_LONGDOUBLE
+		bool "Support packaging of long doubles"
+		help
+		Option impact required alignment for buffers used for packaging
+		(CBPRINTF_PACKAGE_ALIGNMENT). On most platforms long doubles
+		requires buffer to be 16 bytes aligned. Long doubles are rarely used
+		so such alignment is an unnecessary waste. If option is disabled,
+		then compilation fails if long double is used.
+
+	config MP_MAX_NUM_CPUS
+		int
+		default 1
+
+	config SYS_CLOCK_TICKS_PER_SEC
+		int
+		default 100
+
+	config SYS_CLOCK_MAX_TIMEOUT_DAYS
+		int "Max timeout (in days) used in conversions"
+		default 365
+		help
+		Value is used in the time conversion static inline function to determine
+		at compile time which algorithm to use. One algorithm is faster, takes
+		less code but may overflow if multiplication of source and target
+		frequency exceeds 64 bits. Second algorithm prevents that. Faster
+		algorithm is selected for conversion if maximum timeout represented in
+		source frequency domain multiplied by target frequency fits in 64 bits.
+endmenu

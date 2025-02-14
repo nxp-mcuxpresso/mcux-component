@@ -1,0 +1,82 @@
+config MULTITHREADING
+	bool
+	help
+	  If disabled, only the main thread is available, so a main() function
+	  must be provided. Interrupts are available. Kernel objects will most
+	  probably not behave as expected, especially with regards to pending,
+	  since the main thread cannot pend, it being the only thread in the
+	  system.
+
+	  Many drivers and subsystems will not work with this option
+	  set to 'n'; disable only when you REALLY know what you are
+	  doing.
+
+config NUM_COOP_PRIORITIES
+	int "Number of coop priorities" if MULTITHREADING
+	default 1 if !MULTITHREADING
+	default 16
+	range 0 128
+	help
+	  Number of cooperative priorities configured in the system. Gives access
+	  to priorities:
+
+		K_PRIO_COOP(0) to K_PRIO_COOP(CONFIG_NUM_COOP_PRIORITIES - 1)
+
+	  or seen another way, priorities:
+
+		-CONFIG_NUM_COOP_PRIORITIES to -1
+
+	  This can be set to zero to disable cooperative scheduling. Cooperative
+	  threads always preempt preemptible threads.
+
+	  The total number of priorities is
+
+	   NUM_COOP_PRIORITIES + NUM_PREEMPT_PRIORITIES + 1
+
+	  The extra one is for the idle thread, which must run at the lowest
+	  priority, and be the only thread at that priority.
+
+config NUM_PREEMPT_PRIORITIES
+	int "Number of preemptible priorities" if MULTITHREADING
+	default 0 if !MULTITHREADING
+	default 15
+	range 0 128
+	help
+	  Number of preemptible priorities available in the system. Gives access
+	  to priorities 0 to CONFIG_NUM_PREEMPT_PRIORITIES - 1.
+
+	  This can be set to 0 to disable preemptible scheduling.
+
+	  The total number of priorities is
+
+	   NUM_COOP_PRIORITIES + NUM_PREEMPT_PRIORITIES + 1
+
+	  The extra one is for the idle thread, which must run at the lowest
+	  priority, and be the only thread at that priority.
+
+config THREAD_STACK_INFO
+	bool "Thread stack info"
+	help
+	  This option allows each thread to store the thread stack info into zephyr k_thread data
+	  structure.
+
+config THREAD_MONITOR
+	bool "Thread Monitoring"
+	help
+	  This option instructs the kernel to maintain a list of all threads.
+
+config THREAD_NAME
+	bool "Thread name"
+	help
+	  This option allows to set as name for a thread.
+
+config THREAD_MAX_NAME_LEN
+	string "Max length of a thread name"
+	default "configMAX_TASK_NAME_LEN" if MCUX_COMPONENT_middleware.freertos-kernel
+
+config ISR_STACK_SIZE
+	int "ISR and initialization stack size (in bytes)"
+	default 0
+	help
+	  This option specifies the size of the stack used by interrupt
+	  service routines (ISRs), and during kernel initialization.

@@ -7,9 +7,6 @@
 #ifndef ZEPHYR_INCLUDE_ARCH_ARM_ARCH_INLINES_H
 #define ZEPHYR_INCLUDE_ARCH_ARM_ARCH_INLINES_H
 
-
-#ifdef __ZEPHYR__
-
 #include <zephyr/kernel_structs.h>
 #if defined(CONFIG_CPU_AARCH32_CORTEX_R) || defined(CONFIG_CPU_AARCH32_CORTEX_A)
 #include <zephyr/arch/arm/cortex_a_r/lib_helpers.h>
@@ -43,7 +40,5 @@ static ALWAYS_INLINE unsigned int arch_num_cpus(void)
 {
 	return CONFIG_MP_MAX_NUM_CPUS;
 }
-
-#endif
 
 #endif /* ZEPHYR_INCLUDE_ARCH_ARM_ARCH_INLINES_H */

@@ -21,6 +21,10 @@ config ARCH_SUPPORTS_COREDUMP
     bool
     default y if ARM
 
+config ARCH_SUPPORTS_COREDUMP_THREADS
+	bool
+	default y if ARM
+
 config CPU_CORTEX_M
     bool
     help

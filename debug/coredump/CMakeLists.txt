@@ -43,5 +43,13 @@ if (CONFIG_MCUX_COMPONENT_component.debug_coredump_backend.mflash)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.debug_thread_info)
+    mcux_component_version(1.0.0)
+    
+    mcux_add_source(
+        BASE_PATH ${SdkRootDirPath}/components/debug/coredump
+        SOURCES
+            ./thread_info.c
+    )
 
-
+endif()

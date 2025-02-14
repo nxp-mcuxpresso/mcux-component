@@ -13,7 +13,6 @@
 #ifndef ZEPHYR_INCLUDE_KERNEL_H_
 #define ZEPHYR_INCLUDE_KERNEL_H_
 
-#ifdef __ZEPHYR__
 #if !defined(_ASMLANGUAGE)
 #include <zephyr/kernel_includes.h>
 #include <errno.h>
@@ -3328,7 +3327,7 @@ static inline unsigned int z_impl_k_sem_count_get(struct k_sem *sem)
 	BUILD_ASSERT(((count_limit) != 0) && \
 		     ((initial_count) <= (count_limit)) && \
 			 ((count_limit) <= K_SEM_MAX_LIMIT));
-                         
+
 /** @} */
 
 /**
@@ -6251,173 +6250,5 @@ void k_sys_runtime_stats_disable(void);
 #include <zephyr/syscalls/kernel.h>
 
 #endif /* !_ASMLANGUAGE */
-
-#else
-#include <zephyr/kernel_includes.h>
-
-/**
- * @brief Generate null timeout delay.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * not to wait if the requested operation cannot be performed immediately.
- *
- * @return Timeout delay value.
- */
-#define K_NO_WAIT Z_TIMEOUT_NO_WAIT
-
-/**
- * @brief Generate timeout delay from nanoseconds.
- *
- * This macro generates a timeout delay that instructs a kernel API to
- * wait up to @a t nanoseconds to perform the requested operation.
- * Note that timer precision is limited to the tick rate, not the
- * requested value.
- *
- * @param t Duration in nanoseconds.
- *
- * @return Timeout delay value.
- */
-#define K_NSEC(t)     Z_TIMEOUT_NS(t)
-
-/**
- * @brief Generate timeout delay from microseconds.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * to wait up to @a t microseconds to perform the requested operation.
- * Note that timer precision is limited to the tick rate, not the
- * requested value.
- *
- * @param t Duration in microseconds.
- *
- * @return Timeout delay value.
- */
-#define K_USEC(t)     Z_TIMEOUT_US(t)
-
-/**
- * @brief Generate timeout delay from cycles.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * to wait up to @a t cycles to perform the requested operation.
- *
- * @param t Duration in cycles.
- *
- * @return Timeout delay value.
- */
-#define K_CYC(t)     Z_TIMEOUT_CYC(t)
-
-/**
- * @brief Generate timeout delay from system ticks.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * to wait up to @a t ticks to perform the requested operation.
- *
- * @param t Duration in system ticks.
- *
- * @return Timeout delay value.
- */
-#define K_TICKS(t)     Z_TIMEOUT_TICKS(t)
-
-/**
- * @brief Generate timeout delay from milliseconds.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * to wait up to @a ms milliseconds to perform the requested operation.
- *
- * @param ms Duration in milliseconds.
- *
- * @return Timeout delay value.
- */
-#define K_MSEC(ms)     Z_TIMEOUT_MS(ms)
-
-/**
- * @brief Generate timeout delay from seconds.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * to wait up to @a s seconds to perform the requested operation.
- *
- * @param s Duration in seconds.
- *
- * @return Timeout delay value.
- */
-#define K_SECONDS(s)   K_MSEC((s) * MSEC_PER_SEC)
-
-/**
- * @brief Generate timeout delay from minutes.
-
- * This macro generates a timeout delay that instructs a kernel API
- * to wait up to @a m minutes to perform the requested operation.
- *
- * @param m Duration in minutes.
- *
- * @return Timeout delay value.
- */
-#define K_MINUTES(m)   K_SECONDS((m) * 60)
-
-/**
- * @brief Generate timeout delay from hours.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * to wait up to @a h hours to perform the requested operation.
- *
- * @param h Duration in hours.
- *
- * @return Timeout delay value.
- */
-#define K_HOURS(h)     K_MINUTES((h) * 60)
-
-/**
- * @brief Generate infinite timeout delay.
- *
- * This macro generates a timeout delay that instructs a kernel API
- * to wait as long as necessary to perform the requested operation.
- *
- * @return Timeout delay value.
- */
-#define K_FOREVER Z_FOREVER
-
-/**
- * @brief Maximum limit value allowed for a semaphore.
- *
- * This is intended for use when a semaphore does not have
- * an explicit maximum limit, and instead is just used for
- * counting purposes.
- *
- */
-#define K_SEM_MAX_LIMIT UINT_MAX
-
-struct k_sem
-{
-	unsigned int count;
-	unsigned int limit;
-};
-
-#define Z_SEM_INITIALIZER(obj, initial_count, count_limit) \
-	{ \
-	.count = (initial_count), \
-	.limit = (count_limit), \
-	}
-
-#define K_SEM_DEFINE(name, initial_count, count_limit) \
-	STRUCT_SECTION_ITERABLE(k_sem, name) = \
-		Z_SEM_INITIALIZER(name, initial_count, count_limit); \
-	BUILD_ASSERT(((count_limit) != 0) && \
-		     ((initial_count) <= (count_limit)) && \
-			 ((count_limit) <= K_SEM_MAX_LIMIT));
-__syscall int k_sem_take(struct k_sem *sem, k_timeout_t timeout)
-{
-	(void)sem;
-	(void)timeout;
-        
-        return 0;
-}
-
-__syscall void k_sem_give(struct k_sem *sem)
-{
-	(void)sem;
-}
-
-bool k_is_in_isr(void);
-
-#endif
 
 #endif /* ZEPHYR_INCLUDE_KERNEL_H_ */

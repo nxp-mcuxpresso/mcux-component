@@ -20,18 +20,6 @@
 #ifndef ZEPHYR_KERNEL_INCLUDE_KERNEL_STRUCTS_H_
 #define ZEPHYR_KERNEL_INCLUDE_KERNEL_STRUCTS_H_
 
-
-#ifndef __ZEPHYR__
-
-struct _cpu {
-	/* nested interrupt count */
-	uint32_t nested;
-};
-
-typedef struct _cpu _cpu_t;
-
-#else /* !__ZEPHYR__ */
-
 #if !defined(_ASMLANGUAGE)
 #include <zephyr/sys/atomic.h>
 #include <zephyr/types.h>
@@ -318,13 +306,10 @@ struct _timeout {
 
 typedef void (*k_thread_timeslice_fn_t)(struct k_thread *thread, void *data);
 
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* _ASMLANGUAGE */
-
-#endif /* __ZEPHYR__ */
 
 #endif /* ZEPHYR_KERNEL_INCLUDE_KERNEL_STRUCTS_H_ */

@@ -5,11 +5,7 @@
  */
 
 
-#ifdef __ZEPHYR__
 #include <errno.h>
-#else
-#include <zephyr/errno.h>
-#endif
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>

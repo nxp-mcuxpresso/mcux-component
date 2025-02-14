@@ -4,12 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifdef __ZEPHYR__
 #include <errno.h>
-#else
-#include <zephyr/errno.h>
-#endif
-
 #include <zephyr/drivers/flash.h>
 
 static int flash_get_page_info(const struct device *dev, off_t offs,

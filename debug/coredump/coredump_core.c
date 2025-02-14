@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2020 Intel Corporation.
+ * Copyright 2025 NXP
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -7,6 +8,8 @@
 #include <errno.h>
 #ifdef __ZEPHYR__
 #include <kernel_internal.h>
+#else
+#include <zephyr/kernel.h>
 #endif
 #include <zephyr/toolchain.h>
 #include <zephyr/debug/coredump.h>

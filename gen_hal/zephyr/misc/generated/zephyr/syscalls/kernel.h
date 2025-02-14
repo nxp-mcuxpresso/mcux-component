@@ -818,22 +818,22 @@ static inline int k_float_enable(struct k_thread * thread, unsigned int options)
 }
 
 
-extern int z_impl_k_sem_take(struct k_sem * sem, k_timeout_t timeout);
-
-__pinned_func
-static inline int k_sem_take(struct k_sem * sem, k_timeout_t timeout)
-{
-	return z_impl_k_sem_take(sem, timeout);
-}
-
-
-extern void z_impl_k_sem_give(struct k_sem * sem);
-
-__pinned_func
-static inline void k_sem_give(struct k_sem * sem)
-{
-	z_impl_k_sem_give(sem);
-}
+//extern int z_impl_k_sem_take(struct k_sem * sem, k_timeout_t timeout);
+//
+//__pinned_func
+//static inline int k_sem_take(struct k_sem * sem, k_timeout_t timeout)
+//{
+//	return z_impl_k_sem_take(sem, timeout);
+//}
+//
+//
+//extern void z_impl_k_sem_give(struct k_sem * sem);
+//
+//__pinned_func
+//static inline void k_sem_give(struct k_sem * sem)
+//{
+//	z_impl_k_sem_give(sem);
+//}
 
 
 #ifdef __cplusplus

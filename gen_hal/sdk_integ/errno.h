@@ -18,23 +18,23 @@ extern "C" {
 #endif
 
 #ifndef EIO
-#define EIO     5
+#define EIO 5
 #endif
 
 #ifndef ENOMEM
-#define ENOMEM  12
+#define ENOMEM 12
 #endif
 
 #ifndef EACCES
-#define EACCES  13
+#define EACCES 13
 #endif
 
 #ifndef EFAULT
-#define EFAULT  14
+#define EFAULT 14
 #endif
 
 #ifndef ENODEV
-#define ENODEV  19
+#define ENODEV 19
 #endif
 
 #ifndef EINVAL
@@ -42,7 +42,7 @@ extern "C" {
 #endif
 
 #ifndef ENOSYS
-#define ENOSYS  88
+#define ENOSYS 88
 #endif
 
 #ifndef ENOBUFS
@@ -51,6 +51,10 @@ extern "C" {
 
 #ifndef ENOTSUP
 #define ENOTSUP 134
+#endif
+
+#ifndef EBUSY
+#define EBUSY 16
 #endif
 
 #ifdef __cplusplus

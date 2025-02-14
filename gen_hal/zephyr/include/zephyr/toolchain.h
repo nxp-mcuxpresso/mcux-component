@@ -15,6 +15,10 @@
 #ifndef ZEPHYR_INCLUDE_TOOLCHAIN_H_
 #define ZEPHYR_INCLUDE_TOOLCHAIN_H_
 
+#if !defined(__ZEPHYR__)
+#include "sdk_integ/zephyr_mcux_toolchain.h"
+#endif
+
 /**
  * @def HAS_BUILTIN(x)
  * @brief Check if the compiler supports the built-in function \a x.
@@ -52,10 +56,6 @@
 #include <zephyr/toolchain/iar.h>
 #else
 #error "Invalid/unknown toolchain configuration"
-#endif
-
-#if !defined(__ZEPHYR__)
-#include "zephyr_mcux_toolchain.h"
 #endif
 
 /**

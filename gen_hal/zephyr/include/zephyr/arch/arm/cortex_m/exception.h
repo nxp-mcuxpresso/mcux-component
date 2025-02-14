@@ -17,7 +17,11 @@
 #include <zephyr/arch/arm/cortex_m/nvic.h>
 
 /* for assembler, only works with constants */
+#ifdef __ZEPHYR__
 #define Z_EXC_PRIO(pri) (((pri) << (8 - NUM_IRQ_PRIO_BITS)) & 0xff)
+#else
+#define Z_EXC_PRIO(pri) (((pri) << (8 - 8)) & 0xff)
+#endif
 
 /*
  * In architecture variants with non-programmable fault exceptions

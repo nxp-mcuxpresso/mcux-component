@@ -2,9 +2,12 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+rsource "Kconfig"
+
 config MCUX_COMPONENT_component.debug_coredump
 	bool
 	select MCUX_COMPONENT_component.zephyr_headers.debug_coredump
+	select MCUX_COMPONENT_component.gen_hal.osa if (DEBUG_COREDUMP_MEMORY_DUMP_THREADS || DEBUG_COREDUMP_MEMORY_DUMP_MIN)
 
 config MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
 	bool
@@ -31,3 +34,15 @@ config MFLASH_COREDUMP_REGION_SIZE
 	  Should be times of block size.
 
 endif
+
+config DEBUG_THREAD_INFO
+	bool
+	select THREAD_MONITOR
+	select THREAD_NAME
+	help
+	  This option exports an array of offsets to kernel structs to allow
+	  for debugger RTOS plugins to determine the state of running threads.
+
+config MCUX_COMPONENT_component.debug_thread_info
+	bool
+	default y if DEBUG_THREAD_INFO

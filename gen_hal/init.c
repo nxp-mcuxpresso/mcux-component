@@ -15,7 +15,7 @@
 #include <string.h>
 #include <zephyr/device.h>
 #include <zephyr/init.h>
-#include <zephyr/errno.h>
+#include <errno.h>
 
 #if defined(__CC_ARM) || defined(__ARMCC_VERSION)
 #define __init_start              Image$$ER_m_init_start$$Base

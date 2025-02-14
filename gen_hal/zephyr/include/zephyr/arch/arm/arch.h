@@ -21,7 +21,6 @@
 
 #include <zephyr/arch/arm/thread.h>
 #include <zephyr/arch/arm/exception.h>
-#ifdef __ZEPHYR__
 #include <zephyr/arch/arm/irq.h>
 #include <zephyr/arch/arm/error.h>
 #include <zephyr/arch/arm/misc.h>
@@ -30,7 +29,6 @@
 #include <zephyr/arch/arm/nmi.h>
 #include <zephyr/arch/arm/asm_inline.h>
 #include <zephyr/arch/common/sys_bitops.h>
-#endif
 #if defined(CONFIG_GDBSTUB)
 #include <zephyr/arch/arm/gdbstub.h>
 #endif

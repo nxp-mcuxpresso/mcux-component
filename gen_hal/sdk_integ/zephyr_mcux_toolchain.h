@@ -8,6 +8,12 @@
 #define ZEPHYR_MCUX_TOOLCHAIN_H_
 
 #include "fsl_common.h"
+#include "sdk_integ/errno.h"
+
+#ifdef SDK_OS_FREE_RTOS
+#include "FreeRTOSConfig_Gen.h"
+#endif
+#include "ZephyrMap_Gen.h"
 
 #if defined(__ICCARM__)
 

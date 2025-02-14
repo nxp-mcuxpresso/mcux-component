@@ -60,7 +60,7 @@ class GdbStub(abc.ABC):
         ch = socket.recv(2)
         in_chksum = ord(binascii.unhexlify(ch))
 
-        logger.debug(f"Received GDB packet: {data}")
+        logger.debug(f"1--Received GDB packet: {data}")
 
         if (checksum % 256) == in_chksum:
             # ACK
@@ -89,7 +89,7 @@ class GdbStub(abc.ABC):
         checksum = checksum % 256
         pkt += format(checksum, "02X").encode()
 
-        logger.debug(f"Sending GDB packet: {pkt}")
+        logger.debug(f"3--Sending GDB packet: {pkt}")
 
         socket.send(pkt)
 
@@ -312,7 +312,7 @@ class GdbStub(abc.ABC):
                 continue
 
             pkt_type = pkt[0:1]
-            logger.debug(f"Got packet type: {pkt_type}")
+            logger.debug(f"2--Got packet type: {pkt_type}")
 
             if pkt_type == b'?':
                 self.handle_signal_query_packet()

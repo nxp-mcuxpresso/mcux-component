@@ -9,7 +9,7 @@
 
 __weak bool k_is_in_isr(void)
 {
-  return (__get_IPSR()) ? (true) : (false);
+    return (__get_IPSR()) ? (true) : (false);
 }
 
 unsigned int arch_irq_lock(void)

@@ -20,11 +20,7 @@
  * @{
  */
 
-#ifdef __ZEPHYR__
 #include <errno.h>
-#else
-#include <zephyr/errno.h>
-#endif
 
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>

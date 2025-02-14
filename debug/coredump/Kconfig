@@ -2,8 +2,6 @@
 # Copyright 2025 NXP
 # SPDX-License-Identifier: Apache-2.0
 
-rsource "Kconfig.mcux"
-
 menuconfig DEBUG_COREDUMP
 	bool "Core Dump"
 	depends on ARCH_SUPPORTS_COREDUMP

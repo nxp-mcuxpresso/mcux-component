@@ -22,7 +22,6 @@ if (CONFIG_MCUX_COMPONENT_component.gen_hal)
         INCLUDES ./zephyr/include
                 ./zephyr/misc/generated
                 ./zephyr/misc
-                ./sdk_integ
                 ./
     )
 endif()
@@ -55,7 +54,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.device)
         INCLUDES ./zephyr/include
                  ./zephyr/misc/generated
                  ./zephyr/misc
-                 ./sdk_integ
                  ./
     )
 endif()
@@ -75,7 +73,7 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.toolchain)
             zephyr/include/zephyr/toolchain/xcc_missing_defs.h
             zephyr/include/zephyr/toolchain/zephyr_stdint.h
             zephyr/include/zephyr/toolchain.h
-            zephyr/include/zephyr/errno.h
+            sdk_integ/errno.h
             sdk_integ/zephyr_mcux_toolchain.h
     )
 
@@ -84,7 +82,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.toolchain)
         INCLUDES ./zephyr/include
                  ./zephyr/misc/generated
                  ./zephyr/misc
-                 ./sdk_integ
                  ./
     )
 endif()
@@ -173,10 +170,10 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.arch)
         SOURCES
             zephyr/arch/cpu.h
             zephyr/arch/arch_interface.h
-            # zephyr/irq_offload.h
+            zephyr/irq_offload.h
             zephyr/arch/syscall.h
             zephyr/arch/arm/syscall.h
-            # zephyr/timing/types.h
+            zephyr/timing/types.h
             zephyr/arch/arch_inlines.h
             zephyr/arch/arm/arch_inlines.h
             zephyr/arch/arm/thread.h
@@ -184,26 +181,35 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.arch)
             zephyr/arch/arm/cortex_m/exception.h
             zephyr/arch/arm/cortex_m/nvic.h
             zephyr/arch/arm/irq.h
-            # zephyr/sw_isr_table.h
+            zephyr/sw_isr_table.h
             zephyr/arch/arm/error.h
             zephyr/arch/arm/misc.h
             zephyr/arch/arm/arch.h
             zephyr/arch/common/sys_io.h
-            # zephyr/arch/common/addr_types.h
-            # zephyr/arch/common/ffs.h
+            zephyr/arch/common/addr_types.h
+            zephyr/arch/common/ffs.h
             zephyr/arch/arm/nmi.h
             zephyr/arch/arm/asm_inline.h
             zephyr/arch/arm/asm_inline_gcc.h
-            # zephyr/arch/common/sys_bitops.h
+            zephyr/arch/common/sys_bitops.h
             zephyr/arch/arm/gdbstub.h
             zephyr/arch/arm/cortex_m/cpu.h
             zephyr/arch/arm/cortex_m/memory_map.h
             zephyr/fatal_types.h
-            # zephyr/arch/arm/mpu/arm_mpu.h
-            # zephyr/arch/arm/mpu/arm_mpu_v7m.h
-            # zephyr/arch/arm/mpu/arm_mpu_v8.h
-            # zephyr/arch/arm/mpu/nxp_mpu.h
-            # zephyr/arch/arm/mmu/arm_mmu.h
+            zephyr/arch/arm/mpu/arm_mpu.h
+            zephyr/arch/arm/mpu/arm_mpu_v7m.h
+            zephyr/arch/arm/mpu/arm_mpu_v8.h
+            zephyr/arch/arm/mpu/nxp_mpu.h
+            zephyr/arch/arm/mmu/arm_mmu.h
+            zephyr/sys/rb.h
+            zephyr/alloca.h
+    )
+
+    mcux_add_source(
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/zephyr/misc/
+        SOURCES
+            arch/arm/asm_inline_other.h
+            cmsis_core.h
     )
 
     mcux_add_include(
@@ -211,6 +217,7 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.arch)
         INCLUDES ./zephyr/include
                  ./zephyr/misc/generated
                  ./zephyr/misc
+                 ./zephyr/include/zephyr
     )
 endif()
 
@@ -267,7 +274,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.kernel)
             zephyr/sys/sflist.h
             zephyr/kernel/obj_core.h
             zephyr/kernel_structs.h
-            zephyr/sys/rb.h
             zephyr/sys/sys_heap.h
             zephyr/arch/structs.h
             zephyr/kernel/stats.h
@@ -296,7 +302,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.kernel)
             zephyr/sys/mem_stats.h
             zephyr/tracing/tracing.h
             zephyr/tracing/tracking.h
-            zephyr/alloca.h
             zephyr/arch/arm/structs.h
     )
     mcux_add_source(
@@ -314,6 +319,7 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.kernel)
         INCLUDES ./zephyr/include
                  ./zephyr/misc/generated
                  ./zephyr/misc
+                 ./zephyr/include/zephyr
     )
 endif()
 
@@ -353,5 +359,20 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.storage_stream_flash)
     mcux_add_include(
         BASE_PATH ${SdkRootDirPath}/components/gen_hal
         INCLUDES ./zephyr/include
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.gen_hal.osa)
+    mcux_add_source(
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/osa
+        SOURCES
+            thread/fsl_osa_thread.c
+            thread/fsl_osa_thread.h
+    )
+
+    mcux_add_include(
+        BASE_PATH ${SdkRootDirPath}/components/gen_hal/osa
+        INCLUDES 
+            ./thread
     )
 endif()
