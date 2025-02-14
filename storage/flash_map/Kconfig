@@ -7,6 +7,7 @@
 
 config MCUX_COMPONENT_component.storage_flash_map
 	bool
+	select MCUX_COMPONENT_component.zephyr_headers.storage_flash_map
 
 menuconfig FLASH_MAP
 	bool "Flash map abstraction module"

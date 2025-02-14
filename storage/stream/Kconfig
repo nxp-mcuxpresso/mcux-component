@@ -7,6 +7,7 @@
 
 config MCUX_COMPONENT_component.storage_stream
 	bool
+	select MCUX_COMPONENT_component.zephyr_headers.storage_stream_flash
 
 menuconfig STREAM_FLASH
 	bool "Stream to flash"
