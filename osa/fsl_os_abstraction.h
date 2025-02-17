@@ -264,8 +264,8 @@ extern const uint8_t gUseRtos_c;
 #define SIZE_IN_UINT32_UNITS(size) (((size) + sizeof(uint32_t) - 1) / sizeof(uint32_t))
 
 /*! @brief Constant to pass as timeout value in order to wait indefinitely. */
-#define osaWaitNone_c            ((uint32_t)(0))
-#define osaWaitForever_c         ((uint32_t)(-1))
+#define osaWaitNone_c            ((uint32_t)(0UL))
+#define osaWaitForever_c         ((uint32_t)(~0UL))
 #define osaEventFlagsAll_c       ((osa_event_flags_t)(0x00FFFFFF))
 #define osThreadStackArray(name) osThread_##name##_stack
 #define osThreadStackDef(name, stacksize, instances) \
