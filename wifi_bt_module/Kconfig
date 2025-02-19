@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 menu "wifi_bt_module"
@@ -240,6 +240,17 @@ menu "wifi_bt_module"
 
                 config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510_usd
                     bool "NXP IW416-AW-AM510-USD"
+                    help
+                        Azurewave Type AM510 is a small and high performance module based on
+                        NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
+                        Bluetooth® 5.2 BR/EDR/LE up to 150 Mbps PHY data rate on Wi-Fi® and
+                        3Mbps PHY data rate on Bluetooth®.
+
+                        Detailed information about Type AW AM510 module you can find on
+                        https://www.azurewave.com/wireless-modules-nxp.html
+
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510_arduino
+                    bool "NXP IW416-AW-AM510-ARDUINO"
                     help
                         Azurewave Type AM510 is a small and high performance module based on
                         NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +

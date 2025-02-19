@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.tx_pwr_limits)
@@ -136,6 +136,12 @@ endif()
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510_usd)
      mcux_add_macro(
         "-DWIFI_IW416_BOARD_AW_AM510_USD"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_am510_arduino)
+     mcux_add_macro(
+        "-DWIFI_IW416_BOARD_AW_AM510_ARDUINO"
     )
 endif()
 
