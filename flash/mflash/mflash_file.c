@@ -32,6 +32,10 @@ extern char __MFLASH_FS_START[];
 #define MFLASH_FS_START ((void *)__MFLASH_FS_START)
 #endif
 
+#ifdef MFLASH_STATIC_PAGEBUF
+static uint32_t static_pagebuf[MFLASH_PAGE_SIZE / sizeof(uint32_t)];
+#endif
+
 /*
  * The table header and table record structures have to be aligned
  * with pages/sectors that are expected to be of 2**n size, hence there is some padding
@@ -139,21 +143,35 @@ static bool dir_path_match(mflash_dir_record_t *dr, const char *path)
 static void *mflash_page_buf_get(void)
 {
     void *page_buf;
+
+#ifdef MFLASH_STATIC_PAGEBUF
+    (void) page_buf;
+    return (void *) static_pagebuf;
+#else
+
 #ifdef SDK_OS_FREE_RTOS
     page_buf = pvPortMalloc(MFLASH_PAGE_SIZE);
 #else
     page_buf = malloc(MFLASH_PAGE_SIZE);
 #endif
     return page_buf;
+
+#endif
 }
 
 /* Buffer allocation wrapper */
 static void mflash_page_buf_release(void *page_buf)
 {
+#ifdef MFLASH_STATIC_PAGEBUF
+    (void) page_buf;
+#else
+
 #ifdef SDK_OS_FREE_RTOS
     vPortFree(page_buf);
 #else
     free(page_buf);
+#endif
+
 #endif
 }
 
