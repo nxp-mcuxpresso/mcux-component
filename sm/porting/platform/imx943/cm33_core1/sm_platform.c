@@ -126,7 +126,7 @@ void SM_Platform_Handler(void)
                 {
                     bool graceful = (SCMI_SYS_NOTIFIER_GRACEFUL(notifyFlags) != 0U);
 
-                    PRINTF("\nSCMI system notification: graceful=%u, state=0x%08X\n", graceful, systemState);
+                    PRINTF("\nSCMI system notification: graceful=%u, state=0x%08X\r\n", graceful, systemState);
 
                     if (graceful)
                     {
@@ -140,11 +140,11 @@ void SM_Platform_Handler(void)
                             case SCMI_SYS_STATE_FULL_RESET:
                             case SCMI_SYS_STATE_COLD_RESET:
                             case SCMI_SYS_STATE_WARM_RESET:
-                                PRINTF("reset");
+                                PRINTF("reset\r\n");
                                 break;
                             case SCMI_SYS_STATE_FULL_SUSPEND:
                             case SCMI_SYS_STATE_SUSPEND:
-                                PRINTF("suspend");
+                                PRINTF("suspend\r\n");
                                 break;
                             default:
                                 break;
@@ -158,7 +158,7 @@ void SM_Platform_Handler(void)
 
                 if (SCMI_LmmEvent(SM_PLATFORM_NOTIFY, NULL, &eventLm, &notifyFlags) == SCMI_ERR_SUCCESS)
                 {
-                    PRINTF("\nSCMI LMM notification: LM %u, flags=0x%08X\n", eventLm, notifyFlags);
+                    PRINTF("\nSCMI LMM notification: LM %u, flags=0x%08X\r\n", eventLm, notifyFlags);
                 }
             }
             else if (protocolId == SCMI_PROTOCOL_BBM)
@@ -169,7 +169,7 @@ void SM_Platform_Handler(void)
 
                     if (SCMI_BbmRtcEvent(SM_PLATFORM_NOTIFY, &notifyFlags) == SCMI_ERR_SUCCESS)
                     {
-                        PRINTF("\nSCMI BBM RTC notification: flags=0x%08X\n", flags);
+                        PRINTF("\nSCMI BBM RTC notification: flags=0x%08X\r\n", flags);
                     }
                 }
                 else
@@ -178,7 +178,7 @@ void SM_Platform_Handler(void)
 
                     if (SCMI_BbmButtonEvent(SM_PLATFORM_NOTIFY, &notifyFlags) == SCMI_ERR_SUCCESS)
                     {
-                        PRINTF("\nSCMI BBM button notification: flags=0x%08X\n", flags);
+                        PRINTF("\nSCMI BBM button notification: flags=0x%08X\r\n", flags);
                     }
                 }
             }
@@ -188,12 +188,12 @@ void SM_Platform_Handler(void)
 
                 if (SCMI_SensorTripPointEvent(SM_PLATFORM_NOTIFY, NULL, &sensorId, &desc) == SCMI_ERR_SUCCESS)
                 {
-                    PRINTF("\nSCMI sensor notification: sensor=%u, desc=0x%08X\n", sensorId, desc);
+                    PRINTF("\nSCMI sensor notification: sensor=%u, desc=0x%08X\r\n", sensorId, desc);
                 }
             }
             else
             {
-                PRINTF("\nSCMI unknown notification: 0x%X, 0x%X\n", protocolId, messageId);
+                PRINTF("\nSCMI unknown notification: 0x%X, 0x%X\r\n", protocolId, messageId);
             }
         }
     }
