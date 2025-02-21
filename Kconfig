@@ -73,7 +73,6 @@ menu "Component Configuration"
         rsource "pwm/Kconfig"
         rsource "uart/Kconfig"
         rsource "flash/Kconfig"
-        rsource "flash/mflash/Kconfig"
     endmenu
 
     menu "OS"
