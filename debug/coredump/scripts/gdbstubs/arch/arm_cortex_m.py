@@ -124,7 +124,6 @@ class GdbStub_ARM_CortexM(GdbStub):
 
     def handle_thread_register_group_read_packet(self):
         # For selected_thread 0, use the register data retrieved from the dump's arch section
-        logger.debug(f"LOG:selected_thread:{self.selected_thread}")
         if self.selected_thread == 0:
             self.send_registers_packet(self.registers)
         else:
