@@ -1991,3 +1991,20 @@ status_t SDU_ExitPowerDown(void)
 
     return (status_t)kStatus_Success;
 }
+
+status_t SDU_WritePowerMode(int32_t pm_state)
+{
+    status_t ret = kStatus_Fail;
+    uint8_t pm_state_write = (uint8_t)pm_state;
+
+    ret = SDIOSLV_WriteScratchRegister(kSDIOSLV_FunctionNum1,
+        kSDIOSLV_ScratchGroup7, kSDIOSLV_ScratchOffset0, pm_state_write);
+    sdu_d("%s: SDIOSLV_WriteScratchRegister Group%u Offset%u to %u (%d)\r\n",
+        __FUNCTION__, kSDIOSLV_ScratchGroup7, kSDIOSLV_ScratchOffset0, pm_state_write, pm_state);
+    if (ret != kStatus_Success) {
+        sdu_e("%s: SDIOSLV_WriteScratchRegister Group%u Offset%u fail: %d\r\n",
+            __FUNCTION__, kSDIOSLV_ScratchGroup7, kSDIOSLV_ScratchOffset0, ret);
+    }
+
+    return ret;
+}
