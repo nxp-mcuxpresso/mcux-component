@@ -6,8 +6,8 @@ if (CONFIG_MCUX_COMPONENT_component.gen_hal)
     mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/memc)
     mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/pinctrl)
     mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/zephyr/drivers/clock_control)
-    mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/devices/${soc_portfolio}/${soc_series})
-    mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/_boards/${board})
+    mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/devices/${soc_portfolio}/${soc_series} OPTIONAL)
+    mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal/_boards/${board} OPTIONAL)
 
     mcux_add_source(
         BASE_PATH ${SdkRootDirPath}/components/gen_hal
