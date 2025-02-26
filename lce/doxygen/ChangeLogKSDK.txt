@@ -1,0 +1,10 @@
+/*!
+@page component_lce Component Change Log
+
+@section Lce LCE
+  The current Lce component version is 1.0.0.
+
+  - 1.0.0
+    - Initial version.
+
+*/

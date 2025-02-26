@@ -87,6 +87,7 @@ mcux_add_cmakelists(${SdkRootDirPath}/components/eeprom_emulation)
 mcux_add_cmakelists(${SdkRootDirPath}/components/storage)
 mcux_add_cmakelists(${SdkRootDirPath}/components/debug)
 mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal)
+mcux_add_cmakelists(${SdkRootDirPath}/components/lce)
 mcux_load_all_cmakelists_in_directory(${SdkRootDirPath}/components/cmsis_drivers)
 ##### cmakelists.txt end
 
