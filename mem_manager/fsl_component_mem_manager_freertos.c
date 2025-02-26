@@ -82,6 +82,14 @@ mem_status_t MEM_BufferFreeAllWithId(uint8_t poolId)
     return kStatus_MemFreeError;
 }
 
+mem_status_t MEM_BufferCheck(void *buffer, uint32_t size)
+{
+    /* NOT IMPLEMENTED */
+    (void)buffer;
+    (void)size;
+    return kStatus_MemUnknownError;
+}
+
 uint32_t MEM_GetHeapUpperLimitByAreaId(uint8_t area_id)
 {
     /* NOT IMPLEMENTED */
