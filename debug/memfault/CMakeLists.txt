@@ -30,7 +30,7 @@ if (CONFIG_MCUX_COMPONENT_component.memfault_sdk)
                 ./memfault-firmware-sdk/components/include/memfault/metrics/platform/*.h
                 ./memfault-firmware-sdk/components/include/memfault/demo/*.h
                 ./memfault-firmware-sdk/components/include/memfault/util/*.h
-                ./memfault-firmware-sdk/ports/include/*.h
+                ./memfault-firmware-sdk/ports/include/memfault/ports/*.h
     )
 endif()
 
