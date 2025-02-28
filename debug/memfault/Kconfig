@@ -49,13 +49,6 @@ menuconfig MCUX_COMPONENT_component.memfault_sdk
               (i.e evt, dvt, pvt, or rev1, rev2, etc)
               Regular expression defining valid hardware versions: ^[-a-zA-Z0-9_\.\+]+$
 
-        config MEMFAULT_FLASH_SUPPORT_PAGE_REPROGRAM
-            bool "Flash support reprogram page"
-            default y
-            help
-              After the page is erased, the page can be reprogramed to update
-              the empty region.
-
         config MEMFAULT_FLASH_BASE_OFFSET
             hex "Backend flash offset"
             default 0x001F8000

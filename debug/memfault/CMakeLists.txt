@@ -4,6 +4,7 @@
 if (CONFIG_MCUX_COMPONENT_component.memfault_sdk)
     mcux_add_include(
         INCLUDES ./memfault-firmware-sdk/components/include
+                 ./memfault-firmware-sdk/ports/include
     )
 
     mcux_add_source(
@@ -29,6 +30,7 @@ if (CONFIG_MCUX_COMPONENT_component.memfault_sdk)
                 ./memfault-firmware-sdk/components/include/memfault/metrics/platform/*.h
                 ./memfault-firmware-sdk/components/include/memfault/demo/*.h
                 ./memfault-firmware-sdk/components/include/memfault/util/*.h
+                ./memfault-firmware-sdk/ports/include/*.h
     )
 endif()
 
