@@ -90,15 +90,3 @@ if(CONFIG_MCUX_COMPONENT_middleware.iot_reference.transport_mbedtls_psa)
         BASE_PATH ${SdkRootDirPath}/components/aws_iot/using_mbedtls_psa/
     )
 endif()
-
-if(CONFIG_MCUX_COMPONENT_middleware.iot_reference.transport_mbedtls_wifi_serial)
-    mcux_add_source(
-        SOURCES using_mbedtls.c
-                using_mbedtls.h
-        BASE_PATH ${SdkRootDirPath}/components/aws_iot/using_mbedtls_wifi_serial/
-    )
-    mcux_add_include(
-        INCLUDES .
-        BASE_PATH ${SdkRootDirPath}/components/aws_iot/using_mbedtls_wifi_serial/
-    )
-endif()
