@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 NXP
+ * Copyright 2023-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -2761,7 +2761,7 @@ void PCA9422_GetRegulatorVoltage(pca9422_handle_t *handle, pca9422_regulator_t r
                     goto out;
                 }
                 regVal = regVal & regMask;
-                *volt  = (uint8_t)PCA9422_LDO23_OUT_VOLT(regVal);
+                *volt  = (uint32_t)PCA9422_LDO23_OUT_VOLT(regVal);
             }
             else
             {
@@ -2796,7 +2796,7 @@ void PCA9422_GetRegulatorVoltage(pca9422_handle_t *handle, pca9422_regulator_t r
                     goto out;
                 }
                 regVal = regVal & regMask;
-                *volt  = (uint8_t)PCA9422_LDO23_OUT_VOLT(regVal);
+                *volt  = (uint32_t)PCA9422_LDO23_OUT_VOLT(regVal);
             }
             else
             {
