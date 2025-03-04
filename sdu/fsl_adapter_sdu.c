@@ -139,6 +139,8 @@ typedef struct _sdu_stat
     uint32_t err_tx_cmd_call_cb;
     uint32_t drop_tx_cmd;
     uint32_t succ_tx_cmd;
+    uint32_t max_retry_tx_cmd;
+    uint32_t max_retry_tx_event;
     uint32_t err_tx_data_sdio_hdr;
     uint32_t err_tx_data_call_cb;
     uint32_t drop_tx_data;
@@ -1530,12 +1532,14 @@ status_t SDU_RecvData(void)
  * @retval #kStatus_NoData No free buffer to use.
  * @retval #kStatus_Fail Fail to send data.
  */
+uint32_t g_SDU_Send_retry_cnt = 3;
 status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_len)
 {
     sdu_buffer_t *send_buffer = NULL;
     status_t status = kStatus_Fail;
     sdio_header_t *sdio_hdr = NULL;
-    int retry_cnt = 3;
+    int retry_cnt = g_SDU_Send_retry_cnt;
+    uint32_t retry_cnt_cmdevent = 0;
 
     if ((data_addr == NULL) || (data_len == 0U))
     {
@@ -1571,9 +1575,13 @@ retry:
 
     if (send_buffer == NULL)
     {
-        if (retry_cnt != 0)
+        if (((type == SDU_TYPE_FOR_READ_CMD) || (type == SDU_TYPE_FOR_READ_EVENT)) ||
+            ((type == SDU_TYPE_FOR_READ_DATA) && (retry_cnt > 0)))
         {
-            retry_cnt--;
+            if (retry_cnt > 0)
+                retry_cnt--;
+            if ((type == SDU_TYPE_FOR_READ_CMD) || (type == SDU_TYPE_FOR_READ_EVENT))
+                retry_cnt_cmdevent++;
             /* Allow the other thread to run and hence could get available sdio send buffer
              * so that cmd/event/data can be sent by sdio */
             OSA_TimeDelay(1);
@@ -1592,6 +1600,18 @@ retry:
 
             sdu_d("%s: NO free_buffer for type %d!\r\n", __FUNCTION__, type);
             return (status_t)kStatus_NoData;
+        }
+    }
+    if (retry_cnt_cmdevent > 0)
+    {
+        sdu_d("R:%u-%u", type, retry_cnt_cmdevent);
+        if ((type == SDU_TYPE_FOR_READ_CMD) && (retry_cnt_cmdevent > ctrl_sdu.stat.max_retry_tx_cmd))
+        {
+            ctrl_sdu.stat.max_retry_tx_cmd = retry_cnt_cmdevent;
+        }
+        else if ((type == SDU_TYPE_FOR_READ_EVENT) && (retry_cnt_cmdevent > ctrl_sdu.stat.max_retry_tx_event))
+        {
+            ctrl_sdu.stat.max_retry_tx_event = retry_cnt_cmdevent;
         }
     }
 
