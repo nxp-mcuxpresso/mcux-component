@@ -96,7 +96,14 @@ int L##name(args_def) {                                                        \
 extern "C" {
 #endif /* __cplusplus */
 
-void LCE_Init(void);
+/*!
+ * @brief Initializes the variables used in this component and enable the DSP
+ * and MU interrupts.
+ *
+ * @retval KOSA_StatusError Failed to initialize the mutex handle or event handle used by LCE component.
+ * @retval KOSA_StatusSuccess Initialize the mutex handle and event handle used by LCE component successfully.
+ */
+osa_status_t LCE_Init(void);
 
 /* LCE matrix APIs */
 LCE_API_DECL(CE_MatrixAdd_Q15, CE_API_ARG_DEF(int16_t *pDst, int16_t *pA,

@@ -13,20 +13,34 @@ static OSA_EVENT_HANDLE_DEFINE(mCeEvent);
  * @brief Initializes the variables used in this component and enable the DSP
  * and MU interrupts.
  *
+ * @retval KOSA_StatusError Failed to initialize the mutex handle or event handle used by LCE component.
+ * @retval KOSA_StatusSuccess Initialize the mutex handle and event handle used by LCE component successfully.
  */
-void LCE_Init(void)
+osa_status_t LCE_Init(void)
 {
     /* Create CE Mutex */
     osa_status_t osaStatus;
     osaStatus = OSA_MutexCreate((osa_mutex_handle_t)mCeMutexId);
-    assert(KOSA_StatusSuccess == osaStatus);
+    if (KOSA_StatusSuccess != osaStatus)
+    {
+        assert(0);
+        return osaStatus;
+    }
+
     /* Create CE event */
     osaStatus = OSA_EventCreate((osa_event_handle_t)mCeEvent, 1U);
-    assert(KOSA_StatusSuccess == osaStatus);
+    if (KOSA_StatusSuccess != osaStatus)
+    {
+        assert(0);
+        return osaStatus;
+    }
+
     /* Enable MU interrupt */
     NVIC_SetPriority(DSP_IRQn, CE_ISR_PRIORITY);
     (void)EnableIRQ(DSP_IRQn);
     MU_EnableInterrupts(MUA, kMU_GenInt0InterruptEnable);
+
+    return osaStatus;
 }
 
 /*!
