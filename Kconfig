@@ -34,6 +34,8 @@ menu "Component Configuration"
         rsource "lists/Kconfig"
         rsource "str/Kconfig"
         rsource "format/Kconfig"
+        rsource "silicon_id/Kconfig"
+        rsource "notifier/Kconfig"
     endmenu
 
     menu "Console and Shell"
@@ -43,6 +45,7 @@ menu "Component Configuration"
         rsource "log/Kconfig"
         rsource "shell/Kconfig"
         rsource "serial_manager/Kconfig"
+        rsource "rtt/Kconfig"
     endmenu
 
     menu "Codec"
@@ -65,7 +68,6 @@ menu "Component Configuration"
         rsource "led/Kconfig"
         rsource "mem_manager/Kconfig"
         rsource "messaging/Kconfig"
-        rsource "panic/Kconfig"
         rsource "reset/Kconfig"
         rsource "reset1/Kconfig"
         rsource "rng/Kconfig"
@@ -73,8 +75,14 @@ menu "Component Configuration"
         rsource "spi/Kconfig"
         rsource "pwm/Kconfig"
         rsource "uart/Kconfig"
-        rsource "flash/Kconfig"
         rsource "lce/Kconfig"
+        rsource "imu_adapter/Kconfig"
+        rsource "systick_timer/Kconfig"
+        rsource "timer_lptmr/Kconfig"
+        rsource "audio/Kconfig"
+        rsource "adc_sensor/Kconfig"
+        rsource "clock/Kconfig"
+        rsource "pinctrl/Kconfig"
     endmenu
 
     menu "Operating System Abstraction (OSA)"
@@ -84,6 +92,8 @@ menu "Component Configuration"
     menu "EdgeFast Wifi"
         orsource "edgefast_wifi/Kconfig"
     endmenu
+
+    rsource "wifi_bt_module/Kconfig"
 
     # Security
     menu "Security"
@@ -97,10 +107,12 @@ menu "Component Configuration"
     menu "Power"
         rsource "pmic/Kconfig"
         rsource "power_manager/Kconfig"
+        rsource "power/Kconfig"
     endmenu
 
     menu "I/O expander"
         rsource "expander/Kconfig"
+        rsource "sx1502/Kconfig"
     endmenu
 
     rsource "sensor/Kconfig"
@@ -109,6 +121,7 @@ menu "Component Configuration"
         rsource "video/Kconfig"
         rsource "touch/Kconfig"
         rsource "display/Kconfig"
+        rsource "slcd_engine/Kconfig"
     endmenu
 
     menu "ENET PHY"
@@ -119,52 +132,57 @@ menu "Component Configuration"
         rsource "srtm/Kconfig"
     endmenu
 
-    menu "Part drivers"
-        rsource "mt48lc2m32b2/Kconfig"
-        rsource "mt48lc4m16a2/Kconfig"
+    menu "SDIO"
+        rsource "sdu/Kconfig"
+    endmenu
+
+    menu "SMBUS"
+        rsource "smbus/Kconfig"
+    endmenu
+
+    rsource "flash/Kconfig"
+
+    menu "SPI Flash"
         rsource "mx25l_flash/Kconfig"
         rsource "mx25r_flash/Kconfig"
         rsource "mx25_flash/Kconfig"
-        rsource "IS42SM16800H/Kconfig"
-        rsource "sx1502/Kconfig"
     endmenu
 
-    menu "Unsort"
-        rsource "adc_sensor/Kconfig"
-        rsource "audio/Kconfig"
-        rsource "clock/Kconfig"
-        rsource "conn_fwloader/Kconfig"
-        rsource "eeprom_emulation/Kconfig"
-        rsource "exception_handling/Kconfig"
-        rsource "imu_adapter/Kconfig"
-        rsource "imx_sm_crc/Kconfig"
-        rsource "mpi_loader/Kconfig"
-        rsource "notifier/Kconfig"
-        rsource "pinctrl/Kconfig"
-        rsource "power/Kconfig"
-        rsource "rtt/Kconfig"
-        rsource "scmi/Kconfig"
-        rsource "sdu/Kconfig"
-        rsource "silicon_id/Kconfig"
-        rsource "slcd_engine/Kconfig"
+    menu "External RAM"
+        rsource "mt48lc2m32b2/Kconfig"
+        rsource "mt48lc4m16a2/Kconfig"
+        rsource "IS42SM16800H/Kconfig"
+    endmenu
+
+    menu "System Manager"
         rsource "sm/Kconfig"
-        rsource "smbus/Kconfig"
+        rsource "imx_sm_crc/Kconfig"
+        rsource "scmi/Kconfig"
         rsource "smt/Kconfig"
-        rsource "systick_timer/Kconfig"
-        rsource "timer_lptmr/Kconfig"
-        rsource "unity/Kconfig"
-        rsource "wifi_bt_module/Kconfig"
+    endmenu
+
+    menu "Image Loader"
+        rsource "mpi_loader/Kconfig"
+        rsource "conn_fwloader/Kconfig"
     endmenu
 
     menu "Storage"
         rsource "storage/Kconfig"
+        rsource "eeprom_emulation/Kconfig"
     endmenu
 
     menu "Debug"
         rsource "debug/Kconfig"
+        rsource "panic/Kconfig"
+        rsource "exception_handling/Kconfig"
     endmenu
 
     menu "Generic Hal"
         rsource "gen_hal/Kconfig"
     endmenu
+
+    menu "Unit Test"
+        rsource "unity/Kconfig"
+    endmenu
+
 endmenu
