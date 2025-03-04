@@ -1,5 +1,5 @@
 /*! *********************************************************************************
- * Copyright 2020-2021, 2024 NXP
+ * Copyright 2020-2021, 2024-2025 NXP
  *
  *
  * This is the source file for the OS Abstraction layer for thread.
@@ -1098,7 +1098,7 @@ void OSA_InstallIntHandler(uint32_t IRQNumber, void (*handler)(void))
     _Pragma("diag_suppress = Pm138")
 #endif
 #if defined(ENABLE_RAM_VECTOR_TABLE)
-        (void) InstallIRQHandler((IRQn_Type)IRQNumber, (uint32_t) * (uint32_t *)&handler);
+        (void) InstallIRQHandler((IRQn_Type)IRQNumber, (uint32_t)handler);
 #endif /* ENABLE_RAM_VECTOR_TABLE. */
 #if defined(__IAR_SYSTEMS_ICC__)
     _Pragma("diag_remark = PM138")
