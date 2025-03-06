@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_component.eth_phy_common)
@@ -153,5 +153,18 @@ if (CONFIG_MCUX_COMPONENT_component.phylan8741)
         SOURCES
             ./device/phylan8741/fsl_phylan8741.c
             ./device/phylan8741/fsl_phylan8741.h
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.phytja1100)
+    mcux_add_include(
+        INCLUDES
+            ./device/phytja1100
+    )
+
+    mcux_add_source(
+        SOURCES
+            ./device/phytja1100/fsl_phytja1100.c
+            ./device/phytja1100/fsl_phytja1100.h
     )
 endif()

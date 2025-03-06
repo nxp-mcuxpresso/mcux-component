@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_component.eth_phy_common
@@ -47,4 +47,8 @@ config MCUX_COMPONENT_component.phyrtl8201
 
 config MCUX_COMPONENT_component.phylan8741
     bool "lan8741"
+    select MCUX_COMPONENT_component.eth_phy_common
+
+config MCUX_COMPONENT_component.phytja1100
+    bool "tja1100"
     select MCUX_COMPONENT_component.eth_phy_common
