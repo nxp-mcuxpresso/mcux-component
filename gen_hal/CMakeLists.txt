@@ -202,7 +202,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.arch)
             zephyr/arch/arm/mpu/nxp_mpu.h
             zephyr/arch/arm/mmu/arm_mmu.h
             zephyr/sys/rb.h
-            zephyr/alloca.h
     )
 
     mcux_add_source(
@@ -210,6 +209,7 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.arch)
         SOURCES
             arch/arm/asm_inline_other.h
             cmsis_core.h
+            alloca.h
     )
 
     mcux_add_include(
@@ -217,7 +217,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.arch)
         INCLUDES ./zephyr/include
                  ./zephyr/misc/generated
                  ./zephyr/misc
-                 ./zephyr/include/zephyr
     )
 endif()
 
@@ -235,7 +234,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.logging)
             # zephyr/sys/cbprintf_internal.h
             # zephyr/sys/cbprintf_enums.h
             # zephyr/sys/cbprintf_cxx.h
-            # zephyr/alloca.h
     )
 
     mcux_add_include(
@@ -319,7 +317,6 @@ if (CONFIG_MCUX_COMPONENT_component.zephyr_headers.kernel)
         INCLUDES ./zephyr/include
                  ./zephyr/misc/generated
                  ./zephyr/misc
-                 ./zephyr/include/zephyr
     )
 endif()
 

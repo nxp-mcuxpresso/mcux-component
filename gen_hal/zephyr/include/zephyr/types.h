@@ -14,10 +14,6 @@
 extern "C" {
 #endif
 
-#ifndef __ZEPHYR__
-typedef intptr_t off_t;
-#endif
-
 /*
  * A type with strong alignment requirements, similar to C11 max_align_t. It can
  * be used to force alignment of data structures allocated on the stack or as

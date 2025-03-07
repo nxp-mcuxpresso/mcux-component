@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 NXP
+ * Copyright 2024 - 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -40,5 +40,11 @@ extern char _image_ram_start[];
 extern char _image_ram_end[];
 extern char _image_ram_size[];
 #endif
+
+#ifndef _OFF_T_DECLARED
+typedef intptr_t off_t;
+#define _OFF_T_DECLARED
+#endif
+
 
 #endif /* ZEPHYR_MCUX_TOOLCHAIN_H_ */

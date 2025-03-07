@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2020 Intel Corporation.
+ * Copyright 2025 NXP
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -12,8 +13,7 @@
 #ifdef __ZEPHYR__
 #include <sys/types.h>
 #else
-//#include <zephyr/errno.h>
-#include <zephyr/types.h>
+#include "sdk_integ/zephyr_mcux_toolchain.h"
 #endif
 
 /*
