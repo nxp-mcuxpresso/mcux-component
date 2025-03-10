@@ -342,7 +342,7 @@
 /*!
  * @brief Enable PTC6 as a wakeup pin, detect on falling edge.
  */
-#define PM_WSID_PTC6_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 11UL, PORTC_EFT_IRQn, 2UL)
+#define PM_WSID_PTC6_FALLING_EDGE (uint32_t) PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 11UL, (uint32_t) PORTC_EFT_IRQn, 2UL)
 /*!
  * @brief Enable PTC6 as a wakeup pin, detect on any edge.
  */
@@ -413,7 +413,7 @@
 /*!
  * @brief Enable GPIOD Low pins as wakeup source.
  */
-#define PM_WSID_GPIOD_LOW PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 1UL, GPIOD_INT0_IRQn, 0UL)
+#define PM_WSID_GPIOD_LOW (uint32_t) PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 1UL, (uint32_t) GPIOD_INT0_IRQn, 0UL)
 
 /*!
  * @brief Enable GPIOD High pins as wakeup source.
