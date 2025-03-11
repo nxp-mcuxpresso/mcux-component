@@ -129,6 +129,7 @@ void SM_Platform_Handler(void)
 
                     if (graceful)
                     {
+                        SM_Platform_SetSystemState(systemState);
                         switch (systemState)
                         {
                             case SCMI_SYS_STATE_FULL_SHUTDOWN:
