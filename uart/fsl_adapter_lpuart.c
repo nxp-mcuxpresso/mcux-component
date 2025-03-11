@@ -2011,6 +2011,8 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
 #endif /* HAL_UART_DMA_INIT_ENABLE > 0 */
 #endif
     assert(handle);
+    assert(dmaHandle);
+    assert(HAL_UART_DMA_HANDLE_SIZE >= sizeof(hal_uart_dma_state_t));
 
     uartHandle            = (hal_uart_state_t *)handle;
     uartDmaHandle         = (hal_uart_dma_state_t *)dmaHandle;
