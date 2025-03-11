@@ -168,3 +168,16 @@ if (CONFIG_MCUX_COMPONENT_component.phytja1100)
             ./device/phytja1100/fsl_phytja1100.h
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.phytja1120)
+    mcux_add_include(
+        INCLUDES
+            ./device/phytja1120
+    )
+
+    mcux_add_source(
+        SOURCES
+            ./device/phytja1120/fsl_phytja1120.c
+            ./device/phytja1120/fsl_phytja1120.h
+    )
+endif()
