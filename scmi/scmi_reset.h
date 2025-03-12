@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2024 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -53,9 +53,11 @@
  */
 /** @{ */
 /*! Get reset domain attributes */
-#define SCMI_MSG_RESET_DOMAIN_ATTRIBUTES  0x3U
+#define SCMI_MSG_RESET_DOMAIN_ATTRIBUTES     0x3U
 /*! Reset domain */
-#define SCMI_MSG_RESET                    0x4U
+#define SCMI_MSG_RESET                       0x4U
+/*! Negotiate the protocol version */
+#define SCMI_MSG_NEGOTIATE_PROTOCOL_VERSION  0x10U
 /** @} */
 
 /*!
@@ -70,7 +72,7 @@
  * @name SCMI reset architectural reset states
  */
 /** @{ */
-/*! Max length of the returned clock name */
+/*! Cold reset - no retention */
 #define SCMI_RESET_ARCH_COLD  0x00000000U
 /** @} */
 

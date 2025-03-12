@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2024 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -64,6 +64,8 @@
 #define SCMI_MSG_PERFORMANCE_LEVEL_SET          0x7U
 /*! Get performance level */
 #define SCMI_MSG_PERFORMANCE_LEVEL_GET          0x8U
+/*! Negotiate the protocol version */
+#define SCMI_MSG_NEGOTIATE_PROTOCOL_VERSION     0x10U
 /** @} */
 
 /*!

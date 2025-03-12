@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2024 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -70,6 +70,8 @@
 #define SCMI_MSG_FUSA_SCHECK_EVNTRIG         0xBU
 /*! Request manually-triggered execution of sCheck test */
 #define SCMI_MSG_FUSA_SCHECK_TEST_EXEC       0xEU
+/*! Negotiate the protocol version */
+#define SCMI_MSG_NEGOTIATE_PROTOCOL_VERSION  0x10U
 /*! Read F-EENV state change notification event */
 #define SCMI_MSG_FUSA_FEENV_STATE_EVENT      0x0U
 /*! Read S-EENV state request notification event */

@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2024 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -718,7 +718,7 @@ int32_t SCMI_MiscSiInfo(uint32_t channel, uint32_t *deviceId,
 }
 
 /*--------------------------------------------------------------------------*/
-/* Get build config name                                                    */
+/* Get build config info                                                    */
 /*--------------------------------------------------------------------------*/
 int32_t SCMI_MiscCfgInfo(uint32_t channel, uint32_t *mSel,
     uint8_t *cfgName)
@@ -860,6 +860,69 @@ int32_t SCMI_MiscSyslog(uint32_t channel, uint32_t flags, uint32_t logIndex,
 }
 
 /*--------------------------------------------------------------------------*/
+/* Get board info                                                           */
+/*--------------------------------------------------------------------------*/
+int32_t SCMI_MiscBoardInfo(uint32_t channel, uint32_t *attributes,
+    uint8_t *brdName)
+{
+    int32_t status;
+    uint32_t header;
+    const void *msg;
+
+    /* Response message structure */
+    typedef struct
+    {
+        uint32_t header;
+        int32_t status;
+        uint32_t attributes;
+        uint8_t brdName[SCMI_MISC_MAX_BRDNAME];
+    } msg_rmiscd14_t;
+
+    /* Acquire lock */
+    SCMI_A2P_LOCK(channel);
+
+    /* Init buffer */
+    status = SCMI_BufInitC(channel, &msg);
+
+    /* Send request */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
+            SCMI_MSG_MISC_BOARD_INFO, sizeof(header), &header);
+    }
+
+    /* Receive response */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        status = SCMI_A2pRx(channel, sizeof(msg_rmiscd14_t), header);
+    }
+
+    /* Copy out if no error */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        const msg_rmiscd14_t *msgRx = (const msg_rmiscd14_t*) msg;
+
+        /* Extract attributes */
+        if (attributes != NULL)
+        {
+            *attributes = msgRx->attributes;
+        }
+
+        /* Extract brdName */
+        if (brdName != NULL)
+        {
+            SCMI_StrCpy(brdName, msgRx->brdName, SCMI_MISC_MAX_BRDNAME);
+        }
+    }
+
+    /* Release lock */
+    SCMI_A2P_UNLOCK(channel);
+
+    /* Return status */
+    return status;
+}
+
+/*--------------------------------------------------------------------------*/
 /* Negotiate the protocol version                                           */
 /*--------------------------------------------------------------------------*/
 int32_t SCMI_MiscNegotiateProtocolVersion(uint32_t channel,
@@ -867,6 +930,147 @@ int32_t SCMI_MiscNegotiateProtocolVersion(uint32_t channel,
 {
     /* Negotiate protocol version */
     return SCMI_NegotiateProtocolVersion(channel, COMMAND_PROTOCOL, version);
+}
+
+/*--------------------------------------------------------------------------*/
+/* Set an extended control value                                            */
+/*--------------------------------------------------------------------------*/
+int32_t SCMI_MiscControlExtSet(uint32_t channel, uint32_t ctrlId,
+    uint32_t addr, uint32_t len, uint32_t numVal, const uint32_t *extVal)
+{
+    int32_t status;
+    uint32_t header;
+    void *msg;
+
+    /* Acquire lock */
+    SCMI_A2P_LOCK(channel);
+
+    /* Init buffer */
+    status = SCMI_BufInit(channel, &msg);
+
+    /* Send request */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        /* Request message structure */
+        typedef struct
+        {
+            uint32_t header;
+            uint32_t ctrlId;
+            uint32_t addr;
+            uint32_t len;
+            uint32_t numVal;
+            uint32_t extVal[SCMI_MISC_MAX_EXTVAL_T];
+        } msg_tmiscd32_t;
+        msg_tmiscd32_t *msgTx = (msg_tmiscd32_t*) msg;
+
+        /* Fill in parameters */
+        msgTx->ctrlId = ctrlId;
+        msgTx->addr = addr;
+        msgTx->len = len;
+        msgTx->numVal = numVal;
+
+        SCMI_MemCpy((uint8_t*) &msgTx->extVal, (const uint8_t*) extVal,
+            (SCMI_MISC_NUM_EXTVAL_T * sizeof(uint32_t)));
+
+        /* Send message */
+        status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
+            SCMI_MSG_MISC_CONTROL_EXT_SET, sizeof(msg_tmiscd32_t),
+            &header);
+    }
+
+    /* Receive response */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        status = SCMI_A2pRx(channel, sizeof(msg_status_t), header);
+    }
+
+    /* Release lock */
+    SCMI_A2P_UNLOCK(channel);
+
+    /* Return status */
+    return status;
+}
+
+/*--------------------------------------------------------------------------*/
+/* Get an extended control value                                            */
+/*--------------------------------------------------------------------------*/
+int32_t SCMI_MiscControlExtGet(uint32_t channel, uint32_t ctrlId,
+    uint32_t addr, uint32_t len, uint32_t *numVal, uint32_t *extVal)
+{
+    int32_t status;
+    uint32_t header;
+    void *msg;
+
+    /* Response message structure */
+    typedef struct
+    {
+        uint32_t header;
+        int32_t status;
+        uint32_t numVal;
+        uint32_t extVal[SCMI_MISC_MAX_EXTVAL];
+    } msg_rmiscd33_t;
+
+    /* Acquire lock */
+    SCMI_A2P_LOCK(channel);
+
+    /* Init buffer */
+    status = SCMI_BufInit(channel, &msg);
+
+    /* Send request */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        /* Request message structure */
+        typedef struct
+        {
+            uint32_t header;
+            uint32_t ctrlId;
+            uint32_t addr;
+            uint32_t len;
+        } msg_tmiscd33_t;
+        msg_tmiscd33_t *msgTx = (msg_tmiscd33_t*) msg;
+
+        /* Fill in parameters */
+        msgTx->ctrlId = ctrlId;
+        msgTx->addr = addr;
+        msgTx->len = len;
+
+        /* Send message */
+        status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
+            SCMI_MSG_MISC_CONTROL_EXT_GET, sizeof(msg_tmiscd33_t),
+            &header);
+    }
+
+    /* Receive response */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        status = SCMI_A2pRx(channel,
+            sizeof(msg_status_t) + sizeof(uint32_t), header);
+    }
+
+    /* Copy out if no error */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        const msg_rmiscd33_t *msgRx = (const msg_rmiscd33_t*) msg;
+
+        /* Extract numVal */
+        if (numVal != NULL)
+        {
+            *numVal = msgRx->numVal;
+        }
+
+        /* Extract extVal */
+        if (extVal != NULL)
+        {
+            SCMI_MemCpy((uint8_t*) extVal, (uint8_t*) &msgRx->extVal,
+                (SCMI_MISC_NUM_EXTVAL * sizeof(uint32_t)));
+        }
+    }
+
+    /* Release lock */
+    SCMI_A2P_UNLOCK(channel);
+
+    /* Return status */
+    return status;
 }
 
 /*--------------------------------------------------------------------------*/

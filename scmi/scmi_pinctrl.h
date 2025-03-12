@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2024 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -62,6 +62,8 @@
 #define SCMI_MSG_PINCTRL_REQUEST             0x7U
 /*! Release a pin */
 #define SCMI_MSG_PINCTRL_RELEASE             0x8U
+/*! Negotiate the protocol version */
+#define SCMI_MSG_NEGOTIATE_PROTOCOL_VERSION  0x10U
 /** @} */
 
 /*!
@@ -110,6 +112,8 @@
 #define SCMI_PINCTRL_TYPE_DAISY_ID   194U
 /*! Daisy config type */
 #define SCMI_PINCTRL_TYPE_DAISY_CFG  195U
+/*! Extended config type */
+#define SCMI_PINCTRL_TYPE_EXT        196U
 /** @} */
 
 /*!

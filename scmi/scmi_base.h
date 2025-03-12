@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2024 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -66,6 +66,8 @@
 #define SCMI_MSG_BASE_SET_DEVICE_PERMISSIONS           0x9U
 /*! Reset platform resource settings for an agent */
 #define SCMI_MSG_BASE_RESET_AGENT_CONFIGURATION        0xBU
+/*! Negotiate the protocol version */
+#define SCMI_MSG_NEGOTIATE_PROTOCOL_VERSION            0x10U
 /** @} */
 
 /*!

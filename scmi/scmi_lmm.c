@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2024 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -575,6 +575,63 @@ int32_t SCMI_LmmPowerOn(uint32_t channel, uint32_t lmId)
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
             SCMI_MSG_LMM_POWER_ON, sizeof(msg_tlmmd11_t), &header);
+    }
+
+    /* Receive response */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        status = SCMI_A2pRx(channel, sizeof(msg_status_t), header);
+    }
+
+    /* Release lock */
+    SCMI_A2P_UNLOCK(channel);
+
+    /* Return status */
+    return status;
+}
+
+/*--------------------------------------------------------------------------*/
+/* Configure boot address for an LM CPU                                     */
+/*--------------------------------------------------------------------------*/
+int32_t SCMI_LmmResetVectorSet(uint32_t channel, uint32_t lmId,
+    uint32_t cpuId, uint32_t flags, uint32_t resetVectorLow,
+    uint32_t resetVectorHigh)
+{
+    int32_t status;
+    uint32_t header;
+    void *msg;
+
+    /* Acquire lock */
+    SCMI_A2P_LOCK(channel);
+
+    /* Init buffer */
+    status = SCMI_BufInit(channel, &msg);
+
+    /* Send request */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        /* Request message structure */
+        typedef struct
+        {
+            uint32_t header;
+            uint32_t lmId;
+            uint32_t cpuId;
+            uint32_t flags;
+            uint32_t resetVectorLow;
+            uint32_t resetVectorHigh;
+        } msg_tlmmd12_t;
+        msg_tlmmd12_t *msgTx = (msg_tlmmd12_t*) msg;
+
+        /* Fill in parameters */
+        msgTx->lmId = lmId;
+        msgTx->cpuId = cpuId;
+        msgTx->flags = flags;
+        msgTx->resetVectorLow = resetVectorLow;
+        msgTx->resetVectorHigh = resetVectorHigh;
+
+        /* Send message */
+        status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
+            SCMI_MSG_LMM_RESET_VECTOR_SET, sizeof(msg_tlmmd12_t), &header);
     }
 
     /* Receive response */

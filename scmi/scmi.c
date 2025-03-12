@@ -344,8 +344,11 @@ int32_t SCMI_P2aTx(uint32_t channel, uint32_t len, uint32_t header)
     /* Get transport buffer address */
     msg = (drv_scmi_msg_status_t*) SCMI_HdrAddrGet(channel);
 
-    /* Fill in header */
-    msg->header = header;
+    if (msg != NULL)
+    {
+        /* Fill in header */
+        msg->header = header;
+    }
 
     /* Send message via transport */
     status = SMT_Tx(channel, len, true, false);
