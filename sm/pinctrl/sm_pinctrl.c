@@ -31,9 +31,18 @@ void SM_PINCTRL_SetPinMux(sm_pinctrl_t *sm_pinctrl)
 
     if (muxRegister != 0U)
     {
+        uint32_t extMode = (muxMode & 0xF0U) >> 4U;
+
         configs[numConfigs].type  = SCMI_PINCTRL_TYPE_MUX;
         configs[numConfigs].value = SM_PLATFORM_PINCTRL_MUX_MODE(muxMode) | SM_PLATFORM_PINCTRL_SION(inputOnfield);
         numConfigs++;
+
+        if (extMode != 0U)
+        {
+            configs[numConfigs].type = SCMI_PINCTRL_TYPE_EXT;
+            configs[numConfigs].value = extMode;
+            numConfigs++;
+        }
     }
 
     if ((inputRegister & 0xFFFFU) != 0U)
