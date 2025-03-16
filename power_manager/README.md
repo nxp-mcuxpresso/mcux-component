@@ -158,7 +158,8 @@ And then the user defines the GPIO parameter using the MCUXpresso SDK driver API
 
 `/* Configure the interrupt for SW pin. */`  
 `PINT_Init(PINT);`  
-`PINT_PinInterruptConfig(PINT, kPINT_PinInt0, kPINT_PinIntEnableFallEdge,pint_intr_callback);`  
+`PINT_PinInterruptConfig(PINT, kPINT_PinInt0, kPINT_PinIntEnableFallEdge);`
+`PINT_SetCallback(PINT, pint_intr_callback);`
 `PINT_EnableCallback(PINT); /* Enable callbacks for PINT */`  
 
 <br/>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NXP
+ * Copyright 2020, 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -249,7 +249,7 @@ static int32_t CMSIS_GPIO_InitPinAsOutput(gpio_cmsis_handle_t *handle, uint32_t 
     return ARM_DRIVER_OK;
 }
 
-static void CMSIS_GPIO_Callback(gpio_cmsis_handle_t *handle, pint_pin_int_t pintr, uint32_t pmatch_status)
+static void CMSIS_GPIO_Callback(gpio_cmsis_handle_t *handle, pint_pin_int_t pintr, pint_status_t *status)
 {
     /* Iterate all registered callback context */
     gpio_cmsis_context_t *cxt = CMSIS_GPIO_GetContextResource(handle, (uint32_t)pintr);
@@ -298,8 +298,8 @@ static int32_t CMSIS_GPIO_InitPinAsInput(gpio_cmsis_handle_t *handle,
         handle->interrupt_pins |= 0x01UL << pin;
 
         /* Configure the PINT */
-        PINT_PinInterruptConfig(handle->config->pint_base, map->pint_index, CMSIS_GPIO_MapIRQTypeToPINTType(irq_type),
-                                pint_callback);
+        PINT_PinInterruptConfig(handle->config->pint_base, map->pint_index, CMSIS_GPIO_MapIRQTypeToPINTType(irq_type));
+        PINT_SetCallback(handle->config->pint_base, pint_callback);
         PINT_EnableCallbackByIndex(handle->config->pint_base, map->pint_index);
     }
 
@@ -455,9 +455,9 @@ static int32_t GPIO_PORT0_InitPinAsOutput(uint32_t pin, uint32_t output_logic)
     return CMSIS_GPIO_InitPinAsOutput(&s_gpio_port0_handle, pin, output_logic);
 }
 
-static void GPIO_PORT0_Callback(pint_pin_int_t pintr, uint32_t pmatch_status)
+static void GPIO_PORT0_Callback(pint_pin_int_t pintr, pint_status_t *status)
 {
-    CMSIS_GPIO_Callback(&s_gpio_port0_handle, pintr, pmatch_status);
+    CMSIS_GPIO_Callback(&s_gpio_port0_handle, pintr, status->pmstatus);
 }
 
 static int32_t GPIO_PORT0_InitPinAsInput(uint32_t pin, uint32_t irq_type, ARM_GPIO_SignalEvent_t cb_event)
@@ -559,9 +559,9 @@ static int32_t GPIO_PORT1_InitPinAsOutput(uint32_t pin, uint32_t output_logic)
     return CMSIS_GPIO_InitPinAsOutput(&s_gpio_port1_handle, pin, output_logic);
 }
 
-static void GPIO_PORT1_Callback(pint_pin_int_t pintr, uint32_t pmatch_status)
+static void GPIO_PORT1_Callback(pint_pin_int_t pintr, pint_status_t *status)
 {
-    CMSIS_GPIO_Callback(&s_gpio_port1_handle, pintr, pmatch_status);
+    CMSIS_GPIO_Callback(&s_gpio_port1_handle, pintr, status->pmstatus);
 }
 
 static int32_t GPIO_PORT1_InitPinAsInput(uint32_t pin, uint32_t irq_type, ARM_GPIO_SignalEvent_t cb_event)
@@ -664,9 +664,9 @@ static int32_t GPIO_PORT2_InitPinAsOutput(uint32_t pin, uint32_t output_logic)
     return CMSIS_GPIO_InitPinAsOutput(&s_gpio_port2_handle, pin, output_logic);
 }
 
-static void GPIO_PORT2_Callback(pint_pin_int_t pintr, uint32_t pmatch_status)
+static void GPIO_PORT2_Callback(pint_pin_int_t pintr, pint_status_t *status)
 {
-    CMSIS_GPIO_Callback(&s_gpio_port2_handle, pintr, pmatch_status);
+    CMSIS_GPIO_Callback(&s_gpio_port2_handle, pintr, status->pmstatus);
 }
 
 static int32_t GPIO_PORT2_InitPinAsInput(uint32_t pin, uint32_t irq_type, ARM_GPIO_SignalEvent_t cb_event)
@@ -769,9 +769,9 @@ static int32_t GPIO_PORT3_InitPinAsOutput(uint32_t pin, uint32_t output_logic)
     return CMSIS_GPIO_InitPinAsOutput(&s_gpio_port3_handle, pin, output_logic);
 }
 
-static void GPIO_PORT3_Callback(pint_pin_int_t pintr, uint32_t pmatch_status)
+static void GPIO_PORT3_Callback(pint_pin_int_t pintr, pint_status_t *status)
 {
-    CMSIS_GPIO_Callback(&s_gpio_port3_handle, pintr, pmatch_status);
+    CMSIS_GPIO_Callback(&s_gpio_port3_handle, pintr, status->pmstatus);
 }
 
 static int32_t GPIO_PORT3_InitPinAsInput(uint32_t pin, uint32_t irq_type, ARM_GPIO_SignalEvent_t cb_event)
@@ -874,9 +874,9 @@ static int32_t GPIO_PORT4_InitPinAsOutput(uint32_t pin, uint32_t output_logic)
     return CMSIS_GPIO_InitPinAsOutput(&s_gpio_port4_handle, pin, output_logic);
 }
 
-static void GPIO_PORT4_Callback(pint_pin_int_t pintr, uint32_t pmatch_status)
+static void GPIO_PORT4_Callback(pint_pin_int_t pintr, pint_status_t *status)
 {
-    CMSIS_GPIO_Callback(&s_gpio_port4_handle, pintr, pmatch_status);
+    CMSIS_GPIO_Callback(&s_gpio_port4_handle, pintr, status->pmstatus);
 }
 
 static int32_t GPIO_PORT4_InitPinAsInput(uint32_t pin, uint32_t irq_type, ARM_GPIO_SignalEvent_t cb_event)
@@ -979,9 +979,9 @@ static int32_t GPIO_PORT5_InitPinAsOutput(uint32_t pin, uint32_t output_logic)
     return CMSIS_GPIO_InitPinAsOutput(&s_gpio_port5_handle, pin, output_logic);
 }
 
-static void GPIO_PORT5_Callback(pint_pin_int_t pintr, uint32_t pmatch_status)
+static void GPIO_PORT5_Callback(pint_pin_int_t pintr, pint_status_t *status)
 {
-    CMSIS_GPIO_Callback(&s_gpio_port5_handle, pintr, pmatch_status);
+    CMSIS_GPIO_Callback(&s_gpio_port5_handle, pintr, status->pmstatus);
 }
 
 static int32_t GPIO_PORT5_InitPinAsInput(uint32_t pin, uint32_t irq_type, ARM_GPIO_SignalEvent_t cb_event)
