@@ -194,6 +194,7 @@ enum _unity_module
     k_unity_rom_api            = 179,
     k_unity_timer_manager      = 180,
     k_unity_mcm                = 181,
+    k_unity_wkpu               = 182,
 };
 
 #define MAKE_UNITY_NUM(unity_module, caseID) (((uint32_t)(unity_module)*10000) + (uint32_t)(caseID))
