@@ -1,40 +1,46 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-config MCUX_COMPONENT_component.rng_adapter
+menuconfig  MCUX_COMPONENT_component.rng_adapter_interface
     bool "rng"
-    default n
     help
-        Enable component.rng_adapter component
-    select MCUX_COMPONENT_driver.rng
-    depends on MCUX_HAS_COMPONENT_driver.rng
+        Enable component rng_adapter
 
-config MCUX_COMPONENT_component.rnga_adapter
-    bool "rnga"
-    default n
-    help
-        Enable component.rnga_adapter component
-    select MCUX_COMPONENT_driver.rnga
-    depends on MCUX_HAS_COMPONENT_driver.rnga
+if MCUX_COMPONENT_component.rng_adapter_interface
+    choice MCUX_COMPONENT_component.rng_adapter_selection
+        prompt "rng adapter implementation"
 
-config MCUX_COMPONENT_component.trng_adapter
-    bool "trng"
-    default n
-    help
-        Enable component.trng_adapter component
-    select MCUX_COMPONENT_driver.trng
-    depends on MCUX_HAS_COMPONENT_driver.trng
+        config MCUX_COMPONENT_component.rng_adapter
+            bool "rng"
+            help
+                Enable component.rng_adapter component
+            select MCUX_COMPONENT_driver.rng
+            depends on MCUX_HAS_COMPONENT_driver.rng
 
-config MCUX_COMPONENT_component.JNrng_adapter
-    bool "JNrng"
-    default n
-    help
-        Enable component.JNrng_adapter component
-    select MCUX_COMPONENT_driver.jn_rng
-    depends on MCUX_HAS_COMPONENT_driver.jn_rng
+        config CONFIG_MCUX_COMPONENT_component.rnga_adapter
+            bool "rnga"
+            help
+                Enable component.rnga_adapter component
+            select MCUX_COMPONENT_driver.rnga
+            depends on MCUX_HAS_COMPONENT_driver.rnga
 
-config MCUX_COMPONENT_component.software_rng_adapter
-    bool "software_rng"
-    default n
-    help
-        Enable component.software_rng_adapter component
+        config MCUX_COMPONENT_component.trng_adapter
+            bool "trng"
+            help
+                Enable component.trng_adapter component
+            select MCUX_COMPONENT_driver.trng
+            depends on MCUX_HAS_COMPONENT_driver.trng
+
+        config MCUX_COMPONENT_component.JNrng_adapter
+            bool "JNrng"
+            help
+                Enable component.JNrng_adapter component
+            select MCUX_COMPONENT_driver.jn_rng
+            depends on MCUX_HAS_COMPONENT_driver.jn_rng
+
+        config MCUX_COMPONENT_component.software_rng_adapter
+            bool "software_rng"
+            help
+                Enable component.software_rng_adapter component
+    endchoice
+endif
