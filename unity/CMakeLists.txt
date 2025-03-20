@@ -4,6 +4,7 @@
 if(CONFIG_MCUX_COMPONENT_utilities.gcov)
     mcux_component_version(1.0.0)
     mcux_add_configuration(
+        COMPILERS gcc
         CC  "-DSDK_USE_SYSCALL_STUB=0 -DGCOV_ERROR_FILE -DGCOV_EXIT_AT_ERROR -DUNITY_DUMP_RESULT -DUNITY_DUMP_CASE_RESULT_ONLY -DMCUX_SEGGER_SEMIHOSTING -DGCOV_DO_COVERAGE=1 -DUNIT_TEST_COMBINE -DNDEBUG"
     )
     mcux_add_armgcc_configuration(
@@ -18,10 +19,12 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
                 examples_int/unit_tests/sdmmc/tools/segger_semihosting.c
                 examples_int/unit_tests/sdmmc/tools/segger_semihosting.h
         BASE_PATH ${SdkRootDirPath}/./
+        COMPILERS gcc
     )
     mcux_add_include(
         INCLUDES examples_int/unit_tests/sdmmc/tools
         BASE_PATH ${SdkRootDirPath}/./
+        COMPILERS gcc
     )
 endif()
 
@@ -31,10 +34,12 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov.board_init)
         SOURCES examples/_boards/${board}/board_init_gcov.c
                 examples/_boards/${board}/board_init_gcov.h
         BASE_PATH ${SdkRootDirPath}/./
+        COMPILERS gcc
     )
     mcux_add_include(
         INCLUDES examples/_boards/${board}/
         BASE_PATH ${SdkRootDirPath}/./
+        COMPILERS gcc
     )
 endif()
 
