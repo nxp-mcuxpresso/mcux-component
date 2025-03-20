@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT10XX
@@ -24,8 +24,8 @@ config MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT1180
     bool
     default y
     depends on (MCUX_HW_DEVICE_ID_MIMXRT1181xxxxx || MCUX_HW_DEVICE_ID_MIMXRT1182xxxxx ||\
-                MCUX_HW_DEVICE_ID_MIMXRT1187xxxxx || MCUX_HW_DEVICE_ID_MIMXRT1189xxxxx ||\
-                MCUX_HW_DEVICE_ID_MIMXRT1189Axxxxx)
+                MCUX_HW_DEVICE_ID_MIMXRT1186xxxxx || MCUX_HW_DEVICE_ID_MIMXRT1187xxxxx || \
+                MCUX_HW_DEVICE_ID_MIMXRT1189xxxxx)
 
 config MCUX_DEPENDENCY_COMPONENT_SILICON_ID_IMX8
     bool
