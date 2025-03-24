@@ -37,3 +37,16 @@ if (CONFIG_MCUX_COMPONENT_driver.slcd_gdh_1247wp)
         CC "-DSLCD_PANEL_GDH_1247WP_H"
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.slcd_od_6010)
+    mcux_add_source(
+        SOURCES ./OD-6010/OD-6010.c
+                ./OD-6010/OD-6010.h
+    )
+    mcux_add_include(
+        INCLUDES ./OD-6010
+    )
+    mcux_add_configuration(
+        CC "-DSLCD_PANEL_OD_6010_H"
+    )
+endif()

@@ -10,5 +10,7 @@ menuconfig MCUX_COMPONENT_driver.slcd_engine
           bool "GDH_1247WP"
         config MCUX_COMPONENT_driver.slcd_lcd_s401m16kr
           bool "LCD S401M16KR"
+        config MCUX_COMPONENT_driver.slcd_od_6010
+          bool "OD 6010"
       endchoice
     endif
