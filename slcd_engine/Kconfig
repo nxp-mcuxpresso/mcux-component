@@ -12,5 +12,7 @@ menuconfig MCUX_COMPONENT_driver.slcd_engine
           bool "LCD S401M16KR"
         config MCUX_COMPONENT_driver.slcd_od_6010
           bool "OD 6010"
+        config MCUX_COMPONENT_driver.slcd_ftp12557
+          bool "FTP12557"
       endchoice
     endif

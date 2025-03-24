@@ -50,3 +50,16 @@ if (CONFIG_MCUX_COMPONENT_driver.slcd_od_6010)
         CC "-DSLCD_PANEL_OD_6010_H"
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.slcd_ftp12557)
+    mcux_add_source(
+        SOURCES ./FTP12557/FTP12557.c
+                ./FTP12557/FTP12557.h
+    )
+    mcux_add_include(
+        INCLUDES ./FTP12557
+    )
+    mcux_add_configuration(
+        CC "-DSLCD_PANEL_FTP12557_H"
+    )
+endif()

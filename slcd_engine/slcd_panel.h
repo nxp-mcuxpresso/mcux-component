@@ -18,6 +18,8 @@
 #include "LCD-S401M16KR.h"
 #elif defined(SLCD_PANEL_OD_6010_H)
 #include "OD-6010.h"
+#elif defined(DSLCD_PANEL_FTP12557_H)
+#include "FTP12557.h"
 #endif
 
 #endif /* _SLCD_PANEL_H_ */
