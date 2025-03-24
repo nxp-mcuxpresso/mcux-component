@@ -198,6 +198,7 @@ enum _unity_module
     k_unity_stm                = 183,
     k_unity_cmu_fm             = 184,
     k_unity_cmu_fc             = 185,
+    k_unity_tspc               = 186,
 };
 
 #define MAKE_UNITY_NUM(unity_module, caseID) (((uint32_t)(unity_module)*10000) + (uint32_t)(caseID))
