@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
  * Copyright (c) 2016, Freescale Semiconductor, Inc. Not a Contribution.
- * Copyright 2016-2017,2020,2021,2024 NXP. Not a Contribution.
+ * Copyright 2016-2017,2020,2021,2024-2025 NXP. Not a Contribution.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -37,7 +37,7 @@
      (defined(RTE_SPI18) && RTE_SPI18 && defined(LPSPI18)) || (defined(RTE_SPI19) && RTE_SPI19 && defined(LPSPI19)) || \
      (defined(RTE_SPI20) && RTE_SPI20 && defined(LPSPI20)))
 
-#define ARM_LPSPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (10)) /* driver version */
+#define ARM_LPSPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (11)) /* driver version */
 
 /*
  * ARMCC does not support split the data section automatically, so the driver
@@ -609,10 +609,22 @@ static int32_t LPSPI_EdmaSend(const void *data, uint32_t num, cmsis_lpspi_edma_d
     status_t status;
     lpspi_transfer_t xfer = {0};
     uint32_t datawidth    = (LPSPI_GetTcr(lpspi->resource->base) & (uint32_t)LPSPI_TCR_FRAMESZ_MASK) >> LPSPI_TCR_FRAMESZ_SHIFT;
+    uint32_t bytesPerFrame = ((datawidth + 8U) / 8U);
+
+    if (num == 0U)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
+
+    uint32_t tmp = UINT32_MAX / num;
+    if (bytesPerFrame > tmp)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
 
     xfer.rxData   = NULL;
     xfer.txData   = (uint8_t *)data;
-    xfer.dataSize = num * ((datawidth + 8U) / 8U);
+    xfer.dataSize = num * bytesPerFrame;
 
     LPSPI_SetTransferConfigFlags(LPSPI_IsMaster(lpspi->resource->base), lpspi->resource->instance, &xfer);
 
@@ -650,10 +662,22 @@ static int32_t LPSPI_EdmaReceive(void *data, uint32_t num, cmsis_lpspi_edma_driv
     status_t status;
     lpspi_transfer_t xfer = {0};
     uint32_t datawidth    = (LPSPI_GetTcr(lpspi->resource->base) & (uint32_t)LPSPI_TCR_FRAMESZ_MASK) >> LPSPI_TCR_FRAMESZ_SHIFT;
+    uint32_t bytesPerFrame = ((datawidth + 8U) / 8U);
+
+    if (num == 0U)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
+
+    uint32_t tmp = UINT32_MAX / num;
+    if (bytesPerFrame > tmp)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
 
     xfer.txData   = NULL;
     xfer.rxData   = (uint8_t *)data;
-    xfer.dataSize = num * ((datawidth + 8U) / 8U);
+    xfer.dataSize = num * bytesPerFrame;
 
     LPSPI_SetTransferConfigFlags(LPSPI_IsMaster(lpspi->resource->base), lpspi->resource->instance, &xfer);
 
@@ -694,10 +718,22 @@ static int32_t LPSPI_EdmaTransfer(const void *data_out,
     status_t status;
     lpspi_transfer_t xfer = {0};
     uint32_t datawidth    = (LPSPI_GetTcr(lpspi->resource->base) & (uint32_t)LPSPI_TCR_FRAMESZ_MASK) >> LPSPI_TCR_FRAMESZ_SHIFT;
+    uint32_t bytesPerFrame = ((datawidth + 8U) / 8U);
+
+    if (num == 0U)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
+
+    uint32_t tmp = UINT32_MAX / num;
+    if (bytesPerFrame > tmp)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
 
     xfer.txData   = (uint8_t *)data_out;
     xfer.rxData   = (uint8_t *)data_in;
-    xfer.dataSize = num * ((datawidth + 8U) / 8U);
+    xfer.dataSize = num * bytesPerFrame;
 
     LPSPI_SetTransferConfigFlags(LPSPI_IsMaster(lpspi->resource->base), lpspi->resource->instance, &xfer);
 
@@ -830,6 +866,11 @@ static int32_t LPSPI_EdmaControl(uint32_t control, uint32_t arg, cmsis_lpspi_edm
             break;
 
         case ARM_SPI_SET_DEFAULT_TX_VALUE: /* Set default Transmit value; arg = value */
+            if (arg > 0xFFU)
+            {
+                result = ARM_DRIVER_ERROR_PARAMETER;
+                break;
+            }
             LPSPI_SetDummyData(lpspi->resource->base, (uint8_t)arg);
             result = ARM_DRIVER_OK;
             break;
@@ -1020,10 +1061,22 @@ static int32_t LPSPI_InterruptSend(const void *data, uint32_t num, cmsis_lpspi_i
     status_t status;
     lpspi_transfer_t xfer = {0};
     uint32_t datawidth    = (LPSPI_GetTcr(lpspi->resource->base) & (uint32_t)LPSPI_TCR_FRAMESZ_MASK) >> LPSPI_TCR_FRAMESZ_SHIFT;
+    uint32_t bytesPerFrame = ((datawidth + 8U) / 8U);
+
+    if (num == 0U)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
+
+    uint32_t tmp = UINT32_MAX / num;
+    if (bytesPerFrame > tmp)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
 
     xfer.rxData   = NULL;
     xfer.txData   = (uint8_t *)data;
-    xfer.dataSize = num * ((datawidth + 8U) / 8U);
+    xfer.dataSize = num * bytesPerFrame;
 
     LPSPI_SetTransferConfigFlags(LPSPI_IsMaster(lpspi->resource->base), lpspi->resource->instance, &xfer);
 
@@ -1061,10 +1114,22 @@ static int32_t LPSPI_InterruptReceive(void *data, uint32_t num, cmsis_lpspi_inte
     status_t status;
     lpspi_transfer_t xfer = {0};
     uint32_t datawidth    = (LPSPI_GetTcr(lpspi->resource->base) & (uint32_t)LPSPI_TCR_FRAMESZ_MASK) >> LPSPI_TCR_FRAMESZ_SHIFT;
+    uint32_t bytesPerFrame = ((datawidth + 8U) / 8U);
+
+    if (num == 0U)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
+
+    uint32_t tmp = UINT32_MAX / num;
+    if (bytesPerFrame > tmp)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
 
     xfer.txData   = NULL;
     xfer.rxData   = (uint8_t *)data;
-    xfer.dataSize = num * ((datawidth + 8U) / 8U);
+    xfer.dataSize = num * bytesPerFrame;
 
     LPSPI_SetTransferConfigFlags(LPSPI_IsMaster(lpspi->resource->base), lpspi->resource->instance, &xfer);
 
@@ -1105,10 +1170,22 @@ static int32_t LPSPI_InterruptTransfer(const void *data_out,
     status_t status;
     lpspi_transfer_t xfer = {0};
     uint32_t datawidth    = (LPSPI_GetTcr(lpspi->resource->base) & (uint32_t)LPSPI_TCR_FRAMESZ_MASK) >> LPSPI_TCR_FRAMESZ_SHIFT;
+    uint32_t bytesPerFrame = ((datawidth + 8U) / 8U);
+
+    if (num == 0U)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
+
+    uint32_t tmp = UINT32_MAX / num;
+    if (bytesPerFrame > tmp)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
 
     xfer.txData   = (uint8_t *)data_out;
     xfer.rxData   = (uint8_t *)data_in;
-    xfer.dataSize = num * ((datawidth + 8U) / 8U);
+    xfer.dataSize = num * bytesPerFrame;
 
     LPSPI_SetTransferConfigFlags(LPSPI_IsMaster(lpspi->resource->base), lpspi->resource->instance, &xfer);
 
@@ -1235,6 +1312,11 @@ static int32_t LPSPI_InterruptControl(uint32_t control, uint32_t arg, cmsis_lpsp
         case ARM_SPI_SET_DEFAULT_TX_VALUE: /* Set default Transmit value; arg = value */
             if (LPSPI_IsMaster(lpspi->resource->base))
             {
+                if (arg > 0xFFU)
+                {
+                    result = ARM_DRIVER_ERROR_PARAMETER;
+                    break;
+                }
                 LPSPI_SetDummyData(lpspi->resource->base, (uint8_t)arg);
             }
             else
