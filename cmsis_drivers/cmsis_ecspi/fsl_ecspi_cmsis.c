@@ -27,7 +27,7 @@
 
 #if ((defined(RTE_SPI1) && RTE_SPI1) || (defined(RTE_SPI2) && RTE_SPI2) || (defined(RTE_SPI3) && RTE_SPI3))
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2, 2) /* driver version */
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2, 3) /* driver version */
 
 /*
  * ARMCC does not support split the data section automatically, so the driver
