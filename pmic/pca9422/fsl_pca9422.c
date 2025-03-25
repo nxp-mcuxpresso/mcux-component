@@ -1240,6 +1240,9 @@ void PCA9422_GetRegulatorDefaultConfig(pca9422_regulator_config_t *RegConfig)
 
     RegConfig->I2C_SendFunc    = NULL;
     RegConfig->I2C_ReceiveFunc = NULL;
+    RegConfig->onCfg           = kPCA9422_OnCfgDisableModeControl;
+    RegConfig->modeSel         = kPCA9422_ModeSelPin;
+    RegConfig->modeI2C         = kPCA9422_ActiveModeI2C;
     RegConfig->standbyCtrl     = kPCA9422_StandbyCtrlPins;
     RegConfig->standbyCfg      = kPCA9422_StandbyCfgStandby;
     RegConfig->dvsCtrl2En      = kPCA9422_DVSCtrl2PinIgnore;
@@ -1309,7 +1312,7 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         goto out;
     }
     /* PWR_SEQ_CTRL */
-    regVal  = 0x06U;
+    regVal  = (uint8_t)config->onCfg | (uint8_t)config->modeSel | (uint8_t)config->modeI2C | 0x06U;
     regAddr = PCA9422_PWR_SEQ_CTRL;
     result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
     if (result == false)
@@ -2871,6 +2874,7 @@ void PCA9422_SwitchPowerMode(pca9422_handle_t *handle, pca9422_power_mode_t mode
     uint32_t pinMode;
     uint8_t regVal;
     bool result;
+    pca9422_mode_i2c_t i2cMode;
 
     switch (mode)
     {
@@ -2883,22 +2887,34 @@ void PCA9422_SwitchPowerMode(pca9422_handle_t *handle, pca9422_power_mode_t mode
         case kPCA9422_ActiveModeDVS6:
         case kPCA9422_ActiveModeDVS7:
             pinMode = 0x00U;
+            i2cMode = kPCA9422_ActiveModeI2C;
             break;
         case kPCA9422_StandbyMode:
             pinMode = 0x02U;
+            i2cMode = kPCA9422_StandbyModeI2C;
             break;
         case kPCA9422_DPStandbyMode:
             pinMode = 0x03U;
+            i2cMode = kPCA9422_DPStandbyModeI2C;
             break;
         case kPCA9422_SleepMode:
             pinMode = 0x01U;
+            i2cMode = kPCA9422_SleepModeI2C;
             break;
         default:
             pinMode = 0x00U;
+            i2cMode = kPCA9422_ActiveModeI2C;
             break;
     }
     /* Switch by Pins */
     POWER_SetPmicMode((uint32_t)pinMode, kCfg_Run);
+    /* Switch by I2C */
+    regVal = (uint8_t)i2cMode;
+    result = PCA9422_ModifyReg(handle, PCA9422_PWR_SEQ_CTRL, PCA9422_PWR_SEQ_CTRL_MODE_I2C, regVal);
+    if (!result)
+    {
+        LOG_INFO("Error I2C operation [0x%2X]\r\n", PCA9422_PWR_SEQ_CTRL);
+    }
 
     /* Read SYS_CFG1 */
     result = PCA9422_ReadRegs(handle, PCA9422_SYS_CFG1, &regVal, 1U);
