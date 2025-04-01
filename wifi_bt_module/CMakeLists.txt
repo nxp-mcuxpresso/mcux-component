@@ -27,6 +27,21 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.config)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.wifi_bt_combo_fw)
+    mcux_add_macro(
+        "-DCONFIG_WIFI_BT_CMOBO_DNLD\
+         -DCONFIG_WIFI_IND_DNLD=0\
+         -DCONFIG_WIFI_IND_RESET=0"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.bt_only_fw)
+    mcux_add_macro(
+        "-DCONFIG_BT_ONLY_DNLD\
+         -DCONFIG_BT_IND_DNLD"
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.RW61X)
 # Fix "Depended component component.wifi_bt_module.RW61X is not loaded"
 endif()
