@@ -215,7 +215,7 @@ static int32_t coredump_mflash_process_stored_dump(data_read_cb_t cb, void *cb_a
     struct flash_hdr_t hdr;
     uint32_t addr = CONFIG_MFLASH_COREDUMP_REGION_START_ADDR;
 
-    int32_t ret;
+    int32_t ret = 0;
 
     if (mflash_drv_read(addr, (uint32_t *)(uint32_t)&hdr, sizeof(hdr)) != kStatus_Success)
     {
