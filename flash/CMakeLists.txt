@@ -192,6 +192,10 @@ if (${board} STREQUAL evkmimxrt1180)
     mcux_set_variable(drv_folder mimxrt1180)
 endif()
 
+if (${board} STREQUAL frdmimxrt1186)
+    mcux_set_variable(drv_folder frdmimxrt1186)
+endif()
+
 if (${board} STREQUAL evkmimxrt1180a)
     mcux_set_variable(drv_folder mimxrt1180a)
 endif()
