@@ -42,8 +42,8 @@
 
 #define MEMFAULT_FLASH_SECTOR_SIZE MFLASH_SECTOR_SIZE
 #define MEMFAULT_FLASH_PAGE_SIZE MFLASH_PAGE_SIZE
-#define MEMFAULT_PHYS_ADDR(offset)    (CONFIG_MEMFAULT_FLASH_BASE_OFFSET + (offset)) /* physical address. */
-#define MEMFAULT_FLASH_LOG_ADDR(offset) (MFLASH_BASE_ADDRESS + MEMFAULT_PHYS_ADDR(offset)) /* Logical address. */
+#define MEMFAULT_PHYS_ADDR(offset)    ((uint32_t)CONFIG_MEMFAULT_FLASH_BASE_OFFSET + (uint32_t)(offset)) /* physical address. */
+#define MEMFAULT_FLASH_LOG_ADDR(offset) ((uint32_t)MFLASH_BASE_ADDRESS + MEMFAULT_PHYS_ADDR(offset)) /* Logical address. */
 
 void memfault_platform_coredump_storage_get_info(sMfltCoredumpStorageInfo *info)
 {
@@ -55,7 +55,7 @@ void memfault_platform_coredump_storage_get_info(sMfltCoredumpStorageInfo *info)
 
 static bool prv_op_within_flash_bounds(uint32_t offset, size_t data_len)
 {
-	return (offset + data_len) <= CONFIG_MEMFAULT_FLASH_SIZE;
+	return (((UINT32_MAX - data_len) >= offset) && ((offset + data_len) <= (uint32_t)CONFIG_MEMFAULT_FLASH_SIZE));
 }
 
 bool memfault_platform_coredump_storage_read(uint32_t offset, void *data, size_t read_len)
@@ -106,15 +106,15 @@ bool memfault_platform_coredump_storage_erase(uint32_t offset, size_t erase_size
     return true;
 }
 
-bool memfault_platform_coredump_storage_buffered_write(sCoredumpWorkingBuffer *block) {
-    if (!prv_op_within_flash_bounds(block->write_offset, MEMFAULT_COREDUMP_STORAGE_WRITE_SIZE))
+bool memfault_platform_coredump_storage_buffered_write(sCoredumpWorkingBuffer *blk) {
+    if (!prv_op_within_flash_bounds(blk->write_offset, MEMFAULT_COREDUMP_STORAGE_WRITE_SIZE))
     {
         return false;
     }
 
-    return (kStatus_Success == mflash_drv_page_program(MEMFAULT_PHYS_ADDR(block->write_offset), (uint32_t*)(block->data)));
+    return (kStatus_Success == mflash_drv_page_program(MEMFAULT_PHYS_ADDR(blk->write_offset), (uint32_t*)(blk->data)));
 }
 
 void memfault_platform_coredump_storage_clear(void) {
-    memfault_platform_coredump_storage_erase(0, MEMFAULT_FLASH_SECTOR_SIZE);
+    (void)memfault_platform_coredump_storage_erase(0, MEMFAULT_FLASH_SECTOR_SIZE);
 }
