@@ -6,6 +6,7 @@
 
 #include "fsl_os_abstraction.h"
 #include "fsl_debug_console.h"
+#include "fsl_pm_core.h"
 #include "fsl_adapter_sdu.h"
 
 /*******************************************************************************
@@ -153,7 +154,8 @@ typedef enum _sdu_state_t
 {
     SDU_UNINITIALIZED,
     SDU_INITIALIZING,
-    SDU_INITIALIZED
+    SDU_INITIALIZED,
+    SDU_UNINITIALIZING,
 }sdu_state_t;
 
 
@@ -240,6 +242,8 @@ static uint32_t sdu_dbg_level = SDU_DBG_LEVEL_WARN | SDU_DBG_LEVEL_ERROR;
 /*******************************************************************************
  * Private Functions
  ******************************************************************************/
+static status_t SDU_InitData(uint32_t used_fun_num, sdioslv_int_cpu_num_t cpu_num);
+static void SDU_DeinitData(void);
 static status_t SDU_InnerInit(void);
 static void SDU_InnerDeinit(void);
 static bool SDU_IsLinkUp(void);
@@ -303,6 +307,8 @@ static status_t SDU_InitData(uint32_t used_fun_num, sdioslv_int_cpu_num_t cpu_nu
 {
     uint32_t fun_num = 0U;
     sdioslv_fun_ctrl_t *fun_ctrl;
+    status_t stat = (status_t)kStatus_Success;
+
     OSA_SR_ALLOC();
 
     if (used_fun_num > (uint32_t)SDU_MAX_FUNCTION_NUM)
@@ -321,22 +327,13 @@ static status_t SDU_InitData(uint32_t used_fun_num, sdioslv_int_cpu_num_t cpu_nu
         fun_ctrl = (sdioslv_fun_ctrl_t *)OSA_MemoryAllocate(sizeof(sdioslv_fun_ctrl_t));
         if (fun_ctrl == NULL)
         {
-            break;
+            sdu_e("%s: fun_num=%u alloc mem fail", fun_num);
+            stat = (status_t)kStatus_Fail;
+            goto err;
         }
         /* OSA_MemoryAllocate() sets contents of allocated memory to be zero */
         fun_ctrl->regmap = (sdioslv_sdu_regmap_t *)((uint32_t)SDU_SDIO_CFG_BASE + (uint32_t)(SDIO_CCR_FUNC_OFFSET *(uint32_t)(fun_num + 1U)));
         sdu_ctrl.func_ctrl[fun_num] = fun_ctrl;
-    }
-
-    if (fun_num < used_fun_num)
-    {
-        while(fun_num > 0U)
-        {
-            OSA_MemoryFree(sdu_ctrl.func_ctrl[fun_num - 1U]);
-            fun_num--;
-        }
-        OSA_EXIT_CRITICAL();
-        return (status_t)kStatus_Fail;
     }
 
     SDU_REGS8_SETBITS(SDIO_CCR_FUNC0_CARD_INT_MSK, cpu_num);
@@ -344,8 +341,15 @@ static status_t SDU_InitData(uint32_t used_fun_num, sdioslv_int_cpu_num_t cpu_nu
     sdu_ctrl.used_fun_num = (uint8_t)used_fun_num;
     sdu_ctrl.cpu_num      = (uint8_t)cpu_num;
     sdu_ctrl.initialized  = 1;
+
+err:
+    if (stat != kStatus_Success)
+    {
+        SDU_DeinitData();
+        sdu_e("%s: stat=0x%x fail", __FUNCTION__, stat);
+    }
     OSA_EXIT_CRITICAL();
-    return (status_t)kStatus_Success;
+    return stat;
 }
 
 /*!
@@ -358,10 +362,6 @@ static void SDU_DeinitData(void)
     uint8_t fun_num;
     OSA_SR_ALLOC();
 
-    if (sdu_ctrl.initialized == 0U)
-    {
-        return;
-    }
     OSA_ENTER_CRITICAL();
     for (fun_num = 0U; fun_num < sdu_ctrl.used_fun_num; fun_num++)
     {
@@ -370,9 +370,7 @@ static void SDU_DeinitData(void)
             OSA_MemoryFree(sdu_ctrl.func_ctrl[fun_num]);
         }
     }
-    sdu_ctrl.used_fun_num = 0;
-    sdu_ctrl.cpu_num      = 0;
-    sdu_ctrl.initialized  = 0;
+    memset(&sdu_ctrl, 0x00, sizeof(sdu_ctrl));
     OSA_EXIT_CRITICAL();
 }
 
@@ -469,11 +467,7 @@ create_err:
 
 static status_t SDU_InnerInit(void)
 {
-    sdioslv_handle_config_t config;
-    status_t rc;
-    uint32_t i = 0;
-    uint32_t direction = 0;
-    transfer_buffer_t *trans_buf;
+    status_t rc = kStatus_Success;
 
     rc = SDU_InitData(SDU_USED_FUN_NUM, SDU_INT_CPU_NUM);
     if (rc != kStatus_Success)
@@ -481,6 +475,23 @@ static status_t SDU_InnerInit(void)
         sdu_e("Fail to initialize SDU: %d\r\n", (uint32_t)rc);
         return rc;
     }
+
+    return rc;
+}
+
+static void SDU_InnerDeinit(void)
+{
+    SDU_DeinitData();
+}
+
+static status_t SDU_InitBuffer(void)
+{
+    sdioslv_handle_config_t config;
+    status_t rc = kStatus_Success;
+    uint32_t i = 0;
+    uint32_t direction = 0;
+    transfer_buffer_t *trans_buf = NULL;
+
     config.fun_num        = 1;
     config.used_port_num  = SDU_ACTUAL_USE_PORT_NUM;
     config.cpu_num        = 1;//kSDIOSLV_INT_CPUNum3;
@@ -587,20 +598,34 @@ static status_t SDU_InnerInit(void)
         config.data_callback(kStatus_SDIOSLV_FuncRequestBuffer, (sdioslv_func_t)(config.fun_num), (sdioslv_port_t)i, NULL,
                               config.data_user_data);
     }
-done:
-    if (rc != kStatus_Success)
-    {
-        SDU_DeinitData();
-    }
 
+done:
+    if (rc != (status_t)kStatus_Success)
+    {
+        sdu_e("%s: rc=0x%x fail", __FUNCTION__, rc);
+    }
     return rc;
 }
 
-static void SDU_InnerDeinit(void)
+static status_t SDU_DeinitBuffer(void)
 {
-    SDU_DeinitData();
+    /* Code not support fully clear buffer, so comment below currently */
+#if 0
+    /* Clear cmd_buffer / event_buffer / data_buffer? Currently no. */
+    memset(&cmd_buffer, 0x00, sizeof(cmd_buffer));
+    memset(&event_buffer, 0x00, sizeof(event_buffer));
+    memset(&data_buffer, 0x00, sizeof(data_buffer));
 
-    ctrl_sdu.sdu_state = SDU_UNINITIALIZED;
+    /* Clear cmd_trans_buffer / cmdrsp_trans_buffer / event_trans_buffer / data_trans_buffer? Currently no. */
+    memset(&cmd_trans_buffer, 0x00, sizeof(cmd_trans_buffer));
+    memset(&cmdrsp_trans_buffer, 0x00, sizeof(cmdrsp_trans_buffer));
+    memset(&event_trans_buffer, 0x00, sizeof(event_trans_buffer));
+    memset(&data_trans_buffer, 0x00, sizeof(data_trans_buffer));
+
+    memset(&ctrl_sdu, 0x00, sizeof(ctrl_sdu));
+#endif
+
+    return kStatus_Success;
 }
 
 static void SDU_CmdCallback(
@@ -811,6 +836,11 @@ static void SDU_RecvTask(void *param)
         if (KOSA_StatusSuccess ==
                 OSA_EventWait((osa_event_handle_t)ctrl->event, osaEventFlagsAll_c, 0U, osaWaitForever_c, &ev))
         {
+            while (ctrl_sdu.sdu_state != SDU_INITIALIZED)
+            {
+                OSA_TimeDelay(1);
+            }
+
             if ((ev & SDU_CMD_RECEIVED) != 0U)
             {
                 (void)SDU_RecvCmdProcess();
@@ -818,7 +848,7 @@ static void SDU_RecvTask(void *param)
 
             if ((ev & SDU_DATA_RECEIVED) != 0U)
             {
-			    (void)SDU_RecvDataProcess();
+                (void)SDU_RecvDataProcess();
             }
         }
     } while (0U != gUseRtos_c);
@@ -1718,6 +1748,12 @@ static void SDU_SLV_IRQHandler(void)
 
     g_SDU_IRQHandler_cnt++;
 
+    if (SDU_IsLinkUp() != true)
+    {
+        sdu_e("%s: Skip for state=%u", __FUNCTION__, ctrl_sdu.sdu_state);
+        return;
+    }
+
     for (i = 0; i < sdu_ctrl.used_fun_num; i++)
     {
         fun_ctrl = sdu_ctrl.func_ctrl[i];
@@ -1914,21 +1950,28 @@ status_t SDU_Init(void)
         goto done;
     }
 
+    sdu_d("SDU Inner Init.\r\n");
+    rc = SDU_InitBuffer();
+    if (kStatus_Success != rc)
+    {
+        sdu_e("%s: SDU_InnerInit fail: 0x%x\r\n", __FUNCTION__, rc);
+        goto done_deinit;
+    }
+
     sdu_d("Create Data Recv Task.\r\n");
     if (KOSA_StatusSuccess != OSA_TaskCreate((osa_task_handle_t)ctrl_sdu.recvTaskId, OSA_TASK(SDU_RecvTask), &ctrl_sdu))
     {
         sdu_e("Can't create SDU data recv task.\r\n");
         rc = kStatus_Fail;
-        goto done;
+        goto done_deinit;
     }
 
     sdu_d("Create SDU event.\r\n");
     if (KOSA_StatusSuccess != OSA_EventCreate((osa_event_handle_t)ctrl_sdu.event, 1U))
     {
         sdu_e("Can't create SDU event.\r\n");
-        (void)OSA_TaskDestroy((osa_task_handle_t)ctrl_sdu.recvTaskId);
         rc = kStatus_Fail;
-        goto done;
+        goto done_destroy_task;
     }
 
     os_ClearPendingISR(SDU_IRQn);
@@ -1940,7 +1983,7 @@ status_t SDU_Init(void)
     if (kStatus_Success != rc)
     {
         sdu_e("%s: SDU_SetFwReady fail: 0x%x\r\n", __FUNCTION__, rc);
-        goto done;
+        goto done_destroy_event;
     }
 
     ctrl_sdu.sdu_state = SDU_INITIALIZED;
@@ -1950,13 +1993,18 @@ status_t SDU_Init(void)
     (void)SDU_InstallCallback(SDU_TYPE_FOR_WRITE_DATA, SDU_LoopbackRecvDataHandler);
 #endif
 
-done:
-    if (kStatus_Success != rc)
-    {
-        SDU_InnerDeinit();
-    }
     sdu_d("Leave %s: sdu_state=%d rc=0x%x.\r\n", __FUNCTION__, ctrl_sdu.sdu_state, rc);
     OSA_EXIT_CRITICAL();
+    return rc;
+
+done_destroy_event:
+    (void)OSA_EventDestroy((osa_event_handle_t)ctrl_sdu.event);
+done_destroy_task:
+    (void)OSA_TaskDestroy((osa_task_handle_t)ctrl_sdu.recvTaskId);
+done_deinit:
+    SDU_InnerDeinit();
+done:
+    sdu_e("Leave %s: sdu_state=%d rc=0x%x.\r\n", __FUNCTION__, ctrl_sdu.sdu_state, rc);
     return rc;
 }
 
@@ -1967,18 +2015,24 @@ void SDU_Deinit(void)
     OSA_ENTER_CRITICAL();
 
     sdu_d("Enter %s: sdu_state=%d.\r\n", __FUNCTION__, ctrl_sdu.sdu_state);
+
     if (ctrl_sdu.sdu_state == SDU_UNINITIALIZED)
     {
         sdu_e("%s: ctrl_sdu.sdu_state=0x%x\r\n", __FUNCTION__, ctrl_sdu.sdu_state);
         goto done;
     }
+    ctrl_sdu.sdu_state = SDU_UNINITIALIZING;
 
     (void)SDU_ClrFwReady();
 
     (void)OSA_TaskDestroy((osa_task_handle_t)ctrl_sdu.recvTaskId);
     (void)OSA_EventDestroy((osa_event_handle_t)ctrl_sdu.event);
 
+    SDU_DeinitBuffer();
+
     SDU_InnerDeinit();
+
+    ctrl_sdu.sdu_state = SDU_UNINITIALIZED;
 
 done:
     sdu_d("Leave %s: sdu_state=%d.\r\n", __FUNCTION__, ctrl_sdu.sdu_state);
@@ -1994,20 +2048,78 @@ status_t SDU_InstallCallback(sdu_for_write_type_t type, sdu_callback_t callback)
     return (status_t)kStatus_Success;
 }
 
+status_t SDU_CheckHostStatus(uint8_t *status)
+{
+    status_t ret = kStatus_Success;
+    uint8_t host_status = 0U;
+
+    ret = SDIOSLV_ReadScratchRegister(kSDIOSLV_FunctionNum1,
+        kSDIOSLV_ScratchGroup7, kSDIOSLV_ScratchOffset1, &host_status);
+    sdu_d("%s: SDIOSLV_ReadScratchRegister Group%u Offset%u %u",
+        __FUNCTION__, kSDIOSLV_ScratchGroup7, kSDIOSLV_ScratchOffset1, host_status);
+    if (ret != kStatus_Success) {
+        sdu_e("%s: SDIOSLV_ReadScratchRegister Group%u Offset%u fail: %d",
+            __FUNCTION__, kSDIOSLV_ScratchGroup7, kSDIOSLV_ScratchOffset1, ret);
+        return ret;
+    }
+
+    *status = host_status;
+
+    sdu_d("%s done: host_status=%u %u", __FUNCTION__, host_status, *status);
+    return ret;
+}
+
 status_t SDU_EnterPowerDown(void)
 {
+    OSA_SR_ALLOC();
+
+    OSA_ENTER_CRITICAL();
+
+    ctrl_sdu.sdu_state = SDU_UNINITIALIZING;
+
     (void)SDU_ClrFwReady();
+
     SDU_InnerDeinit();
+
+    OSA_EXIT_CRITICAL();
 
     return (status_t)kStatus_Success;
 }
 
 status_t SDU_ExitPowerDown(void)
 {
+    OSA_SR_ALLOC();
+
+    OSA_ENTER_CRITICAL();
+
     (void)SDU_SDIOSLVInit();
+
     (void)SDU_InnerInit();
+
+    OSA_EXIT_CRITICAL();
+
+    return (status_t)kStatus_Success;
+}
+
+
+status_t SDU_ExitPowerDownPhase2(void)
+{
+    OSA_SR_ALLOC();
+
+    OSA_ENTER_CRITICAL();
+
+    (void)SDU_InitBuffer();
+
+    os_ClearPendingISR(SDU_IRQn);
+    /* Interrupt must be maskable by FreeRTOS critical section */
+    NVIC_SetPriority(SDU_IRQn, 2);
+    (void)os_InterruptMaskSet(SDU_IRQn);
+
     (void)SDU_SetFwReady();
+
     ctrl_sdu.sdu_state = SDU_INITIALIZED;
+
+    OSA_EXIT_CRITICAL();
 
     return (status_t)kStatus_Success;
 }
