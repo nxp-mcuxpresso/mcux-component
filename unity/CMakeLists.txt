@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 if(CONFIG_MCUX_COMPONENT_utilities.gcov)
@@ -14,8 +14,6 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
     mcux_add_source(
         SOURCES components/unity/gcov_support.c
                 components/unity/gcov_support.h
-                components/unity/gcov_func.c
-                components/unity/gcov_func.h
                 examples_int/unit_tests/sdmmc/tools/segger_semihosting.c
                 examples_int/unit_tests/sdmmc/tools/segger_semihosting.h
         BASE_PATH ${SdkRootDirPath}/./
@@ -24,6 +22,19 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
     mcux_add_include(
         INCLUDES examples_int/unit_tests/sdmmc/tools
         BASE_PATH ${SdkRootDirPath}/./
+        COMPILERS gcc
+    )
+endif()
+
+if(MCUX_COMPONENT_utilities.gcov.func)
+    mcux_component_version(1.0.0)
+    mcux_add_source(
+        SOURCES gcov_func.c
+                gcov_func.h
+        COMPILERS gcc
+    )
+    mcux_add_include(
+        INCLUDES .
         COMPILERS gcc
     )
 endif()
