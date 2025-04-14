@@ -2,7 +2,12 @@
 @page driver_log Driver Change Log
 
 @section enet cmsis ENET CMSIS
-  Current ENET CMSIS driver version is 2.3
+  Current ENET CMSIS driver version is 2.4
+
+  - 2.4
+    - Bug Fixes
+      - RX/TX buffer interrupts are no longer being registered; notification is required
+        only when a complete frame is received or sent.
 
   - 2.3
     - Bug Fixes
