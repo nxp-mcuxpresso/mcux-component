@@ -185,7 +185,7 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
 
     do
     {
-        while (((uint32_t)(address & 0xFFu) + length) > 0xFFu)
+        while (length > 0xFFu - ((uint32_t)(address & 0xFFu)))
         {
             uint32_t bytes = 0x100u - (address & 0xFFu);
 
