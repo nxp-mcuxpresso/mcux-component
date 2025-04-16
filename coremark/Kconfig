@@ -1,0 +1,9 @@
+# Copyright 2025 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.coremark
+    bool "coremark_workload"
+    default n
+    help
+        Enable component.coremark component
+

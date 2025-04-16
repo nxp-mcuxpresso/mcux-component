@@ -52,6 +52,10 @@ menu "Component Configuration"
         rsource "codec/Kconfig"
     endmenu
 
+    menu "Coremark"
+        rsource "coremark/Kconfig"
+    endmenu
+
     menu "Peripheral Adaptor"
         rsource "button/Kconfig"
         rsource "common_task/Kconfig"

@@ -30,3 +30,4 @@ Origin:
       FreeRTOSConfig - Amazon (MIT) - https://github.com/FreeRTOS/FreeRTOS-Kernel
       aws_iot - Amazon (MIT) - https://github.com/FreeRTOS/iot-reference-nxp-rt1060
       MemFault - Memfault, Inc (Apache-2.0) - https://github.com/memfault/memfault-firmware-sdk
+      coremark - EEMBC (Apache-2.0) - https://github.com/eembc/coremark

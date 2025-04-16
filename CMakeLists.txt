@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 ##### cmakelists.txt start
@@ -7,6 +7,7 @@ mcux_add_cmakelists(${SdkRootDirPath}/components/audio)
 mcux_add_cmakelists(${SdkRootDirPath}/components/aws_iot)
 mcux_add_cmakelists(${SdkRootDirPath}/components/button)
 mcux_add_cmakelists(${SdkRootDirPath}/components/common_task)
+mcux_add_cmakelists(${SdkRootDirPath}/components/coremark)
 mcux_add_cmakelists(${SdkRootDirPath}/components/crc)
 mcux_add_cmakelists(${SdkRootDirPath}/components/crypto_benchmark OPTIONAL)
 mcux_add_cmakelists(${SdkRootDirPath}/components/debug_console)
