@@ -1888,7 +1888,7 @@ static void LPUART_StartRingBufferEDMA(hal_uart_handle_t handle)
                               tcdMemoryPoolPtr[uartHandle->instance]);
 
     /* Enable major interrupt for counting received bytes. */
-    uartDmaHandle->rxEdmaHandle.tcdPool[0U].CSR |= 0x2U;
+    EDMA_TcdEnableInterrupts(&uartDmaHandle->rxEdmaHandle.tcdPool[0U], (uint32_t)kEDMA_MajorInterruptEnable);
 
     /* There is no live chain, TCD block need to be installed in TCD registers. */
     EDMA_InstallTCD(uartDmaHandle->rxEdmaHandle.base, uartDmaHandle->rxEdmaHandle.channel,
