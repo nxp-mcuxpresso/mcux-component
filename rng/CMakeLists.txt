@@ -25,6 +25,12 @@ if (CONFIG_MCUX_COMPONENT_component.JNrng_adapter)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.ele_trng_adapter)
+    mcux_add_source(
+        SOURCES fsl_adapter_ele_trng.c
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.software_rng_adapter)
     mcux_add_source(
         SOURCES fsl_adapter_software_rng.c
