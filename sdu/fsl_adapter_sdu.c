@@ -6,7 +6,6 @@
 
 #include "fsl_os_abstraction.h"
 #include "fsl_debug_console.h"
-#include "fsl_pm_core.h"
 #include "fsl_adapter_sdu.h"
 
 /*******************************************************************************
