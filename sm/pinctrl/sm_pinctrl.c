@@ -20,7 +20,7 @@
  */
 void SM_PINCTRL_SetPinMux(sm_pinctrl_t *sm_pinctrl)
 {
-    scmi_pin_config_t configs[3];
+    scmi_pin_config_t configs[4];
     uint32_t numConfigs    = 0;
     uint32_t channel       = sm_pinctrl->channel;
     uint32_t muxRegister   = sm_pinctrl->mux_register;
