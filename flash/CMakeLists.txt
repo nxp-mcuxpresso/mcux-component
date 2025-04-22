@@ -144,7 +144,7 @@ if ((${device} STREQUAL MCXN947) OR (${device} STREQUAL MCXN547) OR (${device} S
     mcux_set_variable(drv_folder mcxnx4x)
 endif()
 
-if ((${device} STREQUAL MCXA153) OR (${device} STREQUAL MCXA156) OR (${device} STREQUAL MCXA166) OR (${device} STREQUAL MCXA276) OR (${device} STREQUAL MCXL255))
+if ((${device} STREQUAL MCXA153) OR (${device} STREQUAL MCXA156) OR (${device} STREQUAL MCXA346) OR (${device} STREQUAL MCXA276) OR (${device} STREQUAL MCXL255))
     mcux_set_variable(drv_folder mcxa)
 endif()
 
