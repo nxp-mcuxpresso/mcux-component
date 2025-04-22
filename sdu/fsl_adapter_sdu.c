@@ -439,8 +439,8 @@ static sdioslv_handle_t SDU_CreateHandle(sdioslv_handle_config_t *config)
     sdu_fsr->CardIntMode   = 0;//0x00000C02;//CARD_INT_MODE_MSK;
     sdu_fsr->CmdPortConfig =
         (uint32_t)((config->cmd_tx_format << (uint8_t)CMD_TX_LEN_BIT_OFFSET) | (config->cmd_rd_format << (uint8_t)CMD_RD_LEN_BIT_OFFSET));
-    sdu_fsr->Config2 = (uint32_t)((uint8_t)CONFIG2_DEFAULT_SETTING | (config->data_tx_format << (uint8_t)(CONFIG2_TX_LEN_BIT_OFFSET)) |
-        (config->data_rd_format << (uint8_t)(CONFIG2_RD_LEN_BIT_OFFSET)));
+    sdu_fsr->Config2 = (uint32_t)CONFIG2_DEFAULT_SETTING | (((uint32_t)config->data_tx_format) << ((uint8_t)CONFIG2_TX_LEN_BIT_OFFSET)) |
+        (((uint32_t)config->data_rd_format) << ((uint8_t)CONFIG2_RD_LEN_BIT_OFFSET));
 
     for (i = 0; i < SDU_PORT_MAX_TRANSFER; i++)
     {
