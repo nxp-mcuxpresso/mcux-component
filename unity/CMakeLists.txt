@@ -5,8 +5,9 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
     mcux_component_version(1.0.0)
     mcux_add_configuration(
         COMPILERS gcc
-        CC  "-DSDK_USE_SYSCALL_STUB=0 -DGCOV_ERROR_FILE -DGCOV_EXIT_AT_ERROR -DUNITY_DUMP_RESULT -DUNITY_DUMP_CASE_RESULT_ONLY -DMCUX_SEGGER_SEMIHOSTING -DGCOV_DO_COVERAGE=1 -DUNIT_TEST_COMBINE -DNDEBUG"
+        CC  "-DSDK_USE_SYSCALL_STUB=0 -DGCOV_ERROR_FILE -DGCOV_EXIT_AT_ERROR -DUNITY_DUMP_RESULT -DUNITY_DUMP_CASE_RESULT_ONLY -DGCOV_DO_COVERAGE=1 -DUNIT_TEST_COMBINE -DNDEBUG"
     )
+
     mcux_add_armgcc_configuration(
         LD "-Xlinker --defsym=__stack_size__=0x1000 -Xlinker --defsym=__heap_size__=0x4000 --coverage"
     )
@@ -14,11 +15,33 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
     mcux_add_source(
         SOURCES components/unity/gcov_support.c
                 components/unity/gcov_support.h
-                examples_int/unit_tests/sdmmc/tools/segger_semihosting.c
+                components/unity/gcov_common.c
+                components/unity/gcov_common.h
+        BASE_PATH ${SdkRootDirPath}/./
+        COMPILERS gcc
+    )
+
+    mcux_add_include(
+        INCLUDES components/unity
+        BASE_PATH ${SdkRootDirPath}/./
+        COMPILERS gcc
+    )
+endif()
+
+if(CONFIG_MCUX_COMPONENT_utilities.gcov_semihosting)
+    mcux_component_version(1.0.0)
+    mcux_add_configuration(
+        COMPILERS gcc
+        CC  "-DMCUX_SEGGER_SEMIHOSTING"
+    )
+
+    mcux_add_source(
+        SOURCES examples_int/unit_tests/sdmmc/tools/segger_semihosting.c
                 examples_int/unit_tests/sdmmc/tools/segger_semihosting.h
         BASE_PATH ${SdkRootDirPath}/./
         COMPILERS gcc
     )
+
     mcux_add_include(
         INCLUDES examples_int/unit_tests/sdmmc/tools
         BASE_PATH ${SdkRootDirPath}/./
@@ -26,7 +49,60 @@ if(CONFIG_MCUX_COMPONENT_utilities.gcov)
     )
 endif()
 
-if(MCUX_COMPONENT_utilities.gcov.func)
+if(CONFIG_MCUX_COMPONENT_utilities.gcov_shared_mem)
+    mcux_component_version(1.0.0)
+
+    mcux_add_configuration(
+        COMPILERS gcc
+        CC  "-DGCOV_SHARED_MEMORY=1"
+    )
+
+    mcux_add_source(
+        SOURCES gcov_shared_mem_redirect.c
+                gcov_shared_mem_redirect.h
+                gcov_shared_mem.h
+                gcov_shared_mem.c
+        COMPILERS gcc
+    )
+
+    mcux_add_include(
+        INCLUDES .
+        COMPILERS gcc
+    )
+endif()
+
+if(CONFIG_MCUX_COMPONENT_utilities.gcov.shared_mem_reader)
+    mcux_component_version(1.0.0)
+
+    mcux_add_configuration(
+        COMPILERS gcc
+        CC  "-DGCOV_SHARED_MEMORY_READER=1"
+    )
+
+    mcux_add_source(
+        SOURCES gcov_shared_mem_reader.c
+                gcov_shared_mem_reader.h
+                gcov_shared_mem.h
+                gcov_shared_mem.c
+        COMPILERS gcc
+    )
+
+    mcux_add_include(
+        INCLUDES .
+        COMPILERS gcc
+    )
+endif()
+
+if(CONFIG_MCUX_COMPONENT_utilities.gcov.shorten_paths)
+    mcux_component_version(1.0.0)
+
+    mcux_add_configuration(
+        COMPILERS gcc
+        CC  "-DGCOV_SHORTEN_PATHS=1"
+    )
+endif()
+
+if(CONFIG_MCUX_COMPONENT_utilities.gcov.func)
     mcux_component_version(1.0.0)
     mcux_add_source(
         SOURCES gcov_func.c

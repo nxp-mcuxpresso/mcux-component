@@ -16,4 +16,62 @@ if MCUX_COMPONENT_utilities.gcov
         bool "Add gcov functions."
         help
             Enable this option to add gcov functions for gcov initialization.
+
+    choice MCUX_COMPONENT_utilities.gcov.redirect
+        prompt "Select GCov redirection layer."
+
+        default MCUX_COMPONENT_utilities.gcov_semihosting
+
+        config MCUX_COMPONENT_utilities.gcov_semihosting
+            bool "Redirect gcov data via Semihosting"
+
+        config MCUX_COMPONENT_utilities.gcov_uart
+            bool "Redirect gcov data via UART"
+
+        config MCUX_COMPONENT_utilities.gcov_shared_mem
+            bool "Redirect gcov data via Shared Memory"
+    endchoice
+
+    config MCUX_COMPONENT_utilities.gcov.shared_mem_reader
+        default n
+        bool "Enable Shared Memory Reader."
+        help
+            Enable this option to add GCOV shared memory reader functionality.
+
+            This feature allows the primary core to collect code coverage data from
+            secondary cores over shared memory. When enabled:
+
+            - The primary core will include code to read GCOV data (.gcda files)
+            from a shared memory region
+            - Secondary cores must have MCUX_COMPONENT_utilities.gcov_shared_mem
+            enabled to write their coverage data to this shared memory
+            - After the primary core completes its own gcov_dump operation, it will
+            automatically read and process any coverage data from secondary cores
+
+            This provides a complete code coverage solution for multi-core systems,
+            where coverage data from all cores is collected and combined into a
+            single report.
+
+            Enable this on the primary core when you need code coverage analysis
+            from secondary cores in your multi-core application.
+
+    config MCUX_COMPONENT_utilities.gcov.shorten_paths
+        default n
+        bool "Enable Gcov to shorten paths."
+        help
+            Enable this option to automatically shorten long file paths in GCOV
+            output (.gcda files). This addresses limitations in semihosting and
+            shared memory implementations, which typically have maximum path
+            length restrictions (around 250 characters).
+
+            When enabled:
+            - Long paths will be shortened while preserving the file basename and extension
+            - Multiple parent directories may be removed to fit within limits
+            - File paths longer than the limit will still be processed correctly
+
+            You should enable this option if:
+            - Your build generates .gcda files with very long paths
+            - You encounter "max. file name size exceeded" errors during semihosting
+            - You're working with complex projects that have deep directory structures
+
 endif

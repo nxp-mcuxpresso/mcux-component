@@ -34,6 +34,14 @@
 #include <stdio.h>
 #include "gcov_support.h"
 
+#if ((!GCOV_SHARED_MEMORY) && (GCOV_SHARED_MEMORY_READER == 1))
+#include "gcov_shared_mem_reader.h"
+#endif
+
+#if (GCOV_SHARED_MEMORY)
+#include "gcov_shared_mem_redirect.h"
+#endif
+
 #if GCOV_USE_TCOV
 #include "tcov.h"
 #endif
@@ -74,12 +82,25 @@ void gcov_dump_data(void)
 
     gcov_exit();
 #elif GCOV_DO_COVERAGE
-#if __GNUC__ > 11 || (__GNUC__ == 11 && __GNUC_MINOR__ >= 0)
-    __gcov_dump();
-    __gcov_reset();
-#else
-    __gcov_flush();
-#endif
+    #if (GCOV_SHARED_MEMORY)
+        gcov_shared_mem_redirect_enable(true);
+        gcov_shared_mem_redirect_init();
+    #endif
+
+    #if __GNUC__ > 11 || (__GNUC__ == 11 && __GNUC_MINOR__ >= 0)
+        __gcov_dump();
+        __gcov_reset();
+    #else
+        __gcov_flush();
+    #endif
+
+    #if (GCOV_SHARED_MEMORY)
+        gcov_shared_mem_notify_complete();
+    #endif
+
+    #if ((!GCOV_SHARED_MEMORY) && (GCOV_SHARED_MEMORY_READER == 1))
+        gcov_shared_mem_read();
+    #endif
 #endif
 }
 
