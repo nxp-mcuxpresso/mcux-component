@@ -498,6 +498,12 @@ static int32_t ENET_CommonReadFrame(cmsis_enet_mac_driver_state_t *enet, uint8_t
 {
     status_t status;
 
+    /* Check if len exceeds int32_t maximum value. */
+    if (len > 0x7FFFFFFFU)
+    {
+        return ARM_DRIVER_ERROR_PARAMETER;
+    }
+
     status = ENET_ReadFrame(enet->resource->base, enet->handle, frame, len, 0, NULL);
     if (status != kStatus_Success)
     {
