@@ -181,3 +181,16 @@ if (CONFIG_MCUX_COMPONENT_component.phytja1120)
             ./device/phytja1120/fsl_phytja1120.h
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.phyyt8521)
+    mcux_add_include(
+        INCLUDES
+            ./device/phyyt8521
+    )
+
+    mcux_add_source(
+        SOURCES
+            ./device/phyyt8521/fsl_phyyt8521.c
+            ./device/phyyt8521/fsl_phyyt8521.h
+    )
+endif()

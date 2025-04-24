@@ -56,3 +56,7 @@ config MCUX_COMPONENT_component.phytja1100
 config MCUX_COMPONENT_component.phytja1120
     bool "tja1120"
     select MCUX_COMPONENT_component.eth_phy_common
+
+config MCUX_COMPONENT_component.phyyt8521
+    bool "yt8521"
+    select MCUX_COMPONENT_component.eth_phy_common
