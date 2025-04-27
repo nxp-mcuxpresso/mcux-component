@@ -8,6 +8,9 @@
 #include "fsl_device_registers.h"
 #include "fsl_mu.h"
 #include "sm_platform.h"
+#if SCMI_LMM_POWER_CHANGE_PROCESSED
+#include "app_srtm.h"
+#endif
 
 static MU_Type *const s_muBases[] = MU_BASE_PTRS;
 static IRQn_Type const s_muIrqs[] = MU_IRQS;
@@ -44,6 +47,7 @@ void SM_Platform_Init(void)
     /* Configure MU */
     MU_Init(base);
     EnableIRQ(irq);
+    NVIC_SetPriority(irq, SCMI_MU_IRQ_PRIORITY);
     MU_EnableInterrupts(base, (uint32_t)kMU_GenInt1InterruptEnable);
     MU_EnableInterrupts(base, (uint32_t)kMU_GenInt2InterruptEnable);
 
@@ -147,7 +151,10 @@ static void SM_Platform_Handler(void)
 
                 if (SCMI_LmmEvent(SM_PLATFORM_NOTIFY, NULL, &eventLm, &notifyFlags) == SCMI_ERR_SUCCESS)
                 {
-                    PRINTF("\nSCMI LMM notification: LM %u, flags=0x%08X\r\n", eventLm, notifyFlags);
+#if SCMI_LMM_POWER_CHANGE_PROCESSED
+                   /* Handle peer acore power changes notification to assure right communication. */
+                   APP_SRTM_HandleLmmPowerChange(eventLm, notifyFlags);
+#endif
                 }
             }
             else if (protocolId == SCMI_PROTOCOL_BBM)

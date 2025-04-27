@@ -60,6 +60,12 @@
 #define SCMI_LM_REQUEST_M7_SUSPEND_ENABLE (0)
 #endif
 
+#ifndef SCMI_LMM_POWER_CHANGE_PROCESSED
+#define SCMI_LMM_POWER_CHANGE_PROCESSED (0)
+#endif
+
+#define SCMI_MU_IRQ_PRIORITY   (3U)
+
 /*******************************************************************************
  * API
  ******************************************************************************/
