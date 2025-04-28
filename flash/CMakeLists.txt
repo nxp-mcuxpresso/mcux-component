@@ -240,4 +240,8 @@ if ((${board} STREQUAL frdmmcxw23) OR (${board} STREQUAL mcxw23evk))
     mcux_set_variable(drv_folder mcxw23x)
 endif()
 
+if ((${device} STREQUAL MCXE247))
+    mcux_set_variable(drv_folder mcxe2x)
+endif()
+
 mcux_add_cmakelists(${SdkRootDirPath}/components/flash/mflash/${drv_folder} OPTIONAL)
