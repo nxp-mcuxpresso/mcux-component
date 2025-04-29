@@ -2,14 +2,18 @@
 @page driver_log Driver Change Log
 
 @section lpuart_cmsis  LPUART_CMSIS
-  Current LPUART_CMSIS driver version is 2.6
+  Current LPUART_CMSIS driver version is 2.7
+
+  - 2.7
+    - Improvement
+      - Added support for new LPUART instance naming.
 
   - 2.6
-    - Imporvement
+    - Improvement
       - Added support of UART6-UART12 in fsl_lpuart_cmsis.c.
 
   - 2.5
-    - Imporvement
+    - Improvement
       - Changed DMA_Type to void for different platform dma.
 
   - 2.4
