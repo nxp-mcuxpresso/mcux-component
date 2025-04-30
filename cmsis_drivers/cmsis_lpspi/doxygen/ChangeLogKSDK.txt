@@ -2,7 +2,11 @@
 @page driver_log Driver Change Log
 
 @section lpspi_cmsis LPSPI_CMSIS
-  Current LPSPI_CMSIS driver version is 2.11
+  Current LPSPI_CMSIS driver version is 2.12
+
+  - 2.12
+    - Improvement
+      - Added support for new LPSPI instance naming.
 
   - 2.11
     - Bug Fixes
@@ -22,7 +26,7 @@
       - Fixed rule 10.3 in LPSPI_EdmaPowerControl.
 
   - 2.7
-    - Imporvement
+    - Improvement
       - Changed DMA_Type to void for different platform dma.
 
   - 2.6
