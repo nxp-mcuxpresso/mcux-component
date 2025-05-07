@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_driver.fxas21002cq)
@@ -114,6 +114,19 @@ if (CONFIG_MCUX_COMPONENT_driver.mpl3115a2)
 
     mcux_add_include(
         INCLUDES ./mpl3115a2
+    )
+
+endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.nmh1000)
+
+    mcux_add_source(
+        SOURCES ./nmh1000/fsl_nmh1000.h
+                ./nmh1000/fsl_nmh1000.c
+    )
+
+    mcux_add_include(
+        INCLUDES ./nmh1000
     )
 
 endif()
