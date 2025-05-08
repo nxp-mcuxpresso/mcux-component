@@ -144,6 +144,19 @@ if (CONFIG_MCUX_COMPONENT_driver.p3t1755)
 
 endif()
 
+if (CONFIG_MCUX_COMPONENT_driver.tmp117)
+
+    mcux_add_source(
+        SOURCES ./tmp117/fsl_tmp117.h
+                ./tmp117/fsl_tmp117.c
+    )
+
+    mcux_add_include(
+        INCLUDES ./tmp117
+    )
+
+endif()
+
 if (CONFIG_MCUX_COMPONENT_driver.tsl2561)
 
     mcux_add_source(

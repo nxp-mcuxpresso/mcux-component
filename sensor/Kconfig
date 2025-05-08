@@ -65,6 +65,11 @@ config MCUX_COMPONENT_driver.nmh1000
     select MCUX_COMPONENT_driver.common
     select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
 
+config MCUX_COMPONENT_driver.tmp117
+    bool "tmp117"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_DEPENDENCY_COMPONENT_component.sensor_use_i2c_dependency_options
+
 config MCUX_COMPONENT_driver.p3t1755
     bool "p3t1755"
     select MCUX_COMPONENT_driver.common
