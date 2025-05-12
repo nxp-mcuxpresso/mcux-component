@@ -242,6 +242,7 @@ void SM_Platform_Handler(void)
     }
 }
 
+#if 0
 /*!
  * @brief MU8_A IRQ Handler
  */
@@ -249,3 +250,4 @@ void MU8_A_IRQHandler(void)
 {
     SM_Platform_Handler();
 }
+#endif
