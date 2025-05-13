@@ -54,13 +54,6 @@ typedef struct _nmh_config
 } nmh_config_t;
 
 
-/*******************************************************************************
- * Prototypes
- ******************************************************************************/
-static status_t LPI2C_WriteReg(LPI2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t value);
-static status_t LPI2C_ReadReg(LPI2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t *rxBuff, uint32_t rxSize);
-
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
