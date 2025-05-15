@@ -14,11 +14,11 @@ config MCUX_COMPONENT_component.silicon_id
     select MCUX_COMPONENT_component.silicon_id_imx93 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_IMX93
     select MCUX_COMPONENT_component.silicon_id_scfw if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_SCFW
     select MCUX_COMPONENT_component.silicon_id_rw610 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RW610
+    select MCUX_COMPONENT_component.silicon_id_mcxn if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_MCXN
 
     select MCUX_COMPONENT_driver.sim if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_SIM
     select MCUX_COMPONENT_driver.iap if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_IAP
     select MCUX_COMPONENT_driver.flashiap if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_FLASHIAP
-    select MCUX_COMPONENT_driver.romapi_flashiap if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_ROMAPI_FLASHIAP
 
 config MCUX_COMPONENT_component.silicon_id_imxrt10xx
     bool
@@ -47,3 +47,7 @@ config MCUX_COMPONENT_component.silicon_id_scfw
 config MCUX_COMPONENT_component.silicon_id_rw610
     bool
     depends on MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RW610
+
+config MCUX_COMPONENT_component.silicon_id_mcxn
+    bool
+    depends on MCUX_DEPENDENCY_COMPONENT_SILICON_ID_MCXN
