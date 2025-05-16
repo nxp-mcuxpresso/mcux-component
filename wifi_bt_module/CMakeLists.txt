@@ -42,6 +42,13 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.bt_only_fw)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.slim)
+    mcux_add_macro(
+        "-DCONFIG_LWIP_LOW_MEM_FOOTPRINT=1\
+         -DCONFIG_FREERTOS_LOW_MEMORY_FOOTPRINT=1"
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.RW61X)
 # Fix "Depended component component.wifi_bt_module.RW61X is not loaded"
 endif()

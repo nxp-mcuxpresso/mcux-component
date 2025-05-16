@@ -10,6 +10,9 @@ menu "wifi_bt_module"
         bool "wifi_bt_combo_firmware"
     config MCUX_COMPONENT_component.wifi_bt_module.bt_only_fw
         bool "bt_only_firmware"
+    config MCUX_COMPONENT_component.wifi_bt_module.slim
+        bool "wifi_bt slim"
+        select MCUX_COMPONENT_middleware.wifi.slim
     if MCUX_COMPONENT_component.wifi_bt_module.config
         choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.selection
             prompt "Select WiFi-BT Module"
