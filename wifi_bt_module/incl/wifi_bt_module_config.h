@@ -9,30 +9,8 @@
 
 /* Wi-Fi boards configuration list */
 
-/* AzureWave AW-NM191-uSD */
-#if defined(WIFI_88W8801_BOARD_AW_NM191_USD)
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW.h"
-#define SD8801
-#define SDMMCHOST_OPERATION_VOLTAGE_1V8
-#define WIFI_BT_USE_USD_INTERFACE
-#define WLAN_ED_MAC_CTRL                        \
-    {                                           \
-        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x1B \
-    }
-
-/* AzureWave AW-NM191MA */
-#elif defined(WIFI_88W8801_BOARD_AW_NM191MA)
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW.h"
-#define SD8801
-#define SDMMCHOST_OPERATION_VOLTAGE_1V8
-#define WIFI_BT_USE_M2_INTERFACE
-#define WLAN_ED_MAC_CTRL                        \
-    {                                           \
-        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x1B \
-    }
-
 /* AzureWave AW-AM457-uSD */
-#elif defined(WIFI_IW416_BOARD_AW_AM457_USD)
+#if defined(WIFI_IW416_BOARD_AW_AM457_USD)
 #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW.h"
 #define SD8978
 #define SDMMCHOST_OPERATION_VOLTAGE_1V8
@@ -113,38 +91,6 @@
 #define WLAN_ED_MAC_CTRL                                                               \
     {                                                                                  \
         .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x9, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0xC \
-    }
-
-/* Murata 2DS + Murata uSD-M.2 adapter */
-#elif defined(WIFI_88W8801_BOARD_MURATA_2DS_USD)
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_CA.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_EU.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_JP.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_US.h"
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_WW.h"
-#define SD8801
-#define SDMMCHOST_OPERATION_VOLTAGE_1V8
-#define SD_TIMING_MAX kSD_TimingSDR25HighSpeedMode
-#define WIFI_BT_USE_USD_INTERFACE
-#define WLAN_ED_MAC_CTRL                        \
-    {                                           \
-        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x0E \
-    }
-
-/* Murata 2DS */
-#elif defined(WIFI_88W8801_BOARD_MURATA_2DS_M2)
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_CA.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_EU.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_JP.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_US.h"
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2DS_WW.h"
-#define SD8801
-#define SDMMCHOST_OPERATION_VOLTAGE_1V8
-#define SD_TIMING_MAX kSD_TimingSDR25HighSpeedMode
-#define WIFI_BT_USE_M2_INTERFACE
-#define WLAN_ED_MAC_CTRL                        \
-    {                                           \
-        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x0E \
     }
 
 /* Murata 1XK + Murata uSD-M.2 adapter */
@@ -269,17 +215,6 @@
 #define WLAN_ED_MAC_CTRL                                                               \
     {                                                                                  \
         .ed_ctrl_2g = 0x1, .ed_offset_2g = 0xA, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0xA \
-    }
-
-/* u-blox EVK-LILY-W131/-W132 */
-#elif defined(WIFI_88W8801_BOARD_UBX_LILY_W1_USD)
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW.h"
-#define SD8801
-#define SDMMCHOST_OPERATION_VOLTAGE_3V3
-#define WIFI_BT_USE_USD_INTERFACE
-#define WLAN_ED_MAC_CTRL                        \
-    {                                           \
-        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x1B \
     }
 
 /* u-blox EVK-JODY-W263 */

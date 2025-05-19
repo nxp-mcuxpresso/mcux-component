@@ -7,7 +7,6 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.tx_pwr_limits)
                 AzureWave/tx_pwr_limits/wlan_txpwrlimit_cfg_WW_rw610.h
                 Murata/tx_pwr_limits/wlan_txpwrlimit_cfg_murata_1XK_WW.h
                 Murata/tx_pwr_limits/wlan_txpwrlimit_cfg_murata_1ZM_WW.h
-                Murata/tx_pwr_limits/wlan_txpwrlimit_cfg_murata_2DS_WW.h
                 Murata/tx_pwr_limits/wlan_txpwrlimit_cfg_murata_2EL_WW.h
                 Murata/tx_pwr_limits/wlan_txpwrlimit_cfg_murata_NH.h
                 u-blox/tx_pwr_limits/wlan_txpwrlimit_cfg_jody_w5_WW.h
@@ -62,36 +61,6 @@ endif()
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x)
     mcux_add_macro(
         "-DWIFI_BOARD_FRDM_RW61X"
-    )
-endif()
-
-if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191ma)
-     mcux_add_macro(
-        "-DWIFI_88W8801_BOARD_AW_NM191MA"
-    )
-endif()
-
-if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw_nm191_usd)
-     mcux_add_macro(
-        "-DWIFI_88W8801_BOARD_AW_NM191_USD"
-    )
-endif()
-
-if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_m2)
-     mcux_add_macro(
-        "-DWIFI_88W8801_BOARD_MURATA_2DS_M2"
-    )
-endif()
-
-if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ds_usd)
-     mcux_add_macro(
-        "-DWIFI_88W8801_BOARD_MURATA_2DS_USD"
-    )
-endif()
-
-if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_ubx_lily_w1_usd)
-     mcux_add_macro(
-        "-DWIFI_88W8801_BOARD_UBX_LILY_W1_USD"
     )
 endif()
 
