@@ -292,6 +292,10 @@
 #define RW610
 #define WIFI_BT_USE_IMU_INTERFACE
 #define CONFIG_SOC_SERIES_RW6XX_REVISION_A2 1
+#define WLAN_ED_MAC_CTRL                                                               \
+    {                                                                                  \
+        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x8, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0x8 \
+    }
 
 /* Redfinch FRDMRW61X */
 #elif defined(WIFI_BOARD_FRDM_RW61X)
@@ -300,6 +304,10 @@
 #define FRDMRW610
 #define WIFI_BT_USE_IMU_INTERFACE
 #define CONFIG_SOC_SERIES_RW6XX_REVISION_A2 1
+#define WLAN_ED_MAC_CTRL                                                               \
+    {                                                                                  \
+        .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x8, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0x8 \
+    }
 
 /* K32W061 transceiver */
 #elif defined(K32W061_TRANSCEIVER)
