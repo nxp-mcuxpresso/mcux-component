@@ -48,10 +48,10 @@ struct flash_hdr_t
     uint16_t checksum;
 
     /* Error */
-    int32_t error;
+    int error;
 } __packed;
 
-typedef int32_t (*data_read_cb_t)(void *arg, uint8_t *buf, size_t len);
+typedef int (*data_read_cb_t)(void *arg, uint8_t *buf, size_t len);
 
 static void coredump_mflash_page_sync(uint8_t *buf, size_t bufLen, bool flush, bool rmw)
 {
@@ -59,7 +59,7 @@ static void coredump_mflash_page_sync(uint8_t *buf, size_t bufLen, bool flush, b
     /* step 2: write data into flash, and this addr is consecutive. */
     /* step 3: coredump header start from 0x0. */
 
-    int32_t status   = 0;
+    int status   = 0;
     uint32_t addr    = backend_ctx.addrOffset;
     size_t remaining = bufLen;
     uint8_t *ptr     = buf;
@@ -199,7 +199,7 @@ static void coredump_mflash_backend_buffer_output(uint8_t *buf, size_t buflen)
     coredump_mflash_page_sync(buf, buflen, false, false);
 }
 
-static int32_t coredump_mflash_calc_buf_checksum(void *arg, uint8_t *buf, size_t len)
+static int coredump_mflash_calc_buf_checksum(void *arg, uint8_t *buf, size_t len)
 {
     for (uint32_t i = 0UL; i < len; i++)
     {
@@ -210,12 +210,12 @@ static int32_t coredump_mflash_calc_buf_checksum(void *arg, uint8_t *buf, size_t
     return 0;
 }
 
-static int32_t coredump_mflash_process_stored_dump(data_read_cb_t cb, void *cb_arg)
+static int coredump_mflash_process_stored_dump(data_read_cb_t cb, void *cb_arg)
 {
     struct flash_hdr_t hdr;
     uint32_t addr = CONFIG_MFLASH_COREDUMP_REGION_START_ADDR;
 
-    int32_t ret = 0;
+    int ret = 0;
 
     if (mflash_drv_read(addr, (uint32_t *)(uint32_t)&hdr, sizeof(hdr)) != kStatus_Success)
     {
@@ -277,12 +277,12 @@ static int32_t coredump_mflash_process_stored_dump(data_read_cb_t cb, void *cb_a
     return ret;
 }
 
-static int32_t coredump_mflash_get_stored_dump(uint32_t addr, uint8_t *dst, size_t len)
+static int coredump_mflash_get_stored_dump(uint32_t addr, uint8_t *dst, size_t len)
 {
     struct flash_hdr_t hdr;
     uint32_t tmpAddr = ((addr == 0UL) ? CONFIG_MFLASH_COREDUMP_REGION_START_ADDR : addr);
 
-    int32_t ret;
+    int ret;
 
     if (mflash_drv_read(tmpAddr, (uint32_t *)(uint32_t)&hdr, sizeof(hdr)) != kStatus_Success)
     {
@@ -302,7 +302,7 @@ static int32_t coredump_mflash_get_stored_dump(uint32_t addr, uint8_t *dst, size
     /* Return the dump size if no destination buffer available. */
     if (dst == NULL)
     {
-        ret = (int32_t)hdr.size;
+        ret = (int)hdr.size;
         return ret;
     }
 
@@ -318,9 +318,9 @@ static int32_t coredump_mflash_get_stored_dump(uint32_t addr, uint8_t *dst, size
     return ret;
 }
 
-static int32_t coredump_mflash_backend_query(enum coredump_query_id query_id, void *arg)
+static int coredump_mflash_backend_query(enum coredump_query_id query_id, void *arg)
 {
-    int32_t ret;
+    int ret;
 
     switch (query_id)
     {
@@ -350,9 +350,9 @@ static int32_t coredump_mflash_backend_query(enum coredump_query_id query_id, vo
     return ret;
 }
 
-static int32_t coredump_mflash_backend_cmd(enum coredump_cmd_id cmd_id, void *arg)
+static int coredump_mflash_backend_cmd(enum coredump_cmd_id cmd_id, void *arg)
 {
-    int32_t ret;
+    int ret;
 
     switch (cmd_id)
     {
