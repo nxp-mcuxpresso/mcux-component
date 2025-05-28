@@ -38,8 +38,8 @@ if ((${device} STREQUAL KW47B42ZB7) OR (${device} STREQUAL KW47B42Z83) OR (${dev
     mcux_set_variable(pm_device_foldername KW47B42ZB7)
 endif()
 
-if (${device} STREQUAL MCXA276)
-    mcux_set_variable(pm_device_foldername MCXA276)
+if ((${device} STREQUAL MCXA366) OR (${device} STREQUAL MCXA346) OR (${device} STREQUAL MCXA266))
+    mcux_set_variable(pm_device_foldername MCXA366)
 endif()
 if (${device} STREQUAL MCXN236)
     mcux_set_variable(pm_device_foldername MCXN236)
