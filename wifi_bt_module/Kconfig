@@ -309,6 +309,18 @@ menu "wifi_bt_module"
                         Detailed information about Type 2EL module you can find on
                         https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ll
 
+                config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ll_usd
+                    bool "NXP IW610-MURATA-2LL-USD"
+                    help
+                        Murata Type 2LL is a small and very high performance module based on NXP IW610G
+                        combo chipset which supports Wi-Fi™ 802.11a/b/g/n/ac/ax HE20 + Bluetooth®. 5.4
+                        Low Energy + 802.15.4 up to 114.7Mbps PHY data rate on Wi-Fi™ and 2Mbps PHY data
+                        rate on Bluetooth® Low Energy.
+
+                        Detailed information about Type 2EL module you can find on
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2ll
+                        https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/usd-m2-adapter
+
                 config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_jody_w5_m2
                     bool "NXP UBX-JODY-W5-M2"
                     help
