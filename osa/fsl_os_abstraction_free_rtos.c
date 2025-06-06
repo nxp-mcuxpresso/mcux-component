@@ -82,6 +82,7 @@ typedef struct _osa_state
 #endif
     uint32_t basePriority;
     int32_t basePriorityNesting;
+    uint32_t interruptRegPrimask;
     uint32_t interruptDisableCount;
 } osa_state_t;
 
@@ -1233,7 +1234,7 @@ void OSA_EnableIRQGlobal(void)
 
         if (0U == s_osaState.interruptDisableCount)
         {
-            __enable_irq();
+            EnableGlobalIRQ(s_osaState.interruptRegPrimask);
         }
         /* call core API to enable the global interrupt*/
     }
@@ -1248,7 +1249,10 @@ void OSA_EnableIRQGlobal(void)
 void OSA_DisableIRQGlobal(void)
 {
     /* call core API to disable the global interrupt*/
-    __disable_irq();
+    if (0 == s_osaState.interruptDisableCount)
+    {
+        s_osaState.interruptRegPrimask = DisableGlobalIRQ();
+    }
 
     /* update counter*/
     s_osaState.interruptDisableCount++;
