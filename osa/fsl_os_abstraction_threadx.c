@@ -81,6 +81,7 @@ typedef struct _osa_state
 #endif
     uint32_t basePriority;
     int32_t basePriorityNesting;
+    uint32_t interruptRegPrimask;
     uint32_t interruptDisableCount;
 } osa_state_t;
 
@@ -1034,7 +1035,15 @@ osa_status_t OSA_MsgQDestroy(osa_msgq_handle_t msgqHandle)
  *END**************************************************************************/
 void OSA_InterruptEnable(void)
 {
-    (void)tx_interrupt_control(TX_INT_ENABLE);
+    if (s_osaState.basePriorityNesting > 0U)
+    {
+        s_osaState.basePriorityNesting--;
+
+        if (0U == s_osaState.basePriorityNesting)
+        {
+            TX_RESTORE
+        }
+    }
 }
 
 /*FUNCTION**********************************************************************
@@ -1045,7 +1054,13 @@ void OSA_InterruptEnable(void)
  *END**************************************************************************/
 void OSA_InterruptDisable(void)
 {
-    (void)tx_interrupt_control(TX_INT_DISABLE);
+    if (0U == s_osaState.basePriorityNesting)
+    {
+        TX_DISABLE
+    }
+
+    /* update counter*/
+    s_osaState.basePriorityNesting++;
 }
 
 /*FUNCTION**********************************************************************
@@ -1062,7 +1077,7 @@ void OSA_EnableIRQGlobal(void)
 
         if (0U == s_osaState.interruptDisableCount)
         {
-            TX_RESTORE
+            EnableGlobalIRQ(s_osaState.interruptRegPrimask);
         }
         /* call core API to enable the global interrupt*/
     }
@@ -1076,10 +1091,10 @@ void OSA_EnableIRQGlobal(void)
  *END**************************************************************************/
 void OSA_DisableIRQGlobal(void)
 {
-    /* call API to disable the global interrupt*/
-    if (0U == s_osaState.interruptDisableCount)
+    /* call core API to disable the global interrupt*/
+    if (0 == s_osaState.interruptDisableCount)
     {
-        TX_DISABLE
+        s_osaState.interruptRegPrimask = DisableGlobalIRQ();
     }
 
     /* update counter*/
