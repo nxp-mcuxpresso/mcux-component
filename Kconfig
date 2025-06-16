@@ -105,6 +105,7 @@ menu "Component Configuration"
         orsource "ele_base_api/Kconfig"
         orsource "psa_crypto_driver/Kconfig"
         orsource "crypto_benchmark/Kconfig"
+        orsource "sgi_pkc/Kconfig"
     endmenu
 
     menu "Power"
