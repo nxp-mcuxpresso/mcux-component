@@ -1142,7 +1142,7 @@ void PCA9422_GetDefaultBuckConfig(pca9422_buck_config_t *buckCfg)
     /* BUCK3 default configuration */
     buckCfg[2].dvsUpStep    = 0U; /* 25mV */
     buckCfg[2].dvsDnStep    = 0U; /* 25mV */
-    buckCfg[2].dvsCtrl      = kPCA9422_DVS0thrI2CInActiveAndSleep;
+    buckCfg[2].dvsCtrl      = (uint8_t)kPCA9422_DVS0thrI2CInActiveAndSleep;
     buckCfg[2].rampSpeed    = kPCA9422_BxRamp_25mVp2us;
     buckCfg[2].lpMode       = kPCA9422_BxLPmodeNormal;
     buckCfg[2].activeDischg = kPCA9422_BxADEnabled;
@@ -2315,7 +2315,9 @@ void PCA9422_GetRegulatorVoltage(pca9422_handle_t *handle, pca9422_regulator_t r
             {
                 result = PCA9422_ReadRegs(handle, regAddr, &regVal, 1U);
                 if (result == false)
+                {
                     goto out;
+                }
                 regVal = regVal & regMask;
                 *volt  = PCA9422_BUCK1_OUT_VOLT(regVal);
             }
@@ -2333,7 +2335,9 @@ void PCA9422_GetRegulatorVoltage(pca9422_handle_t *handle, pca9422_regulator_t r
             {
                 result = PCA9422_ReadRegs(handle, regAddr, &regVal, 1U);
                 if (result == false)
+                {
                     goto out;
+                }
                 regVal = regVal & regMask;
                 *volt  = PCA9422_BUCK2_OUT_VOLT(regVal);
             }
@@ -2351,7 +2355,9 @@ void PCA9422_GetRegulatorVoltage(pca9422_handle_t *handle, pca9422_regulator_t r
             {
                 result = PCA9422_ReadRegs(handle, regAddr, &regVal, 1U);
                 if (result == false)
+                {
                     goto out;
+                }
                 regVal = regVal & regMask;
                 *volt  = PCA9422_BUCK3_OUT_VOLT(regVal);
             }
