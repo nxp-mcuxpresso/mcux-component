@@ -10,6 +10,12 @@ menu "wifi_bt_module"
         bool "wifi_bt_combo_firmware"
     config MCUX_COMPONENT_component.wifi_bt_module.bt_only_fw
         bool "bt_only_firmware"
+    config MCUX_COMPONENT_component.wifi_bt_module.wifi_fw
+        bool "Wi-Fi firmware"
+    config MCUX_COMPONENT_component.wifi_bt_module.nb_fw
+        bool "narrow band firmware"
+    config MCUX_COMPONENT_component.wifi_bt_module.wifi_nb_combo_fw
+        bool "wifi_nb_combo firmware"
     config MCUX_COMPONENT_component.wifi_bt_module.slim
         bool "wifi_bt slim"
         select MCUX_COMPONENT_middleware.wifi.slim

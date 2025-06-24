@@ -37,7 +37,27 @@ endif()
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.bt_only_fw)
     mcux_add_macro(
         "-DCONFIG_BT_ONLY_DNLD\
-         -DCONFIG_BT_IND_DNLD"
+         -DCONFIG_BT_IND_DNLD=1"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.wifi_fw)
+    mcux_add_macro(
+        "-DCONFIG_WIFI_IND_DNLD=1\
+         -DCONFIG_WIFI_IND_RESET=1"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.nb_fw)
+    mcux_add_macro(
+        "-DCONFIG_BT_IND_DNLD=1"
+    )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.wifi_nb_combo_fw)
+    mcux_add_macro(
+        "-DCONFIG_WIFI_IND_DNLD=0\
+         -DCONFIG_WIFI_IND_RESET=0"
     )
 endif()
 
