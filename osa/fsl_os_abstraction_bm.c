@@ -604,12 +604,15 @@ void OSA_TimeDelay(uint32_t millisec)
 #if (FSL_OSA_BM_TIMER_CONFIG != FSL_OSA_BM_TIMER_NONE)
     uint32_t currTime, timeStart;
 
-    timeStart = OSA_TimeGetMsec();
-
-    do
+    if (millisec > 0U)
     {
-        currTime = OSA_TimeGetMsec(); /* Get current time stamp */
-    } while (millisec >= OSA_TimeDiff(timeStart, currTime));
+        timeStart = OSA_TimeGetMsec();
+
+        do
+        {
+            currTime = OSA_TimeGetMsec(); /* Get current time stamp */
+        } while (millisec >= OSA_TimeDiff(timeStart, currTime));
+    }
 #endif
 }
 /*FUNCTION**********************************************************************
