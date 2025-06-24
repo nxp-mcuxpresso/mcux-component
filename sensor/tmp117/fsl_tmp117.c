@@ -90,7 +90,11 @@ status_t TMP117_GetTemperature(tmp117_config_t *config, int16_t *temperature)
 {
     status_t status = config->i2cReadFunc(config->deviceAddress, TMP117_REG_TEMP_RESULT, (uint8_t *)temperature,
                                           sizeof(*temperature));
-    *temperature    = (int16_t)SWAP16(*temperature);
+    /* Swap temperature of raw unit16 instead of int16_t to avoid wrong swap result
+     if the value being cast is outside the range of int16_t. */
+    uint16_t raw_temp = (uint16_t)*temperature;
+    uint16_t swapped = SWAP16(raw_temp);
+    *temperature = (int16_t)swapped;
     return status;
 }
 
