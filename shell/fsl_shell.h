@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2024 NXP
+ * Copyright 2016-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -27,7 +27,9 @@
 #endif
 
 /*! @brief Macro to set on/off auto-complete feature. */
+#ifndef SHELL_AUTO_COMPLETE
 #define SHELL_AUTO_COMPLETE (1U)
+#endif
 
 /*! @brief Macro to set console buffer size. */
 #ifndef SHELL_BUFFER_SIZE
@@ -35,7 +37,9 @@
 #endif
 
 /*! @brief Macro to set maximum arguments in command. */
+#ifndef SHELL_MAX_ARGS
 #define SHELL_MAX_ARGS (8U)
+#endif
 
 /*! @brief Macro to set maximum count of history commands. */
 #ifndef SHELL_HISTORY_COUNT
@@ -43,7 +47,9 @@
 #endif
 
 /*! @brief Macro to bypass arguments check */
+#ifndef SHELL_IGNORE_PARAMETER_COUNT
 #define SHELL_IGNORE_PARAMETER_COUNT (0xFF)
+#endif
 
 /*! @brief The handle size of the shell module. It is the sum of the SHELL_HISTORY_COUNT * SHELL_BUFFER_SIZE +
  * SHELL_BUFFER_SIZE + SERIAL_MANAGER_READ_HANDLE_SIZE + SERIAL_MANAGER_WRITE_HANDLE_SIZE*/

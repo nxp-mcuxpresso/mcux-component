@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2025 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_COMPONENT_utility.shell
@@ -7,6 +7,80 @@ config MCUX_COMPONENT_utility.shell
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_utility.str
     select MCUX_COMPONENT_component.lists
+    select MCUX_COMPONENT_component.serial_manager
 
-if MCUX_COMPONENT_utility.shell
+config MCUX_COMPONENT_utility.shell.generated_config
+    bool "Generate shell configuration header"
+    default n
+    depends on MCUX_COMPONENT_utility.shell
+    help
+        Generate the config file; otherwise, users will need to provide their own configuration
+        in preinclude.h if they want to change the default values.
+
+if MCUX_COMPONENT_utility.shell.generated_config
+    menu "shell config"
+        config SHELL_NON_BLOCKING_MODE
+            bool "SHELL_NON_BLOCKING_MODE"
+            default y if SERIAL_MANAGER_NON_BLOCKING_MODE
+            default n
+            help
+                Enable or disable non-blocking mode.
+                No prefix in generated macro
+
+        config SHELL_AUTO_COMPLETE
+            bool "SHELL_AUTO_COMPLETE"
+            default y
+            help
+                Macro to set on/off auto-complete feature.
+                No prefix in generated macro
+
+        config SHELL_BUFFER_SIZE
+            int "SHELL_BUFFER_SIZE"
+            default 64
+            help
+                Macro to set console buffer size.
+                No prefix in generated macro
+
+        config SHELL_HISTORY_COUNT
+            int "SHELL_HISTORY_COUNT"
+            default 3
+            help
+                Macro to set maximum count of history commands.
+                No prefix in generated macro
+
+        config SHELL_IGNORE_PARAMETER_COUNT
+            hex "SHELL_IGNORE_PARAMETER_COUNT"
+            default 0xFF
+            help
+                Macro to bypass arguments check.
+                No prefix in generated macro
+
+        config SHELL_USE_COMMON_TASK
+            bool "SHELL_USE_COMMON_TASK"
+            default n
+            help
+                Enable or disable common task.
+                No prefix in generated macro
+
+        config SHELL_TASK_PRIORITY
+            int "SHELL_TASK_PRIORITY"
+            default 2
+            help
+                Macro to set shell task priority.
+                No prefix in generated macro
+
+        config SHELL_TASK_STACK_SIZE
+            int "SHELL_TASK_STACK_SIZE"
+            default 1000
+            help
+                Macro to set shell task stack size.
+                No prefix in generated macro
+
+        config SHELL_PRINT_COPYRIGHT
+            bool "SHELL_PRINT_COPYRIGHT"
+            default y
+            help
+                Enable or disable print copyright.
+                No prefix in generated macro
+    endmenu
 endif
