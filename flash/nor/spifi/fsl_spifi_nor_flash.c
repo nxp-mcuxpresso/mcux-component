@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NXP
+ * Copyright 2018, 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -809,6 +809,11 @@ static status_t spifi_nor_erase_sector(nor_handle_t *handle, uint32_t address)
     return status;
 }
 
+status_t Nor_Flash_Initialization(nor_config_t *config, nor_handle_t *handle)
+{
+    return Nor_Flash_Init(config, handle);
+}
+
 status_t Nor_Flash_Init(nor_config_t *config, nor_handle_t *handle)
 {
     assert(config);
@@ -873,6 +878,22 @@ status_t Nor_Flash_Init(nor_config_t *config, nor_handle_t *handle)
     return status;
 }
 
+status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_Byte)
+{
+    assert(handle != NULL);
+    assert(size_Byte > 0x00U);
+    uint32_t startAddress = address;
+    status_t status       = kStatus_Success;
+
+    for (uint32_t i = 0x00U; i <= (size_Byte / handle->bytesInSectorSize); i++)
+    {
+        status = Nor_Flash_Erase_Sector(handle, startAddress);
+        startAddress += handle->bytesInSectorSize;
+    }
+
+    return status;
+}
+
 status_t Nor_Flash_Page_Program(nor_handle_t *handle, uint32_t address, uint8_t *buffer)
 {
     if (!buffer)
@@ -918,15 +939,30 @@ status_t Nor_Flash_Page_Program(nor_handle_t *handle, uint32_t address, uint8_t 
     return status;
 }
 
-status_t Nor_Flash_Erase_Sector(nor_handle_t *handle, uint32_t address, uint32_t size_Byte)
+status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buffer, uint32_t length)
 {
-    uint32_t endAddress = address + size_Byte;
-    status_t status;
+    assert(handle != NULL);
+    assert(buffer != NULL);
+    uint32_t startAddress = address;
+    status_t status       = kStatus_Success;
 
-    if (endAddress > FSL_FEATURE_SPIFI_START_ADDR + handle->bytesInMemorySize)
+    for (uint32_t i = 0x00U; i <= (length / handle->bytesInPageSize); i++)
     {
-        return kStatus_InvalidArgument;
+        status = Nor_Flash_Page_Program(handle, startAddress, buffer);
+        /* Avoid buffer overflow. */
+        if (length >= handle->bytesInPageSize)
+        {
+            buffer += handle->bytesInPageSize;
+            startAddress += handle->bytesInPageSize;
+        }
     }
+
+    return status;
+}
+
+status_t Nor_Flash_Erase_Sector(nor_handle_t *handle, uint32_t address)
+{
+    status_t status;
 
     address &= ~(handle->bytesInSectorSize - 1);
 
@@ -935,27 +971,13 @@ status_t Nor_Flash_Erase_Sector(nor_handle_t *handle, uint32_t address, uint32_t
     return status;
 }
 
-status_t Nor_Flash_Erase_Block(nor_handle_t *handle, uint32_t address, uint32_t size_Byte)
+status_t Nor_Flash_Erase_Block(nor_handle_t *handle, uint32_t address)
 {
-    uint32_t endAddress = address + size_Byte;
     status_t status;
-
-    if (endAddress > FSL_FEATURE_SPIFI_START_ADDR + handle->bytesInMemorySize)
-    {
-        return kStatus_InvalidArgument;
-    }
 
     address &= ~(handle->bytesInSectorSize - 1);
 
-    while (address < endAddress)
-    {
-        status = spifi_nor_erase_sector(handle, address);
-        if (kStatus_Success != status)
-        {
-            return status;
-        }
-        address += handle->bytesInSectorSize;
-    }
+    status = spifi_nor_erase_sector(handle, address);
 
     return status;
 }
