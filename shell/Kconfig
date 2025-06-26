@@ -41,6 +41,13 @@ if MCUX_COMPONENT_utility.shell.generated_config
                 Macro to set console buffer size.
                 No prefix in generated macro
 
+        config SHELL_ECHO
+            bool "SHELL_ECHO"
+            default y
+            help
+                Macro to set echo feature.
+                No prefix in generated macro
+
         config SHELL_HISTORY_COUNT
             int "SHELL_HISTORY_COUNT"
             default 3

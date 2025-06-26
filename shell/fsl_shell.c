@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2024 NXP
+ * Copyright 2016-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -335,14 +335,18 @@ static void SHELL_hisOperation(uint8_t ch, shell_context_handle_t *shellContextH
         case 'D': /* Left key */
             if ((bool)shellContextHandle->c_pos)
             {
+#if (SHELL_ECHO > 0)
                 (void)SHELL_WRITEX(shellContextHandle, "\b", 1);
+#endif
                 shellContextHandle->c_pos--;
             }
             break;
         case 'C': /* Right key */
             if (shellContextHandle->c_pos < shellContextHandle->l_pos)
             {
+#if (SHELL_ECHO > 0)
                 (void)SHELL_WRITEX(shellContextHandle, &shellContextHandle->line[shellContextHandle->c_pos], 1);
+#endif
                 shellContextHandle->c_pos++;
             }
             break;
@@ -373,7 +377,9 @@ static void SHELL_MoveCursorToBeginningLine(shell_context_handle_t *shellContext
     uint32_t i;
     for (i = 0; i < (uint32_t)shellContextHandle->c_pos; i++)
     {
+#if (SHELL_ECHO > 0)
         (void)SHELL_WRITEX(shellContextHandle, "\b", 1);
+#endif
     }
     /* Do auto complete */
     SHELL_AutoComplete(shellContextHandle);
@@ -395,6 +401,7 @@ static void SHELL_HandleBackspaceKey(shell_context_handle_t *shellContextHandle)
                       &shellContextHandle->line[shellContextHandle->c_pos + 1U],
                       (uint32_t)shellContextHandle->l_pos - (uint32_t)shellContextHandle->c_pos);
         shellContextHandle->line[shellContextHandle->l_pos] = '\0';
+#if (SHELL_ECHO > 0)
         (void)SHELL_WRITEX(shellContextHandle, "\b", 1);
         (void)SHELL_WRITEX(shellContextHandle, &shellContextHandle->line[shellContextHandle->c_pos],
                            strlen(&shellContextHandle->line[shellContextHandle->c_pos]));
@@ -406,10 +413,13 @@ static void SHELL_HandleBackspaceKey(shell_context_handle_t *shellContextHandle)
         {
             (void)SHELL_WRITEX(shellContextHandle, "\b", 1);
         }
+#endif
     }
     else /* Normal backspace operation */
     {
+#if (SHELL_ECHO > 0)
         (void)SHELL_WRITEX(shellContextHandle, "\b \b", 3);
+#endif
         shellContextHandle->line[shellContextHandle->l_pos] = '\0';
     }
 }
@@ -418,23 +428,26 @@ static void SHELL_HandleNormalChar(shell_context_handle_t *shellContextHandle, u
 {
     if (shellContextHandle->c_pos < shellContextHandle->l_pos)
     {
-        uint32_t i;
         (void)memmove(&shellContextHandle->line[shellContextHandle->c_pos + 1U],
                       &shellContextHandle->line[shellContextHandle->c_pos],
                       (uint32_t)shellContextHandle->l_pos - (uint32_t)shellContextHandle->c_pos);
         shellContextHandle->line[shellContextHandle->c_pos] = (char)ch;
+#if (SHELL_ECHO > 0)
         (void)SHELL_WRITEX(shellContextHandle, &shellContextHandle->line[shellContextHandle->c_pos],
                            strlen(&shellContextHandle->line[shellContextHandle->c_pos]));
 
-        for (i = (uint32_t)shellContextHandle->c_pos; i < (uint32_t)shellContextHandle->l_pos; i++)
+        for (uint32_t i = (uint32_t)shellContextHandle->c_pos; i < (uint32_t)shellContextHandle->l_pos; i++)
         {
             (void)SHELL_WRITEX(shellContextHandle, "\b", 1);
         }
+#endif
     }
     else
     {
         shellContextHandle->line[shellContextHandle->l_pos] = (char)ch;
+#if (SHELL_ECHO > 0)
         (void)SHELL_WRITEX(shellContextHandle, &shellContextHandle->line[shellContextHandle->l_pos], 1);
+#endif
     }
 }
 

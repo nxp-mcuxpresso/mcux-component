@@ -36,6 +36,11 @@
 #define SHELL_BUFFER_SIZE (64U)
 #endif
 
+/*! @brief Macro to set echo feature. */
+#ifndef SHELL_ECHO
+#define SHELL_ECHO (1U)
+#endif
+
 /*! @brief Macro to set maximum arguments in command. */
 #ifndef SHELL_MAX_ARGS
 #define SHELL_MAX_ARGS (8U)
