@@ -1584,8 +1584,13 @@ int StrFormatScanf(const char *line_ptr, char *format, va_list args_ptr)
         }
         else if (0U == StrFormatScanIsFormatStarting(c))
         {
+            if (*c == '%') 
+            {
+                /* A % followed by another % matches a single %, so skip the first % */
+                c++;
+            }
+
             /* Ordinary characters. */
-            c++;
             if (*p == *c)
             {
                 n_decode++;
