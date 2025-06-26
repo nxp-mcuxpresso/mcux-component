@@ -31,6 +31,7 @@
  * such code in RAM. Likewise the flash cache must be disabled.
  * These reasons justify the __ECC_FCT_PLACEMENT attribute used for the ECC related functions.
  */
+#if defined SMSCM
 #ifdef ECC_SIM_ON
 #define __ECC_FCT_PLACEMENT __RAMFUNC
 __ECC_FCT_PLACEMENT static void flash_cache_disable1(void);
@@ -44,6 +45,10 @@ __ECC_FCT_PLACEMENT static void flash_cache_disable1(void);
 #define OCMDR0_CF0_DNCBED_SHIFT (3u + SMSCM_OCMDR0_OCMCF0_SHIFT)
 #define OCMDR0_CF0_DNCBEI_MASK  (1u << OCMDR0_CF0_DNCBEI_SHIFT)
 #define OCMDR0_CF0_DNCBED_MASK  (1u << OCMDR0_CF0_DNCBED_SHIFT)
+#else
+#define __ECC_FCT_PLACEMENT
+#define FLASH_CACHE_DISABLE() flash_cache_disable()
+#endif
 
 /*!*********************************************************************************
 *************************************************************************************
@@ -158,7 +163,7 @@ hal_flash_status_t HAL_FlashInit()
 
     uint32_t regPrimask = DisableGlobalIRQ();
     /*  Disable cache/Prefetch */
-    flash_cache_disable();
+    FLASH_CACHE_DISABLE();
     EnableGlobalIRQ(regPrimask);
     if (0U == flashInit)
     {
@@ -325,9 +330,11 @@ __ECC_FCT_PLACEMENT static void flash_cache_disable1(void)
     __DSB();
 }
 #endif
+
 __ECC_FCT_PLACEMENT static int flash_bus_fault_ecc_non_correctable_err_on_data_fetch(bool enableNdisable)
 {
     int st = -1;
+#if defined SMSCM
     uint32_t reg_val;
     reg_val = SMSCM->OCMDR0;
     if ((reg_val & SMSCM_OCMDR0_RO_MASK) != SMSCM_OCMDR0_RO_MASK)
@@ -343,8 +350,27 @@ __ECC_FCT_PLACEMENT static int flash_bus_fault_ecc_non_correctable_err_on_data_f
         SMSCM->OCMDR0 = reg_val;
         st            = 0;
     }
+#else
+    uint32_t reg_val;
+    reg_val = SYSCON->FMC0_CTRL;
+    if ((reg_val & SYSCON_FMC0_CTRL_RO_MASK) != SYSCON_FMC0_CTRL_RO_MASK)
+    {
+        SYSCON->AUTHENTICATE = 0xaaaaaaaaUL;
+        FLASH_CACHE_DISABLE();
+        if (!enableNdisable)
+        {
+            /* disable bus fault on data read in case of ECC non recoverable error */
+            reg_val |= SYSCON_FMC0_CTRL_DNCBED_MASK;
+        }
+        else
+        {
+            reg_val &= ~SYSCON_FMC0_CTRL_DNCBED_MASK;
+        }
+    }
+#endif
     return st;
 }
+
 
 /*!
  * \brief  Activate or deactivate ECC fault detection without bus faulting
@@ -359,9 +385,14 @@ __ECC_FCT_PLACEMENT static int flash_bus_fault_ecc_non_correctable_err_on_data_f
  */
 __ECC_FCT_PLACEMENT int FLASH_ActivateEccFaultDetection(FMU_Type *base, uint32_t *sav_cfg)
 {
-    int st;
+    int st = -1;
     uint32_t fcncf_val;
+    *sav_cfg = 0U;
+#if defined SMSCM
     *sav_cfg = SMSCM->OCMDR0;
+#else
+    *sav_cfg = SYSCON->FMC0_CTRL;
+#endif
     st       = flash_bus_fault_ecc_non_correctable_err_on_data_fetch(false);
     if (0 == st)
     {
@@ -378,7 +409,8 @@ __ECC_FCT_PLACEMENT int FLASH_ActivateEccFaultDetection(FMU_Type *base, uint32_t
 
 __ECC_FCT_PLACEMENT int FLASH_DeactivateEccFaultDetection(FMU_Type *base, uint32_t restore_cfg)
 {
-    int st;
+    int st = -1;
+#if defined SMSCM
     uint32_t fcncf_val;
     st = flash_bus_fault_ecc_non_correctable_err_on_data_fetch(true);
 
@@ -388,6 +420,9 @@ __ECC_FCT_PLACEMENT int FLASH_DeactivateEccFaultDetection(FMU_Type *base, uint32
     base->FCNFG   = fcncf_val;
     __ISB();
     __DSB();
+#else
+#endif
+
     return st;
 }
 
