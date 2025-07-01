@@ -188,23 +188,26 @@ status_t DBI_LCDIF_WriteCommandData(dbi_iface_t *dbiIface, uint32_t command, con
     dbi_lcdif_prv_data_t *prvData = (dbi_lcdif_prv_data_t *)dbiIface->prvData;
     LCDIF_Type *lcdif             = prvData->lcdif;
 
-    if ((((uint16_t)pData[2] << 8U) | (uint16_t)pData[3]) > (((uint16_t)pData[0] << 8U) | (uint16_t)pData[1]))
+    /* If the command is set address, calculate the selected area size, since LCDIF needs these info for configuration.
+     */
+    if ((cmd == (uint8_t)kMIPI_DBI_SetColumnAddress) || (cmd == (uint8_t)kMIPI_DBI_SetPageAddress))
     {
-        uint16_t value = (((uint16_t)pData[2] << 8U) | (uint16_t)pData[3]) - (((uint16_t)pData[0] << 8U) | (uint16_t)pData[1]) + 1U;
-        /* If the command is set address, calculate the selected area size, since LCDIF needs these info for configuration.
-         */
+        uint16_t lrValue = ((uint16_t)pData[2] << 8U) | (uint16_t)pData[3];
+        uint16_t tpValue = ((uint16_t)pData[0] << 8U) | (uint16_t)pData[1];
+
+        if (lrValue < tpValue)
+        {
+            return kStatus_Fail;
+        }
+
         if (cmd == kMIPI_DBI_SetColumnAddress)
         {
-            prvData->width = value;
+            prvData->width = lrValue - tpValue + 1U;
         }
-        else if (cmd == kMIPI_DBI_SetPageAddress)
+        else
         {
-            prvData->height = value;
+            prvData->height = lrValue - tpValue + 1U;
         }
-    }
-    else
-    {
-        return kStatus_Fail;
     }
 
     LCDIF_DbiSendCommand(lcdif, 0U, cmd);
