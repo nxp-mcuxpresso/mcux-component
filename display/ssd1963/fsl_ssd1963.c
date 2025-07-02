@@ -168,6 +168,8 @@ status_t SSD1963_Init(ssd1963_handle_t *handle,
     assert(config);
     assert(config->panelHeight != 0U);
     assert(config->panelWidth != 0U);
+    assert(handle->xferOps->writeCommand != NULL);
+    assert(handle->xferOps->writeData != NULL);
 
     uint8_t multi, div;
     uint32_t pllFreq_Hz;
@@ -285,6 +287,7 @@ status_t SSD1963_Init(ssd1963_handle_t *handle,
 void SSD1963_SetMemoryDoneCallback(ssd1963_handle_t *handle, dbi_mem_done_callback_t callback, void *userData)
 {
     assert(handle);
+    assert(handle->xferOps->setMemoryDoneCallback != NULL);
 
     handle->xferOps->setMemoryDoneCallback(handle->xferOpsData, callback, userData);
 }
@@ -298,16 +301,21 @@ void SSD1963_Deinit(ssd1963_handle_t *handle)
 
 status_t SSD1963_StartDisplay(ssd1963_handle_t *handle)
 {
+    assert(handle->xferOps->writeCommand != NULL);
     return handle->xferOps->writeCommand(handle->xferOpsData, SSD1963_SET_DISPLAY_ON);
 }
 
 status_t SSD1963_StopDisplay(ssd1963_handle_t *handle)
 {
+    assert(handle->xferOps->writeCommand != NULL);
     return handle->xferOps->writeCommand(handle->xferOpsData, SSD1963_SET_DISPLAY_OFF);
 }
 
 status_t SSD1963_SetFlipMode(ssd1963_handle_t *handle, ssd1963_flip_mode_t mode)
 {
+    assert(handle->xferOps->writeCommand != NULL);
+    assert(handle->xferOps->writeData != NULL);
+
     status_t status;
 
 #if (16 == SSD1963_DATA_WITDH)
@@ -330,6 +338,9 @@ status_t SSD1963_SetFlipMode(ssd1963_handle_t *handle, ssd1963_flip_mode_t mode)
 
 status_t SSD1963_SetOrientationMode(ssd1963_handle_t *handle, ssd1963_orientation_mode_t mode)
 {
+    assert(handle->xferOps->writeCommand != NULL);
+    assert(handle->xferOps->writeData != NULL);
+
     status_t status;
 #if (16 == SSD1963_DATA_WITDH)
     uint16_t newAddrMode;
@@ -351,6 +362,9 @@ status_t SSD1963_SetOrientationMode(ssd1963_handle_t *handle, ssd1963_orientatio
 
 status_t SSD1963_SelectArea(ssd1963_handle_t *handle, uint16_t startX, uint16_t startY, uint16_t endX, uint16_t endY)
 {
+    assert(handle->xferOps->writeCommand != NULL);
+    assert(handle->xferOps->writeData != NULL);
+
     uint16_t sc; /* Start of column number. */
     uint16_t ec; /* End of column number. */
     uint16_t sp; /* Start of page number. */
@@ -420,18 +434,23 @@ status_t SSD1963_SelectArea(ssd1963_handle_t *handle, uint16_t startX, uint16_t 
 #if (16 == SSD1963_DATA_WITDH)
 status_t SSD1963_WritePixels(ssd1963_handle_t *handle, const uint16_t *pixels, uint32_t length)
 {
+    assert(handle->xferOps->writeMemory != NULL);
     return handle->xferOps->writeMemory(handle->xferOpsData, SSD1963_WRITE_MEMORY_START, (const uint8_t *)pixels,
                                         length * 2U);
 }
 
 status_t SSD1963_ReadPixels(ssd1963_handle_t *handle, uint16_t *pixels, uint32_t length)
 {
+    assert(handle->xferOps->readMemory != NULL);
     return handle->xferOps->readMemory(handle->xferOpsData, SSD1963_READ_MEMORY_START, (uint8_t *)pixels, length * 2U);
 }
 #endif
 
 status_t SSD1963_SetBackLight(ssd1963_handle_t *handle, uint8_t value)
 {
+    assert(handle->xferOps->writeCommand != NULL);
+    assert(handle->xferOps->writeData != NULL);
+
     status_t status;
 #if (16 == SSD1963_DATA_WITDH)
     uint16_t commandParam[] = {0x06U, value, 0x01U, 0xFFU, 0x00U, 0x01U};
@@ -445,6 +464,9 @@ status_t SSD1963_SetBackLight(ssd1963_handle_t *handle, uint8_t value)
 
 status_t SSD1963_EnableTearEffect(ssd1963_handle_t *handle, bool enable)
 {
+    assert(handle->xferOps->writeCommand != NULL);
+    assert(handle->xferOps->writeData != NULL);
+
     uint16_t regVal = 0;
     status_t status;
 
@@ -463,6 +485,9 @@ status_t SSD1963_EnableTearEffect(ssd1963_handle_t *handle, bool enable)
 
 status_t SSD1963_SetPixelFormat(ssd1963_handle_t *handle, ssd1963_pixel_interface_t pixelFormat)
 {
+    assert(handle->xferOps->writeCommand != NULL);
+    assert(handle->xferOps->writeData != NULL);
+
     status_t status;
 #if (16 == SSD1963_DATA_WITDH)
     uint16_t commandParam[1];
@@ -500,11 +525,15 @@ status_t SSD1963_SetPixelFormat(ssd1963_handle_t *handle, ssd1963_pixel_interfac
 
 status_t SSD1963_ReadMemory(ssd1963_handle_t *handle, uint8_t *data, uint32_t length)
 {
+    assert(handle->xferOps->readMemory != NULL);
+
     return handle->xferOps->readMemory(handle->xferOpsData, SSD1963_READ_MEMORY_START, data, length);
 }
 
 status_t SSD1963_WriteMemory(ssd1963_handle_t *handle, const uint8_t *data, uint32_t length)
 {
+    assert(handle->xferOps->writeMemory != NULL);
+
     return handle->xferOps->writeMemory(handle->xferOpsData, SSD1963_WRITE_MEMORY_START, data, length);
 }
 
@@ -513,6 +542,9 @@ status_t SSD1963_WriteMemory(ssd1963_handle_t *handle, const uint8_t *data, uint
 status_t SSD1963_Init(dbi_iface_t *iface, const ssd1963_config_t *config, uint32_t srcClock_Hz)
 {
     assert(config);
+    assert(iface->xferOps->writeCommandData != NULL);
+    assert(config->panelWidth != 0U);
+    assert(config->panelHeight != 0U);
 
     uint8_t multi, div;
     uint32_t pllFreq_Hz;
@@ -614,6 +646,8 @@ status_t SSD1963_Init(dbi_iface_t *iface, const ssd1963_config_t *config, uint32
 
 status_t SSD1963_SetPixelFormat(dbi_iface_t *iface, ssd1963_pixel_interface_t pixelFormat)
 {
+    assert(iface->xferOps->writeCommandData != NULL);
+
     status_t status;
 #if (16 == SSD1963_DATA_WITDH)
     uint16_t commandParam[1];
@@ -647,6 +681,8 @@ status_t SSD1963_SetPixelFormat(dbi_iface_t *iface, ssd1963_pixel_interface_t pi
 
 status_t SSD1963_SetBackLight(dbi_iface_t *iface, uint8_t value)
 {
+    assert(iface->xferOps->writeCommandData != NULL);
+
 #if (16 == SSD1963_DATA_WITDH)
     uint16_t commandParam[] = {0x06U, value, 0x01U, 0xFFU, 0x00U, 0x01U};
 #else
