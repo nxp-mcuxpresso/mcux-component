@@ -193,7 +193,7 @@ enum _unity_module
     k_unity_pm                 = 175,
     k_unity_dac14              = 176,
     k_unity_elemu              = 177,
-    k_unity_security_subsystem = 178,
+    k_unity_secure_subsystem   = 178,
     k_unity_rom_api            = 179,
     k_unity_timer_manager      = 180,
     k_unity_mcm                = 181,
