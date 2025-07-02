@@ -35,6 +35,7 @@
 #define SRTM_IO_CMD_CONF_INPUT_EVENT (0x00U)
 #define SRTM_IO_CMD_SET_OUTPUT       (0x01U)
 #define SRTM_IO_CMD_GET_INPUT        (0x02U)
+#define SRTM_IO_CMD_GET_DIRECTION    (0x03U)
 
 #define SRTM_IO_NTF_INPUT_EVENT (0x00U)
 
@@ -48,6 +49,7 @@ typedef struct _srtm_io_pin
     srtm_io_service_set_output_t setOutput;
     srtm_io_service_get_input_t getInput;
     srtm_io_service_conf_input_t confIEvent;
+    srtm_io_service_get_direction_t getDirection;
     void *param;
 } *srtm_io_pin_t;
 
@@ -144,6 +146,8 @@ static srtm_status_t SRTM_IoService_Request(srtm_service_t service, srtm_request
     uint16_t ioId = 0U;
     uint32_t len;
     srtm_io_value_t value = SRTM_IoValueLow;
+    srtm_io_direction_t dir = SRTM_IoDirectionInput;
+    uint8_t data = 0U;
 
     assert(service->dispatcher);
 
@@ -211,6 +215,22 @@ static srtm_status_t SRTM_IoService_Request(srtm_service_t service, srtm_request
                     if (pin->getInput)
                     {
                         status = pin->getInput(service, channel->core, ioId, &value);
+                        data = (uint8_t)value;
+                        retCode =
+                            status == SRTM_Status_Success ? SRTM_IO_RETURN_CODE_SUCEESS : SRTM_IO_RETURN_CODE_FAIL;
+                    }
+                    else
+                    {
+                        SRTM_DEBUG_MESSAGE(SRTM_DEBUG_VERBOSE_WARN, "%s: Command %d function not registered!\r\n",
+                                           __func__, SRTM_IO_CMD_GET_INPUT);
+                        retCode = SRTM_IO_RETURN_CODE_FAIL;
+                    }
+                    break;
+                case SRTM_IO_CMD_GET_DIRECTION:
+                    if (pin->getDirection)
+                    {
+                        status = pin->getDirection(service, channel->core, ioId, &dir);
+                        data = (uint8_t)dir;
                         retCode =
                             status == SRTM_Status_Success ? SRTM_IO_RETURN_CODE_SUCEESS : SRTM_IO_RETURN_CODE_FAIL;
                     }
@@ -239,7 +259,7 @@ static srtm_status_t SRTM_IoService_Request(srtm_service_t service, srtm_request
     *payload       = (uint8_t)ioId;
     *(payload + 1) = (uint8_t)(ioId >> 8U);
     *(payload + 2) = retCode;
-    *(payload + 3) = (uint8_t)value; /* Only used in SRTM_IO_CMD_GET_INPUT */
+    *(payload + 3) = data; /* Only used in SRTM_IO_CMD_GET_INPUT and SRTM_IO_CMD_GET_DIRECTION */
 
     /* Now the response is ready */
     return SRTM_Dispatcher_DeliverResponse(service->dispatcher, response);
@@ -320,6 +340,7 @@ srtm_status_t SRTM_IoService_RegisterPin(srtm_service_t service,
                                          srtm_io_service_set_output_t setOutput,
                                          srtm_io_service_get_input_t getInput,
                                          srtm_io_service_conf_input_t confIEvent,
+                                         srtm_io_service_get_direction_t getDirection,
                                          void *param)
 {
     srtm_io_service_t handle = (srtm_io_service_t)service;
@@ -350,6 +371,7 @@ srtm_status_t SRTM_IoService_RegisterPin(srtm_service_t service,
     pin->setOutput  = setOutput;
     pin->getInput   = getInput;
     pin->confIEvent = confIEvent;
+    pin->getDirection   = getDirection;
     pin->param      = param;
     pin->notif      = SRTM_Notification_Create(NULL, SRTM_IO_CATEGORY, SRTM_IO_VERSION, SRTM_IO_NTF_INPUT_EVENT, 2U);
     assert(pin->notif);

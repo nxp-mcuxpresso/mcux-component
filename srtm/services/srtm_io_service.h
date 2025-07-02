@@ -35,6 +35,13 @@ typedef enum _srtm_io_value
     SRTM_IoValueHigh,
 } srtm_io_value_t;
 
+/*! @brief SRTM IO service direction value */
+typedef enum _srtm_io_direction
+{
+    SRTM_IoDirectionOutput = 0U,
+    SRTM_IoDirectionInput,
+} srtm_io_direction_t;
+
 /*! @brief SRTM IO service input event */
 typedef enum _srtm_io_event
 {
@@ -67,6 +74,15 @@ typedef srtm_status_t (*srtm_io_service_get_input_t)(srtm_service_t service,
  */
 typedef srtm_status_t (*srtm_io_service_conf_input_t)(
     srtm_service_t service, srtm_peercore_t core, uint16_t ioId, srtm_io_event_t event, bool wakeup);
+
+/**
+ * @brief SRTM IO service get direction value function type.
+ */
+typedef srtm_status_t (*srtm_io_service_get_direction_t)(srtm_service_t service,
+                                                     srtm_peercore_t core,
+                                                     uint16_t ioId,
+                                                     srtm_io_direction_t *pIoDir);
+
 
 /*******************************************************************************
  * API
@@ -107,6 +123,7 @@ void SRTM_IoService_Reset(srtm_service_t service, srtm_peercore_t core);
  * @param setOutput IO pin set output value callback.
  * @param getInput IO pin get input value callback.
  * @param confIEvent IO pin configure input event callback.
+ * @param getDirection IO pin get direction value callback.
  * @param param user callback parameter.
  * @return SRTM_Status_Success on success and others on failure.
  */
@@ -115,6 +132,7 @@ srtm_status_t SRTM_IoService_RegisterPin(srtm_service_t service,
                                          srtm_io_service_set_output_t setOutput,
                                          srtm_io_service_get_input_t getInput,
                                          srtm_io_service_conf_input_t confIEvent,
+                                         srtm_io_service_get_direction_t getDirection,
                                          void *param);
 
 /*!
