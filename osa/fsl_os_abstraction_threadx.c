@@ -501,8 +501,7 @@ osa_status_t OSA_SemaphoreCreate(osa_semaphore_handle_t semaphoreHandle, uint32_
  *END**************************************************************************/
 osa_status_t OSA_SemaphoreCreateBinary(osa_semaphore_handle_t semaphoreHandle)
 {
-    /* TODO */
-    return KOSA_StatusError;
+    return OSA_SemaphoreCreate(semaphoreHandle, 1U);
 }
 
 /*FUNCTION**********************************************************************
@@ -915,9 +914,12 @@ osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32
 {
     assert(NULL != msgqHandle);
 
-    /* Create the message queue where the number and size is specified by msgNo and msgSize */
-    if (TX_SUCCESS == tx_queue_create((TX_QUEUE *)msgqHandle, (CHAR *)"queue 0", msgSize,
-                                      (uint8_t *)msgqHandle + OSA_MSGQ_HANDLE_SIZE, msgNo * msgSize))
+    /* ThreadX expects sizes in word, but OSA API passes byte size, so we have to convert it */
+    uint32_t sizeWord = (msgSize + sizeof(uint32_t) - 1) / sizeof(uint32_t);
+
+    /* Create the message queue where the number and size is specified by msgNo and sizeWord */
+    if (TX_SUCCESS == tx_queue_create((TX_QUEUE *)msgqHandle, (CHAR *)"queue 0", sizeWord,
+                                      (uint8_t *)msgqHandle + OSA_MSGQ_HANDLE_SIZE, msgNo * sizeWord))
     {
         return KOSA_StatusSuccess;
     }
