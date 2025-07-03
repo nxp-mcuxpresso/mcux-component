@@ -80,16 +80,34 @@ if MCUX_COMPONENT_component.srtm_pwm_service
     endchoice
 endif
 
+config MCUX_COMPONENT_component.srtm_snvs_lp_rtc_adapter
+    bool "SRTM Snvs Lp Rtc adapter"
+
+config MCUX_COMPONENT_component.srtm_rtc_adapter
+    bool "SRTM RTC adapter"
+
 menuconfig MCUX_COMPONENT_component.srtm_rtc_service
-    bool "rtc"
-    imply MCUX_COMPONENT_component.srtm_rtc_adapter
+    bool "SRTM RTC service"
 
 if MCUX_COMPONENT_component.srtm_rtc_service
-    config MCUX_COMPONENT_component.srtm_rtc_adapter
-        bool "SRTM RTC adapter"
-
     choice
-        prompt "rtc adapters"
+        prompt "Select one of SRTM RTC adapters"
+        default MCUX_DEPENDENCY_COMPONENT_srtm_rtc_adapter_DEPEND_COMPONENT_srtm_rtc_adapter
+        config MCUX_DEPENDENCY_COMPONENT_srtm_rtc_adapter_DEPEND_COMPONENT_srtm_rtc_adapter
+            bool "Select SRTM RTC adapter"
+            select MCUX_COMPONENT_component.srtm_rtc_adapter
+        config MCUX_DEPENDENCY_COMPONENT_srtm_rtc_adapter_DEPEND_COMPONENT_srtm_snvs_lp_rtc_adapter
+            bool "Select SRTM SNVS LP RTC adapter"
+            select MCUX_COMPONENT_component.srtm_snvs_lp_rtc_adapter
+    endchoice
+endif
+
+menuconfig MCUX_COMPONENT_component.srtm_rtc_adapter
+    bool "SRTM rtc adapter"
+
+if MCUX_COMPONENT_component.srtm_rtc_adapter
+    choice
+        prompt "Select one of rtc adapters"
         default MCUX_DEPENDENCY_COMPONENT_rtc_adapter_DEPEND_COMPONENT_rtc_bbnsm_adapter
         config MCUX_DEPENDENCY_COMPONENT_rtc_adapter_DEPEND_COMPONENT_rtc_bbnsm_adapter
             bool "bbnsm"
@@ -105,6 +123,3 @@ endif
 
 menuconfig MCUX_COMPONENT_component.srtm_sensor_service
     bool "Sensor"
-
-config MCUX_COMPONENT_component.srtm_snvs_lp_rtc_adapter
-    bool "SRTM Snvs Lp Rtc adapter"
