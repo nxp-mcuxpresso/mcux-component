@@ -15,6 +15,7 @@ config MCUX_COMPONENT_component.silicon_id
     select MCUX_COMPONENT_component.silicon_id_scfw if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_SCFW
     select MCUX_COMPONENT_component.silicon_id_rw610 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RW610
     select MCUX_COMPONENT_component.silicon_id_mcxn if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_MCXN
+    select MCUX_COMPONENT_component.silicon_id_mcxe31x if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_MCXE31X
 
     select MCUX_COMPONENT_driver.sim if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_SIM
     select MCUX_COMPONENT_driver.iap if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_IAP
@@ -51,3 +52,7 @@ config MCUX_COMPONENT_component.silicon_id_rw610
 config MCUX_COMPONENT_component.silicon_id_mcxn
     bool
     depends on MCUX_DEPENDENCY_COMPONENT_SILICON_ID_MCXN
+
+config MCUX_COMPONENT_component.silicon_id_mcxe31x
+    bool
+    depends on MCUX_DEPENDENCY_COMPONENT_SILICON_ID_MCXE31X
