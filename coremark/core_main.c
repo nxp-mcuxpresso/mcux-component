@@ -26,6 +26,7 @@ Original Author: Shay Gal-on
    initial parameters, tun t he benchmark and report the results.
 */
 #include "coremark.h"
+#include "fsl_common.h"
 
 /* Function: iterate
         Run the benchmark for a specified number of iterations.
@@ -87,7 +88,7 @@ ee_s32 get_seed_32(int i);
 #endif
 
 #if (MEM_METHOD == MEM_STATIC)
-ee_u8 static_memblk[TOTAL_DATA_SIZE];
+SDK_ALIGN(ee_u8 static_memblk[TOTAL_DATA_SIZE], 4U);
 #endif
 char *mem_name[3] = { "Static", "Heap", "Stack" };
 /* Function: main
