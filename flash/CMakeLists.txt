@@ -224,7 +224,7 @@ if (${board} STREQUAL frdmrw612)
     mcux_set_variable(drv_folder frdmrw612)
 endif()
 
-if ((${board} STREQUAL kw45b41zevk) OR (${board} STREQUAL kw45b41zloc) OR (${board} STREQUAL kw47evk) OR (${board} STREQUAL kw47loc) OR (${board} STREQUAL mcxw72evk) OR (${board} STREQUAL frdmmcxw72))
+if ((${board} STREQUAL kw45b41zevk) OR (${board} STREQUAL kw45b41zloc) OR (${board} STREQUAL kw47evk) OR (${board} STREQUAL kw47loc) OR (${board} STREQUAL mcxw72evk) OR (${board} STREQUAL frdmmcxw72) OR (${board} STREQUAL mcxw72loc))
     mcux_set_variable(drv_folder k4w1)
 endif()
 
