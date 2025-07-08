@@ -16,6 +16,12 @@
 
 enum
 {
+    kSerialFlash_Unlocked = 0x0,
+    kSerialFlash_Locked
+};
+
+enum
+{
     kSerialFlash_ReadSFDP           = 0x5A,
     kSerialFlash_ReadManufacturerId = 0x9F,
 };
@@ -256,6 +262,20 @@ spifi_mem_nor_handle_t spifi_handle;
 /*******************************************************************************
  * Code
  ******************************************************************************/
+static bool spifi_nor_lock(spifi_mem_nor_handle_t *memSpifiHandler)
+{
+    return (SDK_ATOMIC_LOCAL_TEST_AND_SET(&memSpifiHandler->lock, kSerialFlash_Locked) == kSerialFlash_Unlocked);
+}
+
+static void spifi_nor_unlock(spifi_mem_nor_handle_t *memSpifiHandler)
+{
+    memSpifiHandler->lock = kSerialFlash_Unlocked;
+}
+
+static bool spifi_nor_is_locked(spifi_mem_nor_handle_t *memSpifiHandler)
+{
+    return (memSpifiHandler->lock == kSerialFlash_Locked);
+}
 
 static uint8_t spifi_nor_read_status(SPIFI_Type *base, uint8_t readCmd)
 {
@@ -784,10 +804,16 @@ static status_t spifi_nor_erase_sector(nor_handle_t *handle, uint32_t address)
     address &= ~(handle->bytesInSectorSize - 1);
     spifi_command_type_t cmdType = memSpifiHandler->commandType;
 
+    if (!spifi_nor_lock(memSpifiHandler))
+    {
+        return kStatus_Busy;
+    }
+
     /* Enable write operation. */
     status = spifi_nor_write_enable(base, memSpifiHandler, kSPIFI_CommandAllSerial);
     if (kStatus_Success != status)
     {
+        spifi_nor_unlock(memSpifiHandler);
         return status;
     }
     /* Set address. */
@@ -805,6 +831,8 @@ static status_t spifi_nor_erase_sector(nor_handle_t *handle, uint32_t address)
 
     /* Check if finished. */
     status = spifi_check_norflash_finish(base, memSpifiHandler);
+
+    spifi_nor_unlock(memSpifiHandler);
 
     return status;
 }
@@ -899,6 +927,10 @@ status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_B
     for (uint32_t i = 0x00U; i < (size_Byte / handle->bytesInSectorSize); i++)
     {
         status = Nor_Flash_Erase_Sector(handle, startAddress);
+        if (kStatus_Success != status)
+        {
+            break;
+        }
         startAddress += handle->bytesInSectorSize;
     }
 
@@ -919,10 +951,16 @@ status_t Nor_Flash_Page_Program(nor_handle_t *handle, uint32_t address, uint8_t 
     uint32_t pageSize                       = handle->bytesInPageSize;
     SPIFI_Type *base                        = (SPIFI_Type *)handle->driverBaseAddr;
 
+    if (!spifi_nor_lock(memSpifiHandler))
+    {
+        return kStatus_Busy;
+    }
+
     /* Enable write operation. */
     status = spifi_nor_write_enable(base, memSpifiHandler, kSPIFI_CommandAllSerial);
     if (kStatus_Success != status)
     {
+        spifi_nor_unlock(memSpifiHandler);
         return status;
     }
 
@@ -947,6 +985,7 @@ status_t Nor_Flash_Page_Program(nor_handle_t *handle, uint32_t address, uint8_t 
 
     status = spifi_check_norflash_finish(base, memSpifiHandler);
 
+    spifi_nor_unlock(memSpifiHandler);
     return status;
 }
 
@@ -970,6 +1009,11 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
     for (uint32_t i = 0x00U; i < (length / handle->bytesInPageSize); i++)
     {
         status = Nor_Flash_Page_Program(handle, startAddress, buffer);
+        if (kStatus_Success != status)
+        {
+            break;
+        }
+
         /* Avoid buffer overflow. */
         if (length >= handle->bytesInPageSize)
         {
@@ -1017,10 +1061,16 @@ status_t Nor_Flash_Erase_Chip(nor_handle_t *handle)
     SPIFI_Type *base                        = (SPIFI_Type *)handle->driverBaseAddr;
     uint8_t opcode                          = memSpifiHandler->commandSet.eraseChipCommand;
 
+    if (!spifi_nor_lock(memSpifiHandler))
+    {
+        return kStatus_Busy;
+    }
+
     /* Enable write operation. */
     status = spifi_nor_write_enable(base, memSpifiHandler, kSPIFI_CommandAllSerial);
     if (kStatus_Success != status)
     {
+        spifi_nor_unlock(memSpifiHandler);
         return status;
     }
     /* Set address. */
@@ -1038,6 +1088,8 @@ status_t Nor_Flash_Erase_Chip(nor_handle_t *handle)
 
     /* Check if finished. */
     status = spifi_check_norflash_finish(base, memSpifiHandler);
+
+    spifi_nor_unlock(memSpifiHandler);
 
     return status;
 }
@@ -1062,11 +1114,65 @@ status_t Nor_Flash_Read(nor_handle_t *handle, uint32_t address, uint8_t *buffer,
     cmd.format            = memSpifiHandler->readmemCommandFormt;
     cmd.type              = memSpifiHandler->commandType;
     cmd.opcode            = memSpifiHandler->commandSet.readMemoryCommand;
+
+    if (!spifi_nor_lock(memSpifiHandler))
+    {
+        return kStatus_Busy;
+    }
+
     SPIFI_SetMemoryCommand(base, &cmd);
 
     memcpy(buffer, (void *)address, length);
     /* Reset to command mode. */
     SPIFI_ResetCommand(base);
 
+    spifi_nor_unlock(memSpifiHandler);
+
     return status;
+}
+
+/*!
+ * @brief  Get the busy status of the NOR Flash.
+ *
+ * @param handle    The NOR Flash handler.
+ * @retval Always return kStatus_Success
+ */
+status_t Nor_Flash_Is_Busy(nor_handle_t *handle, bool *isBusy)
+{
+    assert(handle);
+
+    spifi_mem_nor_handle_t *memSpifiHandler = (spifi_mem_nor_handle_t *)(handle->deviceSpecific);
+
+    *isBusy = spifi_nor_is_locked(memSpifiHandler);
+
+    return kStatus_Success;
+}
+
+status_t Nor_Flash_Enter_Lowpower(nor_handle_t *handle)
+{
+    spifi_mem_nor_handle_t *memSpifiHandler = (spifi_mem_nor_handle_t *)(handle->deviceSpecific);
+    SPIFI_Type *base                        = (SPIFI_Type *)handle->driverBaseAddr;
+
+    /* Wait and make sure no flash opearation. */
+    while (!spifi_nor_lock(memSpifiHandler))
+    {
+    }
+
+    SPIFI_Deinit(base);
+
+    return kStatus_Success;
+}
+
+status_t Nor_Flash_Exit_Lowpower(nor_handle_t *handle)
+{
+    spifi_config_t memConfig;
+    spifi_mem_nor_handle_t *memSpifiHandler = (spifi_mem_nor_handle_t *)(handle->deviceSpecific);
+    SPIFI_Type *base                        = (SPIFI_Type *)handle->driverBaseAddr;
+
+    SPIFI_GetDefaultConfig(&memConfig);
+    SPIFI_Init(base, &memConfig);
+
+    spifi_nor_unlock(memSpifiHandler);
+
+    return kStatus_Success;
 }
