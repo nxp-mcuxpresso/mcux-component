@@ -183,6 +183,11 @@ void DBI_LCDIF_InitController(dbi_iface_t *dbiIface, dbi_lcdif_prv_data_t *prvDa
 
 status_t DBI_LCDIF_WriteCommandData(dbi_iface_t *dbiIface, uint32_t command, const void *data, uint32_t len_byte)
 {
+    if ((len_byte != 0U) && (data == NULL))
+    {
+        return kStatus_Fail;
+    }
+
     uint8_t cmd                   = (uint8_t)command;
     uint8_t *pData                = (uint8_t *)data;
     dbi_lcdif_prv_data_t *prvData = (dbi_lcdif_prv_data_t *)dbiIface->prvData;
