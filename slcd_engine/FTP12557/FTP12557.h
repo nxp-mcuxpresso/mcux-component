@@ -88,18 +88,6 @@ typedef enum
     ICON_6G,
 
     /* icon part */
-    ICON_D1,
-    ICON_D2,
-    ICON_D3,
-    ICON_D4,
-    ICON_D5,
-
-    ICON_T1,
-    ICON_T2,
-    ICON_T3,
-    ICON_T4,
-    ICON_T5,
-
     ICON_S1,
     ICON_S2,
     ICON_S3,
@@ -112,6 +100,18 @@ typedef enum
     ICON_S10,
     ICON_S11,
     ICON_S12,
+
+    ICON_D1,
+    ICON_D2,
+    ICON_D3,
+    ICON_D4,
+    ICON_D5,
+
+    ICON_T1,
+    ICON_T2,
+    ICON_T3,
+    ICON_T4,
+    ICON_T5,
 
     ICON_END
 } tSLCD_Segment_Icon;

@@ -704,8 +704,8 @@ const uint16_t SLCD_Icon[] = {
 
     /* 5 T icons */
     SLCD_ENGINE_PIN_VAL(__SLCD_PIN14, __SLCD_T1_COM),   /* T1 */
-    SLCD_ENGINE_PIN_VAL(__SLCD_PIN14, __SLCD_T2_COM),    /* T2 */
+    SLCD_ENGINE_PIN_VAL(__SLCD_PIN14, __SLCD_T2_COM),   /* T2 */
     SLCD_ENGINE_PIN_VAL(__SLCD_PIN14, __SLCD_T3_COM),   /* T3 */
     SLCD_ENGINE_PIN_VAL(__SLCD_PIN14, __SLCD_T4_COM),   /* T4 */
-    SLCD_ENGINE_PIN_VAL(__SLCD_PIN15, __SLCD_T5_COM),  /* T5 */
+    SLCD_ENGINE_PIN_VAL(__SLCD_PIN15, __SLCD_T5_COM),   /* T5 */
 };
