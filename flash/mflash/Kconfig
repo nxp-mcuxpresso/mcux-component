@@ -14,6 +14,7 @@ config MCUX_COMPONENT_component.mflash_onchip
     select MCUX_COMPONENT_driver.cache_xcache if MCUX_HAS_COMPONENT_driver.cache_xcache
     select MCUX_COMPONENT_driver.mcm if MCUX_HAS_COMPONENT_driver.mcm
     select MCUX_COMPONENT_driver.flash_k4 if MCUX_HAS_COMPONENT_driver.flash_k4
+    select MCUX_COMPONENT_driver.flash_c40 if MCUX_HAS_COMPONENT_driver.flash_c40
 
 config MCUX_COMPONENT_component.mflash_onchip_fmu
     bool "Statically allocated file system for on chip mflash via FMU controller"
