@@ -1,0 +1,25 @@
+# Copyright 2025 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+menu "ELE HSEB"
+
+config MCUX_COMPONENT_component.ele_hseb
+    bool "ELE HSEB"
+    select MCUX_COMPONENT_component.ele_hseb_mu_driver
+    select MCUX_COMPONENT_component.ele_hseb_framework
+    select MCUX_COMPONENT_component.ele_hseb_interface    
+
+config MCUX_COMPONENT_component.ele_hseb_mu_driver
+    bool "MU Driver"
+
+config MCUX_COMPONENT_component.ele_hseb_framework
+    bool "Framework"
+
+config MCUX_COMPONENT_component.ele_hseb_interface
+    bool "Interface"
+
+# These are application services for demonstration
+config MCUX_COMPONENT_component.ele_hseb_services
+    bool "Services"
+
+endmenu
