@@ -118,10 +118,8 @@ static osa_state_t s_osaState = {0};
 #if (defined(FSL_OSA_ALLOCATED_HEAP) && (FSL_OSA_ALLOCATED_HEAP > 0U))
 #if defined(configAPPLICATION_ALLOCATED_HEAP) && (configAPPLICATION_ALLOCATED_HEAP)
 #if defined(DATA_SECTION_IS_CACHEABLE) && (DATA_SECTION_IS_CACHEABLE)
-extern uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 AT_NONCACHEABLE_SECTION_ALIGN(uint8_t ucHeap[configTOTAL_HEAP_SIZE], 4);
 #else
-extern uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 SDK_ALIGN(uint8_t ucHeap[configTOTAL_HEAP_SIZE], 4);
 #endif /* DATA_SECTION_IS_CACHEABLE */
 #endif /* configAPPLICATION_ALLOCATED_HEAP */
