@@ -267,7 +267,7 @@ status_t sb3_fw_download_impl(LOAD_Target_Type loadTarget, uint32_t flag, uint32
 {
     volatile uint32_t *magic_pattern_addr = NULL;
     status_t status                       = kStatus_Fail;
-    int wait_count                        = 200;
+    int wait_count                        = 500;
     uint8_t target_type                   = ((uint8_t)loadTarget & ~0x80);
 
     if ((g_bootloaderTree_v1 == NULL) && ((get_chip_revision() == 1U) || (get_chip_revision() == 2U)))
@@ -1113,11 +1113,11 @@ static status_t loader_process_raw_file(uint32_t readOffset)
     uint32_t total_raw_size = 0;
 
 #ifdef CONFIG_FW_VDLLV2
-    if ((*((uint32_t*)data_ptr) == LOADER_RAW_BINARY_FORMAT) && (*((uint32_t*)(data_ptr + 4)) == LOADER_VDLL_RAW_BINARY_FORMAT))
+    if ((*((volatile uint32_t*)data_ptr) == LOADER_RAW_BINARY_FORMAT) && (*((volatile uint32_t*)(data_ptr + 4)) == LOADER_VDLL_RAW_BINARY_FORMAT))
     {
         src_addr  = data_ptr + 16;
-        dst_addr  = (uint8_t *)(*((uint32_t*)(data_ptr + 8)));
-        code_size = *((uint32_t*)(data_ptr + 12));
+        dst_addr  = (uint8_t *)(*((volatile uint32_t*)(data_ptr + 8)));
+        code_size = *((volatile uint32_t*)(data_ptr + 12));
         (void)memcpy(dst_addr, src_addr, code_size);
         status = kStatus_Success;
     }
@@ -1126,14 +1126,14 @@ static status_t loader_process_raw_file(uint32_t readOffset)
     {
         do
         {
-	    if(*((uint32_t*)data_ptr) != LOADER_RAW_BINARY_FORMAT)
-	    {
+            if(*((volatile uint32_t*)data_ptr) != LOADER_RAW_BINARY_FORMAT)
+            {
                 break;
-	    }
+            }
 
             src_addr  = data_ptr + 16;
-            dst_addr  = (uint8_t *)(*((uint32_t*)(data_ptr + 8)));
-            code_size = *((uint32_t*)(data_ptr + 12));
+            dst_addr  = (uint8_t *)(*((volatile uint32_t*)(data_ptr + 8)));
+            code_size = *((volatile uint32_t*)(data_ptr + 12));
             // Check for raw ending segment
             if ((uint32_t)src_addr == 0xffffffffU || (uint32_t)dst_addr == 0xffffffffU)
             {
