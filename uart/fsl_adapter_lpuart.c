@@ -210,6 +210,7 @@ static hal_uart_state_t *s_UartState[sizeof(s_LpuartAdapterBase) / sizeof(LPUART
 static hal_uart_dma_state_t *s_UartDmaState[sizeof(s_LpuartAdapterBase) / sizeof(LPUART_Type *)] = {0};
 #endif /* HAL_UART_DMA_USE_SOFTWARE_IDLELINE_DETECTION */
 #if (defined(HAL_UART_DMA_RING_BUFFER_ENABLE) && (HAL_UART_DMA_RING_BUFFER_ENABLE > 0U))
+#warning HAL_UART_DMA_RING_BUFFER_ENABLE is deprecated and will be removed in a future release.
 /* allocate ring buffer section. */
 AT_NONCACHEABLE_SECTION_INIT(
     static uint8_t s_ringBuffer[sizeof(s_LpuartAdapterBase) / sizeof(LPUART_Type *)][LPUART_RING_BUFFER_SIZE]) = {0};
