@@ -133,6 +133,7 @@ typedef struct _sdu_buffer
     transfer_buffer_t buffer;
 } sdu_buffer_t;
 
+#define SDU_MAX_SAVE_TX_DATA 64
 typedef struct _sdu_stat
 {
     uint32_t err_tx_cmd_sdio_hdr;
@@ -141,6 +142,14 @@ typedef struct _sdu_stat
     uint32_t succ_tx_cmd;
     uint32_t max_retry_tx_cmd;
     uint32_t max_retry_tx_event;
+    uint32_t max_retry_tx_data_no_buf;
+    uint32_t retry_tx_data_no_buf_arr[SDU_MAX_SAVE_TX_DATA];
+    uint32_t retry_tx_data_no_buf_cur;
+    uint32_t retry_tx_data_no_buf_cnt;
+    uint32_t max_retry_tx_data_no_port;
+    uint32_t retry_tx_data_no_port_arr[SDU_MAX_SAVE_TX_DATA];
+    uint32_t retry_tx_data_no_port_cur;
+    uint32_t retry_tx_data_no_port_cnt;
     uint32_t err_tx_data_sdio_hdr;
     uint32_t err_tx_data_call_cb;
     uint32_t drop_tx_data;
@@ -1141,7 +1150,7 @@ static status_t SDU_SendCmdNonBlocking(sdioslv_handle_t handle, transfer_buffer_
         return (status_t)kStatus_Fail;
     }
 
-    if (port_ctrl->occupied != 0U )
+    if (port_ctrl->occupied != 0U)
     {
         OSA_EXIT_CRITICAL();
         return (status_t)kStatus_SDIOSLV_CmdPending;
@@ -1259,9 +1268,19 @@ static status_t SDU_SendDataNonBlocking(sdioslv_handle_t handle, transfer_buffer
     if (tx_port >= fun_ctrl->config.used_port_num)
     {
         OSA_EXIT_CRITICAL();
-        return (status_t)kStatus_SDIOSLV_SendFull;
+        return (status_t)kStatus_Fail;
     }
     port_ctrl = &fun_ctrl->data_port[SDU_PORT_FOR_READ][tx_port];
+    if (port_ctrl->valid == 0U)
+    {
+        OSA_EXIT_CRITICAL();
+        return (status_t)kStatus_Fail;
+    }
+    if (port_ctrl->occupied != 0U)
+    {
+        OSA_EXIT_CRITICAL();
+        return (status_t)kStatus_SDIOSLV_SendFull;
+    }
 
     port_ctrl->buffer        = buffer;
     port_ctrl->occupied      = 1;
@@ -1561,14 +1580,15 @@ status_t SDU_RecvData(void)
  * @retval #kStatus_NoData No free buffer to use.
  * @retval #kStatus_Fail Fail to send data.
  */
-uint32_t g_SDU_Send_retry_cnt = 3;
+uint32_t g_SDU_Send_retry_cnt = 0xFFFFFFFF;
 status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_len)
 {
     sdu_buffer_t *send_buffer = NULL;
     status_t status = kStatus_Fail;
     sdio_header_t *sdio_hdr = NULL;
-    int retry_cnt = g_SDU_Send_retry_cnt;
+    uint32_t retry_cnt = g_SDU_Send_retry_cnt;
     uint32_t retry_cnt_cmdevent = 0;
+    uint32_t retry_cnt_data = 0;
 
     if ((data_addr == NULL) || (data_len == 0U))
     {
@@ -1607,10 +1627,12 @@ retry:
         if (((type == SDU_TYPE_FOR_READ_CMD) || (type == SDU_TYPE_FOR_READ_EVENT)) ||
             ((type == SDU_TYPE_FOR_READ_DATA) && (retry_cnt > 0)))
         {
-            if (retry_cnt > 0)
+            if (retry_cnt > 0 && (retry_cnt != 0xFFFFFFFF))
                 retry_cnt--;
             if ((type == SDU_TYPE_FOR_READ_CMD) || (type == SDU_TYPE_FOR_READ_EVENT))
                 retry_cnt_cmdevent++;
+            else if (type == SDU_TYPE_FOR_READ_DATA)
+                retry_cnt_data++;
             /* Allow the other thread to run and hence could get available sdio send buffer
              * so that cmd/event/data can be sent by sdio */
             OSA_TimeDelay(1);
@@ -1633,7 +1655,6 @@ retry:
     }
     if (retry_cnt_cmdevent > 0)
     {
-        sdu_d("R:%u-%u", type, retry_cnt_cmdevent);
         if ((type == SDU_TYPE_FOR_READ_CMD) && (retry_cnt_cmdevent > ctrl_sdu.stat.max_retry_tx_cmd))
         {
             ctrl_sdu.stat.max_retry_tx_cmd = retry_cnt_cmdevent;
@@ -1642,6 +1663,18 @@ retry:
         {
             ctrl_sdu.stat.max_retry_tx_event = retry_cnt_cmdevent;
         }
+        sdu_d("Retry CMDEVT: %u-%u (%p %u)", type, retry_cnt_cmdevent, data_addr, data_len);
+    }
+    if (retry_cnt_data > 0)
+    {
+        if ((type == SDU_TYPE_FOR_READ_DATA) && (retry_cnt_data > ctrl_sdu.stat.max_retry_tx_data_no_buf))
+        {
+            ctrl_sdu.stat.max_retry_tx_data_no_buf = retry_cnt_data;
+        }
+        ctrl_sdu.stat.retry_tx_data_no_buf_arr[ctrl_sdu.stat.retry_tx_data_no_buf_cur] = retry_cnt_data;
+        ctrl_sdu.stat.retry_tx_data_no_buf_cur = (ctrl_sdu.stat.retry_tx_data_no_buf_cur + 1) % SDU_MAX_SAVE_TX_DATA;
+        ctrl_sdu.stat.retry_tx_data_no_buf_cnt++;
+        sdu_d("Retry DATA: %u-%u (%p %u)", type, retry_cnt_data, data_addr, data_len);
     }
 
     if (data_len + sizeof(sdio_header_t) > send_buffer->buffer.data_size)
@@ -1680,46 +1713,76 @@ retry:
         case SDU_TYPE_FOR_READ_CMD:
             (void)LIST_AddTail(&ctrl_sdu.cmd_q[SDU_PORT_FOR_READ], &send_buffer->link);
             status = SDU_SendCmdNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
-            if ((status == (status_t)kStatus_Success) || (status == (status_t)kStatus_SDIOSLV_CmdPending))
+            if (status == (status_t)kStatus_Success)
             {
                 sdu_d("%s: %d SendCmdNonBlocking ok 0x%x!\r\n", __FUNCTION__, type, status);
             }
             else
             {
-                sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
-                (void)LIST_RemoveElement(&send_buffer->link);
-                (void)LIST_AddTail(&ctrl_sdu.cmd_free_buffer[SDU_PORT_FOR_READ], &send_buffer->link);
-                return (status_t)kStatus_Fail;
+                if (status == (status_t)kStatus_SDIOSLV_CmdPending)
+                {
+                    sdu_d("%s: SDU_SendCmdNonBlocking cmd full retry %u times 0x%x!\r\n", __FUNCTION__, status);
+                }
+                if ((status != (status_t)kStatus_Success) && (status != (status_t)kStatus_SDIOSLV_CmdPending))
+                {
+                    sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
+                    (void)LIST_RemoveElement(&send_buffer->link);
+                    (void)LIST_AddTail(&ctrl_sdu.cmd_free_buffer[SDU_PORT_FOR_READ], &send_buffer->link);
+                    return (status_t)kStatus_Fail;
+                }
             }
             break;
         case SDU_TYPE_FOR_READ_EVENT:
             (void)LIST_AddTail(&ctrl_sdu.event_q, &send_buffer->link);
             status = SDU_SendCmdNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
-            if ((status == (status_t)kStatus_Success) || (status == (status_t)kStatus_SDIOSLV_CmdPending))
+            if (status == (status_t)kStatus_Success)
             {
                 sdu_d("%s: %d SendCmdNonBlocking ok 0x%x!\r\n", __FUNCTION__, type, status);
             }
             else
             {
-                sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
-                (void)LIST_RemoveElement(&send_buffer->link);
-                (void)LIST_AddTail(&ctrl_sdu.event_free_buffer, &send_buffer->link);
-                return (status_t)kStatus_Fail;
+                if (status == (status_t)kStatus_SDIOSLV_CmdPending)
+                {
+                    sdu_d("%s: SDU_SendCmdNonBlocking event full retry %u times 0x%x!\r\n", __FUNCTION__, status);
+                }
+                if ((status != (status_t)kStatus_Success) && (status != (status_t)kStatus_SDIOSLV_CmdPending))
+                {
+                    sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
+                    (void)LIST_RemoveElement(&send_buffer->link);
+                    (void)LIST_AddTail(&ctrl_sdu.event_free_buffer, &send_buffer->link);
+                    return (status_t)kStatus_Fail;
+                }
             }
             break;
         case SDU_TYPE_FOR_READ_DATA:
             (void)LIST_AddTail(&ctrl_sdu.data_q[SDU_PORT_FOR_READ], &send_buffer->link);
             status = SDU_SendDataNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
-            if ((status == (status_t)kStatus_Success) || (status == (status_t)kStatus_SDIOSLV_SendFull))
+            if (status == (status_t)kStatus_Success)
             {
                 sdu_d("%s: SendDataNonBlocking ok 0x%x!\r\n", __FUNCTION__, status);
             }
             else
             {
-                sdu_e("%s: SendDataNonBlocking fail 0x%x!\r\n", __FUNCTION__, status);
-                (void)LIST_RemoveElement(&send_buffer->link);
-                (void)LIST_AddTail(&ctrl_sdu.data_free_buffer, &send_buffer->link);
-                return (status_t)kStatus_Fail;
+                if (status == (status_t)kStatus_SDIOSLV_SendFull)
+                {
+					uint32_t retry_cnt_data = 1;
+                    if (retry_cnt_data > ctrl_sdu.stat.max_retry_tx_data_no_port)
+                    {
+                        ctrl_sdu.stat.max_retry_tx_data_no_port = retry_cnt_data;
+                    }
+                    ctrl_sdu.stat.retry_tx_data_no_port_arr[ctrl_sdu.stat.retry_tx_data_no_port_cur] = retry_cnt_data;
+                    ctrl_sdu.stat.retry_tx_data_no_port_cur = (ctrl_sdu.stat.retry_tx_data_no_port_cur + 1) % SDU_MAX_SAVE_TX_DATA;
+                    ctrl_sdu.stat.retry_tx_data_no_port_cnt++;
+                    sdu_d("%s: SendDataNonBlocking full retry %u times 0x%x!\r\n", __FUNCTION__, retry_cnt_data, status);
+
+                }
+                if ((status != (status_t)kStatus_Success) && (status != (status_t)kStatus_SDIOSLV_SendFull))
+                {
+                    sdu_e("%s: SendDataNonBlocking fail 0x%x!\r\n", __FUNCTION__, status);
+                    (void)LIST_RemoveElement(&send_buffer->link);
+                    (void)LIST_AddTail(&ctrl_sdu.data_free_buffer, &send_buffer->link);
+                    return (status_t)kStatus_Fail;
+                }
             }
             break;
         default:
