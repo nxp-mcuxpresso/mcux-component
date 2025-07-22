@@ -2067,6 +2067,7 @@ void PCA9422_SetRegulatorLPMode(pca9422_handle_t *handle, pca9422_regulator_t re
 static uint8_t PCA9422_GetBUCK123RegAddr(uint8_t idx, pca9422_vout_t vout)
 {
     uint8_t regAddr;
+    assert(idx < 3U);
     switch (vout)
     {
         case kPCA9422_RegSleepVout:
@@ -2168,6 +2169,7 @@ static uint8_t PCA9422_GetLDO1RegAddr(pca9422_vout_t vout)
 static uint8_t PCA9422_GetLDO23RegAddr(uint8_t idx, pca9422_vout_t vout)
 {
     uint8_t regAddr;
+    assert(idx < 2U);
     switch (vout)
     {
         case kPCA9422_RegVout:
