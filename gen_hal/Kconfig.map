@@ -35,4 +35,8 @@ menu "Configuration (ZephyrMap_Gen.h)"
 		frequency exceeds 64 bits. Second algorithm prevents that. Faster
 		algorithm is selected for conversion if maximum timeout represented in
 		source frequency domain multiplied by target frequency fits in 64 bits.
+	
+	config GEN_HAL_OSA_FREERTOS_MAX_TASK
+		int "Max task created in FreeRTOS."
+		default 10
 endmenu

@@ -6,7 +6,11 @@
 #ifndef _FSL_OSA_THREAD
 #define _FSL_OSA_THREAD
 
-#include <zephyr/kernel.h>
+#include "fsl_common.h"
+
+void coredump_freertos_trace_task_create(void *tcb);
+
+void coredump_freertos_trace_task_delete(void *tcb);
 
 /*!
  * @brief Map current task/thread into zephyr format.
@@ -27,6 +31,6 @@ uint8_t OSA_GetThreadNum(void);
  * 
  * @param [in] ptrThreads Pointer to the start of thread list.
  */
-void OSA_PopulateKernelInstance(struct k_thread *ptrThreads);
+void OSA_PopulateKernelInstance(void *ptrThreads, uint32_t taskCount);
 
 #endif /* _FSL_OSA_THREAD */

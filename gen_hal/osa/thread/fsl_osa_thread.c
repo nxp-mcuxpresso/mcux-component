@@ -5,6 +5,8 @@
  */
 #include "fsl_osa_thread.h"
 
+#include <zephyr/kernel.h>
+
 struct z_kernel _kernel;
 struct k_thread _current_Thread;
 k_tid_t ptrCurrent = &_current_Thread;
@@ -103,20 +105,138 @@ typedef struct _free_rtos_TCB
 #endif
 } free_rtos_TCB;
 
+typedef struct _freeRtos_Task_Info
+{
+    void *taskTcb;       /* Store the address of TCB. */
+    uint32_t stackSize;  /* The size of stack, in unit of byte. */
+} freeRtos_Task_Info_t;
+
+static freeRtos_Task_Info_t g_freeRTOS_tcbs[CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK];
+
+static bool find_slot(uint8_t *idx, void *desiredTcb)
+{
+    for (uint8_t i = 0; i < CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
+    {
+      if (g_freeRTOS_tcbs[i].taskTcb == desiredTcb)
+      {
+        *idx = i;
+        return true;
+      }
+  }
+
+  return false;
+}
+
+static void OSA_TranslateTCBToZephyrThread(struct k_thread *zephyrThread, freeRtos_Task_Info_t *freeRTosTaskInfo)
+{
+      free_rtos_TCB *freeRTosTcb = freeRTosTaskInfo->taskTcb;
+      TaskStatus_t curTaskStatus;
+#if defined(CONFIG_THREAD_STACK_INFO)
+      zephyrThread->stack_info.start = (uint32_t)freeRTosTcb->pxStack;
+      zephyrThread->stack_info.size = freeRTosTaskInfo->stackSize;
+      zephyrThread->stack_info.delta = 0U;
+#endif  
+      zephyrThread->base.prio = freeRTosTcb->uxPriority;
+      
+      vTaskGetInfo((TaskHandle_t)freeRTosTcb, &curTaskStatus, pdFALSE, eInvalid);
+      
+      switch(curTaskStatus.eCurrentState)
+      {
+        
+      case eReady:
+        {
+            zephyrThread->base.thread_state = _THREAD_QUEUED;
+            break;
+        }
+        
+      case eBlocked:
+        {
+            zephyrThread->base.thread_state = _THREAD_PENDING;
+            break;
+        }
+      case eSuspended:
+        {
+            zephyrThread->base.thread_state = _THREAD_SUSPENDED;
+            break;
+        }
+      case eDeleted:
+        {
+            zephyrThread->base.thread_state = _THREAD_DEAD;
+            break;
+        }
+        
+      default:
+        {
+            break;
+        }
+      }
+      
+#if defined(CONFIG_THREAD_NAME)
+       memcpy(zephyrThread->name, freeRTosTcb->pcTaskName, CONFIG_THREAD_MAX_NAME_LEN);
+#endif /* defined(CONFIG_THREAD_NAME) */
+      
+      
+      zephyrThread->callee_saved.psp = (uint32_t)freeRTosTcb->pxTopOfStack + 40UL;
+      
+#if ( ( configENABLE_FPU == 1 ) || ( configENABLE_MVE == 1 ) ) && (CONFIG_FPU)
+        zephyrThread->callee_saved.psp += 64UL;
+#endif
+}
+
+void coredump_freertos_trace_task_create(void *tcb)
+{
+    uint8_t idx = 0U;
+    
+    bool isFound = find_slot(&idx, 0);
+    
+    if (isFound)
+    {
+        g_freeRTOS_tcbs[idx].taskTcb = tcb;
+        g_freeRTOS_tcbs[idx].stackSize = ((uint32_t)(((free_rtos_TCB *)tcb)->pxTopOfStack) - (uint32_t)(((free_rtos_TCB *)tcb)->pxStack)) + (18UL * 4UL);
+    }
+    else
+    {
+        /* Task registry full. */
+        assert(false);
+    }
+    
+}
+
+void coredump_freertos_trace_task_delete(void *tcb)
+{
+    uint8_t idx = 0U;
+    
+    if (find_slot(&idx, tcb) == false)
+    {
+        return ;
+    }
+    
+    g_freeRTOS_tcbs[idx].taskTcb = NULL;
+    g_freeRTOS_tcbs[idx].stackSize = 0UL;
+}
+
 struct k_thread *OSA_GetCurrentThread(void)
 {
     free_rtos_TCB *ptrFreeRtosTCB = (free_rtos_TCB *)(xTaskGetCurrentTaskHandle());
-
-#if defined(CONFIG_THREAD_NAME)
-    memcpy(ptrCurrent->name, ptrFreeRtosTCB->pcTaskName, CONFIG_THREAD_MAX_NAME_LEN);
-#endif /* CONFIG_THREAD_NAME */
-
-#if defined(CONFIG_THREAD_STACK_INFO)
-    ptrCurrent->stack_info.start = (uint32_t)ptrFreeRtosTCB->pxStack;
-    ptrCurrent->stack_info.size  = 0x400; /*TODO: Change as   */
-    ptrCurrent->stack_info.delta = 0UL;
-#endif                                    /* CONFIG_THREAD_STACK_INFO */
-
+    uint32_t curTaskId = 0UL;
+    for (uint8_t i =0U; i < CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
+    {
+          void *tmpTcb = g_freeRTOS_tcbs[i].taskTcb;
+          
+          if (tmpTcb == NULL)
+          {
+              continue;
+          }
+          
+          if (((void *)ptrFreeRtosTCB) == (tmpTcb))
+          {
+              curTaskId = i;
+              break;
+          }
+    }
+    
+    OSA_TranslateTCBToZephyrThread(ptrCurrent,&g_freeRTOS_tcbs[curTaskId]);
+    
     return ptrCurrent;
 }
 
@@ -127,92 +247,68 @@ uint8_t OSA_GetThreadNum(void)
     return (uint8_t)taskNum;
 }
 
-void OSA_PopulateKernelInstance(struct k_thread *ptrThreads)
+void OSA_PopulateKernelInstance(void *ptrThreads, uint32_t taskCount)
 {
 #if defined(CONFIG_THREAD_MONITOR)
-    struct k_thread *current                   = ptrThreads;
-    struct k_thread *next                      = ptrThreads;
-    volatile UBaseType_t taskNum               = uxTaskGetNumberOfTasks();
-    TaskStatus_t *taskStatus                   = pvPortMalloc(sizeof(TaskStatus_t) * taskNum);
-    taskNum                                    = uxTaskGetSystemState(taskStatus, taskNum, NULL);
-    TaskStatus_t *curTaskStatus                = taskStatus;
-    free_rtos_TCB *ptrCurFreeRtosTCB           = NULL;
-    volatile StackType_t *curTaskReservedStack = NULL;
+    struct k_thread *current                   = NULL;
+    struct k_thread *next                      = NULL;
+    uint32_t taskId = 0UL;
+    free_rtos_TCB *ptrcurFreeRtosTCB = (free_rtos_TCB *)(xTaskGetCurrentTaskHandle());
+    uint32_t curTaskId = 0UL;
 
-    _kernel.threads = ptrThreads;
-
-    for (uint8_t i = 0U; i < (uint8_t)taskNum; i++)
+    _kernel.threads = (struct k_thread *)ptrThreads;
+    current = (struct k_thread *)ptrThreads;
+    
+    
+    for(uint32_t taskId = 0UL; taskId < taskCount; taskId++)
     {
-        memset((void *)current, 0U, sizeof(struct k_thread));
-        if (i == (taskNum - 1U))
+        memset((void *)current, 0UL, sizeof(struct k_thread));
+        if (taskId == (taskCount - 1U))
         {
-            next = NULL;
+            current->next_thread = NULL;
+            break;
         }
-        else
-        {
-            next += 1UL;
-        }
-        switch (curTaskStatus->eCurrentState)
-        {
-            case eRunning:
-            {
-                current->base.thread_state = 0U;
-                break;
-            }
-            case eReady:
-            {
-                current->base.thread_state = _THREAD_QUEUED;
-                break;
-            }
-            case eBlocked:
-            {
-                current->base.thread_state = _THREAD_PENDING;
-                break;
-            }
-            case eSuspended:
-            {
-                current->base.thread_state = _THREAD_SUSPENDED;
-                break;
-            }
-            case eDeleted:
-            {
-                current->base.thread_state = _THREAD_DEAD;
-                break;
-            }
-            case eInvalid:
-            {
-                current->base.thread_state = _THREAD_DUMMY;
-                break;
-            }
-            default:
-            {
-                assert(false);
-                break;
-            }
-        }
-        current->base.prio   = curTaskStatus->uxCurrentPriority;
-        ptrCurFreeRtosTCB    = (free_rtos_TCB *)(curTaskStatus->xHandle);
-        curTaskReservedStack = ptrCurFreeRtosTCB->pxTopOfStack;
-        // current->entry.pEntry = (k_thread_entry_t)curTaskReservedStack[16];
-        // current->entry.parameter1 = (void *)curTaskReservedStack[10];
-        // current->entry.parameter2 = NULL;
-        // current->entry.parameter3 = NULL;
-        current->next_thread      = next;
-        current->stack_info.start = (uint32_t)curTaskStatus->pxStackBase;
-        current->stack_info.size  = ((uint32_t)curTaskReservedStack - (uint32_t)(curTaskStatus->pxStackBase)) + 0x58UL;
-        current->stack_info.delta = 0UL;
-        memcpy(current->name, curTaskStatus->pcTaskName, CONFIG_THREAD_MAX_NAME_LEN);
+        next = current + 1;
+        current->next_thread = next;
 
-        current++;
-        curTaskStatus++;
+        current = next;
     }
 
-    vPortFree((void *)taskStatus);
+    /* Restore current and next pointer. */
+    current = (struct k_thread *)ptrThreads;
+    next = current->next_thread;
+    
+    assert(taskCount <= CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK);
+    taskId = 0U;
+    for (uint8_t i =0U; i < CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
+    {
+          void *tmpTcb = g_freeRTOS_tcbs[i].taskTcb;
+          
+          if (tmpTcb == NULL)
+          {
+              continue;
+          }
+          
+          if (((void *)ptrcurFreeRtosTCB) == (tmpTcb))
+          {
+              curTaskId = taskId;
+          }
+          
+          OSA_TranslateTCBToZephyrThread(current, &(g_freeRTOS_tcbs[i]));
+
+          current = next;
+          next = next->next_thread;
+          if (++taskId == taskCount)
+          {
+              break;
+          }
+    }
+    
 #else
     (void)ptrThreads;
 #endif
     /* Populate current thread. */
-    _kernel.cpus[0].current = OSA_GetCurrentThread();
+    OSA_TranslateTCBToZephyrThread(_kernel.cpus[0].current, &(g_freeRTOS_tcbs[curTaskId]));
 }
 
 #else
