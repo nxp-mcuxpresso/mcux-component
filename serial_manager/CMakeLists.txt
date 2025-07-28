@@ -63,7 +63,6 @@ if (CONFIG_MCUX_COMPONENT_component.serial_manager_usb_cdc)
             fsl_component_serial_port_usb.c
             usb_cdc_adapter/usb_device_descriptor.h
             usb_cdc_adapter/usb_device_descriptor.c
-            usb_cdc_adapter/usb_device_config.h
     )
     
     mcux_add_configuration(

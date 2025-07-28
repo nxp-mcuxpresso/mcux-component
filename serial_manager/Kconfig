@@ -172,8 +172,8 @@ config MCUX_COMPONENT_component.serial_manager_usb_cdc
     # select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_middleware.usb.common_header
     select MCUX_COMPONENT_middleware.usb.device.common_header
-    select MCUX_COMPONENT_middleware.usb.device.cdc
-        
+    select MCUX_COMPONENT_middleware.usb.device.cdc if !MCUX_MISC_USB_DEVICE_GENERATE_CONFIG
+
     if MCUX_COMPONENT_component.serial_manager_usb_cdc
 
     endif
