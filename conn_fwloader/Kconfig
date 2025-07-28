@@ -8,6 +8,10 @@ menu "connectivity firmware loader"
         select MCUX_COMPONENT_component.osa
         imply MCUX_COMPONENT_component.mflash_offchip
 
+    config MCUX_COMPONENT_driver.conn_fwloader.fw_bin
+        bool "Firmware Binary"
+        default y if MCUX_COMPONENT_driver.conn_fwloader
+
     config MCUX_COMPONENT_driver.conn_fwloader_ns
         bool "conn_fwloader_ns"
 
