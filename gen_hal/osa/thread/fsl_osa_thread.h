@@ -21,14 +21,14 @@ struct k_thread *OSA_GetCurrentThread(void);
 
 /*!
  * @brief Get counts of threads.
- * 
+ *
  * @return Counts of threads.
  */
 uint8_t OSA_GetThreadNum(void);
 
 /*!
  * @brief Populate global variable kernel with input thread list.
- * 
+ *
  * @param [in] ptrThreads Pointer to the start of thread list.
  */
 void OSA_PopulateKernelInstance(void *ptrThreads, uint32_t taskCount);

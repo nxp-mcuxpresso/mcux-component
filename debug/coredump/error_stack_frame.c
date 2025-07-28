@@ -8,6 +8,8 @@
 #include "fsl_osa_thread.h"
 #endif
 
+#include <zephyr/kernel.h>
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -377,7 +379,7 @@ void fault_capture(uint32_t msp, uint32_t psp, uint32_t exc_return, _callee_save
     curThread                      = OSA_GetCurrentThread();
     uint8_t taskCount              = OSA_GetThreadNum();
     struct k_thread *ptrThreadList = malloc(sizeof(struct k_thread) * taskCount);
-    OSA_PopulateKernelInstance(ptrThreadList);
+    OSA_PopulateKernelInstance((void *)ptrThreadList, taskCount);
     coredump(reason, &esf_copy, curThread);
     free((void *)ptrThreadList);
 #else
