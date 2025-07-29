@@ -125,41 +125,70 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_component.ele_hseb_services)
     mcux_add_source(
-        SOURCES services/inc/hse_global_variables.h
+        SOURCES services/inc/global_defs.h
+                services/inc/hse_config.h
                 services/inc/hse_demo_app_services.h
-                services/src/hse_demo_app_config.c
-                services/src/hse_b_catalog_formatting.c
+                services/inc/hse_global_types.h
+                services/inc/hse_global_variables.h
+                services/inc/hse_host_boot.h
+                services/inc/hse_host_common.h
+                services/inc/hse_host_flashSrv.h
+                services/inc/hse_host_sys_authorization.h
+                services/inc/hse_host_test.h
+                services/inc/hse_host_wrappers.h
+                services/inc/hse_memory_update_protocol.h
+                services/inc/hse_monotonic_cnt.h
+                services/inc/hse_sbaf_update.h
+                services/inc/hse_she_api.h
+                services/inc/hse_she_commands.h
                 services/inc/standard/hse_b_catalog_formatting.h
-                services/src/common/hse_global_variables.c
                 services/src/common/hse_config.c
-                services/src/standard/hse_fwType_config.c
-                services/src/utest/hse_utest.c
-                services/src/shecommandapp/hse_host_wrappers.c
-                services/src/shecommandapp/hse_she_commands.c
+                services/src/common/hse_global_variables.c
+                services/src/fw_crypto/hse_crypto.c
+                services/src/fw_crypto/inc/hse_aead_example.h
+                services/src/fw_crypto/inc/hse_aes_example.h
+                services/src/fw_crypto/inc/hse_BD_example.h
+                services/src/fw_crypto/inc/hse_ecc_example.h
+                services/src/fw_crypto/inc/hse_fastcmac_example.h
+                services/src/fw_crypto/inc/hse_get_key_info.h
+                services/src/fw_crypto/inc/hse_hash_example.h
+                services/src/fw_crypto/inc/hse_host_Kdf_examples.h
+                services/src/fw_crypto/inc/hse_host_km_import_key.h
+                services/src/fw_crypto/inc/hse_host_km_utils.h
+                services/src/fw_crypto/inc/hse_host_msc_km.h
+                services/src/fw_crypto/inc/hse_publish_keystore_RamToFlash_example.h
+                services/src/fw_crypto/inc/hse_rsa_example.h
+                services/src/fw_crypto/inc/hse_sessionkeys_example.h
+                services/src/fw_crypto/inc/hse_sys_auth_example.h
+                services/src/fw_crypto/inc/hse_UpdateNvmKeys_example.h
+                services/src/fw_crypto/src/hse_aead_example.c
+                services/src/fw_crypto/src/hse_aes_example.c
+                services/src/fw_crypto/src/hse_BurchesmesterDesmt_example.c
+                services/src/fw_crypto/src/hse_ecc_example.c
+                services/src/fw_crypto/src/hse_fastcmac_example.c
+                services/src/fw_crypto/src/hse_get_key_info.c
+                services/src/fw_crypto/src/hse_hash_example.c
+                services/src/fw_crypto/src/hse_host_Kdf_examples.c
+                services/src/fw_crypto/src/hse_host_km_import_key.c
+                services/src/fw_crypto/src/hse_host_km_utils.c
+                services/src/fw_crypto/src/hse_host_sys_authorization.c
+                services/src/fw_crypto/src/hse_publish_keystore_RamToFlash_example.c
+                services/src/fw_crypto/src/hse_rsa_example.c
+                services/src/fw_crypto/src/hse_sessionkeys_example.c
+                services/src/fw_crypto/src/hse_sys_auth_example.c
+                services/src/fw_crypto/src/hse_UpdateNvmKeys_example.c
+                services/src/hse_b_catalog_formatting.c
+                services/src/hse_demo_app_config.c
+                services/src/monotonic_cnt/hse_monotonic_cnt.c
+                services/src/sbaf_update/sbaf_update.c
                 services/src/shecommandapp/hse_host_common.c
                 services/src/shecommandapp/hse_host_test.c
+                services/src/shecommandapp/hse_host_wrappers.c
                 services/src/shecommandapp/hse_memory_update_protocol.c
-                services/src/fw_crypto/hse_crypto.c
-                services/src/fw_crypto/src/hse_sys_auth_example.c
-                services/src/fw_crypto/inc/hse_sys_auth_example.h
-                services/src/fw_crypto/src/hse_host_sys_authorization.c
-                services/inc/hse_host_sys_authorization.h
-                services/src/fw_crypto/src/hse_aes_example.c
-                services/src/fw_crypto/src/hse_hash_example.c
-                services/src/fw_crypto/src/hse_sessionkeys_example.c
-                services/src/fw_crypto/inc/hse_sessionkeys_example.h
-                services/src/fw_crypto/src/hse_UpdateNvmKeys_example.c
-                services/src/fw_crypto/inc/hse_UpdateNvmKeys_example.h
-                services/src/fw_crypto/src/hse_get_key_info.c
-                services/src/fw_crypto/inc/hse_get_key_info.h
-                services/src/fw_crypto/src/hse_rsa_example.c
-                services/src/fw_crypto/inc/hse_rsa_example.h
-                services/src/fw_crypto/src/hse_aead_example.c
-                services/src/fw_crypto/inc/hse_aead_example.h
-                services/src/fw_crypto/src/hse_publish_keystore_RamToFlash_example.c
-                services/src/fw_crypto/inc/hse_publish_keystore_RamToFlash_example.h
-                services/src/fw_crypto/src/hse_host_Kdf_examples.c
-                services/src/fw_crypto/inc/hse_host_Kdf_examples.h
+                services/src/shecommandapp/hse_she_command_main.c
+                services/src/shecommandapp/hse_she_commands.c
+                services/src/standard/hse_fwType_config.c
+                services/src/utest/hse_utest.c
     )
     mcux_add_include(
         INCLUDES ./
