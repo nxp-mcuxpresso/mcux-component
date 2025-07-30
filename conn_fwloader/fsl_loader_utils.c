@@ -920,7 +920,7 @@ static status_t fsl_sbloader_pump(fsl_api_core_context_t *ctx, uint8_t *data, ui
 
 ////////////////////////////////////////////////////////////////////////////
 //! @brief Read flash area loading to RAM buffer.
-// Direct read from flash is not allowed when remapping is active.
+//
 // buf             : pointer to RAM buffer, its size must be sufficient to receive
 //                   the required number of bytes.
 // src_flash_offset: 'virtual' address in flash relative to start of flash storage.
@@ -929,32 +929,9 @@ static status_t fsl_sbloader_pump(fsl_api_core_context_t *ctx, uint8_t *data, ui
 ////////////////////////////////////////////////////////////////////////////
 static status_t ldr_ReadFromFlash(uint8_t * buf, uint32_t src_flash_offset, size_t read_sz)
 {
-    status_t st;
-    static const uint32_t mflash_base = (1u << 27);
-    uint32_t remap_offset = _ActiveApplicationRemapOffset();
-    if (remap_offset == 0U)
-    {
-        memcpy(buf, (void*)src_flash_offset, read_sz);
-        st = kStatus_Success;
-    }
-    else
-    {
-        // similar to mflash_drv_log2phys
-        uint32_t phys_offset = (src_flash_offset + remap_offset) & ~mflash_base;
-        st = mflash_drv_read(phys_offset, (uint32_t *)buf, read_sz);
-    }
-    return st;
-}
-
-////////////////////////////////////////////////////////////////////////////
-//! @brief Read SB3 area descriptor.
-// Direct read from flash is not allowed when remapping is active.
-// hdr       : pointer to RAM fsl_nboot_sb3_header_t structure.
-// sourceAddr: 'virtual' address where SB3 header is expected.
-////////////////////////////////////////////////////////////////////////////
-status_t read_nboot_sb3_header(fsl_nboot_sb3_header_t * hdr, uint32_t sourceAddr)
-{
-   return ldr_ReadFromFlash((uint8_t*)hdr, sourceAddr, sizeof(fsl_nboot_sb3_header_t));
+    /* When running from the remapped slot, using memcpy is valid, as long as accesses are not done in the overlaid region */
+    memcpy(buf, (void*)src_flash_offset, read_sz);
+    return kStatus_Success;
 }
 
 ////////////////////////////////////////////////////////////////////////////
