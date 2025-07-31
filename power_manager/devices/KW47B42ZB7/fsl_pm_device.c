@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 NXP
+ * Copyright 2024, 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -451,6 +451,10 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
     {
         if (tmp8 == PM_RESOURCE_OFF)
         {
+            /*
+            * $Line Coverage Justification$
+            * $ref pm_device_c_ref_3$.
+            */
             VBAT_EnableSRAMArrayRetained(VBAT0, false);
         }
         else
@@ -518,10 +522,6 @@ static void PM_SetFro192MOperateMode(uint8_t operateMode, pm_resource_recode_t *
     {
         SCG0->FIRCCSR |= SCG_FIRCCSR_FIRCSTEN_MASK;
     }
-    else
-    {
-        SCG0->FIRCCSR &= ~SCG_FIRCCSR_FIRCSTEN_MASK;
-    }
 
     pResourceRecode->currentOperateMode = tmp8;
 }
@@ -542,10 +542,6 @@ static void PM_SetFro6MOperateMode(uint8_t operateMode, pm_resource_recode_t *pR
     if (tmp8 == PM_RESOURCE_FULL_ON)
     {
         SCG0->SIRCCSR |= SCG_SIRCCSR_SIRCSTEN_MASK;
-    }
-    else
-    {
-        SCG0->SIRCCSR &= ~SCG_SIRCCSR_SIRCSTEN_MASK;
     }
 
     pResourceRecode->currentOperateMode = tmp8;

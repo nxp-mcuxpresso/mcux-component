@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 NXP
+ * Copyright 2021-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -16,6 +16,9 @@
  *
  * $Justification pm_core_c_ref_2$
  * Error doesn't happen in test case.
+ *
+ * $Justification pm_core_c_ref_3$
+ * This depends on device implementation. The "prepare" function is NULL with tested devices.
  */
 
 /*******************************************************************************
@@ -257,6 +260,10 @@ void PM_CreateHandle(pm_handle_t *handle)
 
     if (s_pmHandle->deviceOption->prepare != NULL)
     {
+        /*
+         * $Branch Coverage Justification$
+         * $ref pm_core_c_ref_3$.
+         */
         s_pmHandle->deviceOption->prepare();
     }
 
