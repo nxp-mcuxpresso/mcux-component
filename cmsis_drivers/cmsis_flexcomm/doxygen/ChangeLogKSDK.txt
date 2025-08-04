@@ -55,7 +55,13 @@
 */
 
 @section cmsis spi  CMSIS SPI
-  Current CMSIS SPI driver version is 2.5
+  Current CMSIS SPI driver version is 2.6
+
+   - 2.6
+    - Bug Fixes
+      - Fix ARM_SPI_GetDataCount bug when using DMA mode, and desired data size larger than 1024.
+    - Improvements
+      - Remove duplicated code in SPI_DMASend and SPI_DMAReceive.
 
    - 2.5
     - Bug Fixes

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
  * Copyright (c) 2016, Freescale Semiconductor, Inc. Not a Contribution.
- * Copyright 2016-2020 NXP. Not a Contribution.
+ * Copyright 2016-2020, 2025 NXP. Not a Contribution.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -31,7 +31,7 @@
      (defined(RTE_SPI9) && RTE_SPI9) || (defined(RTE_SPI10) && RTE_SPI10) || (defined(RTE_SPI11) && RTE_SPI11) || \
      (defined(RTE_SPI12) && RTE_SPI12) || (defined(RTE_SPI13) && RTE_SPI13))
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2, 5) /* driver version */
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2, 6) /* driver version */
 
 /*! @brief IDs of clock for each FLEXCOMM module */
 static const clock_ip_name_t s_flexcommClocks[] = FLEXCOMM_CLOCKS;
@@ -110,6 +110,8 @@ static const ARM_SPI_CAPABILITIES s_SPIDriverCapabilities = {
 /*******************************************************************************
  * Code
  ******************************************************************************/
+
+static int32_t SPI_DMATransfer(const void *data_out, void *data_in, uint32_t num, cmsis_spi_dma_driver_state_t *spi);
 
 static void SPI_MasterCommonControl(uint32_t control,
                                     cmsis_spi_resource_t *resource,
@@ -570,88 +572,12 @@ static int32_t SPI_DMAPowerControl(ARM_POWER_STATE state, cmsis_spi_dma_driver_s
 
 static int32_t SPI_DMASend(const void *data, uint32_t num, cmsis_spi_dma_driver_state_t *spi)
 {
-    int32_t ret;
-    status_t status;
-    spi_transfer_t xfer        = {0};
-    spi_config_t *spi_config_p = (spi_config_t *)SPI_GetConfig(spi->resource->base);
-
-    xfer.rxData   = NULL;
-    xfer.txData   = (uint8_t *)data;
-    xfer.dataSize = num * (((uint32_t)spi_config_p->dataWidth + 8UL) / 8UL);
-    if ((spi->flags & (uint8_t)SPI_FLAG_MASTER) != 0U)
-    {
-        xfer.configFlags |= (uint32_t)kSPI_FrameAssert;
-    }
-
-    if ((spi->flags & (uint8_t)SPI_FLAG_MASTER) != 0U)
-    {
-        status = SPI_MasterTransferDMA(spi->resource->base, &spi->handle->masterHandle, &xfer);
-    }
-    else
-    {
-        status = SPI_SlaveTransferDMA(spi->resource->base, &spi->handle->slaveHandle, &xfer);
-    }
-
-    switch (status)
-    {
-        case kStatus_Success:
-            ret = ARM_DRIVER_OK;
-            break;
-        case kStatus_InvalidArgument:
-            ret = ARM_DRIVER_ERROR_PARAMETER;
-            break;
-        case kStatus_SPI_Busy:
-            ret = ARM_DRIVER_ERROR_BUSY;
-            break;
-        default:
-            ret = ARM_DRIVER_ERROR;
-            break;
-    }
-
-    return ret;
+    return SPI_DMATransfer(data, NULL, num, spi);
 }
 
 static int32_t SPI_DMAReceive(void *data, uint32_t num, cmsis_spi_dma_driver_state_t *spi)
 {
-    int32_t ret;
-    status_t status;
-    spi_transfer_t xfer        = {0};
-    spi_config_t *spi_config_p = (spi_config_t *)SPI_GetConfig(spi->resource->base);
-
-    xfer.txData   = NULL;
-    xfer.rxData   = (uint8_t *)data;
-    xfer.dataSize = num * (((uint32_t)spi_config_p->dataWidth + 8UL) / 8UL);
-    if ((spi->flags & (uint8_t)SPI_FLAG_MASTER) != 0U)
-    {
-        xfer.configFlags |= (uint32_t)kSPI_FrameAssert;
-    }
-
-    if ((spi->flags & (uint8_t)SPI_FLAG_MASTER) != 0U)
-    {
-        status = SPI_MasterTransferDMA(spi->resource->base, &spi->handle->masterHandle, &xfer);
-    }
-    else
-    {
-        status = SPI_SlaveTransferDMA(spi->resource->base, &spi->handle->slaveHandle, &xfer);
-    }
-
-    switch (status)
-    {
-        case kStatus_Success:
-            ret = ARM_DRIVER_OK;
-            break;
-        case kStatus_InvalidArgument:
-            ret = ARM_DRIVER_ERROR_PARAMETER;
-            break;
-        case kStatus_SPI_Busy:
-            ret = ARM_DRIVER_ERROR_BUSY;
-            break;
-        default:
-            ret = ARM_DRIVER_ERROR;
-            break;
-    }
-
-    return ret;
+    return SPI_DMATransfer(NULL, data, num, spi);
 }
 
 static int32_t SPI_DMATransfer(const void *data_out, void *data_in, uint32_t num, cmsis_spi_dma_driver_state_t *spi)
@@ -696,21 +622,19 @@ static int32_t SPI_DMATransfer(const void *data_out, void *data_in, uint32_t num
 
     return ret;
 }
+
 static uint32_t SPI_DMAGetCount(cmsis_spi_dma_driver_state_t *spi)
 {
-    uint32_t cnt;
-    size_t bytes;
+    size_t cnt = 0;
     spi_config_t *spi_config_p = (spi_config_t *)SPI_GetConfig(spi->resource->base);
-
-    bytes = DMA_GetRemainingBytes(spi->dmaResource->rxdmaBase, spi->dmaResource->rxdmaChannel);
 
     if ((spi->flags & (uint8_t)SPI_FLAG_MASTER) != 0U)
     {
-        cnt = spi->handle->masterHandle.transferSize - bytes;
+        (void)SPI_MasterTransferGetCountDMA(spi->resource->base, &spi->handle->masterHandle, &cnt);
     }
     else
     {
-        cnt = spi->handle->slaveHandle.transferSize - bytes;
+        (void)SPI_SlaveTransferGetCountDMA(spi->resource->base, &spi->handle->slaveHandle, &cnt);
     }
     cnt /= (((uint32_t)spi_config_p->dataWidth + 8U) / 8U);
 
