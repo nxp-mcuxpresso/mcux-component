@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 NXP
+ * Copyright 2020, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -231,6 +231,8 @@ hal_flash_status_t HAL_FlashProgramUnaligned(uint32_t dest, uint32_t size, uint8
     uint8_t buffer[PGM_SIZE_BYTE];
     uint32_t bytes            = dest & ((uint32_t)PGM_SIZE_BYTE - 1U);
     hal_flash_status_t status = kStatus_HAL_Flash_Success;
+
+    assert(size <= UINT32_MAX - dest);
 
     if (bytes != 0U)
     {

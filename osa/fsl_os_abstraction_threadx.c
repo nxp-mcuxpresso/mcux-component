@@ -147,6 +147,11 @@ void *OSA_MemoryAllocateAlign(uint32_t memLength, uint32_t alignbytes)
     osa_mem_align_cb_t *p_cb = NULL;
     uint32_t alignedsize;
 
+    if ((alignbytes < 1U) || (alignbytes > UINT16_MAX))
+    {
+        return NULL;
+    }
+
     /* Check overflow. */
     alignedsize = (uint32_t)(unsigned int)OSA_MEM_SIZE_ALIGN(memLength, alignbytes);
     if (alignedsize < memLength)
@@ -154,7 +159,7 @@ void *OSA_MemoryAllocateAlign(uint32_t memLength, uint32_t alignbytes)
         return NULL;
     }
 
-    if (alignedsize > 0xFFFFFFFFU - alignbytes - sizeof(osa_mem_align_cb_t))
+    if (alignedsize > UINT32_MAX - alignbytes - sizeof(osa_mem_align_cb_t))
     {
         return NULL;
     }
@@ -348,6 +353,8 @@ osa_task_priority_t OSA_TaskGetPriority(osa_task_handle_t taskHandle)
 osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority_t taskPriority)
 {
     assert(taskHandle);
+    assert(taskPriority <= OSA_TASK_PRIORITY_MIN);
+    assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
     UINT status              = 0;
     UINT priority;
@@ -916,6 +923,7 @@ osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32
 
     /* ThreadX expects sizes in word, but OSA API passes byte size, so we have to convert it */
     uint32_t sizeWord = (msgSize + sizeof(uint32_t) - 1) / sizeof(uint32_t);
+    assert(msgNo <= UINT32_MAX / sizeWord);
 
     /* Create the message queue where the number and size is specified by msgNo and sizeWord */
     if (TX_SUCCESS == tx_queue_create((TX_QUEUE *)msgqHandle, (CHAR *)"queue 0", sizeWord,
@@ -1036,11 +1044,11 @@ osa_status_t OSA_MsgQDestroy(osa_msgq_handle_t msgqHandle)
  *END**************************************************************************/
 void OSA_InterruptEnable(void)
 {
-    if (s_osaState.interruptDisableNesting > 0U)
+    if (s_osaState.interruptDisableNesting > 0)
     {
         s_osaState.interruptDisableNesting--;
 
-        if (0U == s_osaState.interruptDisableNesting)
+        if (0 == s_osaState.interruptDisableNesting)
         {
             TX_RESTORE
         }
@@ -1055,7 +1063,7 @@ void OSA_InterruptEnable(void)
  *END**************************************************************************/
 void OSA_InterruptDisable(void)
 {
-    if (0U == s_osaState.interruptDisableNesting)
+    if (0 == s_osaState.interruptDisableNesting)
     {
         TX_DISABLE
     }

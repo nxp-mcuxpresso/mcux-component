@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020, 2022 NXP
+ * Copyright 2018, 2020, 2022, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -2075,9 +2075,9 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
 #if (defined(FSL_FEATURE_EDMA_HAS_CHANNEL_MUX) && (FSL_FEATURE_EDMA_HAS_CHANNEL_MUX > 0U))
     dma_channel_mux_configure_t *dmaChannelMux = dmaConfig->dma_channel_mux_configure;
     EDMA_SetChannelMux(dmaBases[dmaConfig->dma_instance], dmaConfig->tx_channel,
-                       (int32_t)dmaChannelMux->dma_dmamux_configure.dma_tx_channel_mux);
+                       dmaChannelMux->dma_dmamux_configure.dma_tx_channel_mux);
     EDMA_SetChannelMux(dmaBases[dmaConfig->dma_instance], dmaConfig->rx_channel,
-                       (int32_t)dmaChannelMux->dma_dmamux_configure.dma_rx_channel_mux);
+                       dmaChannelMux->dma_dmamux_configure.dma_rx_channel_mux);
 #if (defined(HAL_UART_ADAPTER_LOWPOWER) && (HAL_UART_ADAPTER_LOWPOWER > 0U))
     (void)memcpy(&uartDmaHandle->dma_channel_mux_configure, dmaConfig->dma_channel_mux_configure,
                  sizeof(dma_channel_mux_configure_t));

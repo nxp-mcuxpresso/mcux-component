@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 NXP
+ * Copyright 2021, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -103,6 +103,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     IRQn_Type dmaIrqNumber[] = DMA_IRQS;
 #endif /* FSL_FEATURE_SOC_DMA_COUNT */
     uint8_t channelNum;
+    uint32_t u32Temp;
 
     assert(handle);
     assert(config);
@@ -157,8 +158,10 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
         /* no action */
     }
 
-    i2sConfig.divider =
-        (uint16_t)(config->srcClock_Hz / (uint32_t)config->sampleRate_Hz / (uint32_t)config->bitWidth / channelNum);
+    u32Temp = config->srcClock_Hz / (uint32_t)config->sampleRate_Hz / (uint32_t)config->bitWidth / channelNum;
+    assert(u32Temp <= UINT16_MAX);
+
+    i2sConfig.divider = (uint16_t)u32Temp;
     i2sConfig.dataLength = config->bitWidth;
     if (0U == config->frameLength)
     {

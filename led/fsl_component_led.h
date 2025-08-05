@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 NXP
+ * Copyright 2018-2020, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -38,14 +38,14 @@ typedef void *led_handle_t;
 /*! @brief Definition of LED handle size. */
 #if (defined(LED_DIMMING_ENABLEMENT) && (LED_DIMMING_ENABLEMENT > 0U))
 /* HAL_GPIO_HANDLE_SIZE * 3 + HAL_PWM_HANDLE_SIZE *3 + LED dedicated size */
-#define LED_HANDLE_SIZE ((16U * 3U) + (8U * 3U) + 40U)
+#define LED_HANDLE_SIZE ((HAL_GPIO_HANDLE_SIZE * 3U) + (8U * 3U) + 48U)
 #else
 #if (defined(LED_USE_CONFIGURE_STRUCTURE) && (LED_USE_CONFIGURE_STRUCTURE > 0U))
 /* HAL_GPIO_HANDLE_SIZE * 3 + LED dedicated size */
-#define LED_HANDLE_SIZE ((16U * 3U) + 32U)
+#define LED_HANDLE_SIZE ((HAL_GPIO_HANDLE_SIZE * 3U) + 40U)
 #else
 /* HAL_GPIO_HANDLE_SIZE * 3 + LED dedicated size */
-#define LED_HANDLE_SIZE ((16U * 3U) + 36U)
+#define LED_HANDLE_SIZE ((HAL_GPIO_HANDLE_SIZE * 3U) + 40U)
 #endif
 #endif
 

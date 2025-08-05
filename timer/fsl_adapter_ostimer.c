@@ -132,7 +132,10 @@ hal_timer_status_t HAL_TimerUpdateTimeout(hal_timer_handle_t halTimerHandle, uin
 {
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     uint64_t timerTicks                      = OSTIMER_GetCurrentTimerValue(s_ostimerBase[halTimerState->instance]);
-    halTimerState->timeout                   = timeout;
+
+    assert(timeout <= HAL_TimerGetMaxTimeout(halTimerHandle));
+
+    halTimerState->timeout = timeout;
     /* Translate the millisecond to ostimer count value. */
     timerTicks += USEC_TO_COUNT(timeout, halTimerState->timerClock_Hz);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 NXP
+ * Copyright 2021, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -330,7 +330,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
 #if (defined(FSL_FEATURE_SAI_HAS_FIFO) && (FSL_FEATURE_SAI_HAS_FIFO > 0U))
     if (config->fifoWatermark < (uint16_t)FSL_FEATURE_SAI_FIFO_COUNTn(s_i2sBases[audioHandle->instance]))
     {
-        saiConfig.fifo.fifoWatermark = (uint8_t)config->fifoWatermark;
+        saiConfig.fifo.fifoWatermark = (uint8_t)(config->fifoWatermark & 0xFFU);
     }
     else
     {
@@ -364,6 +364,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     }
     else
     {
+        assert(config->bitWidth <= UINT8_MAX / channelNum << 1U);
         saiConfig.frameSync.frameSyncWidth = config->bitWidth * channelNum >> 1U;
         saiConfig.serialData.dataWordNum   = channelNum;
     }
@@ -478,6 +479,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     s_dmaMuxOccupied[audioHandle->dmaMuxInstance]++;
 #endif /* HAL_AUDIO_DMA_INIT_ENABLE */
 
+    assert(dmaMuxConfig->dmaMuxConfig.dmaRequestSource <= INT32_MAX);
     DMAMUX_SetSource(dmaMuxBases[audioHandle->dmaMuxInstance], dmaConfig->channel,
                      (int32_t)dmaMuxConfig->dmaMuxConfig.dmaRequestSource);
 
@@ -514,7 +516,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
 #if (defined(FSL_FEATURE_EDMA_HAS_CHANNEL_MUX) && (FSL_FEATURE_EDMA_HAS_CHANNEL_MUX > 0U))
         assert(dmaConfig->dmaChannelMuxConfig);
         EDMA_SetChannelMux(dmaBases[dmaConfig->instance], dmaConfig->channel,
-                          (int32_t)((hal_audio_dma_channel_mux_config_t *)dmaConfig->dmaChannelMuxConfig)
+                          ((hal_audio_dma_channel_mux_config_t *)dmaConfig->dmaChannelMuxConfig)
                                    ->dmaChannelMuxConfig.dmaRequestSource);
 #endif /* FSL_FEATURE_EDMA_HAS_CHANNEL_MUX */
 

@@ -30,7 +30,7 @@
  *  of this software
 
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2020, 2023 NXP
+ * Copyright 2016-2020, 2023, 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -1373,7 +1373,7 @@ char *_sys_command_string(char *cmd, int len)
 int __attribute__((weak)) _write(int handle, char *buffer, int size);
 int __attribute__((weak)) _write(int handle, char *buffer, int size)
 {
-    if (NULL == buffer)
+    if ((NULL == buffer) || (size < 0))
     {
         /* return -1 if error. */
         return -1;

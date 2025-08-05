@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 - 2019 NXP
+ * Copyright 2018 - 2019, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -79,10 +79,10 @@ typedef struct _led_pin
 /* LED state structure */
 typedef struct _led_state
 {
+    volatile uint64_t expiryPeriodCount;
     struct _led_state *next;
     uint32_t gpioHandle[sizeof(led_config_t) / sizeof(led_pin_config_t)]
                        [((HAL_GPIO_HANDLE_SIZE + sizeof(uint32_t) - 1U) / sizeof(uint32_t))];
-    volatile uint32_t expiryPeriodCount;
 #if (defined(LED_DIMMING_ENABLEMENT) && (LED_DIMMING_ENABLEMENT > 0U))
     uint32_t pwmHandle[sizeof(led_config_t) / sizeof(led_pin_config_t)]
                       [((HAL_PWM_HANDLE_SIZE + sizeof(uint32_t) - 1U) / sizeof(uint32_t))];
@@ -115,7 +115,7 @@ typedef struct _led_state
 typedef struct _led_list
 {
     led_state_t *ledState;
-    volatile uint32_t periodCount;
+    volatile uint64_t periodCount;
     TIMER_MANAGER_HANDLE_DEFINE(timerHandle);
 } led_list_t;
 
@@ -148,7 +148,7 @@ static led_status_t LED_SetStatus(led_state_t *ledState, led_color_t color, uint
     led_color_t colorSet;
     uint8_t count = 1;
 
-    ledState->expiryPeriodCount = s_ledList.periodCount + threshold;
+    ledState->expiryPeriodCount = s_ledList.periodCount + (uint64_t)threshold;
 
 #if (defined(LED_USE_CONFIGURE_STRUCTURE) && (LED_USE_CONFIGURE_STRUCTURE > 0U))
     ledRgbPin = (const led_pin_config_t *)(const void *)&ledState->pinsConfig->ledRgb;
@@ -183,11 +183,11 @@ static led_status_t LED_SetStatus(led_state_t *ledState, led_color_t color, uint
         {
 #if (defined(LED_USE_CONFIGURE_STRUCTURE) && (LED_USE_CONFIGURE_STRUCTURE > 0U))
             (void)HAL_GpioSetOutput(ledState->gpioHandle[i], (colorSet != 0U) ?
-                                                                 (1U - (uint8_t)ledRgbPin[i].gpio.level) :
+                                                                 ((ledRgbPin[i].gpio.level != 0U) ? 0U : 1U) :
                                                                  (uint8_t)ledRgbPin[i].gpio.level);
 #else
             (void)HAL_GpioSetOutput(ledState->gpioHandle[i], (colorSet != 0U) ?
-                                                                 (1U - (uint8_t)ledRgbPin[i].gpio.pinStateDefault) :
+                                                                 ((ledRgbPin[i].gpio.pinStateDefault != 0U) ? 0U : 1U) :
                                                                  (uint8_t)ledRgbPin[i].gpio.pinStateDefault);
 #endif
         }

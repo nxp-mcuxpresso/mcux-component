@@ -1,6 +1,6 @@
 /*! *********************************************************************************
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2022, 2023 NXP
+ * Copyright 2016-2022, 2023, 2025 NXP
  *
  * \file
  *
@@ -76,9 +76,6 @@
 * Private macros
 *************************************************************************************
 ********************************************************************************** */
-#ifndef MAX_UINT16
-#define MAX_UINT16 0x00010000U
-#endif
 
 #define MEMMANAGER_BLOCK_INVALID (uint16_t)0x0    /* Used to remove a block in the heap - debug only */
 #define MEMMANAGER_BLOCK_FREE    (uint16_t)0xBA00 /* Mark a previous allocated block as free         */
@@ -504,7 +501,8 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
             /* The head of the area des list is necessarily the main heap */
             p_area->start_address.address_ptr = &memHeap[0];
             p_area->end_address.raw_address   = memHeapEnd;
-            assert(p_area->end_address.raw_address > p_area->start_address.raw_address);
+            assert(p_area->start_address.raw_address < SIZE_MAX - BLOCK_HDR_SIZE);
+            assert(p_area->end_address.raw_address > p_area->start_address.raw_address + BLOCK_HDR_SIZE);
             p_area->next = NULL;
             if (p_area_id != NULL)
             {
@@ -530,6 +528,8 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
                 st = kStatus_MemInitError;
                 break;
             }
+            assert(new_area_desc->start_address.raw_address < SIZE_MAX - BLOCK_HDR_SIZE);
+            assert(new_area_desc->end_address.raw_address > new_area_desc->start_address.raw_address + BLOCK_HDR_SIZE);
             area_sz = new_area_desc->end_address.raw_address - new_area_desc->start_address.raw_address;
             if (area_sz <= (uint32_t)KB((uint32_t)1U))
             {
@@ -546,6 +546,17 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
                     st = kStatus_MemInitError;
                     break;
                 }
+                if (((new_area_desc->start_address.raw_address >= p_area->start_address.raw_address) &&
+                    (new_area_desc->start_address.raw_address <= p_area->end_address.raw_address)) ||
+                    ((new_area_desc->end_address.raw_address >= p_area->start_address.raw_address) &&
+                    (new_area_desc->end_address.raw_address <= p_area->end_address.raw_address)) ||
+                    ((new_area_desc->start_address.raw_address < p_area->start_address.raw_address) &&
+                    (new_area_desc->end_address.raw_address > p_area->end_address.raw_address)))
+                {
+                    st = kStatus_MemInitError; /* overlap with previously registered blocks */
+                    break;
+                }
+                assert(id < UINT8_MAX);
                 id++;
             }
             if (st != kStatus_MemSuccess)
@@ -753,23 +764,23 @@ static void *MEM_BufferAllocateFromArea(memAreaPrivDesc_t *p_area, uint8_t area_
         else
         {
             /* last block in the heap, check if available space to allocate the block */
-            int32_t available_size;
+            uint32_t available_size;
             uint32_t total_size;
             uint32_t current_footprint = (uint32_t)FreeBlockHdr + BLOCK_HDR_SIZE - 1U;
-            int32_t remaining_bytes;
+            uint32_t remaining_bytes;
 
             /* Current allocation should never be greater than heap end */
-            available_size = (int32_t)p_area->end_address.raw_address - (int32_t)current_footprint;
-            assert(available_size >= 0);
+            assert(p_area->end_address.raw_address >= current_footprint);
+            available_size = p_area->end_address.raw_address - current_footprint;
 
             assert(FreeBlockHdr == p_area->ctx.FreeBlockHdrList.tail);
-            total_size      = (numBytes + BLOCK_HDR_SIZE);
-            remaining_bytes = available_size - (int32_t)total_size;
-            if (remaining_bytes >= 0) /* need to keep the room for the next BlockHeader */
+            total_size = numBytes + BLOCK_HDR_SIZE;
+            if (available_size >= total_size) /* need to keep the room for the next BlockHeader */
             {
-                if (p_area->low_watermark > (uint32_t)remaining_bytes)
+                remaining_bytes = available_size - total_size;
+                if (p_area->low_watermark > remaining_bytes)
                 {
-                    p_area->low_watermark = (uint32_t)remaining_bytes;
+                    p_area->low_watermark = remaining_bytes;
                 }
                 /* Depending on the platform, some RAM banks could need some reinitialization after a low power
                  * period, such as ECC RAM banks */
@@ -927,6 +938,7 @@ static void *MEM_BufferAllocate(uint32_t numBytes, uint8_t poolId)
                     break;
                 }
             }
+            assert(area_id < UINT8_MAX);
             area_id++;
         }
     }
@@ -947,6 +959,11 @@ void *MEM_BufferAllocWithId(uint32_t numBytes, uint8_t poolId)
     void_ptr_t BlockHdr_ptr;
 #endif
     void_ptr_t buffer_ptr;
+
+    if (numBytes > UINT16_MAX)
+    {
+        return NULL;
+    }
 
 #if defined(gFSCI_MemAllocTest_Enabled_d) && (gFSCI_MemAllocTest_Enabled_d)
     void *pCaller = (void *)((uint32_t *)__mem_get_LR());
@@ -1240,7 +1257,7 @@ void *MEM_BufferRealloc(void *buffer, uint32_t new_size)
     uint16_t block_size  = 0U;
     do
     {
-        if (new_size >= MAX_UINT16)
+        if (new_size > UINT16_MAX)
         {
             realloc_buffer = NULL;
             /* Bypass he whole procedure so keep original buffer that cannot be reallocated */
@@ -1355,6 +1372,11 @@ uint32_t MEM_GetAvailableBlocks(uint32_t size)
 void *MEM_CallocAlt(size_t len, size_t val)
 {
     size_t blk_size;
+    
+    if (len > UINT16_MAX / val)
+    {
+        return NULL;
+    }
 
     blk_size = len * val;
 

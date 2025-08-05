@@ -227,6 +227,11 @@ void *OSA_MemoryAllocateAlign(uint32_t memLength, uint32_t alignbytes)
     osa_mem_align_cb_t *p_cb = NULL;
     uint32_t alignedsize;
 
+    if ((alignbytes < 1U) || (alignbytes > UINT16_MAX))
+    {
+        return NULL;
+    }
+
     /* Check overflow. */
     alignedsize = (uint32_t)(unsigned int)OSA_MEM_SIZE_ALIGN(memLength, alignbytes);
     if (alignedsize < memLength)
@@ -234,7 +239,7 @@ void *OSA_MemoryAllocateAlign(uint32_t memLength, uint32_t alignbytes)
         return NULL;
     }
 
-    if (alignedsize > 0xFFFFFFFFU - alignbytes - sizeof(osa_mem_align_cb_t))
+    if (alignedsize > UINT32_MAX - alignbytes - sizeof(osa_mem_align_cb_t))
     {
         return NULL;
     }
@@ -479,6 +484,8 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
     uint32_t regPrimask;
     assert(sizeof(task_control_block_t) == OSA_TASK_HANDLE_SIZE);
     assert(taskHandle);
+    assert(thread_def->tpriority <= OSA_TASK_PRIORITY_MIN);
+    assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
 
     ptaskStruct->p_func    = thread_def->pthread;
     ptaskStruct->haveToRun = 1U;
@@ -658,6 +665,7 @@ osa_status_t OSA_SemaphoreCreate(osa_semaphore_handle_t semaphoreHandle, uint32_
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
     assert(sizeof(semaphore_t) <= OSA_SEM_HANDLE_SIZE);
     assert(semaphoreHandle);
+    assert(initValue <= UINT8_MAX);
 
     pSemStruct->semCount      = (uint8_t)initValue;
     pSemStruct->isWaiting     = 0U;
