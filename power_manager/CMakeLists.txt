@@ -1,7 +1,7 @@
 # Copyright 2024 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-if ((${device} STREQUAL MCXN947) OR (${device} STREQUAL MCXN547) OR (${device} STREQUAL MCXN946) OR (${device} STREQUAL MCXN546))
+if ((${device} STREQUAL MCXN947) OR (${device} STREQUAL MCXN547) OR (${device} STREQUAL MCXN946) OR (${device} STREQUAL MCXN546) OR (${device} STREQUAL MCXN556S) OR (${device} STREQUAL MCXN537) OR (${device} STREQUAL MCXN536) OR (${device} STREQUAL MCXN527) OR (${device} STREQUAL MCXN526) OR (${device} STREQUAL MCXN247))
     mcux_set_variable(pm_device_foldername MCXN94x)
 endif()
 
