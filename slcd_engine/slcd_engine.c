@@ -72,7 +72,7 @@ int32_t SLCD_Engine_Show_Letter(tSLCD_Engine *slcd_engine, int8_t letter, int8_t
         ppSLCD_NumPos = SLCD_Pos_Lower_Letters[pos];
         offset = 97; /* 97 for 'a' */
     }
-    else /* Invalidd character */
+    else /* Invalid character */
     {
         return -1;
     }
@@ -80,7 +80,7 @@ int32_t SLCD_Engine_Show_Letter(tSLCD_Engine *slcd_engine, int8_t letter, int8_t
     if (ppSLCD_NumPos[letter - offset] == NULL)
     {
         /* This letter is not supported by 7-segment display */
-        return -1;
+        return -2;
     }
 
     /* A letter is comprised of several bytes' value */

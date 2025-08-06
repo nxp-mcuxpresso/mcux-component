@@ -220,6 +220,20 @@ static const uint16_t SLCD_Pos##x##_Letter_A[] = {                              
     0x0,                                                                                 \
 };
 
+#define SLCD_POS_LETTER_a(x)                                                                            \
+static const uint16_t SLCD_Pos##x##_Letter_a[] = {                                                      \
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x) + 1, __SLCD_A_COM | __SLCD_B_COM | __SLCD_C_COM | __SLCD_D_COM),\
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x), __SLCD_E_COM | __SLCD_G_COM),                                  \
+    0x0,                                                                                                \
+};
+
+#define SLCD_POS_LETTER_B(x)                                                                            \
+static const uint16_t SLCD_Pos##x##_Letter_B[] = {                                                      \
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x) + 1, __SLCD_A_COM | __SLCD_B_COM | __SLCD_C_COM | __SLCD_D_COM),\
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x), __SLCD_E_COM | __SLCD_F_COM | __SLCD_G_COM),                   \
+    0x0,                                                                                                \
+};
+
 #define SLCD_POS_LETTER_b(x)                                                         \
 static const uint16_t SLCD_Pos##x##_Letter_b[] = {                                   \
     SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x) + 1, __SLCD_C_COM | __SLCD_D_COM),           \
@@ -304,6 +318,13 @@ static const uint16_t SLCD_Pos##x##_Letter_I[] = {                        \
     0x0,                                                                  \
 };
 
+#define SLCD_POS_LETTER_J(x)                                                             \
+static const uint16_t SLCD_Pos##x##_Letter_J[] = {                                       \
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x) + 1, __SLCD_B_COM | __SLCD_C_COM | __SLCD_D_COM),\
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x), __SLCD_E_COM),                                  \
+    0x0,                                                                                 \
+};
+
 #define SLCD_POS_LETTER_j(x)                                                             \
 static const uint16_t SLCD_Pos##x##_Letter_j[] = {                                       \
     SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x) + 1, __SLCD_A_COM | __SLCD_C_COM | __SLCD_D_COM),\
@@ -351,6 +372,13 @@ static const uint16_t SLCD_Pos##x##_Letter_o[] = {                        \
     SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x) + 1, __SLCD_C_COM | __SLCD_D_COM),\
     SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x), __SLCD_E_COM | __SLCD_G_COM),    \
     0x0,                                                                  \
+};
+
+#define SLCD_POS_LETTER_P(x)                                                         \
+static const uint16_t SLCD_Pos##x##_Letter_P[] = {                                   \
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x) + 1, __SLCD_A_COM | __SLCD_B_COM),           \
+    SLCD_ENGINE_PIN_VAL(SLCD_PIN_NUM(x), __SLCD_E_COM | __SLCD_F_COM | __SLCD_G_COM),\
+    0x0,                                                                             \
 };
 
 #define SLCD_POS_LETTER_p(x)                                                         \
@@ -410,6 +438,8 @@ static const uint16_t SLCD_Pos##x##_Letter_y[] = {                        \
 };
 
 SLCD_POS_LETTER_A(1)
+SLCD_POS_LETTER_a(1)
+SLCD_POS_LETTER_B(1)
 SLCD_POS_LETTER_b(1)
 SLCD_POS_LETTER_C(1)
 SLCD_POS_LETTER_c(1)
@@ -422,6 +452,7 @@ SLCD_POS_LETTER_H(1)
 SLCD_POS_LETTER_h(1)
 SLCD_POS_LETTER_i(1)
 SLCD_POS_LETTER_I(1)
+SLCD_POS_LETTER_J(1)
 SLCD_POS_LETTER_j(1)
 SLCD_POS_LETTER_L(1)
 SLCD_POS_LETTER_l(1)
@@ -429,6 +460,7 @@ SLCD_POS_LETTER_n(1)
 SLCD_POS_LETTER_N(1)
 SLCD_POS_LETTER_O(1)
 SLCD_POS_LETTER_o(1)
+SLCD_POS_LETTER_P(1)
 SLCD_POS_LETTER_p(1)
 SLCD_POS_LETTER_q(1)
 SLCD_POS_LETTER_r(1)
@@ -439,6 +471,8 @@ SLCD_POS_LETTER_u(1)
 SLCD_POS_LETTER_y(1)
 
 SLCD_POS_LETTER_A(2)
+SLCD_POS_LETTER_a(2)
+SLCD_POS_LETTER_B(2)
 SLCD_POS_LETTER_b(2)
 SLCD_POS_LETTER_C(2)
 SLCD_POS_LETTER_c(2)
@@ -451,6 +485,7 @@ SLCD_POS_LETTER_H(2)
 SLCD_POS_LETTER_h(2)
 SLCD_POS_LETTER_i(2)
 SLCD_POS_LETTER_I(2)
+SLCD_POS_LETTER_J(2)
 SLCD_POS_LETTER_j(2)
 SLCD_POS_LETTER_L(2)
 SLCD_POS_LETTER_l(2)
@@ -458,6 +493,7 @@ SLCD_POS_LETTER_n(2)
 SLCD_POS_LETTER_N(2)
 SLCD_POS_LETTER_O(2)
 SLCD_POS_LETTER_o(2)
+SLCD_POS_LETTER_P(2)
 SLCD_POS_LETTER_p(2)
 SLCD_POS_LETTER_q(2)
 SLCD_POS_LETTER_r(2)
@@ -468,6 +504,8 @@ SLCD_POS_LETTER_u(2)
 SLCD_POS_LETTER_y(2)
 
 SLCD_POS_LETTER_A(3)
+SLCD_POS_LETTER_a(3)
+SLCD_POS_LETTER_B(3)
 SLCD_POS_LETTER_b(3)
 SLCD_POS_LETTER_C(3)
 SLCD_POS_LETTER_c(3)
@@ -480,6 +518,7 @@ SLCD_POS_LETTER_H(3)
 SLCD_POS_LETTER_h(3)
 SLCD_POS_LETTER_i(3)
 SLCD_POS_LETTER_I(3)
+SLCD_POS_LETTER_J(3)
 SLCD_POS_LETTER_j(3)
 SLCD_POS_LETTER_L(3)
 SLCD_POS_LETTER_l(3)
@@ -487,6 +526,7 @@ SLCD_POS_LETTER_n(3)
 SLCD_POS_LETTER_N(3)
 SLCD_POS_LETTER_O(3)
 SLCD_POS_LETTER_o(3)
+SLCD_POS_LETTER_P(3)
 SLCD_POS_LETTER_p(3)
 SLCD_POS_LETTER_q(3)
 SLCD_POS_LETTER_r(3)
@@ -497,6 +537,8 @@ SLCD_POS_LETTER_u(3)
 SLCD_POS_LETTER_y(3)
 
 SLCD_POS_LETTER_A(4)
+SLCD_POS_LETTER_a(4)
+SLCD_POS_LETTER_B(4)
 SLCD_POS_LETTER_b(4)
 SLCD_POS_LETTER_C(4)
 SLCD_POS_LETTER_c(4)
@@ -509,6 +551,7 @@ SLCD_POS_LETTER_H(4)
 SLCD_POS_LETTER_h(4)
 SLCD_POS_LETTER_i(4)
 SLCD_POS_LETTER_I(4)
+SLCD_POS_LETTER_J(4)
 SLCD_POS_LETTER_j(4)
 SLCD_POS_LETTER_L(4)
 SLCD_POS_LETTER_l(4)
@@ -516,6 +559,7 @@ SLCD_POS_LETTER_n(4)
 SLCD_POS_LETTER_N(4)
 SLCD_POS_LETTER_O(4)
 SLCD_POS_LETTER_o(4)
+SLCD_POS_LETTER_P(4)
 SLCD_POS_LETTER_p(4)
 SLCD_POS_LETTER_q(4)
 SLCD_POS_LETTER_r(4)
@@ -526,6 +570,8 @@ SLCD_POS_LETTER_u(4)
 SLCD_POS_LETTER_y(4)
 
 SLCD_POS_LETTER_A(5)
+SLCD_POS_LETTER_a(5)
+SLCD_POS_LETTER_B(5)
 SLCD_POS_LETTER_b(5)
 SLCD_POS_LETTER_C(5)
 SLCD_POS_LETTER_c(5)
@@ -538,6 +584,7 @@ SLCD_POS_LETTER_H(5)
 SLCD_POS_LETTER_h(5)
 SLCD_POS_LETTER_i(5)
 SLCD_POS_LETTER_I(5)
+SLCD_POS_LETTER_J(5)
 SLCD_POS_LETTER_j(5)
 SLCD_POS_LETTER_L(5)
 SLCD_POS_LETTER_l(5)
@@ -545,6 +592,7 @@ SLCD_POS_LETTER_n(5)
 SLCD_POS_LETTER_N(5)
 SLCD_POS_LETTER_O(5)
 SLCD_POS_LETTER_o(5)
+SLCD_POS_LETTER_P(5)
 SLCD_POS_LETTER_p(5)
 SLCD_POS_LETTER_q(5)
 SLCD_POS_LETTER_r(5)
@@ -555,6 +603,8 @@ SLCD_POS_LETTER_u(5)
 SLCD_POS_LETTER_y(5)
 
 SLCD_POS_LETTER_A(6)
+SLCD_POS_LETTER_a(6)
+SLCD_POS_LETTER_B(6)
 SLCD_POS_LETTER_b(6)
 SLCD_POS_LETTER_C(6)
 SLCD_POS_LETTER_c(6)
@@ -567,6 +617,7 @@ SLCD_POS_LETTER_H(6)
 SLCD_POS_LETTER_h(6)
 SLCD_POS_LETTER_i(6)
 SLCD_POS_LETTER_I(6)
+SLCD_POS_LETTER_J(6)
 SLCD_POS_LETTER_j(6)
 SLCD_POS_LETTER_L(6)
 SLCD_POS_LETTER_l(6)
@@ -574,6 +625,7 @@ SLCD_POS_LETTER_n(6)
 SLCD_POS_LETTER_N(6)
 SLCD_POS_LETTER_O(6)
 SLCD_POS_LETTER_o(6)
+SLCD_POS_LETTER_P(6)
 SLCD_POS_LETTER_p(6)
 SLCD_POS_LETTER_q(6)
 SLCD_POS_LETTER_r(6)
@@ -584,24 +636,27 @@ SLCD_POS_LETTER_u(6)
 SLCD_POS_LETTER_y(6)
 
 /* Macro to define SLCD pin value array containing uppercase letters. x can be from 1 to 6 represent 6 positions on panel. */
-#define SLCD_POS_UPPER_LETTER_ARRAY(x)                                                                        \
-static const uint16_t *SLCD_Pos##x##_Upper_Letters[] = {                                                      \
-    SLCD_Pos##x##_Letter_A, NULL/*No B*/, SLCD_Pos##x##_Letter_C, NULL/*No D*/, SLCD_Pos##x##_Letter_E,       \
-    SLCD_Pos##x##_Letter_F, SLCD_Pos##x##_Letter_G, SLCD_Pos##x##_Letter_H, SLCD_Pos##x##_Letter_I,           \
-    NULL/*No J*/, NULL/*No K*/, SLCD_Pos##x##_Letter_L, NULL/*No M*/, SLCD_Pos##x##_Letter_N,                 \
-    SLCD_Pos##x##_Letter_O, NULL/*No P*/, NULL/*No Q*/, NULL/*No R*/, SLCD_Pos##x##_Letter_S,                 \
-    NULL/*No T*/, SLCD_Pos##x##_Letter_U, NULL/*No V*/, NULL/*No W*/, NULL/*No X*/, NULL/*No Y*/, NULL/*No Z*/\
+#define SLCD_POS_UPPER_LETTER_ARRAY(x)                                                             \
+static const uint16_t *SLCD_Pos##x##_Upper_Letters[] = {                                           \
+    SLCD_Pos##x##_Letter_A, SLCD_Pos##x##_Letter_B, SLCD_Pos##x##_Letter_C, NULL/*No D*/,          \
+    SLCD_Pos##x##_Letter_E, SLCD_Pos##x##_Letter_F, SLCD_Pos##x##_Letter_G, SLCD_Pos##x##_Letter_H,\
+    SLCD_Pos##x##_Letter_I, SLCD_Pos##x##_Letter_J, NULL/*No K*/,           SLCD_Pos##x##_Letter_L,\
+    NULL/*No M*/,           SLCD_Pos##x##_Letter_N, SLCD_Pos##x##_Letter_O, SLCD_Pos##x##_Letter_P,\
+    NULL/*No Q*/,           NULL/*No R*/,           SLCD_Pos##x##_Letter_S, NULL/*No T*/,          \
+    SLCD_Pos##x##_Letter_U, NULL/*No V*/,           NULL/*No W*/,           NULL/*No X*/,          \
+    NULL/*No Y*/,           NULL/*No Z*/                                                           \
 };
 
 /* Macro to define SLCD pin value array containing lowercase letters. x can be from 1 to 6 represent 6 positions on panel. */
-#define SLCD_POS_LOWER_LETTER_ARRAY(x)                                                                 \
-static const uint16_t *SLCD_Pos##x##_Lower_Letters[] = {                                               \
-    NULL/*No a*/, SLCD_Pos##x##_Letter_b, SLCD_Pos##x##_Letter_c, SLCD_Pos##x##_Letter_d, NULL/*No e*/,\
-    NULL/*No f*/, SLCD_Pos##x##_Letter_g, SLCD_Pos##x##_Letter_h, SLCD_Pos##x##_Letter_i,              \
-    SLCD_Pos##x##_Letter_j, NULL/*No k*/, SLCD_Pos##x##_Letter_l, NULL/*No m*/, SLCD_Pos##x##_Letter_n,\
-    SLCD_Pos##x##_Letter_o, SLCD_Pos##x##_Letter_p, SLCD_Pos##x##_Letter_q, SLCD_Pos##x##_Letter_r,    \
-    NULL/*No s*/, SLCD_Pos##x##_Letter_t, SLCD_Pos##x##_Letter_u, NULL/*No v*/, NULL/*No w*/,          \
-    NULL/*No x*/, SLCD_Pos##x##_Letter_y, NULL/*No z*/                                                 \
+#define SLCD_POS_LOWER_LETTER_ARRAY(x)                                                             \
+static const uint16_t *SLCD_Pos##x##_Lower_Letters[] = {                                           \
+    SLCD_Pos##x##_Letter_a, SLCD_Pos##x##_Letter_b, SLCD_Pos##x##_Letter_c, SLCD_Pos##x##_Letter_d,\
+    NULL/*No e*/,           NULL/*No f*/,           SLCD_Pos##x##_Letter_g, SLCD_Pos##x##_Letter_h,\
+    SLCD_Pos##x##_Letter_i, SLCD_Pos##x##_Letter_j, NULL/*No k*/,           SLCD_Pos##x##_Letter_l,\
+    NULL/*No m*/,           SLCD_Pos##x##_Letter_n, SLCD_Pos##x##_Letter_o, SLCD_Pos##x##_Letter_p,\
+    SLCD_Pos##x##_Letter_q, SLCD_Pos##x##_Letter_r, NULL/*No s*/,           SLCD_Pos##x##_Letter_t,\
+    SLCD_Pos##x##_Letter_u, NULL/*No v*/,           NULL/*No w*/,           NULL/*No x*/,          \
+    SLCD_Pos##x##_Letter_y, NULL/*No z*/                                                           \
 };
 
 SLCD_POS_UPPER_LETTER_ARRAY(1)
