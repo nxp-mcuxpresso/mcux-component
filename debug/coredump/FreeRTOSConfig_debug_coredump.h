@@ -1,3 +1,9 @@
+/*
+ * Copyright 2025 NXP
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 #ifndef traceTASK_CREATE
 #if defined(__GNUC__)
     extern void coredump_freertos_trace_task_create(void *tcb);
