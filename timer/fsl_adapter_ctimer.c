@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019, 2023 NXP
+ * Copyright 2018-2019, 2023, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -59,7 +59,45 @@ void ctimer1_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(1);
 }
-static ctimer_callback_t ctimer_callback_table[] = {ctimer0_match0_callback, ctimer1_match0_callback};
+
+void ctimer2_match0_callback(uint32_t flags);
+void ctimer2_match0_callback(uint32_t flags)
+{
+    HAL_TimerInterruptHandle(2);
+}
+
+void ctimer3_match0_callback(uint32_t flags);
+void ctimer3_match0_callback(uint32_t flags)
+{
+    HAL_TimerInterruptHandle(3);
+}
+
+void ctimer4_match0_callback(uint32_t flags);
+void ctimer4_match0_callback(uint32_t flags)
+{
+    HAL_TimerInterruptHandle(4);
+}
+
+void ctimer5_match0_callback(uint32_t flags);
+void ctimer5_match0_callback(uint32_t flags)
+{
+    HAL_TimerInterruptHandle(5);
+}
+
+void ctimer6_match0_callback(uint32_t flags);
+void ctimer6_match0_callback(uint32_t flags)
+{
+    HAL_TimerInterruptHandle(6);
+}
+
+void ctimer7_match0_callback(uint32_t flags);
+void ctimer7_match0_callback(uint32_t flags)
+{
+    HAL_TimerInterruptHandle(7);
+}
+static ctimer_callback_t ctimer_callback_table[] = {ctimer0_match0_callback, ctimer1_match0_callback,
+    ctimer2_match0_callback, ctimer3_match0_callback, ctimer4_match0_callback, ctimer5_match0_callback,
+    ctimer6_match0_callback, ctimer7_match0_callback};
 
 /************************************************************************************
 *************************************************************************************
@@ -75,6 +113,7 @@ hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_co
     assert(halTimerConfig);
     assert(halTimerHandle);
     assert(halTimerConfig->instance < (sizeof(s_CtimerBase) / sizeof(CTIMER_Type *)));
+    assert(halTimerConfig->instance < (sizeof(ctimer_callback_table) / sizeof(ctimer_callback_t)));
 
     CTIMER_GetDefaultConfig(&config);
     halTimerState->instance                = halTimerConfig->instance;
