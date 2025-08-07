@@ -50,6 +50,7 @@ if (CONFIG_MCUX_COMPONENT_component.debug_thread_info)
         BASE_PATH ${SdkRootDirPath}/components/debug/coredump
         SOURCES
             ./thread_info.c
+            ./FreeRTOSConfig_debug_coredump.h
     )
 
 endif()
