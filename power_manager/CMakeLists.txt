@@ -9,7 +9,7 @@ if ((${device} STREQUAL MIMXRT1176) OR (${device} STREQUAL MIMXRT1175) OR (${dev
     mcux_set_variable(pm_device_foldername RT1170)
 endif()
 
-if ((${device} STREQUAL KW45B41Z83) OR (${device} STREQUAL K32W1480) OR (${device} STREQUAL MCXW716C) 
+if ((${device} STREQUAL KW45B41Z83) OR (${device} STREQUAL MCXW716C)
     OR (${device} STREQUAL MCXW716A))
     mcux_set_variable(pm_device_foldername KW45B41Z83)
 endif()
