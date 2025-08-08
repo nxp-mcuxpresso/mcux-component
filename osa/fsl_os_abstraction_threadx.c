@@ -920,6 +920,7 @@ osa_status_t OSA_EventDestroy(osa_event_handle_t eventHandle)
 osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32_t msgSize)
 {
     assert(NULL != msgqHandle);
+    assert(msgSize <= UINT32_MAX - sizeof(uint32_t) + 1);
 
     /* ThreadX expects sizes in word, but OSA API passes byte size, so we have to convert it */
     uint32_t sizeWord = (msgSize + sizeof(uint32_t) - 1) / sizeof(uint32_t);
