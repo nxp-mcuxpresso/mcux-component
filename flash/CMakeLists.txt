@@ -229,7 +229,7 @@ if ((${board} STREQUAL kw45b41zevk) OR (${board} STREQUAL kw45b41zloc) OR (${boa
 endif()
 
 if ((${board} STREQUAL frdmmcxw71) OR (${board} STREQUAL mcxw71evk))
-    mcux_set_variable(drv_folder k32w1)
+    mcux_set_variable(drv_folder k4w1)
 endif()
 
 if ((${board} STREQUAL frdmmcxw23) OR (${board} STREQUAL mcxw23evk))
