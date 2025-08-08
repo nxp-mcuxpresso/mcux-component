@@ -46,7 +46,7 @@ static void PM_SetAllowedLowestPowerMode(void);
  ******************************************************************************/
 
 /***************************************************************
- * Private Funtions
+ * Private Functions
  ***************************************************************/
 static uint8_t PM_findDeepestState(uint64_t duration)
 {
@@ -213,7 +213,7 @@ static void PM_ExitCriticalDefault(void)
 }
 
 /***************************************************************
- * Public Funtions
+ * Public Functions
  ***************************************************************/
 /*!
  * brief Initialize the power manager handle, this function should be invoked before using other power manager
@@ -357,36 +357,14 @@ void PM_EnterLowPower(uint64_t duration)
             status = PM_notifyPowerStateEntry(stateIndex);
 #endif /* FSL_PM_SUPPORT_NOTIFICATION */
 
+            
+#if (defined(FSL_PM_SUPPORT_NOTIFICATION) && FSL_PM_SUPPORT_NOTIFICATION)
+            s_pmHandle->lpDuration = duration;
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
             if (status == kStatus_PMSuccess)
             {
-#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
-                if (s_pmHandle->getTimestamp != NULL)
-                {
-                    s_pmHandle->entryTimestamp = s_pmHandle->getTimestamp();
-                }
-
-                /* Start low power timer if needed */
-                if ((s_pmHandle->timerStart != NULL) && (duration != 0UL))
-                {
-                    s_pmHandle->timerStart(duration - (s_pmHandle->deviceOption->states[stateIndex].exitLatency));
-                }
-#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
-
                 /* Enter into low power state. */
                 s_pmHandle->deviceOption->enter(stateIndex, &s_pmHandle->softConstraints, &s_pmHandle->sysRescGroup);
-
-#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
-                /* Stop low power timer if it is started */
-                if (s_pmHandle->timerStop != NULL)
-                {
-                    s_pmHandle->timerStop();
-                }
-
-                if (s_pmHandle->getTimestamp != NULL)
-                {
-                    s_pmHandle->exitTimestamp = s_pmHandle->getTimestamp();
-                }
-#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
             }
 
 #if (defined(FSL_PM_SUPPORT_NOTIFICATION) && FSL_PM_SUPPORT_NOTIFICATION)
@@ -445,14 +423,31 @@ void PM_RegisterTimerController(pm_handle_t *handle,
     }
 }
 
-void PM_RegisterCriticalRegionController(pm_handle_t *handle,
-                                         pm_enter_critical criticalEntry,
-                                         pm_exit_critical criticalExit)
+void PM_RecordAndStartTimer(void)
 {
-    assert(handle != NULL);
+    if (s_pmHandle->getTimestamp != NULL)
+    {
+        s_pmHandle->entryTimestamp = s_pmHandle->getTimestamp();
+    }
 
-    handle->enterCritical = criticalEntry;
-    handle->exitCritical  = criticalExit;
+    if ((s_pmHandle->timerStart != NULL) && (s_pmHandle->lpDuration != 0UL))
+    {
+        s_pmHandle->timerStart(s_pmHandle->lpDuration - (s_pmHandle->deviceOption->states[s_pmHandle->targetState].exitLatency));
+    }
+}
+
+void PM_StopAndRecordTimer(void)
+{
+    /* Stop low power timer if it is started */
+    if (s_pmHandle->timerStop != NULL)
+    {
+        s_pmHandle->timerStop();
+    }
+
+    if (s_pmHandle->getTimestamp != NULL)
+    {
+        s_pmHandle->exitTimestamp = s_pmHandle->getTimestamp();
+    }
 }
 
 /*!
@@ -463,6 +458,16 @@ uint64_t PM_GetLastLowPowerDuration(void)
     return s_pmHandle->getTimerDuration(s_pmHandle->entryTimestamp, s_pmHandle->exitTimestamp);
 }
 #endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
+
+void PM_RegisterCriticalRegionController(pm_handle_t *handle,
+                                         pm_enter_critical criticalEntry,
+                                         pm_exit_critical criticalExit)
+{
+    assert(handle != NULL);
+
+    handle->enterCritical = criticalEntry;
+    handle->exitCritical  = criticalExit;
+}
 
 #if (defined(FSL_PM_SUPPORT_NOTIFICATION) && FSL_PM_SUPPORT_NOTIFICATION)
 /*!
@@ -704,7 +709,7 @@ status_t PM_HandleWakeUpEvent(void)
 }
 
 /*!
- * brief If the specfic wakeup event occurs, invoke this API to execute its service function.
+ * brief If the specific wakeup event occurs, invoke this API to execute its service function.
  *
  * param ws Pointer to the wakeup source object.
  * return status_t The status of trigger wakeup source behavior.

@@ -399,7 +399,16 @@ static void PM_DEV_EnterLowPowerMode(uint8_t stateIndex,
         default:
             return;
     }
+
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+    PM_RecordAndStartTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
+
     POWER_EnterPowerMode((power_mode_cfg_t)stateIndex, enabledResources);
+
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+            PM_StopAndRecordTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
 }
 
 static void PM_DEV_CleanExitLowPowerMode(void)

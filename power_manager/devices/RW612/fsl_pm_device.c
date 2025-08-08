@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 NXP
+ * Copyright 2022, 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -228,6 +228,10 @@ static void PM_DEV_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRe
     assert(pSoftRescMask != NULL);
     assert(pSysRescGroup != NULL);
 
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+    PM_RecordAndStartTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
+
     switch (stateIndex)
     {
         case PM_LP_STATE_PM0:
@@ -242,6 +246,10 @@ static void PM_DEV_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRe
             (void)POWER_EnterPowerMode(stateIndex, &slpCfg);
             break;
     }
+
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+    PM_StopAndRecordTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
 }
 
 static void PM_DEV_CleanExitLowPowerMode(void)

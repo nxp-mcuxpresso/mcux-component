@@ -323,6 +323,9 @@ typedef struct _pm_handle
 
     pm_enter_critical enterCritical; /* Power manager critical entry function, default set as NULL. */
     pm_exit_critical exitCritical;   /* Power manager critical exit function, default set as NULL. */
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+    uint64_t lpDuration;
+#endif
 } pm_handle_t;
 
 #if defined(__cplusplus)
@@ -400,6 +403,16 @@ void PM_RegisterTimerController(pm_handle_t *handle,
  * @brief Get the actual low power state duration.
  */
 uint64_t PM_GetLastLowPowerDuration(void);
+
+/*!
+ * @brief Record current value of timer, and start timer.
+ */
+void PM_RecordAndStartTimer(void);
+
+/*!
+ * @brief Stop the timer and then record value of timer.
+ */
+void PM_StopAndRecordTimer(void);
 #endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
 
 /*!
@@ -493,7 +506,7 @@ status_t PM_DisableWakeupSource(pm_wakeup_source_t *ws);
 status_t PM_HandleWakeUpEvent(void);
 
 /*!
- * @brief If the specfic wakeup event occurs, invoke this API to execute its service function.
+ * @brief If the specific wakeup event occurs, invoke this API to execute its service function.
  *
  * @param ws Pointer to the wakeup source object.
  * @return status_t The status of trigger wakeup source behavior.

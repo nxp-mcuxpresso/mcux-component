@@ -199,6 +199,10 @@ static void PM_BOARD_EnterLowPowerMode(uint8_t stateIndex,
     // uint8_t rescMaskArrayIndex = 0U;
     // uint8_t rescMaskOffset     = 0U;
 
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+    PM_RecordAndStartTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
+
     switch (stateIndex)
     {
         /* WFI */
@@ -252,6 +256,9 @@ static void PM_BOARD_EnterLowPowerMode(uint8_t stateIndex,
             break;
         }
     }
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+    PM_StopAndRecordTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
     PM_BOARD_EnableBasicResources(pSoftRescMask, pSysRescGroup);
 #if 0
     CMC_SetPowerModeProtection(CMC0, kCMC_AllowAllLowPowerModes);

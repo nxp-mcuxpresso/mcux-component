@@ -1,5 +1,5 @@
 /*
- * Copyright 2024, 2025 NXP
+ * Copyright 2024-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -305,6 +305,9 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
 
     if ((stateIndex == PM_LP_STATE_SLEEP) || (stateIndex == PM_LP_STATE_DEEP_SLEEP))
     {
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+        PM_RecordAndStartTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
         if (g_mainWakePDConfig.clock_mode == kCMC_GateCoreClock)
         {
             /* This configuration corresponds to WFI only, only the core clock will be gated */
@@ -320,6 +323,9 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
         {
             CMC_EnterLowPowerMode(CMC0, &g_mainWakePDConfig);
         }
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+        PM_StopAndRecordTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
     }
     else
     {
@@ -359,10 +365,18 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
             REGFILE1->REG[0] = crcResult;
 
             PM_SaveRuntimeContext();
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+            PM_RecordAndStartTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
+
             if (setjmp(g_coreContext) == 0)
             {
                 CMC_EnterLowPowerMode(CMC0, &g_mainWakePDConfig);
             }
+
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+            PM_StopAndRecordTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
             PM_RestoreRuntimeContext();
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 NXP
+ * Copyright 2023-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -1513,9 +1513,17 @@ static void PM_DEV_EnterPowerState(uint8_t stateIndex, pm_resc_mask_t *pSoftResc
                 // Set the SLEEPDEEP bit to go into deep sleep mode (STOP and SUSPEND)
                 SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
             }
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+            PM_RecordAndStartTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
+
             __DSB();
             __ISB();
             __WFI();
+
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
+            PM_StopAndRecordTimer();
+#endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
         }
     }
 }
