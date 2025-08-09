@@ -11,6 +11,7 @@
 #include <stdio.h>
 #endif
 
+#include "fsl_debug_console_conf.h"
 #include "fsl_debug_console.h"
 #include "fsl_ram_console.h"
 #include "fsl_str.h"
