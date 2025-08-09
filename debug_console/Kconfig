@@ -24,6 +24,13 @@ config MCUX_COMPONENT_utility.debug_console
         Note: When MCUX_COMPONENT_utility.debug_console is selected, you also need to ensure that MCUX_COMPONENT_utility.assert
              is selected, otherwise there will be a condition conflict warning.
 
+config MCUX_COMPONENT_utility.ram_console
+    bool "ram_console"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_utility.str
+    help
+        Use RAM Console driver.
+ 
 config MCUX_PRJSEG_utility.debug_console_transfer_non_blocking
     bool "debug_console_transfer_non_blocking mode"
     default n

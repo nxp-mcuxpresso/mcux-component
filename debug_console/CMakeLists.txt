@@ -13,6 +13,18 @@ if (CONFIG_MCUX_COMPONENT_utility.debug_console)
     )
 
 endif()
+if (CONFIG_MCUX_COMPONENT_utility.ram_console)
+
+    mcux_add_source(
+        SOURCES fsl_debug_console.h
+                fsl_ram_console.c
+    )
+
+    mcux_add_include(
+        INCLUDES .
+    )
+
+endif()
 if (CONFIG_MCUX_PRJSEG_utility.debug_console_transfer_non_blocking)
 
     mcux_add_configuration(
