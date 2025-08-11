@@ -265,13 +265,13 @@ static uint8_t HAL_AudioSetSaiConfig(const hal_audio_config_t *config, sai_trans
 #endif /* FSL_FEATURE_SAI_HAS_FIFO_COMBINE_MODE */
 
 #if (defined(FSL_FEATURE_SAI_HAS_FIFO) && (FSL_FEATURE_SAI_HAS_FIFO > 0U))
-    if (config->fifoWatermark < (uint16_t)FSL_FEATURE_SAI_FIFO_COUNTn(s_i2sBases[audioHandle->instance]))
+    if (config->fifoWatermark < (uint16_t)FSL_FEATURE_SAI_FIFO_COUNTn(s_i2sBases[config->instance]))
     {
         saiConfig->fifo.fifoWatermark = (uint8_t)(config->fifoWatermark & 0xFFU);
     }
     else
     {
-        saiConfig->fifo.fifoWatermark = (uint8_t)FSL_FEATURE_SAI_FIFO_COUNTn(s_i2sBases[audioHandle->instance]) - 1U;
+        saiConfig->fifo.fifoWatermark = (uint8_t)FSL_FEATURE_SAI_FIFO_COUNTn(s_i2sBases[config->instance]) - 1U;
     }
 #endif /* FSL_FEATURE_SAI_HAS_FIFO */
 
