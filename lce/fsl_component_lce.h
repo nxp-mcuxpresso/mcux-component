@@ -118,10 +118,6 @@ LCE_API_DECL(CE_MatrixMul_F32, CE_API_ARG_DEF(float *pDst, float *pA, float *pB,
                                               int M, int N, int P));
 LCE_API_DECL(CE_MatrixMul_CF32, CE_API_ARG_DEF(float *pDst, float *pA,
                                                float *pB, int M, int N, int P));
-LCE_API_DECL(CE_MatrixInv_F32, CE_API_ARG_DEF(float *pAinv, float *pA, int M));
-LCE_API_DECL(CE_MatrixInvSymm_F32,
-             CE_API_ARG_DEF(float *pAinv, float *pA, int M));
-LCE_API_DECL(CE_MatrixInv_CF32, CE_API_ARG_DEF(float *pAinv, float *pA, int M));
 LCE_API_DECL(CE_MatrixInvHerm_CF32,
              CE_API_ARG_DEF(float *pAinv, float *pA, float *pScratch, int M,
                             uint8_t flag_packedInput, uint8_t flag_cholInv));
@@ -129,7 +125,7 @@ LCE_API_DECL(CE_MatrixEvdHerm_CF32,
              CE_API_ARG_DEF(float *pLambdaOut, float *pUout, float *pUin,
                             float *pScratch, int M, float tol, int max_iter,
                             uint8_t flag_packedInput));
-LCE_API_DECL(CE_MatrixChol_CF32, CE_API_ARG_DEF(float *pL, float *pA, int M));
+LCE_API_DECL(CE_MatrixChol_CF32, CE_API_ARG_DEF(float *pL, float *pA, float *pScratch, int M, uint8_t flag_packedInput));
 
 /* LCE transform APIs */
 LCE_API_DECL(CE_TransformCFFT_F16,
