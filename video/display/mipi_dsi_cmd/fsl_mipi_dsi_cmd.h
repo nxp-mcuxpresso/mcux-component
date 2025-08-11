@@ -85,9 +85,9 @@ enum _mipi_dcs
 };
 
 /*!
- * @brief Pixel format used by DSC command.
+ * @brief Pixel format used by DCS command.
  */
-typedef enum _mipi_dsc_pixel_format
+typedef enum _mipi_dcs_pixel_format
 {
     kMIPI_DCS_Pixel3Bits  = 1U, /*!< 3-bit per pixel. */
     kMIPI_DCS_Pixel8Bits  = 2U, /*!< 8-bit per pixel. */
@@ -95,7 +95,7 @@ typedef enum _mipi_dsc_pixel_format
     kMIPI_DCS_Pixel16Bits = 5U, /*!< 16-bit per pixel. */
     kMIPI_DCS_Pixel18Bits = 6U, /*!< 18-bit per pixel. */
     kMIPI_DCS_Pixel24Bits = 7U, /*!< 24-bit per pixel. */
-} mipi_dsc_pixel_format_t;
+} mipi_dcs_pixel_format_t;
 
 /*!
  * @brief Callback function when the write memory finished.
@@ -259,8 +259,8 @@ status_t MIPI_DSI_ReadCMD(mipi_dsi_device_t *device, enum _mipi_dcs dcsCmd, uint
  * @return Returns @ref kStatus_Success if success, otherwise returns error code.
  */
 status_t MIPI_DSI_DCS_SetPixelFormat(mipi_dsi_device_t *device,
-                                     mipi_dsc_pixel_format_t dbiFormat,
-                                     mipi_dsc_pixel_format_t dpiFormat);
+                                     mipi_dcs_pixel_format_t dbiFormat,
+                                     mipi_dcs_pixel_format_t dpiFormat);
 
 /*!
  * @brief Select area to write or read pixels.

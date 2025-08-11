@@ -54,8 +54,8 @@ status_t MIPI_DSI_DCS_SetDisplayOn(mipi_dsi_device_t *device, bool on)
 }
 
 status_t MIPI_DSI_DCS_SetPixelFormat(mipi_dsi_device_t *device,
-                                     mipi_dsc_pixel_format_t dbiFormat,
-                                     mipi_dsc_pixel_format_t dpiFormat)
+                                     mipi_dcs_pixel_format_t dbiFormat,
+                                     mipi_dcs_pixel_format_t dpiFormat)
 {
     dsi_transfer_t dsiXfer = {0};
     uint8_t txData[2];
@@ -169,7 +169,7 @@ status_t MIPI_DSI_DCS_Write(mipi_dsi_device_t *device, const uint8_t *txData, in
 
     if (0 == txDataSize)
     {
-        /* For DSC command, the data size should not be 0. */
+        /* For DCS command, the data size should not be 0. */
         return kStatus_InvalidArgument;
     }
     else if (1 == txDataSize)
@@ -291,8 +291,8 @@ status_t MIPI_DSI_SelectArea(mipi_dsi_device_t *device, uint16_t startX, uint16_
     dsiXfer.txDataType     = kDSI_TxDataDcsLongWr;
     dsiXfer.txDataSize     = 4;
     dsiXfer.txData         = txData;
-    dsiXfer.sendDscCmd     = true;
-    dsiXfer.dscCmd         = (uint8_t)kMIPI_DCS_SetColumnAddress;
+    dsiXfer.sendDcsCmd     = true;
+    dsiXfer.dcsCmd         = (uint8_t)kMIPI_DCS_SetColumnAddress;
 
     txData[0] = (uint8_t)((startX >> 8U) & 0xFFU);
     txData[1] = (uint8_t)(startX & 0xFFU);
@@ -306,7 +306,7 @@ status_t MIPI_DSI_SelectArea(mipi_dsi_device_t *device, uint16_t startX, uint16_
         return status;
     }
 
-    dsiXfer.dscCmd = (uint8_t)kMIPI_DCS_SetPageAddress;
+    dsiXfer.dcsCmd = (uint8_t)kMIPI_DCS_SetPageAddress;
     txData[0]      = (uint8_t)((startY >> 8U) & 0xFFU);
     txData[1]      = (uint8_t)(startY & 0xFFU);
     txData[2]      = (uint8_t)((endY >> 8U) & 0xFFU);

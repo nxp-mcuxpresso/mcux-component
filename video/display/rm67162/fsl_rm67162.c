@@ -360,7 +360,7 @@ status_t RM67162_Init(display_handle_t *handle, const display_config_t *config)
 {
     uint32_t i;
     status_t status = kStatus_Success;
-    mipi_dsc_pixel_format_t dscPixelFormat;
+    mipi_dcs_pixel_format_t dcsPixelFormat;
     const rm67162_resource_t *resource = (const rm67162_resource_t *)(handle->resource);
     mipi_dsi_device_t *dsiDevice       = resource->dsiDevice;
     uint32_t initSettingSize;
@@ -387,11 +387,11 @@ status_t RM67162_Init(display_handle_t *handle, const display_config_t *config)
     /* Only support RGB888 and RGB565. */
     if (kVIDEO_PixelFormatRGB565 == config->pixelFormat)
     {
-        dscPixelFormat = kMIPI_DCS_Pixel16Bits;
+        dcsPixelFormat = kMIPI_DCS_Pixel16Bits;
     }
     else if ((kVIDEO_PixelFormatXRGB8888 == config->pixelFormat) || (kVIDEO_PixelFormatRGB888 == config->pixelFormat))
     {
-        dscPixelFormat = kMIPI_DCS_Pixel24Bits;
+        dcsPixelFormat = kMIPI_DCS_Pixel24Bits;
     }
     else
     {
@@ -420,7 +420,7 @@ status_t RM67162_Init(display_handle_t *handle, const display_config_t *config)
             return status;
         }
     }
-    status = MIPI_DSI_DCS_SetPixelFormat(dsiDevice, dscPixelFormat, kMIPI_DCS_Pixel24Bits);
+    status = MIPI_DSI_DCS_SetPixelFormat(dsiDevice, dcsPixelFormat, kMIPI_DCS_Pixel24Bits);
     if (kStatus_Success != status)
     {
         return status;

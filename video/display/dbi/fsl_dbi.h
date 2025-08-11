@@ -28,7 +28,7 @@
 #endif
 
 /*!
- * @brief MIPI DBI command, same with the MIPI DSC (Display Command Set)
+ * @brief MIPI DBI command, same with the MIPI DCS (Display Command Set)
  */
 enum _mipi_dbi_cmd
 {
