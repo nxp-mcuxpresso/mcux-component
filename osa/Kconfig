@@ -21,14 +21,14 @@ config MCUX_COMPONENT_component.osa
             config MCUX_COMPONENT_component.osa_bm
                 bool "bm"
                 depends on !MCUX_COMPONENT_middleware.freertos-kernel
-                depends on !MCUX_COMPONENT_middleware.azure_rtos.tx
+                depends on !MCUX_COMPONENT_middleware.threadx
                 depends on !MCUX_COMPONENT_middleware.zephyr
             config MCUX_COMPONENT_component.osa_free_rtos
                 bool "freertos"
                 depends on MCUX_COMPONENT_middleware.freertos-kernel
             config MCUX_COMPONENT_component.osa_threadx
                 bool "threadx"
-                depends on MCUX_COMPONENT_middleware.wireless.ble_controller_threadx
+                depends on MCUX_COMPONENT_middleware.wireless.ble_controller_threadx || MCUX_COMPONENT_middleware.threadx
             config MCUX_COMPONENT_component.osa_zephyr
                 bool "zephyr"
                 depends on MCUX_COMPONENT_middleware.zephyr
