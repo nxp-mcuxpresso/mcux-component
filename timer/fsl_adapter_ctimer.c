@@ -48,53 +48,86 @@ static void HAL_TimerInterruptHandle(uint8_t instance)
     }
 }
 
+#if defined(CTIMER0)
 void ctimer0_match0_callback(uint32_t flags);
 void ctimer0_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(0);
 }
+#else /* CTIMER0 */
+#define ctimer0_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER0 */
 
+#if defined(CTIMER1)
 void ctimer1_match0_callback(uint32_t flags);
 void ctimer1_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(1);
 }
+#else /* CTIMER1 */
+#define ctimer1_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER1 */
 
+#if defined(CTIMER2)
 void ctimer2_match0_callback(uint32_t flags);
 void ctimer2_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(2);
 }
+#else /* CTIMER2 */
+#define ctimer2_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER2 */
 
+#if defined(CTIMER3)
 void ctimer3_match0_callback(uint32_t flags);
 void ctimer3_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(3);
 }
+#else /* CTIMER3 */
+#define ctimer3_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER3 */
 
+#if defined(CTIMER4)
 void ctimer4_match0_callback(uint32_t flags);
 void ctimer4_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(4);
 }
+#else /* CTIMER4 */
+#define ctimer4_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER4 */
 
+#if defined(CTIMER5)
 void ctimer5_match0_callback(uint32_t flags);
 void ctimer5_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(5);
 }
+#else /* CTIMER5 */
+#define ctimer5_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER5 */
 
+#if defined(CTIMER6)
 void ctimer6_match0_callback(uint32_t flags);
 void ctimer6_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(6);
 }
+#else /* CTIMER6 */
+#define ctimer6_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER6 */
 
+#if defined(CTIMER7)
 void ctimer7_match0_callback(uint32_t flags);
 void ctimer7_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(7);
 }
+#else /* CTIMER7 */
+#define ctimer7_match0_callback (ctimer_callback_t)0u
+#endif /* CTIMER7 */
+
 static ctimer_callback_t ctimer_callback_table[] = {ctimer0_match0_callback, ctimer1_match0_callback,
     ctimer2_match0_callback, ctimer3_match0_callback, ctimer4_match0_callback, ctimer5_match0_callback,
     ctimer6_match0_callback, ctimer7_match0_callback};
