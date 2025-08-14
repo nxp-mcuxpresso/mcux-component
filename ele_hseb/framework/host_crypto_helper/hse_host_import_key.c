@@ -1506,6 +1506,9 @@ hseSrvResponse_t ImportFormattedEccKeyReq
         }
     }
 
+    /* But if we use NULL for pubkey, we must use zero public key length */
+    pubKeyByteLen = pPubKey == NULL ? 0u : pubKeyByteLen;
+
     memset(pHseSrvDesc, 0, sizeof(hseSrvDescriptor_t));
     memset(&keyInfo, 0, sizeof(hseKeyInfo_t));
     keyInfo.keyType = keyType;
