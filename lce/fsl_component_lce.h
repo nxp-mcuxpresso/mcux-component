@@ -57,12 +57,12 @@
 #define CE_API_ARG_VAR(...) __VA_ARGS__
 
 #define LCE_API_DEFINE(name, args_def, args_var)                               \
-int L##name(args_def) {                                                        \
+int32_t L##name(args_def) {                                                        \
     if (KOSA_StatusSuccess != LCE_MUTEX_LOCK()) {                              \
         assert(0);                                                             \
         return 1;                                                              \
     }                                                                          \
-    int status = name(args_var);                                               \
+    int32_t status = name(args_var);                                               \
     osa_event_flags_t event = 0U;                                              \
     osa_status_t osa_status = KOSA_StatusSuccess;                              \
     do {                                                                       \
@@ -86,7 +86,7 @@ int L##name(args_def) {                                                        \
     return status;                                                             \
 }
 
-#define LCE_API_DECL(name, args_def) int L##name(args_def)
+#define LCE_API_DECL(name, args_def) int32_t L##name(args_def)
 
 /*******************************************************************************
  * API
@@ -107,35 +107,35 @@ osa_status_t LCE_Init(void);
 
 /* LCE matrix APIs */
 LCE_API_DECL(CE_MatrixAdd_Q15, CE_API_ARG_DEF(int16_t *pDst, int16_t *pA,
-                                              int16_t *pB, int M, int N));
+                                              int16_t *pB, int32_t M, int32_t N));
 LCE_API_DECL(CE_MatrixAdd_Q31, CE_API_ARG_DEF(int32_t *pDst, int32_t *pA,
-                                              int32_t *pB, int M, int N));
+                                              int32_t *pB, int32_t M, int32_t N));
 LCE_API_DECL(CE_MatrixAdd_F32,
-             CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int M, int N));
+             CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int32_t M, int32_t N));
 LCE_API_DECL(CE_MatrixElemMul_F32,
-             CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int M, int N));
+             CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int32_t M, int32_t N));
 LCE_API_DECL(CE_MatrixMul_F32, CE_API_ARG_DEF(float *pDst, float *pA, float *pB,
-                                              int M, int N, int P));
+                                              int32_t M, int32_t N, int32_t P));
 LCE_API_DECL(CE_MatrixMul_CF32, CE_API_ARG_DEF(float *pDst, float *pA,
-                                               float *pB, int M, int N, int P));
+                                               float *pB, int32_t M, int32_t N, int32_t P));
 LCE_API_DECL(CE_MatrixInvHerm_CF32,
-             CE_API_ARG_DEF(float *pAinv, float *pA, float *pScratch, int M,
+             CE_API_ARG_DEF(float *pAinv, float *pA, float *pScratch, int32_t M,
                             uint8_t flag_packedInput, uint8_t flag_cholInv));
 LCE_API_DECL(CE_MatrixEvdHerm_CF32,
              CE_API_ARG_DEF(float *pLambdaOut, float *pUout, float *pUin,
-                            float *pScratch, int M, float tol, int max_iter,
+                            float *pScratch, int32_t M, float tol, int32_t max_iter,
                             uint8_t flag_packedInput));
-LCE_API_DECL(CE_MatrixChol_CF32, CE_API_ARG_DEF(float *pL, float *pA, float *pScratch, int M, uint8_t flag_packedInput));
+LCE_API_DECL(CE_MatrixChol_CF32, CE_API_ARG_DEF(float *pL, float *pA, float *pScratch, int32_t M, uint8_t flag_packedInput));
 
 /* LCE transform APIs */
 LCE_API_DECL(CE_TransformCFFT_F16,
-             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N));
+             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N));
 LCE_API_DECL(CE_TransformCFFT_F32,
-             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N));
+             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N));
 LCE_API_DECL(CE_TransformIFFT_F16,
-             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N));
+             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N));
 LCE_API_DECL(CE_TransformIFFT_F32,
-             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N));
+             CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N));
 
 #if defined(__cplusplus)
 }

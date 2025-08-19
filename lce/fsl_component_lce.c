@@ -60,51 +60,51 @@ void DSP_IRQHandler(void)
 
 /* CE matrix APIs with synchronized access control */
 LCE_API_DEFINE(CE_MatrixAdd_Q15,
-               CE_API_ARG_DEF(int16_t *pDst, int16_t *pA, int16_t *pB, int M,
-                              int N),
+               CE_API_ARG_DEF(int16_t *pDst, int16_t *pA, int16_t *pB, int32_t M,
+                              int32_t N),
                CE_API_ARG_VAR(pDst, pA, pB, M, N));
 LCE_API_DEFINE(CE_MatrixAdd_Q31,
-               CE_API_ARG_DEF(int32_t *pDst, int32_t *pA, int32_t *pB, int M,
-                              int N),
+               CE_API_ARG_DEF(int32_t *pDst, int32_t *pA, int32_t *pB, int32_t M,
+                              int32_t N),
                CE_API_ARG_VAR(pDst, pA, pB, M, N));
 LCE_API_DEFINE(CE_MatrixAdd_F32,
-               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int M, int N),
+               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int32_t M, int32_t N),
                CE_API_ARG_VAR(pDst, pA, pB, M, N));
 LCE_API_DEFINE(CE_MatrixElemMul_F32,
-               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int M, int N),
+               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int32_t M, int32_t N),
                CE_API_ARG_VAR(pDst, pA, pB, M, N));
 LCE_API_DEFINE(CE_MatrixMul_F32,
-               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int M, int N,
-                              int P),
+               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int32_t M, int32_t N,
+                              int32_t P),
                CE_API_ARG_VAR(pDst, pA, pB, M, N, P));
 LCE_API_DEFINE(CE_MatrixMul_CF32,
-               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int M, int N,
-                              int P),
+               CE_API_ARG_DEF(float *pDst, float *pA, float *pB, int32_t M, int32_t N,
+                              int32_t P),
                CE_API_ARG_VAR(pDst, pA, pB, M, N, P));
 LCE_API_DEFINE(CE_MatrixInvHerm_CF32,
-               CE_API_ARG_DEF(float *pAinv, float *pA, float *pScratch, int M,
+               CE_API_ARG_DEF(float *pAinv, float *pA, float *pScratch, int32_t M,
                               uint8_t flag_packedInput, uint8_t flag_cholInv),
                CE_API_ARG_VAR(pAinv, pA, pScratch, M, flag_packedInput,
                               flag_cholInv));
 LCE_API_DEFINE(CE_MatrixEvdHerm_CF32,
                CE_API_ARG_DEF(float *pLambdaOut, float *pUout, float *pUin,
-                              float *pScratch, int M, float tol, int max_iter,
+                              float *pScratch, int32_t M, float tol, int32_t max_iter,
                               uint8_t flag_packedInput),
                CE_API_ARG_VAR(pLambdaOut, pUout, pUin, pScratch, M, tol,
                               max_iter, flag_packedInput));
-LCE_API_DEFINE(CE_MatrixChol_CF32, CE_API_ARG_DEF(float *pL, float *pA, float *pScratch, int M, uint8_t flag_packedInput),
+LCE_API_DEFINE(CE_MatrixChol_CF32, CE_API_ARG_DEF(float *pL, float *pA, float *pScratch, int32_t M, uint8_t flag_packedInput),
                CE_API_ARG_VAR(pL, pA, pScratch, M, flag_packedInput));
 
 /* CE transform APIs with synchronized access control */
 LCE_API_DEFINE(CE_TransformCFFT_F16,
-               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N),
+               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N),
                CE_API_ARG_VAR(pY, pX, pScratch, log2N));
 LCE_API_DEFINE(CE_TransformCFFT_F32,
-               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N),
+               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N),
                CE_API_ARG_VAR(pY, pX, pScratch, log2N));
 LCE_API_DEFINE(CE_TransformIFFT_F16,
-               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N),
+               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N),
                CE_API_ARG_VAR(pY, pX, pScratch, log2N));
 LCE_API_DEFINE(CE_TransformIFFT_F32,
-               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int log2N),
+               CE_API_ARG_DEF(float *pY, float *pX, float *pScratch, int32_t log2N),
                CE_API_ARG_VAR(pY, pX, pScratch, log2N));
