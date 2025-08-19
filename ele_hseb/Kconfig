@@ -3,11 +3,19 @@
 
 menu "ELE HSEB"
 
+config ELE_HSEB
+    int "ELE_HSEB"
+    default 1
+    depends on MCUX_COMPONENT_component.ele_hseb
+    help
+        No prefix in generated macro
+        Defines the ELE_HSEB macro in preinclude file.
+
 config MCUX_COMPONENT_component.ele_hseb
     bool "ELE HSEB"
     select MCUX_COMPONENT_component.ele_hseb_mu_driver
     select MCUX_COMPONENT_component.ele_hseb_framework
-    select MCUX_COMPONENT_component.ele_hseb_interface    
+    select MCUX_COMPONENT_component.ele_hseb_interface
 
 config MCUX_COMPONENT_component.ele_hseb_mu_driver
     bool "MU Driver"
