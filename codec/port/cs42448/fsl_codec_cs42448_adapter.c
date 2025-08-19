@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 NXP
+ * Copyright  2021, 2025 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -122,8 +122,18 @@ status_t HAL_CODEC_CS42448_SetVolume(void *handle, uint32_t playChannel, uint32_
         else
         {
             /* 1 is mapped t0 255, 100 is mapped to 0 */
-            mappedVolume = (uint8_t)(CS42448_AOUT_MAX_VOLUME_VALUE -
-                                     ((volume - 1U) * (CS42448_AOUT_MAX_VOLUME_VALUE + 3U)) / 100U);
+            uint32_t tempVolume = CS42448_AOUT_MAX_VOLUME_VALUE - 
+                                  ((volume - 1U) * (CS42448_AOUT_MAX_VOLUME_VALUE + 3U)) / 100U;
+            
+            /* Ensure the result fits in uint8_t range */
+            if (tempVolume > 255U)
+            {
+                mappedVolume = 255U;
+            }
+            else
+            {
+                mappedVolume = (uint8_t)tempVolume;
+            }
 
             ret = CS42448_SetAOUTVolume((cs42448_handle_t *)((uint32_t)(((codec_handle_t *)handle)->codecDevHandle)),
                                         (uint8_t)(i + 1U), mappedVolume);

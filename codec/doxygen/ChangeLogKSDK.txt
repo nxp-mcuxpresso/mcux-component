@@ -2,7 +2,11 @@
 @page component_log Component Change Log
 
 @section codec CODEC
-  The current codec common driver version is 2.3.1.
+  The current codec common driver version is 2.3.2.
+  - 2.3.2
+    - Bug Fixes
+      - Fixed violations of MISRA C-2012 rule 10.1, 10.3, 10.4, 10.5, 10.6, 10.7, 10.8, 12.4.
+
   - 2.3.1
     - Bug Fixes
       - Fixed violations of MISRA C-2012 rule 16.1,16.3.
