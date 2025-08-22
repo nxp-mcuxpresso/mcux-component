@@ -375,7 +375,7 @@ hal_gpio_status_t HAL_GpioSetTriggerMode(hal_gpio_handle_t gpioHandle, hal_gpio_
     if (kRGPIO_InterruptOrDMADisabled != triggerConfig)
     {
     	NVIC_SetPriority(Rgpio_IRQn[gpioStateHandle->pin.port], HAL_GPIO_ISR_PRIORITY);
-    	NVIC_EnableIRQ(Rgpio_IRQn[gpioStateHandle->pin.port]);
+        (void)EnableIRQ(Rgpio_IRQn[gpioStateHandle->pin.port]);
     }
 
     return kStatus_HAL_GpioSuccess;
