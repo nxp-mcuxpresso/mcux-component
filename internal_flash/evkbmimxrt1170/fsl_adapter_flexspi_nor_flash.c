@@ -307,6 +307,20 @@ hal_flash_status_t HAL_FlashInit(void)
     bool CodeCacheEnableFlag = false;
 #endif /* FSL_FEATURE_SOC_LMEM_COUNT */
 
+    base = NULL;
+    for (uint8_t i = 0; i < (sizeof(s_flexspiBase) / sizeof(FLEXSPI_Type *)); i++)
+    {
+        if (NULL != s_flexspiBase[i])
+        {
+            base = s_flexspiBase[i];
+            break;
+        }
+    }
+    if (NULL == base)
+    {
+        return kStatus_HAL_Flash_Fail;
+    }
+
     (void)memset(&config, 0x0, sizeof(flexspi_config_t));
 #if defined(__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
     bool DCacheEnableFlag = false;
@@ -328,19 +342,6 @@ hal_flash_status_t HAL_FlashInit(void)
 #endif /* FSL_FEATURE_SOC_LMEM_COUNT */
 
     key  = DisableGlobalIRQ();
-    base = NULL;
-    for (uint8_t i = 0; i < (sizeof(s_flexspiBase) / sizeof(FLEXSPI_Type *)); i++)
-    {
-        if (NULL != s_flexspiBase[i])
-        {
-            base = s_flexspiBase[i];
-            break;
-        }
-    }
-    if (NULL == base)
-    {
-        return kStatus_HAL_Flash_Fail;
-    }
 
     /*Get FLEXSPI default settings and configure the flexspi. */
     FLEXSPI_GetDefaultConfig(&config);
@@ -466,6 +467,27 @@ hal_flash_status_t HAL_FlashProgram(uint32_t dest, uint32_t size, uint8_t *pData
     bool CodeCacheEnableFlag = false;
 #endif /* FSL_FEATURE_SOC_LMEM_COUNT */
 
+    if (dest < FLEXSPI_AMBA_BASE)
+    {
+        return kStatus_HAL_Flash_Fail;
+    }
+
+    dest = dest - FLEXSPI_AMBA_BASE;
+
+    base = NULL;
+    for (uint8_t i = 0; i < (sizeof(s_flexspiBase) / sizeof(FLEXSPI_Type *)); i++)
+    {
+        if (NULL != s_flexspiBase[i])
+        {
+            base = s_flexspiBase[i];
+            break;
+        }
+    }
+    if (NULL == base)
+    {
+        return kStatus_HAL_Flash_Fail;
+    }
+
 #if defined(__ICACHE_PRESENT) && (__ICACHE_PRESENT == 1U)
     bool ICacheEnableFlag = false;
     /* Disable I cache. */
@@ -494,27 +516,6 @@ hal_flash_status_t HAL_FlashProgram(uint32_t dest, uint32_t size, uint8_t *pData
         CodeCacheEnableFlag = true;
     }
 #endif /* FSL_FEATURE_SOC_LMEM_COUNT */
-
-    if (dest < FLEXSPI_AMBA_BASE)
-    {
-        return kStatus_HAL_Flash_Fail;
-    }
-
-    dest = dest - FLEXSPI_AMBA_BASE;
-
-    base = NULL;
-    for (uint8_t i = 0; i < (sizeof(s_flexspiBase) / sizeof(FLEXSPI_Type *)); i++)
-    {
-        if (NULL != s_flexspiBase[i])
-        {
-            base = s_flexspiBase[i];
-            break;
-        }
-    }
-    if (NULL == base)
-    {
-        return kStatus_HAL_Flash_Fail;
-    }
 
     address = dest;
     while (address < (dest + size))
@@ -643,6 +644,22 @@ hal_flash_status_t HAL_FlashEraseSector(uint32_t dest, uint32_t size)
     {
         return kStatus_HAL_Flash_Fail;
     }
+
+    dest = dest - FLEXSPI_AMBA_BASE;
+    base = NULL;
+    for (uint8_t i = 0; i < (sizeof(s_flexspiBase) / sizeof(FLEXSPI_Type *)); i++)
+    {
+        if (NULL != s_flexspiBase[i])
+        {
+            base = s_flexspiBase[i];
+            break;
+        }
+    }
+    if (NULL == base)
+    {
+        return kStatus_HAL_Flash_Fail;
+    }
+
 #if defined(__ICACHE_PRESENT) && (__ICACHE_PRESENT == 1U)
     bool ICacheEnableFlag = false;
     /* Disable I cache. */
@@ -661,21 +678,6 @@ hal_flash_status_t HAL_FlashEraseSector(uint32_t dest, uint32_t size)
         CodeCacheEnableFlag = true;
     }
 #endif /* FSL_FEATURE_SOC_LMEM_COUNT */
-
-    dest = dest - FLEXSPI_AMBA_BASE;
-    base = NULL;
-    for (uint8_t i = 0; i < (sizeof(s_flexspiBase) / sizeof(FLEXSPI_Type *)); i++)
-    {
-        if (NULL != s_flexspiBase[i])
-        {
-            base = s_flexspiBase[i];
-            break;
-        }
-    }
-    if (NULL == base)
-    {
-        return kStatus_HAL_Flash_Fail;
-    }
 
     address = dest;
     while (address < (dest + size))

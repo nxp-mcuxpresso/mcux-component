@@ -422,6 +422,11 @@ hal_flash_status_t HAL_FlashProgram(uint32_t dest, uint32_t size, uint8_t *pData
     status_t status;
     flexspi_transfer_t flashXfer;
     uint32_t key;
+
+    if (dest < FLEXSPI_AMBA_BASE)
+    {
+        return kStatus_HAL_Flash_Fail;
+    }
 #if defined(__ICACHE_PRESENT) && (__ICACHE_PRESENT == 1U)
     bool ICacheEnableFlag = false;
     /* Disable I cache. */
@@ -441,11 +446,6 @@ hal_flash_status_t HAL_FlashProgram(uint32_t dest, uint32_t size, uint8_t *pData
         DCacheEnableFlag = true;
     }
 #endif /* __DCACHE_PRESENT */
-
-    if (dest < FLEXSPI_AMBA_BASE)
-    {
-        return kStatus_HAL_Flash_Fail;
-    }
 
     dest = dest - FLEXSPI_AMBA_BASE;
 

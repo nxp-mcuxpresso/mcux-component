@@ -478,6 +478,10 @@ hal_flash_status_t HAL_FlashProgram(uint32_t dest, uint32_t size, uint8_t *pData
     flexspi_transfer_t flashXfer;
     uint32_t key;
 
+    if (dest < FLEXSPI_AMBA_BASE)
+    {
+        return kStatus_HAL_Flash_Fail;
+    }
 #if defined(FSL_FEATURE_SOC_CACHE64_CTRL_COUNT) && (FSL_FEATURE_SOC_CACHE64_CTRL_COUNT == 1U)
     bool CacheEnableFlag = false;
     if (CACHE64_CTRL_CCR_ENCACHE_MASK == (CACHE64->CCR & CACHE64_CTRL_CCR_ENCACHE_MASK))
@@ -486,11 +490,6 @@ hal_flash_status_t HAL_FlashProgram(uint32_t dest, uint32_t size, uint8_t *pData
         CacheEnableFlag = true;
     }
 #endif /* __DCACHE_PRESENT */
-
-    if (dest < FLEXSPI_AMBA_BASE)
-    {
-        return kStatus_HAL_Flash_Fail;
-    }
 
     dest = dest - FLEXSPI_AMBA_BASE;
 
