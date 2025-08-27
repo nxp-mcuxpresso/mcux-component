@@ -6,4 +6,3 @@ config MCUX_COMPONENT_component.coremark
     default n
     help
         Enable component.coremark component
-
