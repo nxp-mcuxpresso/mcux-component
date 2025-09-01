@@ -13,6 +13,7 @@
 
 #include "fsl_dbi.h"
 #include "fsl_lcdif.h"
+#include "fsl_dc_fb.h"
 #if DBI_USE_MIPI_PANEL
 #include "fsl_mipi_dsi.h"
 #endif
@@ -84,6 +85,11 @@ status_t DBI_LCDIF_WriteMemory2D(
     dbi_iface_t *dbiIface, uint32_t command, const void *data, uint32_t len_byte, uint32_t stride_byte);
 
 status_t DBI_LCDIF_SetPixelFormat(dbi_iface_t *dbiIface, video_pixel_format_t format);
+
+static inline uint32_t DBI_LCDIF_GetProperty(dbi_iface_t *dbiIface)
+{
+    return kDC_FB_TwoDimensionMemoryWrite;
+}
 
 void DBI_LCDIF_IRQHandler(dbi_iface_t *dbiIface);
 

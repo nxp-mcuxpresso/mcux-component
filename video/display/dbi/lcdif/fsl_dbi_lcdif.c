@@ -40,6 +40,7 @@ const dbi_iface_xfer_ops_t g_dbiLcdifXferOps = {
 
 const dbi_config_ops_t g_dbiLcdifConfigOps = {
     .setPixelFormat = DBI_LCDIF_SetPixelFormat,
+    .getProperty = DBI_LCDIF_GetProperty,
 };
 
 static const dbi_lcdif_pixel_foramt_map_t s_lcdifPixelFormatMap[] = {

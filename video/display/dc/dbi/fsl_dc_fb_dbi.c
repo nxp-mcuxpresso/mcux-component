@@ -168,7 +168,9 @@ status_t DC_FB_DBI_SetFrameBuffer(const dc_fb_t *dc, uint8_t layer, void *frameB
 
 uint32_t DC_FB_DBI_GetProperty(const dc_fb_t *dc)
 {
-    return 0U;
+    dc_fb_dbi_handle_t *dcDbiHandle = (dc_fb_dbi_handle_t *)dc->prvData;
+
+    return DBI_IFACE_GetProperty(&(dcDbiHandle->dbiIface));
 }
 
 void DC_FB_DBI_SetCallback(const dc_fb_t *dc, uint8_t layer, dc_fb_callback_t callback, void *param)

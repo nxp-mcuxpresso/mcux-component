@@ -176,6 +176,7 @@ typedef struct _dbi_iface_xfer_ops
 typedef struct _dbi_config_ops
 {
     status_t (*setPixelFormat)(dbi_iface_t *dbiIface, video_pixel_format_t format);
+    uint32_t (*getProperty)(dbi_iface_t *dbiIface);
 } dbi_config_ops_t;
 
 /*@brief DBI transfer interface.*/
@@ -281,6 +282,24 @@ static inline status_t DBI_IFACE_SetPixelFormat(dbi_iface_t *dbiIface, video_pix
     else
     {
         return kStatus_Fail;
+    }
+}
+
+/*!
+ * @brief Get display controller property.
+ *
+ * @param[in] dbiIface Pointer to the DBI interface.
+ * @return Mask of supported property.
+ */
+static inline uint32_t DBI_IFACE_GetProperty(dbi_iface_t *dbiIface)
+{
+    if (dbiIface->configOps->getProperty != NULL)
+    {
+        return dbiIface->configOps->getProperty(dbiIface);
+    }
+    else
+    {
+        return 0U;
     }
 }
 
