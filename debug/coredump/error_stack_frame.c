@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "zephyr/debug/coredump.h"
+#include "zephyr_headers/debug/coredump.h"
 #if defined(CONFIG_DEBUG_COREDUMP_MEMORY_DUMP_MIN) || defined(CONFIG_DEBUG_COREDUMP_MEMORY_DUMP_THREADS)
 #include "fsl_osa_thread.h"
 #endif
 
-#include <zephyr/kernel.h>
+#include <zephyr_headers/kernel.h>
 
 /*******************************************************************************
  * Code

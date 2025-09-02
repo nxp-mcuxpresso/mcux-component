@@ -13,17 +13,17 @@
 #ifdef __ZEPHYR__
 #include <errno.h>
 #else
-#include <zephyr/errno.h>
+#include <zephyr_headers/errno.h>
 #endif
-#include <zephyr/drivers/flash.h>
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/spi.h>
-#include <zephyr/init.h>
+#include <zephyr_headers/drivers/flash.h>
+#include <zephyr_headers/drivers/gpio.h>
+#include <zephyr_headers/drivers/spi.h>
+#include <zephyr_headers/init.h>
 #include <string.h>
-#include <zephyr/logging/log.h>
-#include <zephyr/sys_clock.h>
-#include <zephyr/pm/device.h>
-#include <zephyr/pm/device_runtime.h>
+#include <zephyr_headers/logging/log.h>
+#include <zephyr_headers/sys_clock.h>
+#include <zephyr_headers/pm/device.h>
+#include <zephyr_headers/pm/device_runtime.h>
 
 #include "spi_nor.h"
 #include "jesd216.h"

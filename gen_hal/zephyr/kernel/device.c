@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 #include <string.h>
-#include <zephyr/device.h>
-#include <zephyr/sys/atomic.h>
-#include <zephyr/sys/iterable_sections.h>
-#include <zephyr/sys/kobject.h>
-#include <zephyr/internal/syscall_handler.h>
-#include <zephyr/toolchain.h>
+#include <zephyr_headers/device.h>
+#include <zephyr_headers/sys/atomic.h>
+#include <zephyr_headers/sys/iterable_sections.h>
+#include <zephyr_headers/sys/kobject.h>
+#include <zephyr_headers/internal/syscall_handler.h>
+#include <zephyr_headers/toolchain.h>
 
 /**
  * @brief Initialize state for all static devices.
@@ -67,7 +67,7 @@ static inline const struct device *z_vrfy_device_get_binding(const char *name)
 
 	return z_impl_device_get_binding(name_copy);
 }
-#include <zephyr/syscalls/device_get_binding_mrsh.c>
+#include <zephyr_headers/syscalls/device_get_binding_mrsh.c>
 
 static inline bool z_vrfy_device_is_ready(const struct device *dev)
 {
@@ -75,7 +75,7 @@ static inline bool z_vrfy_device_is_ready(const struct device *dev)
 
 	return z_impl_device_is_ready(dev);
 }
-#include <zephyr/syscalls/device_is_ready_mrsh.c>
+#include <zephyr_headers/syscalls/device_is_ready_mrsh.c>
 #endif /* CONFIG_USERSPACE */
 
 #ifdef CONFIG_DEVICE_DT_METADATA
@@ -125,7 +125,7 @@ static inline const struct device *z_vrfy_device_get_by_dt_nodelabel(const char 
 
 	return z_impl_device_get_by_dt_nodelabel(nl_copy);
 }
-#include <zephyr/syscalls/device_get_by_dt_nodelabel_mrsh.c>
+#include <zephyr_headers/syscalls/device_get_by_dt_nodelabel_mrsh.c>
 #endif /* CONFIG_USERSPACE */
 #endif /* CONFIG_DEVICE_DT_METADATA */
 

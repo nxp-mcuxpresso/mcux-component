@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <zephyr/debug/coredump.h>
+#include <zephyr_headers/debug/coredump.h>
 #include "coredump_internal.h"
 
 #include "mflash_common.h"

@@ -14,7 +14,7 @@ description: |
   the following snippet of devicetree source code instructs the GPIO controller
   to route the interrupt from pin 9 of `gpioa` to the WKPU interrupt controller:
 
-    #include <zephyr/dt-bindings/gpio/nxp-s32-gpio.h>
+    #include <zephyr_headers/dt-bindings/gpio/nxp-s32-gpio.h>
 
     &device {
         gpios = <&gpioa 9 (NXP_S32_GPIO_INT_WKPU | GPIO_ACTIVE_HIGH)>;

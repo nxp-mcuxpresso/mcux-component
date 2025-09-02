@@ -7,7 +7,7 @@
 #ifdef __ZEPHYR__
 #include <sys/types.h>
 #endif
-#include <zephyr/kernel.h>
+#include <zephyr_headers/kernel.h>
 #include "jesd216.h"
 #include "spi_nor.h"
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr/drivers/pinctrl.h>
+#include <zephyr_headers/drivers/pinctrl.h>
 #include <soc.h>
 
 static MCI_IO_MUX_Type *mci_iomux =

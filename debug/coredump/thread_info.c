@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr/kernel.h>
+#include <zephyr_headers/kernel.h>
 
 #define THREAD_INFO_UNIMPLEMENTED	0xffffffff
 

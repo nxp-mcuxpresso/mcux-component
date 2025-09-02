@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr/drivers/pinctrl.h>
+#include <zephyr_headers/drivers/pinctrl.h>
 
 int pinctrl_lookup_state(const struct pinctrl_dev_config *config, uint8_t id,
 			 const struct pinctrl_state **state)

@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr/dt-bindings/clock/mcux_lpc_syscon_clock.h>
+#include <zephyr_headers/dt-bindings/clock/mcux_lpc_syscon_clock.h>
 //#include <dt-bindings/gpio/gpio.h>
-#include <zephyr/dt-bindings/memory-attr/memory-attr-arm.h>
+#include <zephyr_headers/dt-bindings/memory-attr/memory-attr-arm.h>
 //#include <dt-bindings/i2c/i2c.h>
-//#include <zephyr/dt-bindings/power/nxp_rw_pmu.h>
+//#include <zephyr_headers/dt-bindings/power/nxp_rw_pmu.h>
 //#include <dt-bindings/adc/nxp,gau-adc.h>
-//#include <zephyr/dt-bindings/reset/nxp_syscon_reset_common.h>
-#include <zephyr/dt-bindings/memory-attr/memory-attr-arm.h>
+//#include <zephyr_headers/dt-bindings/reset/nxp_syscon_reset_common.h>
+#include <zephyr_headers/dt-bindings/memory-attr/memory-attr-arm.h>
 
 / {
 #if 0

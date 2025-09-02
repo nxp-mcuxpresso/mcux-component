@@ -9,12 +9,12 @@
 #ifdef __ZEPHYR__
 #include <kernel_internal.h>
 #else
-#include <zephyr/kernel.h>
+#include <zephyr_headers/kernel.h>
 #endif
-#include <zephyr/toolchain.h>
-#include <zephyr/debug/coredump.h>
-#include <zephyr/sys/byteorder.h>
-#include <zephyr/sys/util.h>
+#include <zephyr_headers/toolchain.h>
+#include <zephyr_headers/debug/coredump.h>
+#include <zephyr_headers/sys/byteorder.h>
+#include <zephyr_headers/sys/util.h>
 
 #include "coredump_internal.h"
 #if defined(CONFIG_DEBUG_COREDUMP_BACKEND_LOGGING)

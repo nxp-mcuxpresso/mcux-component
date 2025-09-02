@@ -8,9 +8,9 @@
 #define ZEPHYR_DRIVERS_FLASH_JESD216_H_
 
 #include <errno.h>
-#include <zephyr/sys/byteorder.h>
-#include <zephyr/sys/util.h>
-#include <zephyr/types.h>
+#include <zephyr_headers/sys/byteorder.h>
+#include <zephyr_headers/sys/util.h>
+#include <zephyr_headers/types.h>
 
 /* JEDEC Read identification */
 #define JESD216_CMD_READ_ID   SPI_NOR_CMD_RDID

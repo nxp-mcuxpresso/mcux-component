@@ -8,13 +8,13 @@
 #ifdef __ZEPHYR__
 #include <kernel_internal.h>
 #endif
-#include <zephyr/toolchain.h>
-#include <zephyr/debug/coredump.h>
+#include <zephyr_headers/toolchain.h>
+#include <zephyr_headers/debug/coredump.h>
 #ifdef __ZEPHYR__
-#include <zephyr/linker/linker-defs.h>
+#include <zephyr_headers/linker/linker-defs.h>
 #endif
-#include <zephyr/sys/byteorder.h>
-#include <zephyr/sys/util.h>
+#include <zephyr_headers/sys/byteorder.h>
+#include <zephyr_headers/sys/util.h>
 
 #include "coredump_internal.h"
 

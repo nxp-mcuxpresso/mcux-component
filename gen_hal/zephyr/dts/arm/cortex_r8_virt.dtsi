@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr/dt-bindings/interrupt-controller/arm-gic.h>
+#include <zephyr_headers/dt-bindings/interrupt-controller/arm-gic.h>
 
 / {
 	#address-cells = <1>;

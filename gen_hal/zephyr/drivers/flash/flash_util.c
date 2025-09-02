@@ -15,10 +15,10 @@
 #include <sys/types.h>
 #endif
 
-#include <zephyr/drivers/flash.h>
-#include <zephyr/internal/syscall_handler.h>
-#include <zephyr/logging/log.h>
-#include <zephyr/sys/math_extras.h>
+#include <zephyr_headers/drivers/flash.h>
+#include <zephyr_headers/internal/syscall_handler.h>
+#include <zephyr_headers/logging/log.h>
+#include <zephyr_headers/sys/math_extras.h>
 
 LOG_MODULE_REGISTER(flash, CONFIG_FLASH_LOG_LEVEL);
 
@@ -200,5 +200,5 @@ int z_vrfy_flash_copy(const struct device *src_dev, off_t src_offset, const stru
 	K_OOPS(K_SYSCALL_MEMORY_WRITE(buf, buf_size));
 	return z_impl_flash_copy(src_dev, src_offset, dst_dev, dst_offset, size, buf, buf_size);
 }
-#include <zephyr/syscalls/flash_copy_mrsh.c>
+#include <zephyr_headers/syscalls/flash_copy_mrsh.c>
 #endif

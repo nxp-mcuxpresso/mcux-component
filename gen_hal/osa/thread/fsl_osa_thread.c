@@ -5,7 +5,7 @@
  */
 #include "fsl_osa_thread.h"
 
-#include <zephyr/kernel.h>
+#include <zephyr_headers/kernel.h>
 
 struct z_kernel _kernel;
 struct k_thread _current_Thread;

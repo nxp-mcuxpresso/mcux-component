@@ -9,7 +9,7 @@ description: |
 
   Example configuration:
 
-  #include <zephyr/dt-bindings/input/input-event-codes.h>
+  #include <zephyr_headers/dt-bindings/input/input-event-codes.h>
 
   analog_axis {
           compatible = "analog-axis";

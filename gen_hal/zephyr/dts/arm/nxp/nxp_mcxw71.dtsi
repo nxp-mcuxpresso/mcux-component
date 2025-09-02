@@ -6,11 +6,11 @@
 
 #include <mem.h>
 #include <arm/armv8-m.dtsi>
-#include <zephyr/dt-bindings/clock/scg_k4.h>
-#include <zephyr/dt-bindings/gpio/gpio.h>
-#include <zephyr/dt-bindings/pwm/pwm.h>
-#include <zephyr/dt-bindings/i2c/i2c.h>
-#include <zephyr/dt-bindings/memory-attr/memory-attr-arm.h>
+#include <zephyr_headers/dt-bindings/clock/scg_k4.h>
+#include <zephyr_headers/dt-bindings/gpio/gpio.h>
+#include <zephyr_headers/dt-bindings/pwm/pwm.h>
+#include <zephyr_headers/dt-bindings/i2c/i2c.h>
+#include <zephyr_headers/dt-bindings/memory-attr/memory-attr-arm.h>
 
 / {
 	aliases {
