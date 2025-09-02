@@ -278,6 +278,7 @@ void OSA_PopulateKernelInstance(void *ptrThreads, uint32_t taskCount)
     (void)ptrThreads;
 #endif
     /* Populate current thread. */
+    _kernel.cpus[0].current = &_current_Thread;
     OSA_TranslateTCBToZephyrThread(_kernel.cpus[0].current, &(g_freeRTOS_tcbs[curTaskId]));
 }
 
