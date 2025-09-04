@@ -83,6 +83,16 @@ if (CONFIG_MCUX_COMPONENT_component.sm.imx943_cm7_core1)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.sm.imx943_ca55)
+    mcux_add_source(
+        SOURCES porting/platform/imx943/ca55/sm_platform.h
+                porting/platform/imx943/ca55/sm_platform.c
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx943/ca55
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.sm.imx95_cm33)
     mcux_add_source(
         SOURCES porting/platform/imx95/cm33/sm_platform.h
