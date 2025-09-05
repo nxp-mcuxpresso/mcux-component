@@ -650,7 +650,7 @@ static void SDU_CmdCallback(
         case (status_t)kStatus_SDIOSLV_FuncReadComplete:
             cmd_event_buf = (sdu_buffer_t *)buffer->user_data;
             (void)LIST_AddTail(&ctrl_sdu.cmd_q[SDU_PORT_FOR_WRITE], &cmd_event_buf->link);
-            (void)OSA_EventSet(ctrl->event, SDU_CMD_RECEIVED);
+            (void)OSA_EventSet(ctrl->event, SDU_CMD_DNLD_OVR);
             break;
         case (status_t)kStatus_SDIOSLV_FuncSendComplete:
             cmd_event_buf = (sdu_buffer_t *)buffer->user_data;
@@ -699,7 +699,7 @@ static void SDU_DataCallback(
             SDU_dump_hex(sdu_dbg_level, buffer->data_addr, sdio_hdr->len);
             data_buf = (sdu_buffer_t *)buffer->user_data;
             (void)LIST_AddTail(&ctrl_sdu.data_q[SDU_PORT_FOR_WRITE], &data_buf->link);
-            (void)OSA_EventSet(ctrl->event, SDU_DATA_RECEIVED);
+            (void)OSA_EventSet(ctrl->event, SDU_DATA_DNLD_OVR);
             break;
         case (status_t)kStatus_SDIOSLV_FuncSendComplete:
             data_buf = (sdu_buffer_t *)buffer->user_data;
@@ -784,7 +784,7 @@ static void SDU_TransferDataRecv(sdu_ctrl_t *ctrl)
         /* Let command get priority */
         if (LIST_GetSize(&ctrl->cmd_q[SDU_PORT_FOR_WRITE]))
         {
-            OSA_EventSet(ctrl->event, SDU_DATA_RECEIVED);
+            OSA_EventSet(ctrl->event, SDU_DATA_DNLD_OVR);
             break;
         }
     }
@@ -801,10 +801,10 @@ static void SDU_TransferTask(void *param)
         if (KOSA_StatusSuccess ==
             OSA_EventWait((osa_event_handle_t)ctrl->event, osaEventFlagsAll_c, 0U, osaWaitForever_c, &ev))
         {
-            if (ev & SDU_CMD_RECEIVED)
+            if (ev & SDU_CMD_DNLD_OVR)
                 SDU_TransferCmdRecv(ctrl);
 
-            if (ev & SDU_DATA_RECEIVED)
+            if (ev & SDU_DATA_DNLD_OVR)
                 SDU_TransferDataRecv(ctrl);
         }
     } while (0U != gUseRtos_c);
@@ -842,19 +842,19 @@ static void SDU_RecvTask(void *param)
     do
     {
         if (KOSA_StatusSuccess ==
-                OSA_EventWait((osa_event_handle_t)ctrl->event, osaEventFlagsAll_c, 0U, osaWaitForever_c, &ev))
+                OSA_EventWait((osa_event_handle_t)ctrl->event, (SDU_CMD_DNLD_OVR | SDU_DATA_DNLD_OVR), 0U, osaWaitForever_c, &ev))
         {
             while (ctrl_sdu.sdu_state != SDU_INITIALIZED)
             {
                 OSA_TimeDelay(1);
             }
 
-            if ((ev & SDU_CMD_RECEIVED) != 0U)
+            if ((ev & SDU_CMD_DNLD_OVR) != 0U)
             {
                 (void)SDU_RecvCmdProcess();
             }
 
-            if ((ev & SDU_DATA_RECEIVED) != 0U)
+            if ((ev & SDU_DATA_DNLD_OVR) != 0U)
             {
                 (void)SDU_RecvDataProcess();
             }
@@ -964,6 +964,8 @@ static inline void SDU_ProcessCmdUpLdOvr(sdioslv_fun_ctrl_t *fun_ctrl)
     port_ctrl->buffer   = NULL;
     port_ctrl->occupied = 0;
 
+    (void)OSA_EventSet((osa_event_handle_t)(ctrl_sdu.event), SDU_CMD_UPLD_OVR);
+
     /* If any pending cmdrsp or event in q, send one of them here */
     if ((send_buffer = (sdu_buffer_t *)LIST_GetHead(&ctrl_sdu.cmd_q[SDU_PORT_FOR_READ])) != NULL)
     {
@@ -1061,6 +1063,8 @@ static inline void SDU_ProcessDataUpLdOvr(sdioslv_fun_ctrl_t *fun_ctrl)
 #if 0
     SDU_AdjustAvailDataPort(fun_ctrl);
 #endif
+
+    (void)OSA_EventSet((osa_event_handle_t)(ctrl_sdu.event), SDU_DATA_UPLD_OVR);
 
     if ((send_buffer = (sdu_buffer_t *)LIST_GetHead(&ctrl_sdu.data_q[SDU_PORT_FOR_READ])) != NULL)
     {
@@ -1460,11 +1464,11 @@ status_t SDU_RecvCmd(void)
 
     while(true)
     {
-        status = OSA_EventWait((osa_event_handle_t)(ctrl_sdu.event), SDU_CMD_RECEIVED, 0U, osaWaitForever_c, &ev);
+        status = OSA_EventWait((osa_event_handle_t)(ctrl_sdu.event), SDU_CMD_DNLD_OVR, 0U, osaWaitForever_c, &ev);
 
         if (KOSA_StatusSuccess == status)
         {
-            if ((ev & SDU_CMD_RECEIVED) != 0U)
+            if ((ev & SDU_CMD_DNLD_OVR) != 0U)
    			{
    	            ret = SDU_RecvCmdProcess();
 
@@ -1531,11 +1535,11 @@ status_t SDU_RecvData(void)
 
 	while(true)
 	{
-	    status = OSA_EventWait((osa_event_handle_t)(ctrl_sdu.event), SDU_DATA_RECEIVED, 0U, osaWaitForever_c, &ev);
+	    status = OSA_EventWait((osa_event_handle_t)(ctrl_sdu.event), SDU_DATA_DNLD_OVR, 0U, osaWaitForever_c, &ev);
 
 	    if (KOSA_StatusSuccess == status)
 	    {
-	        if ((ev & SDU_DATA_RECEIVED) != 0U)
+	        if ((ev & SDU_DATA_DNLD_OVR) != 0U)
 	        {
 	            while (LIST_GetHead(&ctrl_sdu.data_q[SDU_PORT_FOR_WRITE]) != NULL)
 	            {
@@ -1619,11 +1623,23 @@ retry:
             break;
         default:
             sdu_e("%s: Unknown type %d.\n\r", __func__, type);
+            return (status_t)kStatus_Fail;
             break;
     }
 
     if (send_buffer == NULL)
     {
+        osa_event_flags_t ev = 0;
+        if ((type == SDU_TYPE_FOR_READ_CMD) || (type == SDU_TYPE_FOR_READ_EVENT))
+        {
+            OSA_EventWait((osa_event_handle_t)ctrl_sdu.event, SDU_CMD_UPLD_OVR, 0U, osaWaitForever_c, &ev);
+        }
+        else
+        {
+            OSA_EventWait((osa_event_handle_t)ctrl_sdu.event, SDU_DATA_UPLD_OVR, 0U, osaWaitForever_c, &ev);
+        }
+        goto retry;
+#if 0
         if (((type == SDU_TYPE_FOR_READ_CMD) || (type == SDU_TYPE_FOR_READ_EVENT)) ||
             ((type == SDU_TYPE_FOR_READ_DATA) && (retry_cnt > 0)))
         {
@@ -1652,6 +1668,7 @@ retry:
             sdu_d("%s: NO free_buffer for type %d!\r\n", __FUNCTION__, type);
             return (status_t)kStatus_NoData;
         }
+#endif
     }
     if (retry_cnt_cmdevent > 0)
     {
