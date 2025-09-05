@@ -56,7 +56,7 @@ static status_t WM8960_SetInternalPllConfig(
     {
         return kStatus_InvalidArgument;
     }
-    
+
     pllF2 = outputClk * 4U;
 
     /* disable PLL power */
@@ -103,13 +103,9 @@ static status_t WM8960_SetInternalPllConfig(
     /* Safe calculation of pllK with overflow/underflow protection */
     uint64_t pllK_tmp = (uint64_t)pllR - (uint64_t)pllN * 1000U * 1000U;
 
-    if ((uint64_t)(1UL << 24U) < (UINT64_MAX / pllK_tmp))
+    if (pllK_tmp > 0U && ((uint64_t)(1UL << 24U) < (UINT64_MAX / pllK_tmp)))
     {
         pllK_tmp *= (uint64_t)(1UL << 24U);
-    }
-    else
-    {
-        return kStatus_Fail;
     }
 
     pllK_tmp = pllK_tmp / 1000U / 1000U;
@@ -166,7 +162,7 @@ static status_t WM8960_SetInternalPllConfig(
     {
         return kStatus_Fail;
     }
-    
+
     /* enable PLL power */
     WM8960_CHECK_RET(WM8960_ModifyReg(handle, WM8960_POWER2, 1U, 1U), ret);
 
@@ -192,9 +188,9 @@ static status_t WM8960_SetMasterClock(wm8960_handle_t *handle, uint32_t sysclk, 
     {
         return kStatus_InvalidArgument;
     }
-    
+
     /* Check if sampleRate * bitWidth * 2U calculation would overflow */
-    if ((sampleRate > (UINT32_MAX / bitWidth)) || 
+    if ((sampleRate > (UINT32_MAX / bitWidth)) ||
         ((sampleRate * bitWidth) > (UINT32_MAX / 2U)))
     {
         return kStatus_InvalidArgument;
@@ -389,7 +385,7 @@ status_t WM8960_SetModule(wm8960_handle_t *handle, wm8960_module_t module, bool 
 {
     status_t ret = kStatus_Success;
     uint16_t enableValue = isEnabled ? 1U : 0U;  /* Safe conversion from bool to uint16_t */
-    
+
     switch (module)
     {
         case kWM8960_ModuleADC:
@@ -866,13 +862,13 @@ status_t WM8960_ConfigDataFormat(wm8960_handle_t *handle, uint32_t sysclk, uint3
     else if (divider > 256U)
     {
         uint32_t div_factor = divider / 256U;
-        
+
         // Check bounds to prevent overflow
         if (div_factor > 31U) // Since shifting by 6, max safe value is 31 (31 << 6 = 1984)
         {
             return kStatus_InvalidArgument;
         }
-        
+
         val = (uint16_t)((div_factor << 6U) | (div_factor << 3U));
     }
     else
