@@ -14,21 +14,10 @@ if (CONFIG_MCUX_COMPONENT_component.coremark)
         INCLUDES ./
     )
     mcux_add_source(
-        SOURCES porting/imxrt700/core_portme.c
-        SOURCES porting/imxrt700/core_portme.h
-        DEVICE_IDS MIMXRT798S
+        SOURCES porting/${soc_series}/core_portme.c
+        SOURCES porting/${soc_series}/core_portme.h
     )
     mcux_add_include(
-        INCLUDES ./porting/imxrt700
-        DEVICE_IDS MIMXRT798S
-    )
-    mcux_add_source(
-        SOURCES porting/imxrt2660/core_portme.c
-        SOURCES porting/imxrt2660/core_portme.h
-        DEVICE_IDS MIMXRT2661xxxxx MIMXRT2662xxxxx
-    )
-    mcux_add_include(
-        INCLUDES ./porting/imxrt2660
-        DEVICE_IDS MIMXRT2661xxxxx MIMXRT2662xxxxx
+        INCLUDES ./porting/${soc_series}
     )
 endif()
