@@ -2,6 +2,24 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_component.memfault_sdk)
+
+    mcux_add_armgcc_configuration(
+        # For the compile warning:
+        # cc1: warning: variable tracking requested, but useless unless producing debug info
+        #
+        # Debug info is needed when debugging the fault, so should always generate it,
+        # otherwise there is compile warning.
+        CC "-g"
+    )
+
+    mcux_add_iar_configuration(
+        # Suppress such warnings in memfault SDK code:
+        # Pe188: enumerated type mixed with another type
+        # Pe1305: function declared with "noreturn" does return
+        # Pe128: loop is not reachable
+        CC "--diag_suppress=Pe188,Pe1305,Pe128"
+    )
+
     mcux_add_include(
         INCLUDES ./memfault-firmware-sdk/components/include
                  ./memfault-firmware-sdk/ports/include
