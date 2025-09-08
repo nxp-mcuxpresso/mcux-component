@@ -121,6 +121,13 @@ if (CONFIG_MCUX_COMPONENT_component.ele_hseb_interface)
                  interface/inc_services
                  BASE_PATH ${SdkRootDirPath}/components/ele_hseb/
     )
+
+    # Pragma push and pop operations are defined in header file, MDK doesn't like this and generate warnings
+    mcux_add_mdk_configuration(
+        CC "-Wno-pragma-pack"
+        CX "-Wno-pragma-pack"
+    )
+
 endif()
 
 if (CONFIG_MCUX_COMPONENT_component.ele_hseb_services)
