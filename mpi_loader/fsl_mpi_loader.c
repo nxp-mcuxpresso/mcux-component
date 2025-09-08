@@ -210,7 +210,6 @@ static void MPI_HandleRelocTable(uint32_t *vect)
                 {
                     /* Handle error: relocTabEnd is less than MPI_TZM_PRESET_SIZE */
                     MPI_ASSERT(false);
-                    return;
                 }
             }
         }
