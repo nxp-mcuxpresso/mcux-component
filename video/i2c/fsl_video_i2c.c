@@ -32,7 +32,7 @@ status_t VIDEO_I2C_WriteReg(uint8_t i2cAddr,
         value >>= 8;
     }
 
-    return i2cSendFunc(i2cAddr, reg, addrType, data, regWidth);
+    return i2cSendFunc(i2cAddr, reg, addrType, data, (uint8_t)regWidth);
 }
 
 /*!
@@ -58,7 +58,7 @@ status_t VIDEO_I2C_ReadReg(uint8_t i2cAddr,
     uint8_t width   = (uint8_t)regWidth;
     status_t status;
 
-    status = i2cReceiveFunc(i2cAddr, reg, addrType, data, regWidth);
+    status = i2cReceiveFunc(i2cAddr, reg, addrType, data, width);
 
     if (kStatus_Success == status)
     {
