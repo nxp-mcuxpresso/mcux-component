@@ -819,7 +819,14 @@ static void SDU_LoopbackRecvCmdHandler(void *tlv, size_t tlv_sz)
     sdu_d("RecvCmd len: %d", tlv_sz);
     SDU_dump_hex(sdu_dbg_level, tlv, tlv_sz);
 
-    (void)SDU_Send(SDU_TYPE_FOR_READ_CMD, (uint8_t *)tlv, (uint16_t)(tlv_sz + CRC_LEN));
+    if(tlv_sz + CRC_LEN <= UINT16_MAX)
+    {
+        (void)SDU_Send(SDU_TYPE_FOR_READ_CMD, (uint8_t *)tlv, (uint16_t)(tlv_sz + CRC_LEN));
+    }
+    else
+    {
+        sdu_e("tlv_sz too large\r\n");
+    }
 }
 
 static void SDU_LoopbackRecvDataHandler(void *tlv, size_t tlv_sz)
@@ -830,7 +837,14 @@ static void SDU_LoopbackRecvDataHandler(void *tlv, size_t tlv_sz)
     sdu_d("RecvData len: %d\r\n", tlv_sz);
     SDU_dump_hex(sdu_dbg_level, tlv, tlv_sz);
 
-    (void)SDU_Send(SDU_TYPE_FOR_READ_DATA, (uint8_t *)tlv, (uint16_t)(tlv_sz + CRC_LEN));
+    if(tlv_sz + CRC_LEN <= UINT16_MAX)
+    {
+        (void)SDU_Send(SDU_TYPE_FOR_READ_DATA, (uint8_t *)tlv, (uint16_t)(tlv_sz + CRC_LEN));
+    }
+    else
+    {
+        sdu_e("tlv_sz too large\r\n");
+    }
 }
 #endif
 
