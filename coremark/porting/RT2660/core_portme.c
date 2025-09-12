@@ -61,19 +61,10 @@ volatile ee_s32 seed5_volatile = 0;
 #define MYTIMEDIFF(fin, ini)       ((fin) - (ini))
 #define TIMER_RES_DIVIDER          1
 #define SAMPLE_TIME_IMPLEMENTATION 1
-#define EE_TICKS_PER_SEC           (NSECS_PER_SEC / TIMER_RES_DIVIDER)
+#define EE_TICKS_PER_SEC           12000000
 
 #if defined(COREMARK_USING_SYSTICK) && COREMARK_USING_SYSTICK
 volatile CORE_TICKS overflow = 0;
-
-void Systick_IRQHandler(void)
-{
-    if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
-    {
-        SysTick->VAL = 0;
-    }
-    overflow++;
-}
 
 void SysTick_Handler(void)
 {

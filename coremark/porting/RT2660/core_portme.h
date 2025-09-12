@@ -30,7 +30,7 @@ Original Author: Shay Gal-on
 
 /********************************* NXP add-on **********************************/
 #ifndef ITERATIONS
-#define ITERATIONS 100
+#define ITERATIONS 1000
 #endif
 
 #define printf DbgConsole_Printf
