@@ -32,10 +32,10 @@
  *
  * The application can define a minimal heap size for proper code exection at run time,
  * This will issue a link error if the minimal heap size requirement is not fullfilled (not enough space in RAM)
- * By Default, Minimal heap size is set to 4 bytes (unlikely enough to have application work correctly)
+ * By Default, Minimal heap size is set to 16 bytes (unlikely enough to have application work correctly)
  */
 #if !defined(MinimalHeapSize_c)
-#define MinimalHeapSize_c (uint32_t)4
+#define MinimalHeapSize_c (uint32_t)16
 #endif
 
 /*!
