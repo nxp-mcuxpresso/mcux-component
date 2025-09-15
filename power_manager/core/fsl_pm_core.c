@@ -258,13 +258,13 @@ void PM_CreateHandle(pm_handle_t *handle)
 
     s_pmHandle = handle;
 
-    if (s_pmHandle->deviceOption->prepare != NULL)
+    if (s_pmHandle->deviceOption->prepare != NULL) /* GCOVR_EXCL_BR_LINE */
     {
         /*
          * $Branch Coverage Justification$
          * $ref pm_core_c_ref_3$.
          */
-        s_pmHandle->deviceOption->prepare();
+        s_pmHandle->deviceOption->prepare(); /* GCOVR_EXCL_LINE */
     }
 
     /* Need to clean some device register for proper functioning */
@@ -272,7 +272,7 @@ void PM_CreateHandle(pm_handle_t *handle)
      * $Branch Coverage Justification$
      * $ref pm_core_c_ref_1$.
      */
-    if (s_pmHandle->deviceOption->clean != NULL)
+    if (s_pmHandle->deviceOption->clean != NULL) /* GCOVR_EXCL_BR_LINE */
     {
         s_pmHandle->deviceOption->clean();
     }
@@ -376,7 +376,7 @@ void PM_EnterLowPower(uint64_t duration)
              * $Branch Coverage Justification$
              * $ref pm_core_c_ref_1$.
              */
-            if (s_pmHandle->deviceOption->clean != NULL)
+            if (s_pmHandle->deviceOption->clean != NULL) /* GCOVR_EXCL_BR_LINE */
             {
                 s_pmHandle->deviceOption->clean();
             }
@@ -603,7 +603,7 @@ status_t PM_EnableWakeupSource(pm_wakeup_source_t *ws)
         (void)LIST_AddTail((list_handle_t) & (s_pmHandle->wakeupSourceList), (list_element_handle_t) & (ws->link));
         status = s_pmHandle->deviceOption->manageWakeupSource(ws, true);
 
-        if (status == kStatus_Success)
+        if (status == kStatus_Success) /* GCOVR_EXCL_BR_LINE */
         {
             ws->enabled = true;
         }
@@ -613,7 +613,7 @@ status_t PM_EnableWakeupSource(pm_wakeup_source_t *ws)
              * $Line Coverage Justification$
              * $ref pm_core_c_ref_2$.
              */
-            status = kStatus_PMWakeupSourceEnableError;
+            status = kStatus_PMWakeupSourceEnableError; /* GCOVR_EXCL_LINE */
         }
     }
 
@@ -648,7 +648,7 @@ status_t PM_DisableWakeupSource(pm_wakeup_source_t *ws)
         (void)LIST_RemoveElement((list_element_handle_t) & (ws->link));
         status = s_pmHandle->deviceOption->manageWakeupSource(ws, false);
 
-        if (status == kStatus_Success)
+        if (status == kStatus_Success) /* GCOVR_EXCL_BR_LINE */
         {
             ws->enabled = false;
         }
@@ -658,7 +658,7 @@ status_t PM_DisableWakeupSource(pm_wakeup_source_t *ws)
              * $Line Coverage Justification$
              * $ref pm_core_c_ref_2$.
              */
-            status = kStatus_PMWakeupSourceDisableError;
+            status = kStatus_PMWakeupSourceDisableError; /* GCOVR_EXCL_LINE */
         }
     }
 

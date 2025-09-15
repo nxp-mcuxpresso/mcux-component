@@ -239,7 +239,7 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
     uint8_t rescMaskArrayIndex = 0U;
     uint8_t rescMaskOffset     = 0U;
 
-    switch (stateIndex)
+    switch (stateIndex) /* GCOVR_EXCL_BR_LINE */
     {
         case PM_LP_STATE_SLEEP:
         {
@@ -294,11 +294,11 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
          * $Line Coverage Justification$
          * $ref pm_device_c_ref_1$.
          */
-        default:
+        default: /* GCOVR_EXCL_START */
         {
             /* This branch should never be hit. */
             break;
-        }
+        } /* GCOVR_EXCL_STOP */
     }
     PM_EnableBasicResources(pSoftRescMask, pSysRescGroup);
     CMC_SetPowerModeProtection(CMC0, (uint32_t)kCMC_AllowAllLowPowerModes);
@@ -391,8 +391,8 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
 
 static void PM_CleanExitLowPowerMode(void)
 {
-    if ((SPC_CheckPowerDomainLowPowerRequest(SPC0, kSPC_PowerDomain0) == true) &&
-        (SPC_GetPowerDomainLowPowerMode(SPC0, kSPC_PowerDomain0) >= kSPC_PowerDownWithSysClockOff))
+    if ((SPC_CheckPowerDomainLowPowerRequest(SPC0, kSPC_PowerDomain0) == true) && /*GCOVR_EXCL_BR_LINE */
+        (SPC_GetPowerDomainLowPowerMode(SPC0, kSPC_PowerDomain0) >= kSPC_PowerDownWithSysClockOff)) /* GCOVR_EXCL_LINE */
     {
         /*
          * $Line Coverage Justification$
@@ -401,7 +401,7 @@ static void PM_CleanExitLowPowerMode(void)
         /* We need to release IO isolation when exiting from Power Down mode
          * This is done here after all peripherals have been reinitialized, to
          * avoid any glitch on IOs */
-        SPC_ClearPeriphIOIsolationFlag(SPC0);
+        SPC_ClearPeriphIOIsolationFlag(SPC0); /* GCOVR_EXCL_LINE */
     }
 
     /* Clear SPC LP request status for next low power phase
@@ -463,13 +463,13 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
 
     if (sramId == 10U)
     {
-        if (tmp8 == PM_RESOURCE_OFF)
+        if (tmp8 == PM_RESOURCE_OFF) /* GCOVR_EXCL_BR_LINE */
         {
             /*
             * $Line Coverage Justification$
             * $ref pm_device_c_ref_3$.
             */
-            VBAT_EnableSRAMArrayRetained(VBAT0, false);
+            VBAT_EnableSRAMArrayRetained(VBAT0, false); /* GCOVR_EXCL_LINE */
         }
         else
         {
@@ -478,7 +478,7 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
     }
     else
     {
-        switch (tmp8)
+        switch (tmp8) /* GCOVR_EXCL_BR_LINE */
         {
             case PM_RESOURCE_FULL_ON:
             {
@@ -498,7 +498,7 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
             * $Line Coverage Justification$
             * $ref pm_device_c_ref_3$.
             */
-            case PM_RESOURCE_OFF:
+            case PM_RESOURCE_OFF: /* GCOVR_EXCL_START */
             {
                 CMC_PowerOnSRAMLowPowerOnly(CMC0, 1U << sramId);
                 CMC_PowerOffSRAMAllMode(CMC0, 1U << sramId);
@@ -513,7 +513,7 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
             {
                 /* This branch will never be hit. */
                 break;
-            }
+            } /* GCOVR_EXCL_STOP */
         }
     }
     pResourceRecode->currentOperateMode = tmp8;
@@ -578,7 +578,7 @@ static void PM_SetWakePowerDomainOperateMode(uint8_t operateMode, pm_resource_re
      * $Branch Coverage Justification$
      * KW47 does not provided the software method to power off WAKE power domain.
      */
-    else if (operateMode == PM_RESOURCE_PARTABLE_ON1)
+    else if (operateMode == PM_RESOURCE_PARTABLE_ON1) /* GCOVR_EXCL_BR_LINE */
     {
         if (g_mainWakePDConfig.main_domain >= kCMC_DeepSleepMode)
         {
@@ -593,7 +593,7 @@ static void PM_SetWakePowerDomainOperateMode(uint8_t operateMode, pm_resource_re
     pResourceRecode->currentOperateMode = operateMode;
 }
 
-static void PM_WakeupFunction(void)
+static void PM_WakeupFunction(void) /* GCOVR_EXCL_FUNCTION */
 {
     /*
      * $Line Coverage Justification$
@@ -767,14 +767,14 @@ static bool PM_IsWakeupSource(pm_wakeup_source_t *ws)
         wuuPf = WUU_GetExternalWakeUpPinsFlag(WUU0);
         mask  = (1UL << inputId) & WUU_PIN_FLAG_MASK;
 
-        if ((wuuPf & mask) != 0UL)
+        if ((wuuPf & mask) != 0UL) /* GCOVR_EXCL_BR_LINE */
         {
             /*
              * $Line Coverage Justification$
              * $ref pm_device_c_ref_2$.
              */
             /* This wake up source triggered the last wake up */
-            ret = true;
+            ret = true; /* GCOVR_EXCL_LINE */
         }
     }
 
