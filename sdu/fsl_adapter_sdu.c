@@ -1604,7 +1604,9 @@ status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_le
     sdu_buffer_t *send_buffer = NULL;
     status_t status = kStatus_Fail;
     sdio_header_t *sdio_hdr = NULL;
+#if 0
     uint32_t retry_cnt = g_SDU_Send_retry_cnt;
+#endif
     uint32_t retry_cnt_cmdevent = 0;
     uint32_t retry_cnt_data = 0;
 
