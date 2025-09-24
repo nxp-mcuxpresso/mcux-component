@@ -4,29 +4,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-
-config MCUX_COMPONENT_middleware.iot_reference.kvstore
-    bool "kvstore"
-    select MCUX_COMPONENT_middleware.freertos-kernel
-
 config MCUX_COMPONENT_middleware.iot_reference.logging
     bool "logging"
     select MCUX_COMPONENT_middleware.freertos-kernel
-
-config MCUX_COMPONENT_middleware.iot_reference.mqtt_agent
-    bool "mqtt_agent"
-    select MCUX_COMPONENT_middleware.freertos-kernel
-    select MCUX_COMPONENT_middleware.freertos.backoffalgorithm
-    select MCUX_COMPONENT_middleware.freertos.coremqtt-agent
-    select MCUX_COMPONENT_middleware.freertos.corepkcs11
-    select MCUX_COMPONENT_middleware.iot_reference.kvstore
-    select MCUX_COMPONENT_middleware.iot_reference.mqtt_agent_interface
-
-config MCUX_COMPONENT_middleware.iot_reference.mqtt_agent_interface
-    bool "mqtt_agent_interface"
-    select MCUX_COMPONENT_middleware.freertos.coremqtt-agent
-    select MCUX_COMPONENT_middleware.freertos-kernel
-    select configSUPPORT_STATIC_ALLOCATION
 
 config MCUX_COMPONENT_middleware.iot_reference.transport_mbedtls
     bool "transport_mbedtls"
