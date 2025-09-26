@@ -161,10 +161,6 @@ hal_flash_status_t HAL_FlashInit()
     static uint32_t flashInit = 0;
     status_t status           = (status_t)kStatus_HAL_Flash_Success;
 
-    uint32_t regPrimask = DisableGlobalIRQ();
-    /*  Disable cache/Prefetch */
-    FLASH_CACHE_DISABLE();
-    EnableGlobalIRQ(regPrimask);
     if (0U == flashInit)
     {
         /* Init Flash */
