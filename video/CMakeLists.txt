@@ -81,6 +81,19 @@ if (CONFIG_MCUX_COMPONENT_driver.dbi)
 
 endif()
 
+if (CONFIG_MCUX_COMPONENT_driver.dcif)
+
+    mcux_add_source(
+        SOURCES display/dbi/dcif/fsl_dbi_dcif.h
+                display/dbi/dcif/fsl_dbi_dcif.c
+    )
+
+    mcux_add_include(
+        INCLUDES ./display/dbi/dcif
+    )
+
+endif()
+
 if (CONFIG_MCUX_COMPONENT_driver.dbi_flexio_edma)
 
     mcux_add_source(
@@ -220,6 +233,19 @@ if (CONFIG_MCUX_COMPONENT_driver.dc-fb-dcif)
 
     mcux_add_include(
         INCLUDES ./display/dc/dcif
+    )
+
+endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.dc-fb-dcif_1)
+
+    mcux_add_source(
+        SOURCES display/dc/dcif_1/fsl_dc_fb_dcif.h
+                display/dc/dcif_1/fsl_dc_fb_dcif.c
+    )
+
+    mcux_add_include(
+        INCLUDES ./display/dc/dcif_1
     )
 
 endif()

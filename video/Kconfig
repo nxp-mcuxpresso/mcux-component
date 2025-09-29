@@ -34,6 +34,11 @@ config MCUX_COMPONENT_driver.dbi
     select MCUX_COMPONENT_driver.video-common
 
 # The dbi drivers shall be invisible and selected by board project segment by default
+config MCUX_COMPONENT_driver.dbi_dcif
+    bool
+    select MCUX_COMPONENT_driver.dbi
+    select MCUX_COMPONENT_driver.dcif_1
+
 config MCUX_COMPONENT_driver.dbi_flexio_edma
     bool
     select MCUX_COMPONENT_driver.dbi
@@ -111,6 +116,13 @@ config MCUX_COMPONENT_driver.dc-fb-dcif
     bool "Use display controller frame buffer adapter for dcif"
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.dcif
+    select MCUX_COMPONENT_driver.display-common
+    select MCUX_COMPONENT_driver.dc-fb-common
+
+config MCUX_COMPONENT_driver.dc-fb-dcif_1
+    bool "Use display controller frame buffer adapter for dcif_1"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_COMPONENT_driver.dcif_1
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.dc-fb-common
 
