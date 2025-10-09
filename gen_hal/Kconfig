@@ -12,19 +12,19 @@ menuconfig MCUX_COMPONENT_component.gen_hal
     help
       Generic HAL based on Zephyr
 
-	if MCUX_COMPONENT_component.gen_hal
-		rsource "zephyr/drivers/flash/Kconfig"
-		rsource "zephyr/drivers/memc/Kconfig"
-		rsource "zephyr/drivers/pinctrl/Kconfig"
-		rsource "zephyr/drivers/clock_control/Kconfig"
-		osource "components/gen_hal/_boards/${board}/Kconfig"
-		osource "components/gen_hal/devices/${soc_portfolio}/${soc_series}/Kconfig"
-	endif
+if MCUX_COMPONENT_component.gen_hal
+	rsource "zephyr/drivers/flash/Kconfig"
+	rsource "zephyr/drivers/memc/Kconfig"
+	rsource "zephyr/drivers/pinctrl/Kconfig"
+	rsource "zephyr/drivers/clock_control/Kconfig"
+	osource "components/gen_hal/_boards/${board}/Kconfig"
+	osource "components/gen_hal/devices/${soc_portfolio}/${soc_series}/Kconfig"
+endif
 
-	if MCUX_COMPONENT_component.zephyr_headers
-		rsource "Kconfig.map"
-		rsource "Kconfig.zephyr_headers"
-	endif
+if MCUX_COMPONENT_component.zephyr_headers
+	rsource "Kconfig.map"
+	rsource "Kconfig.zephyr_headers"
+endif
 
 config MCUX_COMPONENT_component.gen_hal.osa
 	bool "OSA to support Zephyr Kernel related features"
