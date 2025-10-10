@@ -81,7 +81,7 @@ if (CONFIG_MCUX_COMPONENT_driver.dbi)
 
 endif()
 
-if (CONFIG_MCUX_COMPONENT_driver.dcif)
+if (CONFIG_MCUX_COMPONENT_driver.dbi_dcif)
 
     mcux_add_source(
         SOURCES display/dbi/dcif/fsl_dbi_dcif.h
