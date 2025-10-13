@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2022 NXP
+ * Copyright 2020, 2022, 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -31,7 +31,7 @@ i3c_device_t *demo_icm42688pDev;
 icm42688p_handle_t icmp42688p_handle;
 volatile bool icm42688p_ibiFlag = false;
 uint8_t icm42688p_ibiData[16];
-uint8_t icm42688p_ibiLen;
+uint32_t icm42688p_ibiLen;
 static i3c_device_ibi_info_t dev_icm42688pIbi = {
     .maxPayloadLength = 1, .enabled = true, .ibiHandler = icm42688p_ibi_callback};
 
@@ -42,6 +42,7 @@ void icm42688p_ibi_callback(i3c_device_t *dev, const void *ibiData, uint32_t ibi
 {
     icm42688p_ibiFlag = true;
     icm42688p_ibiLen  = ibiLen;
+    assert(icm42688p_ibiLen <= sizeof(icm42688p_ibiData));
     memcpy(icm42688p_ibiData, ibiData, icm42688p_ibiLen);
 }
 
