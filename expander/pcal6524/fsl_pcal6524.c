@@ -23,13 +23,13 @@ typedef enum _pcal6524_reg_ops
 /*! @brief Read port registers value. */
 static status_t PCAL6524_ReadPort(pcal6524_handle_t *handle, uint8_t startReg, uint32_t *value)
 {
-    return handle->I2C_ReceiveFunc(handle->i2cAddr, startReg, 1U, (uint8_t *)value, 3U, 0U);
+    return handle->I2C_ReceiveFunc(handle->i2cBase, handle->i2cAddr, startReg, 1U, (uint8_t *)value, 3U, 0U);
 }
 
 /*! @brief Write port registers value. */
 static status_t PCAL6524_WritePort(pcal6524_handle_t *handle, uint8_t startReg, uint32_t value)
 {
-    return handle->I2C_SendFunc(handle->i2cAddr, startReg, 1U, (uint8_t *)&value, 3U, 0U);
+    return handle->I2C_SendFunc(handle->i2cBase, handle->i2cAddr, startReg, 1U, (uint8_t *)&value, 3U, 0U);
 }
 
 /*! @brief Modify PCAL6524 port register bits. */
@@ -79,6 +79,7 @@ void PCAL6524_Init(pcal6524_handle_t *handle, const pcal6524_config_t *config)
     assert(NULL != handle);
     assert(NULL != config);
 
+    handle->i2cBase         = config->i2cBase;
     handle->i2cAddr         = config->i2cAddr;
     handle->I2C_SendFunc    = config->I2C_SendFunc;
     handle->I2C_ReceiveFunc = config->I2C_ReceiveFunc;

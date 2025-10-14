@@ -44,7 +44,8 @@ typedef enum _pcal6524_dir
 } pcal6524_dir_t;
 
 /*! @brief PCAL6524 I2C receive function. */
-typedef status_t (*pcal6524_i2c_receive_func_t)(uint8_t deviceAddress,
+typedef status_t (*pcal6524_i2c_receive_func_t)(void *base,
+                                                uint8_t deviceAddress,
                                                 uint32_t subAddress,
                                                 uint8_t subaddressSize,
                                                 uint8_t *rxBuff,
@@ -52,7 +53,8 @@ typedef status_t (*pcal6524_i2c_receive_func_t)(uint8_t deviceAddress,
                                                 uint32_t flags);
 
 /*! @brief PCAL6524 I2C send function. */
-typedef status_t (*pcal6524_i2c_send_func_t)(uint8_t deviceAddress,
+typedef status_t (*pcal6524_i2c_send_func_t)(void *base,
+                                             uint8_t deviceAddress,
                                              uint32_t subAddress,
                                              uint8_t subaddressSize,
                                              const uint8_t *txBuff,
@@ -62,6 +64,7 @@ typedef status_t (*pcal6524_i2c_send_func_t)(uint8_t deviceAddress,
 /*! @brief PCAL6524 configure structure.*/
 typedef struct _pcal6524_config
 {
+    void *i2cBase;                               /*!< I2C instance base address. */
     uint8_t i2cAddr;                             /*!< I2C address. */
     pcal6524_i2c_send_func_t I2C_SendFunc;       /*!< Function to send I2C data. */
     pcal6524_i2c_receive_func_t I2C_ReceiveFunc; /*!< Function to receive I2C data. */
@@ -70,6 +73,7 @@ typedef struct _pcal6524_config
 /*! @brief PCAL6524 driver handle. */
 typedef struct _pcal6524_handle
 {
+    void *i2cBase;                               /*!< I2C instance base address. */
     uint8_t i2cAddr;                             /*!< I2C address. */
     pcal6524_i2c_send_func_t I2C_SendFunc;       /*!< Function to send I2C data. */
     pcal6524_i2c_receive_func_t I2C_ReceiveFunc; /*!< Function to receive I2C data. */
