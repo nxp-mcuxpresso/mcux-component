@@ -1371,6 +1371,8 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
     /* BUCK1OUT_DVS */
     for (i = 0U; i < 8U; i++)
     {
+        assert(config->buck[0].dvsVout[i] <= PCA9422_BUCK1_OUT_MAX);
+        assert(config->buck[0].dvsVout[i] >= PCA9422_BUCK1_OUT_MIN);
         bxDVS[i] = (uint8_t)PCA9422_BUCK1_OUT_VAL(config->buck[0].dvsVout[i]);
     }
     regAddr = PCA9422_BUCK1OUT_DVS0;
@@ -1379,6 +1381,8 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
     /* BUCK2OUT_DVS */
     for (i = 0U; i < 8U; i++)
     {
+        assert(config->buck[1].dvsVout[i] <= PCA9422_BUCK2_OUT_MAX);
+        assert(config->buck[1].dvsVout[i] >= PCA9422_BUCK2_OUT_MIN);
         bxDVS[i] = (uint8_t)PCA9422_BUCK2_OUT_VAL(config->buck[1].dvsVout[i]);
     }
     regAddr = PCA9422_BUCK2OUT_DVS0;
@@ -1387,6 +1391,8 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
     /* BUCK3OUT_DVS */
     for (i = 0U; i < 8U; i++)
     {
+        assert(config->buck[2].dvsVout[i] <= PCA9422_BUCK3_OUT_MAX);
+        assert(config->buck[2].dvsVout[i] >= PCA9422_BUCK3_OUT_MIN);
         bxDVS[i] = (uint8_t)PCA9422_BUCK3_OUT_VAL(config->buck[2].dvsVout[i]);
     }
     regAddr = PCA9422_BUCK3OUT_DVS0;
@@ -1396,46 +1402,61 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
     if (PCA9422_UnlockRegulatorOutputRegister(handle))
     {
         /* BUCK1OUT_STBY */
+        assert(config->buck[0].stbyVout <= PCA9422_BUCK1_OUT_MAX);
+        assert(config->buck[0].stbyVout >= PCA9422_BUCK1_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BUCK1_OUT_VAL(config->buck[0].stbyVout);
         regAddr = PCA9422_BUCK1OUT_STBY;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* PCA9422_BUCK1OUT_MAX_LIMIT */
+        assert(config->buck[0].maxVout <= PCA9422_BUCK1_OUT_MAX);
         regVal  = (uint8_t)PCA9422_BUCK1_OUT_VAL(config->buck[0].maxVout);
         regAddr = PCA9422_BUCK1OUT_MAX_LIMIT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* BUCK1OUT_SLEEP */
+        assert(config->buck[0].sleepVout <= PCA9422_BUCK1_OUT_MAX);
+        assert(config->buck[0].sleepVout >= PCA9422_BUCK1_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BUCK1_OUT_VAL(config->buck[0].sleepVout);
         regAddr = PCA9422_BUCK1OUT_SLEEP;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* BUCK2OUT_STBY */
+        assert(config->buck[1].stbyVout <= PCA9422_BUCK2_OUT_MAX);
+        assert(config->buck[1].stbyVout >= PCA9422_BUCK2_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BUCK2_OUT_VAL(config->buck[1].stbyVout);
         regAddr = PCA9422_BUCK2OUT_STBY;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* BUCK2OUT_MAX_LIMIT */
+        assert(config->buck[1].maxVout <= PCA9422_BUCK2_OUT_MAX);
         regVal  = (uint8_t)PCA9422_BUCK2_OUT_VAL(config->buck[1].maxVout);
         regAddr = PCA9422_BUCK2OUT_MAX_LIMIT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* BUCK2OUT_SLEEP */
+        assert(config->buck[1].sleepVout <= PCA9422_BUCK2_OUT_MAX);
+        assert(config->buck[1].sleepVout >= PCA9422_BUCK2_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BUCK2_OUT_VAL(config->buck[1].sleepVout);
         regAddr = PCA9422_BUCK2OUT_SLEEP;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* BUCK3OUT_STBY */
+        assert(config->buck[2].stbyVout <= PCA9422_BUCK3_OUT_MAX);
+        assert(config->buck[2].stbyVout >= PCA9422_BUCK3_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BUCK3_OUT_VAL(config->buck[2].stbyVout);
         regAddr = PCA9422_BUCK3OUT_STBY;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* BUCK3OUT_MAX_LIMIT */
+        assert(config->buck[2].maxVout <= PCA9422_BUCK3_OUT_MAX);
         regVal  = (uint8_t)PCA9422_BUCK3_OUT_VAL(config->buck[2].maxVout);
         regAddr = PCA9422_BUCK3OUT_MAX_LIMIT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* BUCK3OUT_SLEEP */
+        assert(config->buck[2].sleepVout <= PCA9422_BUCK3_OUT_MAX);
+        assert(config->buck[2].sleepVout >= PCA9422_BUCK3_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BUCK3_OUT_VAL(config->buck[2].sleepVout);
         regAddr = PCA9422_BUCK3OUT_SLEEP;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
@@ -1452,11 +1473,15 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO2_OUT_STBY */
+        assert(config->ldo[0].stbyVout <= PCA9422_LDO23_OUT_MAX);
+        assert(config->ldo[0].stbyVout >= PCA9422_LDO23_OUT_MIN);
         regVal  = (uint8_t)PCA9422_LDO23_OUT_VAL(config->ldo[0].stbyVout);
         regAddr = PCA9422_LDO2_OUT_STBY;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO2_OUT_SLEEP */
+        assert(config->ldo[0].sleepVout <= PCA9422_LDO23_OUT_MAX);
+        assert(config->ldo[0].sleepVout >= PCA9422_LDO23_OUT_MIN);
         regVal  = (uint8_t)PCA9422_LDO23_OUT_VAL(config->ldo[0].sleepVout);
         regAddr = PCA9422_LDO2_OUT_SLEEP;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
@@ -1473,11 +1498,15 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO3_OUT_STBY */
+        assert(config->ldo[1].stbyVout <= PCA9422_LDO23_OUT_MAX);
+        assert(config->ldo[1].stbyVout >= PCA9422_LDO23_OUT_MIN);
         regVal  = (uint8_t)PCA9422_LDO23_OUT_VAL(config->ldo[1].stbyVout);
         regAddr = PCA9422_LDO3_OUT_STBY;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO3_OUT_SLEEP */
+        assert(config->ldo[1].sleepVout <= PCA9422_LDO23_OUT_MAX);
+        assert(config->ldo[1].sleepVout >= PCA9422_LDO23_OUT_MIN);
         regVal  = (uint8_t)PCA9422_LDO23_OUT_VAL(config->ldo[1].sleepVout);
         regAddr = PCA9422_LDO3_OUT_SLEEP;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
@@ -1493,16 +1522,22 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO4_OUT */
+        assert(config->ldo[2].vout <= PCA9422_LDO4_OUT_MAX);
+        assert(config->ldo[2].vout >= PCA9422_LDO4_OUT_MIN);
         regVal  = (uint8_t)PCA9422_LDO4_OUT_VAL(config->ldo[2].vout);
         regAddr = PCA9422_LDO4_OUT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO4_OUT_STBY */
+        assert(config->ldo[2].stbyVout <= PCA9422_LDO4_OUT_MAX);
+        assert(config->ldo[2].stbyVout >= PCA9422_LDO4_OUT_MIN); 
         regVal  = (uint8_t)PCA9422_LDO4_OUT_VAL(config->ldo[2].stbyVout);
         regAddr = PCA9422_LDO4_OUT_STBY;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO4_OUT_SLEEP */
+        assert(config->ldo[2].sleepVout <= PCA9422_LDO4_OUT_MAX);
+        assert(config->ldo[2].sleepVout >= PCA9422_LDO4_OUT_MIN); 
         regVal  = (uint8_t)PCA9422_LDO4_OUT_VAL(config->ldo[2].sleepVout);
         regAddr = PCA9422_LDO4_OUT_SLEEP;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
@@ -1530,26 +1565,34 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* SW4_BB_CFG3 - BB_VOUT */
+        assert(config->buckBoost.vout <= PCA9422_BB_OUT_MAX);
+        assert(config->buckBoost.vout >= PCA9422_BB_OUT_MIN); 
         regVal  = (uint8_t)PCA9422_BB_OUT_VAL(config->buckBoost.vout);
         regAddr = PCA9422_SW4_BB_CFG3;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* SW4_BB_CFG4 - BB_VOUT_STBY */
+        assert(config->buckBoost.stdyVout <= PCA9422_BB_OUT_MAX);
+        assert(config->buckBoost.stdyVout >= PCA9422_BB_OUT_MIN); 
         regVal  = (uint8_t)PCA9422_BB_OUT_VAL(config->buckBoost.stdyVout);
         regAddr = PCA9422_SW4_BB_CFG4;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* SW4_BB_MAX_LIMIT */
+        assert(config->buckBoost.maxVout <= PCA9422_BB_OUT_MAX);
         regVal  = (uint8_t)PCA9422_BB_OUT_VAL(config->buckBoost.maxVout);
         regAddr = PCA9422_SW4_BB_MAX_LIMIT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* SW4_BB_MIN_LIMIT */
+        assert(config->buckBoost.minVout >= PCA9422_BB_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BB_OUT_VAL(config->buckBoost.minVout);
         regAddr = PCA9422_SW4_BB_MIN_LIMIT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* SW4_BB_VOUT_SLEEP */
+        assert(config->buckBoost.sleepVout <= PCA9422_BB_OUT_MAX);
+        assert(config->buckBoost.sleepVout >= PCA9422_BB_OUT_MIN);
         regVal  = (uint8_t)PCA9422_BB_OUT_VAL(config->buckBoost.sleepVout);
         regAddr = PCA9422_SW4_BB_VOUT_SLEEP;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
@@ -2629,15 +2672,15 @@ void PCA9422_SetBuckDVSControl(pca9422_handle_t *handle, pca9422_regulator_t reg
     {
         case kPCA9422_RegulatorSwitch1:
             regMask = PCA9422_BUCK123_DVS_CFG2_B1_DVS_CTRL;
-            regVal  = (uint8_t)(dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B1_DVS_CTRL));
+            regVal  = (uint8_t)((dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B1_DVS_CTRL)) & 0xFFU);
             break;
         case kPCA9422_RegulatorSwitch2:
             regMask = PCA9422_BUCK123_DVS_CFG2_B2_DVS_CTRL;
-            regVal  = (uint8_t)(dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B2_DVS_CTRL));
+            regVal  = (uint8_t)((dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B2_DVS_CTRL)) & 0xFFU);
             break;
         case kPCA9422_RegulatorSwitch3:
             regMask = PCA9422_BUCK123_DVS_CFG2_B3_DVS_CTRL;
-            regVal  = (uint8_t)(dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B3_DVS_CTRL));
+            regVal  = (uint8_t)((dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B3_DVS_CTRL)) & 0xFFU);
             break;
         default:
             LOG_INFO("Error Invalid regulator\r\n");
@@ -3229,7 +3272,7 @@ bool PCA9422_ModifyRegReadback(pca9422_handle_t *handle, uint8_t reg, uint8_t ma
     return result;
 }
 
-bool PCA9422_WriteRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint32_t size)
+bool PCA9422_WriteRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint8_t size)
 {
     assert(handle);
     assert(handle->I2C_SendFunc);
@@ -3238,7 +3281,7 @@ bool PCA9422_WriteRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, 
     return (kStatus_Success == handle->I2C_SendFunc(handle->slaveAddress, regBase, 1U, val, size)) ? true : false;
 }
 
-bool PCA9422_ReadRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint32_t size)
+bool PCA9422_ReadRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint8_t size)
 {
     assert(handle);
     assert(handle->I2C_ReceiveFunc);
@@ -3274,12 +3317,12 @@ void PCA9422_EnableChargerInterrupts(pca9422_handle_t *handle, uint8_t *source)
     bool result;
     uint8_t maskVal[6];
 
-    maskVal[0] = (uint8_t)(~(source[0] & 0xFFU)); /* INT_DEVICE_0_MASK */
-    maskVal[1] = (uint8_t)(~(source[1] & 0xFFU)); /* INT_DEVICE_1_MASK */
-    maskVal[2] = (uint8_t)(~(source[2] & 0xFFU)); /* INT_CHARGE_0_MASK */
-    maskVal[3] = (uint8_t)(~(source[3] & 0xFFU)); /* INT_CHARGE_1_MASK */
-    maskVal[4] = (uint8_t)(~(source[4] & 0xFFU)); /* INT_CHARGE_2_MASK */
-    maskVal[5] = (uint8_t)(~(source[5] & 0xFFU)); /* INT_CHARGE_3_MASK */
+    maskVal[0] = (uint8_t)((~source[0]) & 0xFFU); /* INT_DEVICE_0_MASK */
+    maskVal[1] = (uint8_t)((~source[1]) & 0xFFU); /* INT_DEVICE_1_MASK */
+    maskVal[2] = (uint8_t)((~source[2]) & 0xFFU); /* INT_CHARGE_0_MASK */
+    maskVal[3] = (uint8_t)((~source[3]) & 0xFFU); /* INT_CHARGE_1_MASK */
+    maskVal[4] = (uint8_t)((~source[4]) & 0xFFU); /* INT_CHARGE_2_MASK */
+    maskVal[5] = (uint8_t)((~source[5]) & 0xFFU); /* INT_CHARGE_3_MASK */
 
     /* Write mask registers */
     result = PCA9422_WriteRegs(handle, PCA9422_INT_DEVICE_0_MASK, maskVal, sizeof(maskVal));
@@ -3335,7 +3378,7 @@ void PCA9422_EnableRegulatorInterrupt(pca9422_handle_t *handle, uint8_t *source)
     bool result;
     uint8_t maskVal;
 
-    maskVal = (uint8_t)(~(*source & 0xFFU)); /* INT1_MASK */
+    maskVal = (uint8_t)((~(*source)) & 0xFFU); /* INT1_MASK */
     /* Write mask register */
     result = PCA9422_WriteRegs(handle, PCA9422_INT1_MASK, &maskVal, sizeof(maskVal));
     if (!result)
@@ -3389,9 +3432,9 @@ void PCA9422_EnableSublevelInterrupts(pca9422_handle_t *handle, uint8_t *source)
     bool result;
     uint8_t maskVal[3];
 
-    maskVal[0] = (uint8_t)(~(source[0] & 0xFFU)); /* SUB_INT0_MASK */
-    maskVal[1] = (uint8_t)(~(source[1] & 0xFFU)); /* SUB_INT1_MASK */
-    maskVal[2] = (uint8_t)(~(source[2] & 0xFFU)); /* SUB_INT2_MASK */
+    maskVal[0] = (uint8_t)((~source[0]) & 0xFFU); /* SUB_INT0_MASK */
+    maskVal[1] = (uint8_t)((~source[1]) & 0xFFU); /* SUB_INT1_MASK */
+    maskVal[2] = (uint8_t)((~source[2]) & 0xFFU); /* SUB_INT2_MASK */
 
     /* Write mask registers */
     result = PCA9422_WriteRegs(handle, PCA9422_SUB_INT0_MASK, &maskVal[0], 1U);

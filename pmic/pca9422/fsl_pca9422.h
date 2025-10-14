@@ -2140,7 +2140,7 @@ void PCA9422_SetWatchDogTimer(pca9422_handle_t *handle, pca9422_wd_timer_t wd_ti
  * @param size array length in bytes to write.
  * @return true if success or false if error.
  */
-bool PCA9422_WriteRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint32_t size);
+bool PCA9422_WriteRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint8_t size);
 
 /*!
  * @brief Read the value of register array in PCA9422.
@@ -2151,7 +2151,7 @@ bool PCA9422_WriteRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, 
  * @param size array length in bytes to read.
  * @return true if success or false if error.
  */
-bool PCA9422_ReadRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint32_t size);
+bool PCA9422_ReadRegs(pca9422_handle_t *handle, uint8_t regBase, uint8_t *val, uint8_t size);
 
 /*!
  * @brief Modify some bits in the register in PCA9422.
