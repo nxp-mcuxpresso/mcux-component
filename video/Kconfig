@@ -146,6 +146,7 @@ config MCUX_COMPONENT_driver.display-mipi-dsi-cmd
     select MCUX_COMPONENT_driver.common
     select MCUX_COMPONENT_driver.mipi_dsi if MCUX_HAS_COMPONENT_driver.mipi_dsi
     select MCUX_COMPONENT_driver.mipi_dsi_split if MCUX_HAS_COMPONENT_driver.mipi_dsi_split
+    select MCUX_COMPONENT_driver.mipi_dsi_split_1 if MCUX_HAS_COMPONENT_driver.mipi_dsi_split_1
 
 menu "Display Panel Driverss"
 config MCUX_COMPONENT_driver.display-hx8394
