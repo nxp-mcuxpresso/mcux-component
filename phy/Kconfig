@@ -60,3 +60,8 @@ config MCUX_COMPONENT_component.phytja1120
 config MCUX_COMPONENT_component.phyyt8521
     bool "yt8521"
     select MCUX_COMPONENT_component.eth_phy_common
+
+config MCUX_COMPONENT_component.phytenbaset
+    bool "tenbaset_phy"
+    select MCUX_COMPONENT_component.eth_phy_common
+    select MCUX_COMPONENT_driver.tenbaset_phy

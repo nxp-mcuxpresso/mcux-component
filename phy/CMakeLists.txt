@@ -194,3 +194,16 @@ if (CONFIG_MCUX_COMPONENT_component.phyyt8521)
             ./device/phyyt8521/fsl_phyyt8521.h
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.phytenbaset)
+    mcux_add_include(
+        INCLUDES
+            ./device/phytenbaset
+    )
+
+    mcux_add_source(
+        SOURCES
+            ./device/phytenbaset/fsl_phytenbaset.c
+            ./device/phytenbaset/fsl_phytenbaset.h
+    )
+endif()
