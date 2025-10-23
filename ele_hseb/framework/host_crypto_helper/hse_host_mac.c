@@ -172,7 +172,7 @@ hseSrvResponse_t AesXCbcmacGenerate(hseKeyHandle_t keyHandle, uint32_t msgLength
                                     const uint8_t *pMsg, uint32_t* pTagLength,
                                     uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacSignSrv(HSE_ACCESS_MODE_ONE_PASS, 0, macScheme, keyHandle,
                       msgLength, pMsg, pTagLength, pTag, 0U);
@@ -182,7 +182,7 @@ hseSrvResponse_t AesXCbcmacVerify(hseKeyHandle_t keyHandle, uint32_t msgLength,
                                   const uint8_t *pMsg, const uint32_t* pTagLength,
                                   const uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacVerSrv(HSE_ACCESS_MODE_ONE_PASS, 0, macScheme, keyHandle,
                      msgLength, pMsg, pTagLength, pTag, 0U);
@@ -191,7 +191,7 @@ hseSrvResponse_t AesXCbcmacVerify(hseKeyHandle_t keyHandle, uint32_t msgLength,
 hseSrvResponse_t AesXCbcmacGenerateStreamStart(hseKeyHandle_t keyHandle, uint32_t streamId,
                                                uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacSignSrv(HSE_ACCESS_MODE_START, streamId, macScheme, keyHandle,
                       msgLength, pMsg, 0, 0, 0U);
@@ -200,7 +200,7 @@ hseSrvResponse_t AesXCbcmacGenerateStreamStart(hseKeyHandle_t keyHandle, uint32_
 hseSrvResponse_t AesXCbcmacGenerateStreamUpdate(hseKeyHandle_t keyHandle, uint32_t streamId,
                                                 uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacSignSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, keyHandle,
                       msgLength, pMsg, 0, 0, 0U);
@@ -210,7 +210,7 @@ hseSrvResponse_t AesXCbcmacGenerateStreamFinish(hseKeyHandle_t keyHandle, uint32
                                                 uint32_t msgLength, const uint8_t *pMsg,
                                                 uint32_t* pTagLength, uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacSignSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, keyHandle,
                       msgLength, pMsg, pTagLength, pTag, 0U);
@@ -219,7 +219,7 @@ hseSrvResponse_t AesXCbcmacGenerateStreamFinish(hseKeyHandle_t keyHandle, uint32
 hseSrvResponse_t AesXCbcmacVerifyStreamStart(hseKeyHandle_t keyHandle, uint32_t streamId,
                                                uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacVerSrv(HSE_ACCESS_MODE_START, streamId, macScheme, keyHandle,
                       msgLength, pMsg, 0, 0, 0U);
@@ -228,7 +228,7 @@ hseSrvResponse_t AesXCbcmacVerifyStreamStart(hseKeyHandle_t keyHandle, uint32_t 
 hseSrvResponse_t AesXCbcmacVerifyStreamUpdate(hseKeyHandle_t keyHandle, uint32_t streamId,
                                                 uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacVerSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, keyHandle,
                       msgLength, pMsg, 0, 0, 0U);
@@ -238,7 +238,7 @@ hseSrvResponse_t AesXCbcmacVerifyStreamFinish(hseKeyHandle_t keyHandle, uint32_t
                                               uint32_t msgLength, const uint8_t *pMsg,
                                               const uint32_t* pTagLength, const uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_XCBC_MAC;
     return MacVerSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, keyHandle,
                       msgLength, pMsg, pTagLength, pTag, 0U);
@@ -301,7 +301,7 @@ hseSrvResponse_t AesCmacGenerate(hseKeyHandle_t keyHandle, uint32_t msgLength,
                                  const uint8_t *pMsg, uint32_t* pTagLength,
                                  uint8_t *pTag, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacSignSrv(HSE_ACCESS_MODE_ONE_PASS, 0, macScheme, keyHandle,
@@ -312,7 +312,7 @@ hseSrvResponse_t AesCmacVerify(hseKeyHandle_t keyHandle, uint32_t msgLength,
                                const uint8_t *pMsg, const uint32_t* pTagLength,
                                const uint8_t *pTag, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacVerSrv(HSE_ACCESS_MODE_ONE_PASS, 0, macScheme, keyHandle,
@@ -322,7 +322,7 @@ hseSrvResponse_t AesCmacVerify(hseKeyHandle_t keyHandle, uint32_t msgLength,
 hseSrvResponse_t AesCmacGenerateStreamStart(hseKeyHandle_t keyHandle, uint32_t streamId,
                                             uint32_t msgLength, const uint8_t* pMsg, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacSignSrv(HSE_ACCESS_MODE_START, streamId, macScheme, keyHandle,
@@ -331,7 +331,7 @@ hseSrvResponse_t AesCmacGenerateStreamStart(hseKeyHandle_t keyHandle, uint32_t s
 
 hseSrvResponse_t AesCmacGenerateStreamUpdate(uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacSignSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, 0,
@@ -341,7 +341,7 @@ hseSrvResponse_t AesCmacGenerateStreamUpdate(uint32_t streamId, uint32_t msgLeng
 hseSrvResponse_t AesCmacGenerateStreamFinish(uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg,
                                              uint32_t *pTagLength, uint8_t *pTag, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacSignSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, 0,
@@ -351,7 +351,7 @@ hseSrvResponse_t AesCmacGenerateStreamFinish(uint32_t streamId, uint32_t msgLeng
 hseSrvResponse_t AesCmacVerifyStreamStart(hseKeyHandle_t keyHandle, uint32_t streamId,
                                           uint32_t msgLength, const uint8_t* pMsg, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacVerSrv(HSE_ACCESS_MODE_START, streamId, macScheme, keyHandle,
@@ -360,7 +360,7 @@ hseSrvResponse_t AesCmacVerifyStreamStart(hseKeyHandle_t keyHandle, uint32_t str
 
 hseSrvResponse_t AesCmacVerifyStreamUpdate(uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacVerSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, 0,
@@ -370,7 +370,7 @@ hseSrvResponse_t AesCmacVerifyStreamUpdate(uint32_t streamId, uint32_t msgLength
 hseSrvResponse_t AesCmacVerifyStreamFinish(uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg,
                                            const uint32_t *pTagLength, const uint8_t *pTag, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_CMAC;
     macScheme.sch.cmac.cipherAlgo = HSE_CIPHER_ALGO_AES;
     return MacVerSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, 0,
@@ -387,7 +387,7 @@ hseSrvResponse_t AesGmacGenerate(hseKeyHandle_t keyHandle, uint32_t ivLength,
                                  const uint8_t *pMsg, uint32_t* pTagLength,
                                  uint8_t *pTag, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     macScheme.sch.gmac.ivLength = ivLength;
     macScheme.sch.gmac.pIV = (HOST_ADDR)pIV;
@@ -400,7 +400,7 @@ hseSrvResponse_t AesGmacVerify(hseKeyHandle_t keyHandle, uint32_t ivLength,
                                const uint8_t *pMsg, const uint32_t* pTagLength,
                                const uint8_t *pTag, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     macScheme.sch.gmac.ivLength = ivLength;
     macScheme.sch.gmac.pIV = (HOST_ADDR)pIV;
@@ -413,7 +413,7 @@ hseSrvResponse_t AesGmacGenerateStreamStart(hseKeyHandle_t keyHandle, uint32_t s
                                             uint32_t ivLength, const uint8_t* pIV,
                                             uint32_t msgLength, const uint8_t* pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     macScheme.sch.gmac.ivLength = ivLength;
     macScheme.sch.gmac.pIV = (HOST_ADDR)pIV;
@@ -424,7 +424,7 @@ hseSrvResponse_t AesGmacGenerateStreamStart(hseKeyHandle_t keyHandle, uint32_t s
 hseSrvResponse_t AesGmacGenerateStreamUpdate(hseKeyHandle_t keyHandle, uint32_t streamId,
                                              uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     return MacSignSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, keyHandle,
                       msgLength, pMsg, 0, 0, 0U);
@@ -434,7 +434,7 @@ hseSrvResponse_t AesGmacGenerateStreamFinish(hseKeyHandle_t keyHandle, uint32_t 
                                              uint32_t msgLength, const uint8_t *pMsg,
                                              uint32_t *pTagLength, uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     return MacSignSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, keyHandle,
                       msgLength, pMsg, pTagLength, pTag, 0U);
@@ -444,7 +444,7 @@ hseSrvResponse_t AesGmacVerifyStreamStart(hseKeyHandle_t keyHandle, uint32_t str
                                           uint32_t ivLength, const uint8_t* pIV,
                                           uint32_t msgLength, const uint8_t* pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     macScheme.sch.gmac.ivLength = ivLength;
     macScheme.sch.gmac.pIV = (HOST_ADDR)pIV;
@@ -455,7 +455,7 @@ hseSrvResponse_t AesGmacVerifyStreamStart(hseKeyHandle_t keyHandle, uint32_t str
 hseSrvResponse_t AesGmacVerifyStreamUpdate(hseKeyHandle_t keyHandle, uint32_t streamId,
                                            uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     return MacVerSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, keyHandle,
                       msgLength, pMsg, 0, 0, 0U);
@@ -465,7 +465,7 @@ hseSrvResponse_t AesGmacVerifyStreamFinish(hseKeyHandle_t keyHandle, uint32_t st
                                            uint32_t msgLength, const uint8_t *pMsg,
                                            const uint32_t *pTagLength, const uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_GMAC;
     return MacVerSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, keyHandle,
                       msgLength, pMsg, pTagLength, pTag, 0U);
@@ -479,7 +479,7 @@ hseSrvResponse_t HmacGenerate(hseKeyHandle_t authKeyHandle, hseHashAlgo_t hashAl
                               uint32_t inputLength, const uint8_t* pInput,
                               uint32_t* pTagLength, uint8_t* pTag, hseSGTOption_t inputSgtType)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacSignSrv(HSE_ACCESS_MODE_ONE_PASS, 0, macScheme, authKeyHandle,
@@ -490,7 +490,7 @@ hseSrvResponse_t HmacVerify(hseKeyHandle_t authKeyHandle, hseHashAlgo_t hashAlgo
                             uint32_t inputLength, const uint8_t* pInput,
                             const uint32_t* pTagLength, const uint8_t* pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacVerSrv(HSE_ACCESS_MODE_ONE_PASS, 0, macScheme, authKeyHandle,
@@ -500,7 +500,7 @@ hseSrvResponse_t HmacVerify(hseKeyHandle_t authKeyHandle, hseHashAlgo_t hashAlgo
 hseSrvResponse_t HmacGenerateStartStream(hseKeyHandle_t keyHandle, hseHashAlgo_t hashAlgo,
                                          uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacSignSrv(HSE_ACCESS_MODE_START, streamId, macScheme, keyHandle,
@@ -509,7 +509,7 @@ hseSrvResponse_t HmacGenerateStartStream(hseKeyHandle_t keyHandle, hseHashAlgo_t
 
 hseSrvResponse_t HmacGenerateUpdateStream(hseHashAlgo_t hashAlgo, uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacSignSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, 0,
@@ -520,7 +520,7 @@ hseSrvResponse_t HmacGenerateFinishStream(hseHashAlgo_t hashAlgo, uint32_t strea
                                           uint32_t msgLength, const uint8_t *pMsg,
                                           uint32_t *pTagLength, uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacSignSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, 0,
@@ -530,7 +530,7 @@ hseSrvResponse_t HmacGenerateFinishStream(hseHashAlgo_t hashAlgo, uint32_t strea
 hseSrvResponse_t HmacVerifyStartStream(hseKeyHandle_t keyHandle, hseHashAlgo_t hashAlgo,
                                        uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacVerSrv(HSE_ACCESS_MODE_START, streamId, macScheme, keyHandle,
@@ -539,7 +539,7 @@ hseSrvResponse_t HmacVerifyStartStream(hseKeyHandle_t keyHandle, hseHashAlgo_t h
 
 hseSrvResponse_t HmacVerifyUpdateStream(hseHashAlgo_t hashAlgo, uint32_t streamId, uint32_t msgLength, const uint8_t *pMsg)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacVerSrv(HSE_ACCESS_MODE_UPDATE, streamId, macScheme, 0,
@@ -550,7 +550,7 @@ hseSrvResponse_t HmacVerifyFinishStream(hseHashAlgo_t hashAlgo, uint32_t streamI
                                         uint32_t msgLength, const uint8_t *pMsg,
                                         const uint32_t *pTagLength, const uint8_t *pTag)
 {
-    hseMacScheme_t macScheme;
+    hseMacScheme_t macScheme = {0};
     macScheme.macAlgo = HSE_MAC_ALGO_HMAC;
     macScheme.sch.hmac.hashAlgo = hashAlgo;
     return MacVerSrv(HSE_ACCESS_MODE_FINISH, streamId, macScheme, 0,

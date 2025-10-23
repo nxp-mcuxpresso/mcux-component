@@ -181,7 +181,7 @@ hseSrvResponse_t EcdsaSign(hseKeyHandle_t keyHandle, hseHashAlgo_t hashAlgo,
                               uint32_t* pRLen, uint8_t* pR,
                               uint32_t* pSLen, uint8_t* pS)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_ECDSA;
     signScheme.sch.ecdsa.hashAlgo = hashAlgo;
     return SignReq(HSE_ACCESS_MODE_ONE_PASS, signScheme,
@@ -197,7 +197,7 @@ hseSrvResponse_t EcdsaVerify(hseKeyHandle_t keyHandle, hseHashAlgo_t hashAlgo,
                              const uint32_t* pRLen, const uint8_t* pR,
                              const uint32_t* pSLen, const uint8_t* pS)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_ECDSA;
     signScheme.sch.ecdsa.hashAlgo = hashAlgo;
     return VerReq(HSE_ACCESS_MODE_ONE_PASS, signScheme,
@@ -216,7 +216,7 @@ hseSrvResponse_t EddsaSign(hseKeyHandle_t keyHandle, bool_t bHashEddsa,
                               uint32_t* pRLen, uint8_t* pR,
                               uint32_t* pSLen, uint8_t* pS)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
 
     signScheme.signSch                 = HSE_SIGN_EDDSA;
     signScheme.sch.eddsa.bHashEddsa    = bHashEddsa;
@@ -236,7 +236,7 @@ hseSrvResponse_t EddsaVerify(hseKeyHandle_t keyHandle, bool_t bHashEddsa,
                              const uint32_t* pRLen, const uint8_t* pR,
                              const uint32_t* pSLen, const uint8_t* pS)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
 
     signScheme.signSch                 = HSE_SIGN_EDDSA;
     signScheme.sch.eddsa.bHashEddsa    = bHashEddsa;
@@ -258,7 +258,7 @@ hseSrvResponse_t RsaPssSignSrv(hseKeyHandle_t keyHandle, uint32_t saltLength,
                                const uint8_t *pInput, bool_t bInputIsHashed, hseSGTOption_t sgtOption,
                                uint32_t *pSignatureLength, uint8_t *pSignature)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PSS;
     signScheme.sch.rsaPss.saltLength = saltLength;
     signScheme.sch.rsaPss.hashAlgo = hashAlgo;
@@ -272,7 +272,7 @@ hseSrvResponse_t RsaPssVerSrv(hseKeyHandle_t keyHandle, uint32_t saltLength,
                               const uint8_t *pInput, bool_t bInputIsHashed, hseSGTOption_t sgtOption,
                               const uint32_t* pSignatureLength, const uint8_t *pSignature)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PSS;
     signScheme.sch.rsaPss.saltLength = saltLength;
     signScheme.sch.rsaPss.hashAlgo = hashAlgo;
@@ -285,7 +285,7 @@ hseSrvResponse_t RsaPssSignStreamStartSrv(hseKeyHandle_t keyHandle,
                                           hseHashAlgo_t hashAlgo,
                                           uint32_t saltLength)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PSS;
     signScheme.sch.rsaPss.saltLength = saltLength;
     signScheme.sch.rsaPss.hashAlgo = hashAlgo;
@@ -317,7 +317,7 @@ hseSrvResponse_t RsaPssVerStreamStartSrv(hseKeyHandle_t keyHandle,
                                          hseHashAlgo_t hashAlgo,
                                          uint32_t saltLength)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PSS;
     signScheme.sch.rsaPss.saltLength = saltLength;
     signScheme.sch.rsaPss.hashAlgo = hashAlgo;
@@ -352,7 +352,7 @@ hseSrvResponse_t RsaPkcs1v15SignSrv(hseKeyHandle_t keyHandle, hseHashAlgo_t hash
                                     uint32_t inputLength, uint8_t *pInput, bool_t bInputIsHashed, hseSGTOption_t sgtOption,
                                     uint32_t *pSignatureLength, uint8_t *pSignature)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PKCS1_V15;
     signScheme.sch.rsaPkcs1v15.hashAlgo = hashAlgo;
     return SignReq(HSE_ACCESS_MODE_ONE_PASS, signScheme, keyHandle,
@@ -366,7 +366,7 @@ hseSrvResponse_t RsaPkcs1v15SignAsyncSrv(hseKeyHandle_t keyHandle, hseHashAlgo_t
                                          uint32_t *pSignatureLength, uint8_t *pSignature,
                                          hseTxOptions_t asyncTxOptions)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PKCS1_V15;
     signScheme.sch.rsaPkcs1v15.hashAlgo = hashAlgo;
     return SignReq(HSE_ACCESS_MODE_ONE_PASS, signScheme, keyHandle,
@@ -377,7 +377,7 @@ hseSrvResponse_t RsaPkcs1v15VerSrv(hseKeyHandle_t keyHandle, hseHashAlgo_t hashA
                                    uint32_t inputLength, const uint8_t *pInput, bool_t bInputIsHashed, hseSGTOption_t sgtOption,
                                    const uint32_t* pSignatureLength, const uint8_t *pSignature)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PKCS1_V15;
     signScheme.sch.rsaPkcs1v15.hashAlgo = hashAlgo;
     return VerReq(HSE_ACCESS_MODE_ONE_PASS, signScheme, keyHandle,
@@ -391,7 +391,7 @@ hseSrvResponse_t RsaPkcs1v15VerAsyncSrv(hseKeyHandle_t keyHandle, hseHashAlgo_t 
                                         const uint32_t* pSignatureLength, const uint8_t *pSignature,
                                         hseTxOptions_t asyncTxOptions)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PKCS1_V15;
     signScheme.sch.rsaPkcs1v15.hashAlgo = hashAlgo;
     return VerReq(HSE_ACCESS_MODE_ONE_PASS, signScheme, keyHandle,
@@ -400,7 +400,7 @@ hseSrvResponse_t RsaPkcs1v15VerAsyncSrv(hseKeyHandle_t keyHandle, hseHashAlgo_t 
 
 hseSrvResponse_t RsaPkcs1v15SignStreamStart(hseKeyHandle_t keyHandle, hseHashAlgo_t hashAlgo)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PKCS1_V15;
     signScheme.sch.rsaPkcs1v15.hashAlgo = hashAlgo;
     return SignReq(HSE_ACCESS_MODE_START, signScheme, keyHandle,
@@ -427,7 +427,7 @@ hseSrvResponse_t RsaPkcs1v15SignStreamFinish(uint32_t inputLength, const uint8_t
 
 hseSrvResponse_t RsaPkcs1v15VerSha1StreamStart(hseKeyHandle_t keyHandle, hseHashAlgo_t hashAlgo)
 {
-    hseSignScheme_t signScheme;
+    hseSignScheme_t signScheme = {0};
     signScheme.signSch = HSE_SIGN_RSASSA_PKCS1_V15;
     signScheme.sch.rsaPkcs1v15.hashAlgo = hashAlgo;
     return VerReq(HSE_ACCESS_MODE_START, signScheme, keyHandle,

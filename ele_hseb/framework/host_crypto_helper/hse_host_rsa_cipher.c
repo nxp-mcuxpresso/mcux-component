@@ -242,7 +242,7 @@ hseSrvResponse_t RsaNoPaddEncrypt
     uint8_t *pCiphertext
 )
 {
-    hseRsaCipherScheme_t rsaScheme;
+    hseRsaCipherScheme_t rsaScheme = {0};
     rsaScheme.rsaAlgo = HSE_RSA_ALGO_NO_PADDING;
 
     return RsaCipherReq(HSE_CIPHER_DIR_ENCRYPT, rsaScheme, keyHandle, plaintextLength, (HOST_ADDR)pPlaintext,
@@ -262,7 +262,7 @@ hseSrvResponse_t RsaOaepEncrypt
     uint8_t *pCiphertext
 )
 {
-    hseRsaCipherScheme_t rsaScheme;
+    hseRsaCipherScheme_t rsaScheme = {0};
     rsaScheme.rsaAlgo = HSE_RSA_ALGO_RSAES_OAEP;
     rsaScheme.sch.rsaOAEP.hashAlgo = hashAlgo;
     rsaScheme.sch.rsaOAEP.labelLength = labelLength;
@@ -278,7 +278,7 @@ hseSrvResponse_t RsaPkcs1V15Encrypt(hseKeyHandle_t keyHandle, hseHashAlgo_t hash
                                     uint32_t plaintextLength, const uint8_t *pPlaintext, 
                                     uint32_t *pCiphertextLength, uint8_t *pCiphertext)
 {
-    hseRsaCipherScheme_t rsaScheme;
+    hseRsaCipherScheme_t rsaScheme = {0};
     rsaScheme.rsaAlgo = HSE_RSA_ALGO_RSAES_PKCS1_V15;
     if(HSE_CIPHER_ALGO_NULL != hashAlgo)
     {
@@ -296,7 +296,7 @@ hseSrvResponse_t RsaPkcs1V15Decrypt(hseKeyHandle_t keyHandle, hseHashAlgo_t hash
                                     uint32_t ciphertextLength, uint8_t *pCiphertext, 
                                     uint32_t *pPlaintextLength, uint8_t *pPlaintext)
 {
-    hseRsaCipherScheme_t rsaScheme;
+    hseRsaCipherScheme_t rsaScheme = {0};
     rsaScheme.rsaAlgo = HSE_RSA_ALGO_RSAES_PKCS1_V15;
     if(HSE_CIPHER_ALGO_NULL != hashAlgo)
     {
@@ -333,7 +333,7 @@ hseSrvResponse_t RsaNoPaddDecrypt
     uint8_t *pPlaintext
 )
 {
-    hseRsaCipherScheme_t rsaScheme;
+    hseRsaCipherScheme_t rsaScheme = {0};
     rsaScheme.rsaAlgo = HSE_RSA_ALGO_NO_PADDING;
 
     return RsaCipherReq(HSE_CIPHER_DIR_DECRYPT, rsaScheme, keyHandle, ciphertextLength, (HOST_ADDR)pCiphertext,
@@ -353,7 +353,7 @@ hseSrvResponse_t RsaOaepDecrypt
     uint8_t *pPlaintext
 )
 {
-    hseRsaCipherScheme_t rsaScheme;
+    hseRsaCipherScheme_t rsaScheme = {0};
     rsaScheme.rsaAlgo = HSE_RSA_ALGO_RSAES_OAEP;
     rsaScheme.sch.rsaOAEP.hashAlgo = hashAlgo;
     rsaScheme.sch.rsaOAEP.labelLength = labelLength;
