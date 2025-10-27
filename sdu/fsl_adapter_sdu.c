@@ -241,7 +241,6 @@ static uint32_t sdu_dbg_level = SDU_DBG_LEVEL_WARN | SDU_DBG_LEVEL_ERROR;
 #define sdu_d(_fmt_, ...)
 #endif
 
-
 /*******************************************************************************
  * Public Functions
  ******************************************************************************/
@@ -1439,6 +1438,8 @@ static status_t SDU_RecvCmdProcess(void)
         return ret;
     }
 
+    (void)SDU_RefillCmdBuffer(&ctrl_sdu);
+
     sdio_hdr = (sdio_header_t *)(cmd_rcv->buffer.data_addr);
     if ((sdio_hdr->len <= sizeof(sdio_header_t)) || (sdio_hdr->len > SDU_CMD_BUFFER_SIZE)
         || (sdio_hdr->type != SDU_TYPE_CMD))
@@ -1449,6 +1450,7 @@ static status_t SDU_RecvCmdProcess(void)
     else
     {
         sdu_d("%s: SDIO hdr: len=%d type=%d!\r\n", __FUNCTION__, sdio_hdr->len, sdio_hdr->type);
+        SDU_dump_hex(sdu_dbg_level, sdio_hdr, sdio_hdr->len);
         if (ctrl_sdu.sdu_cb_fn[SDU_TYPE_FOR_WRITE_CMD] != NULL)
         {
             //memcpy(data_addr, cmd_rcv->buffer.data_addr + sizeof(sdio_header_t), MIN(sdio_hdr->len, data_size));
@@ -1465,7 +1467,6 @@ static status_t SDU_RecvCmdProcess(void)
         }
     }
     (void)LIST_AddTail(&ctrl_sdu.cmd_free_buffer[SDU_PORT_FOR_WRITE], &cmd_rcv->link);
-    (void)SDU_RefillCmdBuffer(&ctrl_sdu);
 
     return ret;
 }
@@ -1526,6 +1527,7 @@ static status_t SDU_RecvDataProcess(void)
     else
     {
         sdu_d("%s: SDIO hdr: len=%d type=%d!\r\n", __FUNCTION__, sdio_hdr->len, sdio_hdr->type);
+        SDU_dump_hex(sdu_dbg_level, sdio_hdr, sdio_hdr->len);
         if (ctrl_sdu.sdu_cb_fn[SDU_TYPE_FOR_WRITE_DATA] != NULL)
         {
             //memcpy(data_addr, data_rcv->buffer.data_addr + sizeof(sdio_header_t), MIN(sdio_hdr->len, data_size));
@@ -1741,6 +1743,9 @@ retry:
     send_buffer->buffer.data_len = sdio_hdr->len;
     send_buffer->buffer.user_data = (uint32_t)send_buffer;
 
+    sdu_d("%s: SDIO hdr: len=%d type=%d!\r\n", __FUNCTION__, sdio_hdr->len, sdio_hdr->type);
+    SDU_dump_hex(sdu_dbg_level, sdio_hdr, sdio_hdr->len);
+
     switch (type)
     {
         case SDU_TYPE_FOR_READ_CMD:
@@ -1852,39 +1857,41 @@ static void SDU_SLV_IRQHandler(void)
     for (i = 0; i < sdu_ctrl.used_fun_num; i++)
     {
         fun_ctrl = sdu_ctrl.func_ctrl[i];
-        if ((fun_ctrl->initialized != 0U) && (fun_ctrl->enable != 0U))
+        if (fun_ctrl && (fun_ctrl->initialized != 0U) && (fun_ctrl->enable != 0U))
         {
             sdu_fsr    = fun_ctrl->regmap;
             int_status = sdu_fsr->CardIntStatus;
             crc_err    = sdu_fsr->HostTransferStatus;
 
+            sdu_fsr->CardIntStatus = ~int_status | SDIO_CCR_CIC_PwrUp;
+
             if ((int_status & (uint32_t)SDIO_CCR_CIC_CmdUpLdOvr) != 0U)
             {
                 SDU_ProcessCmdUpLdOvr(fun_ctrl);
-                sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_CmdUpLdOvr);
+                //sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_CmdUpLdOvr);
             }
 
             if (((int_status & (uint32_t)SDIO_CCR_CIC_CmdDnLdOvr) != 0U) && ((crc_err & (uint32_t)SDIO_CCR_HOST_DnLdCRC_err) == 0U))
             {
                 SDU_ProcessCmdDnLdOvr(fun_ctrl);
-                sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_CmdDnLdOvr);
+                //sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_CmdDnLdOvr);
             }
 
             if ((int_status & (uint32_t)SDIO_CCR_CIC_UpLdOvr) != 0U)
             {
                 SDU_ProcessDataUpLdOvr(fun_ctrl);
-                sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_UpLdOvr);
+                //sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_UpLdOvr);
             }
 
             if (((int_status & (uint32_t)SDIO_CCR_CIC_DnLdOvr) != 0U) && ((crc_err & (uint32_t)SDIO_CCR_HOST_DnLdCRC_err) == 0U))
             {
                 SDU_ProcessDataDnLdOvr(fun_ctrl);
-                sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_DnLdOvr);
+                //sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_DnLdOvr);
             }
 
             if ((int_status & ((uint32_t)SDIO_CCR_CIC_PwrUp)) != 0U)
             {
-                sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_PwrUp);
+                //sdu_fsr->CardIntStatus &= ~((uint32_t)SDIO_CCR_CIC_PwrUp);
             }
         }
     }
@@ -2161,8 +2168,52 @@ status_t SDU_CheckHostStatus(uint8_t *status)
     *status = host_status;
 
     sdu_d("%s done: host_status=%u %u", __FUNCTION__, host_status, *status);
+
     return ret;
 }
+
+/*!
+ * @brief SDU if UpldOver is Done on all CMD/DATA ports.
+ *
+ * @param void
+ * @retval 1 - CMD ports UpldOver NOT done.
+ * @retval 100+x - DATA ports UpldOver NOT done, x is DATA port number.
+ * @retval 0  - All ports UpldOver done.
+ */
+uint32_t SDU_CheckUpldOvrDone(void)
+{
+    sdioslv_fun_ctrl_t *fun_ctrl = NULL;
+    uint8_t i = 0;
+    uint8_t j = 0;
+
+    for (i = 0; i < sdu_ctrl.used_fun_num; i++)
+    {
+        fun_ctrl = sdu_ctrl.func_ctrl[i];
+        if (fun_ctrl && (fun_ctrl->initialized != 0U) && (fun_ctrl->enable != 0U))
+        {
+            if (fun_ctrl->cmd_port[SDU_PORT_FOR_READ].valid)
+            {
+                if (fun_ctrl->cmd_port[SDU_PORT_FOR_READ].occupied)
+                {
+                    return 1;
+                }
+            }
+            for (j = 0; j < SDU_MAX_PORT_NUM; j++)
+            {
+                if (fun_ctrl->data_port[SDU_PORT_FOR_READ][j].valid)
+                {
+                    if (fun_ctrl->data_port[SDU_PORT_FOR_READ][j].occupied)
+                    {
+                        return (100 + j);
+                    }
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 
 status_t SDU_EnterPowerDown(void)
 {
