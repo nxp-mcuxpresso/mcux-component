@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -15,8 +15,14 @@
  * Definitions
  ******************************************************************************/
 
-#define XSPI_INSTANCE        XSPI0
-#define XSPI_CLOCK           kCLOCK_Xspi0
+#if USE_XSPI1
+    #define XSPI_INSTANCE        XSPI1
+    #define XSPI_CLOCK           kCLOCK_Xspi1
+#else
+    #define XSPI_INSTANCE        XSPI0
+    #define XSPI_CLOCK           kCLOCK_Xspi0
+#endif
+
 #define XSPI_RX_SAMPLE_CLOCK kXSPI_ReadSampleClkExternalInputFromDqsPad
 
 /* Octal mode used by default, pinmux already set to this mode.
@@ -45,6 +51,15 @@
 #define FLASH_WE_STATUS_OFFSET   7
 #define FLASH_ENABLE_OCTAL_CMD   0x02
 
+#if USE_XSPI1
+#define XSPI_INVALIDATE_CACHES do { \
+  XSPI_Cache64_InvalidateCache(CACHE64_CTRL1); \
+  } while(0)
+#else
+#define XSPI_INVALIDATE_CACHES do { \
+  XSPI_Cache64_InvalidateCache(CACHE64_CTRL0); \
+  } while(0)    
+#endif
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -149,17 +164,7 @@ const uint32_t customLUT[CUSTOM_LUT_LENGTH] = {
 /*******************************************************************************
  * Code
  ******************************************************************************/
-/* Temporary fix untill cache64 control is implemented in xspi driver */
-static void CACHE64_Invalidate(void)
-{
-    CACHE64_CTRL0->CCR |= CACHE64_CTRL_CCR_INVW0_MASK | CACHE64_CTRL_CCR_INVW1_MASK | CACHE64_CTRL_CCR_GO_MASK;
-    while ((CACHE64_CTRL0->CCR & CACHE64_CTRL_CCR_GO_MASK) != 0x00U)
-    {
-    }
-    CACHE64_CTRL0->CCR &= ~(CACHE64_CTRL_CCR_INVW0_MASK | CACHE64_CTRL_CCR_INVW1_MASK);
-}
-
-static status_t xspi_nor_write_enable(XSPI_Type *base, uint32_t baseAddr, bool useOctal)
+RAMFUNC static status_t xspi_nor_write_enable(XSPI_Type *base, uint32_t baseAddr, bool useOctal)
 {
     xspi_transfer_t flashXfer;
     status_t status;
@@ -185,7 +190,7 @@ static status_t xspi_nor_write_enable(XSPI_Type *base, uint32_t baseAddr, bool u
     return status;
 }
 
-static status_t xspi_nor_wait_bus_busy(XSPI_Type *base, bool useOctal)
+RAMFUNC static status_t xspi_nor_wait_bus_busy(XSPI_Type *base, bool useOctal)
 {
     /* Wait status ready. */
     bool isBusy;
@@ -233,7 +238,7 @@ static status_t xspi_nor_wait_bus_busy(XSPI_Type *base, bool useOctal)
 }
 
 #if defined(FLASH_ENABLE_OCTAL_CMD)
-static status_t xspi_nor_enable_octal_mode(XSPI_Type *base)
+RAMFUNC static status_t xspi_nor_enable_octal_mode(XSPI_Type *base)
 {
     xspi_transfer_t flashXfer;
     status_t status;
@@ -269,7 +274,7 @@ static status_t xspi_nor_enable_octal_mode(XSPI_Type *base)
 }
 #endif
 
-static status_t xspi_nor_flash_read(XSPI_Type *base, uint32_t dstAddr, uint32_t *src, uint32_t length, bool useOctal)
+RAMFUNC static status_t xspi_nor_flash_read(XSPI_Type *base, uint32_t dstAddr, uint32_t *src, uint32_t length, bool useOctal)
 {
     status_t status;
     xspi_transfer_t flashXfer;
@@ -294,7 +299,7 @@ static status_t xspi_nor_flash_read(XSPI_Type *base, uint32_t dstAddr, uint32_t 
     return status;
 }
 
-static status_t xspi_nor_flash_erase_sector(XSPI_Type *base, uint32_t address, bool useOctal)
+RAMFUNC static status_t xspi_nor_flash_erase_sector(XSPI_Type *base, uint32_t address, bool useOctal)
 {
     status_t status;
     xspi_transfer_t flashXfer;
@@ -326,7 +331,7 @@ static status_t xspi_nor_flash_erase_sector(XSPI_Type *base, uint32_t address, b
     return status;
 }
 
-static status_t xspi_nor_flash_page_program(XSPI_Type *base, uint32_t dstAddr, uint32_t *src, bool useOctal)
+RAMFUNC static status_t xspi_nor_flash_page_program(XSPI_Type *base, uint32_t dstAddr, uint32_t *src, bool useOctal)
 {
     status_t status;
     xspi_transfer_t flashXfer;
@@ -368,7 +373,7 @@ static status_t xspi_nor_flash_page_program(XSPI_Type *base, uint32_t dstAddr, u
     return status;
 }
 
-static int32_t mflash_drv_init_internal(XSPI_Type *base, bool useOctal)
+RAMFUNC static int32_t mflash_drv_init_internal(XSPI_Type *base, bool useOctal)
 {
     uint32_t primask;
     xspi_config_t config;
@@ -387,12 +392,21 @@ static int32_t mflash_drv_init_internal(XSPI_Type *base, bool useOctal)
     primask = __get_PRIMASK();
     __asm("cpsid i");
 
+#if USE_XSPI1    
+    CLOCK_AttachClk(kMAIN_PLL_PFD2_to_XSPI1);
+    CLOCK_SetClkDiv(kCLOCK_DivXspi1Clk, 1u); /*400MHz*/
+
+    POWER_DisablePD(kPDRUNCFG_APD_XSPI1);
+    POWER_DisablePD(kPDRUNCFG_PPD_XSPI1);
+    POWER_ApplyPD();
+#else
     CLOCK_AttachClk(kMAIN_PLL_PFD1_to_XSPI0);
     CLOCK_SetClkDiv(kCLOCK_DivXspi0Clk, 1u); /*400MHz*/
 
     POWER_DisablePD(kPDRUNCFG_APD_XSPI0);
     POWER_DisablePD(kPDRUNCFG_PPD_XSPI0);
     POWER_ApplyPD();
+#endif
 
     config.ptrAhbAccessConfig = &xspiAhbAccessConfig;
     config.ptrIpAccessConfig  = &xspiIpAccessConfig;
@@ -437,13 +451,13 @@ static int32_t mflash_drv_init_internal(XSPI_Type *base, bool useOctal)
 }
 
 /* API - initialize 'mflash' */
-int32_t mflash_drv_init(void)
+RAMFUNC int32_t mflash_drv_init(void)
 {
     /* Necessary to have double wrapper call in non_xip memory */
     return mflash_drv_init_internal(XSPI_INSTANCE, USE_OCTAL_MODE);
 }
 
-static int32_t mflash_drv_read_internal(uint32_t addr, uint32_t *buffer, uint32_t len)
+RAMFUNC static int32_t mflash_drv_read_internal(uint32_t addr, uint32_t *buffer, uint32_t len)
 {
     uint32_t primask = __get_PRIMASK();
 
@@ -465,7 +479,7 @@ static int32_t mflash_drv_read_internal(uint32_t addr, uint32_t *buffer, uint32_
 }
 
 /* API - Read data */
-int32_t mflash_drv_read(uint32_t addr, uint32_t *buffer, uint32_t len)
+RAMFUNC int32_t mflash_drv_read(uint32_t addr, uint32_t *buffer, uint32_t len)
 {
     /* Check alignment */
     if (((uint32_t)buffer % 4) || (len % 4))
@@ -477,7 +491,7 @@ int32_t mflash_drv_read(uint32_t addr, uint32_t *buffer, uint32_t len)
 }
 
 /* Internal - erase single sector */
-static int32_t mflash_drv_sector_erase_internal(uint32_t sector_addr)
+RAMFUNC static int32_t mflash_drv_sector_erase_internal(uint32_t sector_addr)
 {
     status_t status;
     uint32_t primask = __get_PRIMASK();
@@ -488,7 +502,7 @@ static int32_t mflash_drv_sector_erase_internal(uint32_t sector_addr)
 
     // invalidate_caches();
     DCACHE_InvalidateByRange(MFLASH_BASE_ADDRESS + sector_addr, MFLASH_SECTOR_SIZE);
-    CACHE64_Invalidate();
+    XSPI_INVALIDATE_CACHES;
 
     if (primask == 0U)
     {
@@ -505,7 +519,7 @@ static int32_t mflash_drv_sector_erase_internal(uint32_t sector_addr)
 /* Calling wrapper for 'mflash_drv_sector_erase_internal'.
  * Erase one sector starting at 'sector_addr' - must be sector aligned.
  */
-int32_t mflash_drv_sector_erase(uint32_t sector_addr)
+RAMFUNC int32_t mflash_drv_sector_erase(uint32_t sector_addr)
 {
     if (0 == mflash_drv_is_sector_aligned(sector_addr))
         return kStatus_InvalidArgument;
@@ -514,7 +528,7 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
 }
 
 /* Internal - write single page */
-static int32_t mflash_drv_page_program_internal(uint32_t page_addr, uint32_t *data)
+RAMFUNC static int32_t mflash_drv_page_program_internal(uint32_t page_addr, uint32_t *data)
 {
     uint32_t primask = __get_PRIMASK();
 
@@ -524,7 +538,7 @@ static int32_t mflash_drv_page_program_internal(uint32_t page_addr, uint32_t *da
     status = xspi_nor_flash_page_program(XSPI_INSTANCE, page_addr, data, USE_OCTAL_MODE);
 
     DCACHE_InvalidateByRange(MFLASH_BASE_ADDRESS + page_addr, MFLASH_PAGE_SIZE);
-    CACHE64_Invalidate();
+    XSPI_INVALIDATE_CACHES;
 
     if (primask == 0U)
     {
@@ -542,7 +556,7 @@ static int32_t mflash_drv_page_program_internal(uint32_t page_addr, uint32_t *da
  * Write 'data' to 'page_addr' - must be page aligned.
  * NOTE: Don't try to store constant data that are located in XIP !!
  */
-int32_t mflash_drv_page_program(uint32_t page_addr, uint32_t *data)
+RAMFUNC int32_t mflash_drv_page_program(uint32_t page_addr, uint32_t *data)
 {
     if (0 == mflash_drv_is_page_aligned(page_addr))
         return kStatus_InvalidArgument;
