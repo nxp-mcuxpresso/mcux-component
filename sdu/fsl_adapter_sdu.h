@@ -44,7 +44,8 @@ typedef struct _sdio_header
 } sdio_header_t;
 
 #define SDIO_SLEEP_HS_DONE 1U
-#define SDIO_RESET_DONE 2U
+#define SDIO_HOST_RESET_DONE 2U
+#define SDIO_HOST_INIT_DONE 3U
 
 /*******************************************************************************
  * APIs

@@ -1611,6 +1611,8 @@ status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_le
 #endif
     uint32_t retry_cnt_cmdevent = 0;
     uint32_t retry_cnt_data = 0;
+    status_t ret = kStatus_Fail;
+    uint8_t host_status = 0;
 
     if ((data_addr == NULL) || (data_len == 0U))
     {
@@ -1622,9 +1624,16 @@ status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_le
         return (status_t)kStatus_InvalidArgument;
     }
 
-    if (SDU_IsLinkUp() != true)
+    while (SDU_IsLinkUp() != true)
     {
-        return (status_t)kStatus_Fail;
+        OSA_TimeDelay(1);
+    }
+
+    ret = SDU_CheckHostStatus(&host_status);
+    while ((ret != kStatus_Success) || (host_status != SDIO_HOST_INIT_DONE))
+    {
+        OSA_TimeDelay(1);
+        ret = SDU_CheckHostStatus(&host_status);
     }
 
 retry:
@@ -2204,7 +2213,7 @@ uint32_t SDU_CheckUpldOvrDone(void)
                 {
                     if (fun_ctrl->data_port[SDU_PORT_FOR_READ][j].occupied)
                     {
-                        return (100 + j);
+                        return (100 * i + j);
                     }
                 }
             }
