@@ -20,8 +20,8 @@
  ******************************************************************************/
 /*! @name Driver version */
 /*! @{ */
-/*! @brief SX1502 driver version 2.0.0. */
-#define FSL_SX1502_DRIVER_VERSION (MAKE_VERSION(2, 0, 0))
+/*! @brief SX1502 driver version 2.0.1. */
+#define FSL_SX1502_DRIVER_VERSION (MAKE_VERSION(2, 0, 1))
 /*! @} */
 
 /*! @brief SX1502 handle size */

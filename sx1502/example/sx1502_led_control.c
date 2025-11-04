@@ -288,9 +288,14 @@ int main(void)
         "LED1/LED3/LED5/LED7 on, LED2/LED4/LED6 off\r\n    pattern index off : All LEDs return to the initial "
         "state.\r\n");
     /* Init SHELL */
-    s_shellHandle = &s_shellHandleBuffer[0];
+    memset(s_shellHandleBuffer, 0, sizeof(s_shellHandleBuffer));
+    s_shellHandle = (shell_handle_t)&s_shellHandleBuffer[0];
 
-    SHELL_Init(s_shellHandle, g_serialHandle, "SHELL>> ");
+    if (SHELL_Init(s_shellHandle, g_serialHandle, "SHELL>> ") != kStatus_SHELL_Success) {
+        PRINTF("Shell initialization failed!\r\n");
+        return -1;
+    }
+    
     /* Add new command to commands list */
     SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(led));
     SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(pattern));

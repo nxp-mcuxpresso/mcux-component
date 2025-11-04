@@ -42,6 +42,12 @@ static status_t SX1502_I2C_Receive(void *handle,
 {
     hal_i2c_master_transfer_t masterXfer;
 
+    /* Validate subaddressSize to prevent underrun */
+    if (subaddressSize == 0U)
+    {
+        return kStatus_InvalidArgument;
+    }
+
     masterXfer.slaveAddress   = deviceAddress;
     masterXfer.direction      = kHAL_I2cRead;
     masterXfer.subaddress     = (uint32_t)subAddress;
@@ -61,6 +67,12 @@ static status_t SX1502_I2C_Send(void *handle,
                                 uint8_t txBuffSize)
 {
     hal_i2c_master_transfer_t masterXfer;
+
+    /* Validate subaddressSize to prevent underrun */
+    if (subaddressSize == 0U)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     masterXfer.slaveAddress   = deviceAddress;
     masterXfer.direction      = kHAL_I2cWrite;
