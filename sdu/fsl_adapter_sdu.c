@@ -15,7 +15,7 @@
 #define os_InterruptMaskSet(irq_num)   EnableIRQ(irq_num)
 #define os_ClearPendingISR(irq_num)    NVIC_ClearPendingIRQ(irq_num)
 
-#define SDU_TRANSFER_TASK_STACK_SIZE (1000U)
+#define SDU_TRANSFER_TASK_STACK_SIZE (3072U)
 
 #define SDU_DEFAULT_BLOCK_SIZE (512U)
 
