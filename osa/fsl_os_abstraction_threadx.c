@@ -315,7 +315,7 @@ void OSA_TaskYield(void)
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
 osa_task_priority_t OSA_TaskGetPriority(osa_task_handle_t taskHandle)
 {
-    assert(taskHandle);
+    assert(taskHandle != NULL);
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
     UINT status              = 0;
     CHAR *task_name;
@@ -352,7 +352,7 @@ osa_task_priority_t OSA_TaskGetPriority(osa_task_handle_t taskHandle)
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
 osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority_t taskPriority)
 {
-    assert(taskHandle);
+    assert(taskHandle != NULL);
     assert(taskPriority <= OSA_TASK_PRIORITY_MIN);
     assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
@@ -383,7 +383,7 @@ osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
 osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *thread_def, osa_task_param_t task_param)
 {
-    assert(taskHandle);
+    assert(taskHandle != NULL);
     osa_status_t status      = KOSA_StatusError;
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
 
@@ -421,7 +421,7 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
 osa_status_t OSA_TaskDestroy(osa_task_handle_t taskHandle)
 {
-    assert(taskHandle);
+    assert(taskHandle != NULL);
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
     osa_status_t status      = KOSA_StatusSuccess;
 
@@ -612,7 +612,7 @@ osa_status_t OSA_SemaphorePost(osa_semaphore_handle_t semaphoreHandle)
  *END**************************************************************************/
 osa_status_t OSA_MutexCreate(osa_mutex_handle_t mutexHandle)
 {
-    assert(mutexHandle);
+    assert(mutexHandle != NULL);
     osa_status_t status = KOSA_StatusSuccess;
 
 #ifndef CPU2
@@ -636,7 +636,7 @@ osa_status_t OSA_MutexCreate(osa_mutex_handle_t mutexHandle)
  *END**************************************************************************/
 osa_status_t OSA_MutexLock(osa_mutex_handle_t mutexHandle, uint32_t millisec)
 {
-    assert(mutexHandle);
+    assert(mutexHandle != NULL);
     osa_status_t status = KOSA_StatusSuccess;
 
 #ifndef CPU2
@@ -667,7 +667,7 @@ osa_status_t OSA_MutexLock(osa_mutex_handle_t mutexHandle, uint32_t millisec)
  *END**************************************************************************/
 osa_status_t OSA_MutexUnlock(osa_mutex_handle_t mutexHandle)
 {
-    assert(mutexHandle);
+    assert(mutexHandle != NULL);
     osa_status_t status = KOSA_StatusSuccess;
 
 #ifndef CPU2
@@ -688,7 +688,7 @@ osa_status_t OSA_MutexUnlock(osa_mutex_handle_t mutexHandle)
  *END**************************************************************************/
 osa_status_t OSA_MutexDestroy(osa_mutex_handle_t mutexHandle)
 {
-    assert(mutexHandle);
+    assert(mutexHandle != NULL);
     osa_status_t status = KOSA_StatusSuccess;
 
     if (TX_SUCCESS != tx_mutex_delete((TX_MUTEX *)mutexHandle))

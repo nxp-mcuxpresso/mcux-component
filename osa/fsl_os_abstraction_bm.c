@@ -394,7 +394,7 @@ void OSA_TaskYield(void)
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
 osa_task_priority_t OSA_TaskGetPriority(osa_task_handle_t taskHandle)
 {
-    assert(taskHandle);
+    assert(taskHandle != NULL);
     task_handler_t handler = (task_handler_t)taskHandle;
     return handler->priority;
 }
@@ -409,7 +409,7 @@ osa_task_priority_t OSA_TaskGetPriority(osa_task_handle_t taskHandle)
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
 osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority_t taskPriority)
 {
-    assert(taskHandle);
+    assert(taskHandle != NULL);
     list_element_handle_t list_element;
     task_control_block_t *tcb = NULL;
 #if (defined(GENERIC_LIST_LIGHT) && (GENERIC_LIST_LIGHT > 0U))
@@ -483,7 +483,7 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
     task_control_block_t *ptaskStruct = (task_control_block_t *)taskHandle;
     uint32_t regPrimask;
     assert(sizeof(task_control_block_t) == OSA_TASK_HANDLE_SIZE);
-    assert(taskHandle);
+    assert(taskHandle != NULL);
     assert(thread_def->tpriority <= OSA_TASK_PRIORITY_MIN);
     assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
 
@@ -554,7 +554,7 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
 osa_status_t OSA_TaskDestroy(osa_task_handle_t taskHandle)
 {
     uint32_t regPrimask;
-    assert(taskHandle);
+    assert(taskHandle != NULL);
 
     OSA_EnterCritical(&regPrimask);
     (void)LIST_RemoveElement(taskHandle);
@@ -664,7 +664,7 @@ osa_status_t OSA_SemaphoreCreate(osa_semaphore_handle_t semaphoreHandle, uint32_
 {
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
     assert(sizeof(semaphore_t) <= OSA_SEM_HANDLE_SIZE);
-    assert(semaphoreHandle);
+    assert(semaphoreHandle != NULL);
     assert(initValue <= UINT8_MAX);
 
     pSemStruct->semCount      = (uint8_t)initValue;
@@ -694,7 +694,7 @@ osa_status_t OSA_SemaphoreCreateBinary(osa_semaphore_handle_t semaphoreHandle)
 {
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
     assert(sizeof(semaphore_t) <= OSA_SEM_HANDLE_SIZE);
-    assert(semaphoreHandle);
+    assert(semaphoreHandle != NULL);
 
     pSemStruct->semCount      = 1U;
     pSemStruct->isWaiting     = 0U;
@@ -720,7 +720,7 @@ osa_status_t OSA_SemaphoreCreateBinary(osa_semaphore_handle_t semaphoreHandle)
  *END**************************************************************************/
 osa_status_t OSA_SemaphoreDestroy(osa_semaphore_handle_t semaphoreHandle)
 {
-    assert(semaphoreHandle);
+    assert(semaphoreHandle != NULL);
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
 
     /* Destroy semaphoreHandle's data */
@@ -745,7 +745,7 @@ osa_status_t OSA_SemaphoreWait(osa_semaphore_handle_t semaphoreHandle, uint32_t 
 {
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
     uint32_t regPrimask;
-    assert(semaphoreHandle);
+    assert(semaphoreHandle != NULL);
 #if (defined(FSL_OSA_BM_TIMEOUT_ENABLE) && (FSL_OSA_BM_TIMEOUT_ENABLE > 0U))
 #if (FSL_OSA_BM_TIMER_CONFIG != FSL_OSA_BM_TIMER_NONE)
     uint32_t currentTime;
@@ -819,7 +819,7 @@ osa_status_t OSA_SemaphorePost(osa_semaphore_handle_t semaphoreHandle)
 {
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
     uint32_t regPrimask;
-    assert(semaphoreHandle);
+    assert(semaphoreHandle != NULL);
 
     /* check whether max value is reached */
     if (((KOSA_CountingSemaphore == pSemStruct->semaphoreType) &&
@@ -855,7 +855,7 @@ osa_status_t OSA_MutexCreate(osa_mutex_handle_t mutexHandle)
 {
     mutex_t *pMutexStruct = (mutex_t *)mutexHandle;
     assert(sizeof(mutex_t) <= OSA_MUTEX_HANDLE_SIZE);
-    assert(mutexHandle);
+    assert(mutexHandle != NULL);
 
     pMutexStruct->isLocked  = 0U;
     pMutexStruct->isWaiting = 0U;
@@ -950,7 +950,7 @@ osa_status_t OSA_MutexUnlock(osa_mutex_handle_t mutexHandle)
 {
     mutex_t *pMutexStruct = (mutex_t *)mutexHandle;
     uint32_t regPrimask;
-    assert(mutexHandle);
+    assert(mutexHandle != NULL);
 
     OSA_EnterCritical(&regPrimask);
     pMutexStruct->isLocked = 0U;
@@ -966,7 +966,7 @@ osa_status_t OSA_MutexUnlock(osa_mutex_handle_t mutexHandle)
  *END**************************************************************************/
 osa_status_t OSA_MutexDestroy(osa_mutex_handle_t mutexHandle)
 {
-    assert(mutexHandle);
+    assert(mutexHandle != NULL);
     mutex_t *pMutexStruct = (mutex_t *)mutexHandle;
 
     /* Destory mutexHandle's data */
@@ -1001,7 +1001,7 @@ osa_status_t OSA_EventCreate(osa_event_handle_t eventHandle, uint8_t autoClear)
 {
     event_t *pEventStruct = eventHandle;
     assert(sizeof(event_t) == OSA_EVENT_HANDLE_SIZE);
-    assert(eventHandle);
+    assert(eventHandle != NULL);
 
     pEventStruct->isWaiting  = 0U;
     pEventStruct->flags      = 0;
@@ -1196,7 +1196,7 @@ osa_status_t OSA_EventWait(osa_event_handle_t eventHandle,
  *END**************************************************************************/
 osa_status_t OSA_EventDestroy(osa_event_handle_t eventHandle)
 {
-    assert(eventHandle);
+    assert(eventHandle != NULL);
     event_t *pEventStruct = (event_t *)eventHandle;
 
     /* Destroy eventHandle's data */
@@ -1217,7 +1217,7 @@ osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32
 {
     msg_queue_t *pMsgQStruct = msgqHandle;
     assert(sizeof(msg_queue_t) == OSA_MSGQ_HANDLE_SIZE);
-    assert(msgqHandle);
+    assert(msgqHandle != NULL);
 
     pMsgQStruct->max      = (uint16_t)msgNo;
     pMsgQStruct->number   = 0;
@@ -1237,7 +1237,7 @@ osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32
  *END**************************************************************************/
 osa_status_t OSA_MsgQPut(osa_msgq_handle_t msgqHandle, osa_msg_handle_t pMessage)
 {
-    assert(msgqHandle);
+    assert(msgqHandle != NULL);
     msg_queue_t *pQueue;
     osa_status_t status = KOSA_StatusSuccess;
     uint32_t regPrimask;
@@ -1296,7 +1296,7 @@ osa_status_t OSA_MsgQPut(osa_msgq_handle_t msgqHandle, osa_msg_handle_t pMessage
  *END**************************************************************************/
 osa_status_t OSA_MsgQGet(osa_msgq_handle_t msgqHandle, osa_msg_handle_t pMessage, uint32_t millisec)
 {
-    assert(msgqHandle);
+    assert(msgqHandle != NULL);
     msg_queue_t *pQueue;
     osa_status_t status = KOSA_StatusSuccess;
     uint32_t regPrimask;
@@ -1387,7 +1387,7 @@ osa_status_t OSA_MsgQGet(osa_msgq_handle_t msgqHandle, osa_msg_handle_t pMessage
  *END**************************************************************************/
 int OSA_MsgQAvailableMsgs(osa_msgq_handle_t msgqHandle)
 {
-    assert(msgqHandle);
+    assert(msgqHandle != NULL);
     msg_queue_t *pQueue = (msg_queue_t *)msgqHandle;
 
     return (int)pQueue->number;
@@ -1402,7 +1402,7 @@ int OSA_MsgQAvailableMsgs(osa_msgq_handle_t msgqHandle)
  *END**************************************************************************/
 osa_status_t OSA_MsgQDestroy(osa_msgq_handle_t msgqHandle)
 {
-    assert(msgqHandle);
+    assert(msgqHandle != NULL);
     msg_queue_t *pQueue = (msg_queue_t *)msgqHandle;
 
     /* Destory msgqHandle's data */
