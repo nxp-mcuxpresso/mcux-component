@@ -31,7 +31,7 @@
      (defined(RTE_SPI9) && RTE_SPI9) || (defined(RTE_SPI10) && RTE_SPI10) || (defined(RTE_SPI11) && RTE_SPI11) || \
      (defined(RTE_SPI12) && RTE_SPI12) || (defined(RTE_SPI13) && RTE_SPI13))
 
-#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2, 6) /* driver version */
+#define ARM_SPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2, 7) /* driver version */
 
 /*! @brief IDs of clock for each FLEXCOMM module */
 static const clock_ip_name_t s_flexcommClocks[] = FLEXCOMM_CLOCKS;
@@ -111,7 +111,17 @@ static const ARM_SPI_CAPABILITIES s_SPIDriverCapabilities = {
  * Code
  ******************************************************************************/
 
+#if ((defined(RTE_SPI0_DMA_EN) && RTE_SPI0_DMA_EN) || (defined(RTE_SPI1_DMA_EN) && RTE_SPI1_DMA_EN) ||     \
+     (defined(RTE_SPI2_DMA_EN) && RTE_SPI2_DMA_EN) || (defined(RTE_SPI3_DMA_EN) && RTE_SPI3_DMA_EN) ||     \
+     (defined(RTE_SPI4_DMA_EN) && RTE_SPI4_DMA_EN) || (defined(RTE_SPI5_DMA_EN) && RTE_SPI5_DMA_EN) ||     \
+     (defined(RTE_SPI6_DMA_EN) && RTE_SPI6_DMA_EN) || (defined(RTE_SPI7_DMA_EN) && RTE_SPI7_DMA_EN) ||     \
+     (defined(RTE_SPI8_DMA_EN) && RTE_SPI8_DMA_EN) || (defined(RTE_SPI9_DMA_EN) && RTE_SPI9_DMA_EN) ||     \
+     (defined(RTE_SPI10_DMA_EN) && RTE_SPI10_DMA_EN) || (defined(RTE_SPI11_DMA_EN) && RTE_SPI11_DMA_EN) || \
+     (defined(RTE_SPI12_DMA_EN) && RTE_SPI12_DMA_EN) || (defined(RTE_SPI13_DMA_EN) && RTE_SPI13_DMA_EN))
+
 static int32_t SPI_DMATransfer(const void *data_out, void *data_in, uint32_t num, cmsis_spi_dma_driver_state_t *spi);
+
+#endif
 
 static void SPI_MasterCommonControl(uint32_t control,
                                     cmsis_spi_resource_t *resource,

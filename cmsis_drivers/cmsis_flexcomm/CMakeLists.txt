@@ -8,7 +8,7 @@ if(CONFIG_MCUX_COMPONENT_driver.cmsis_flexcomm_i2c)
 endif()
 
 if(CONFIG_MCUX_COMPONENT_driver.cmsis_flexcomm_spi)
-    mcux_component_version(2.6.0)
+    mcux_component_version(2.7.0)
 
     mcux_add_source(SOURCES fsl_spi_cmsis.h fsl_spi_cmsis.c)
 

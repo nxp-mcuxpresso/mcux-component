@@ -55,7 +55,11 @@
 */
 
 @section cmsis spi  CMSIS SPI
-  Current CMSIS SPI driver version is 2.6
+  Current CMSIS SPI driver version is 2.7
+
+   - 2.7
+    - Improvements
+      - Wrap function declarations with macros
 
    - 2.6
     - Bug Fixes
