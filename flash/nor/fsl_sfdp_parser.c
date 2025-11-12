@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 NXP
+ * Copyright 2024-2025 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -1413,7 +1413,7 @@ sfdp_ret_type_t SFDP_GetBusyBitInfo(sfdp_handle_t *handle,
         /* Reserved. */
     }
 
-    if ((padNum == kSFDP_Flash1Pad))
+    if (padNum == kSFDP_Flash1Pad)
     {
         ptrBusyBitInfo->dummyCycles   = 0U;
         ptrBusyBitInfo->addrFollowCmd = false;
