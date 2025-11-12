@@ -54,3 +54,17 @@ if (CONFIG_MCUX_COMPONENT_component.debug_thread_info)
     )
 
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.debug_coredump)
+mcux_add_configuration(
+    # Suppress such warnings in gen_hal SDK code:
+    # Pe111: statement is unreachable
+    # Pe021: type qualifiers are meaningless in this declaration
+    # Pe1153: function 'xxx' declared implicitly
+    # Pe223: function 'xxx' declared implicitly
+
+    TOOLCHAINS iar
+    CC "--diag_suppress=Pe111,Pe021,Pe1153,Pe223"
+    CX "--diag_suppress=Pe111,Pe021,Pe1153,Pe223"
+)
+endif()
