@@ -2011,7 +2011,7 @@ static status_t SDU_ClrFwReady(void)
     status_t ret = kStatus_Fail;
 
     ret = SDIOSLV_WriteScratchRegister(kSDIOSLV_FunctionNum1,
-        kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset0, 0x00);
+        kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset0, 0xAA);
     if (ret != kStatus_Success) {
         sdu_e("%s: SDIOSLV_WriteScratchRegister Group%u Offset%u fail: %d\r\n",
             __FUNCTION__, kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset0, ret);
@@ -2019,12 +2019,40 @@ static status_t SDU_ClrFwReady(void)
     }
 
     ret = SDIOSLV_WriteScratchRegister(kSDIOSLV_FunctionNum1,
-        kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset1, 0x00);
+        kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset1, 0xBB);
     if (ret != kStatus_Success) {
         sdu_e("%s: SDIOSLV_WriteScratchRegister Group%u Offset%u fail: %d\r\n",
             __FUNCTION__, kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset1, ret);
         goto done;
     }
+
+done:
+    return ret;
+}
+
+status_t SDU_GetFwReady(uint16_t *val)
+{
+    status_t ret = kStatus_Fail;
+    uint8_t val0 = 0xAB;
+    uint8_t val1 = 0xBA;
+
+    ret = SDIOSLV_ReadScratchRegister(kSDIOSLV_FunctionNum1,
+        kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset0, &val0);
+    if (ret != kStatus_Success) {
+        sdu_e("%s: SDIOSLV_ReadScratchRegister Group%u Offset%u fail: %d\r\n",
+            __FUNCTION__, kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset0, ret);
+        goto done;
+    }
+
+    ret = SDIOSLV_ReadScratchRegister(kSDIOSLV_FunctionNum1,
+        kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset1, &val1);
+    if (ret != kStatus_Success) {
+        sdu_e("%s: SDIOSLV_ReadScratchRegister Group%u Offset%u fail: %d\r\n",
+            __FUNCTION__, kSDIOSLV_ScratchGroup2, kSDIOSLV_ScratchOffset1, ret);
+        goto done;
+    }
+
+    *val = val0 | (val1 << 8);
 
 done:
     return ret;
@@ -2234,7 +2262,18 @@ status_t SDU_EnterPowerDown(void)
 
     (void)SDU_ClrFwReady();
 
-    SDU_InnerDeinit();
+    OSA_EXIT_CRITICAL();
+
+    return (status_t)kStatus_Success;
+}
+
+status_t SDU_ExitPowerDownLite(void)
+{
+    OSA_SR_ALLOC();
+
+    OSA_ENTER_CRITICAL();
+
+    ctrl_sdu.sdu_state = SDU_INITIALIZED;
 
     OSA_EXIT_CRITICAL();
 
@@ -2246,6 +2285,8 @@ status_t SDU_ExitPowerDown(void)
     OSA_SR_ALLOC();
 
     OSA_ENTER_CRITICAL();
+
+    SDU_InnerDeinit();
 
     (void)SDU_SDIOSLVInit();
 

@@ -61,11 +61,13 @@ extern "C" {
 status_t SDU_Init(void);
 void SDU_Deinit(void);
 status_t SDU_EnterPowerDown(void);
+status_t SDU_ExitPowerDownLite(void);
 status_t SDU_ExitPowerDown(void);
 status_t SDU_ExitPowerDownPhase2(void);
 status_t SDU_WritePowerMode(int32_t pm_state);
 status_t SDU_CheckHostStatus(uint8_t *status);
 uint32_t SDU_CheckUpldOvrDone(void);
+status_t SDU_GetFwReady(uint16_t *val);
 
 typedef void (*sdu_callback_t)(void *tlv, size_t tlv_sz);
 status_t SDU_InstallCallback(sdu_for_write_type_t type, sdu_callback_t callback);
