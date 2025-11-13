@@ -998,7 +998,7 @@ typedef enum _pca9422_bx_fpwm_mode
 #define PCA9422_BUCK1_OUT_STEP (6250UL)   /* 6.25mV */
 #define PCA9422_BUCK1_OUT_MAX  (1975000U) /* 1975mV */
 #define PCA9422_BUCK1_OUT_VAL(_volt) \
-    (((_volt) - PCA9422_BUCK1_OUT_MIN + PCA9422_BUCK1_OUT_STEP - 1U) / PCA9422_BUCK1_OUT_STEP)
+    ((((_volt) - PCA9422_BUCK1_OUT_MIN + PCA9422_BUCK1_OUT_STEP - 1U) / PCA9422_BUCK1_OUT_STEP) & 0xFFU)
 #define PCA9422_BUCK1_OUT_VOLT(_val) (((uint32_t)(_val) * PCA9422_BUCK1_OUT_STEP) + PCA9422_BUCK1_OUT_MIN)
 
 /*! @brief PCA9422 Buck2 OUT voltage definition. (uV unit) */
@@ -1006,7 +1006,7 @@ typedef enum _pca9422_bx_fpwm_mode
 #define PCA9422_BUCK2_OUT_STEP (25000U)   /* 25mV */
 #define PCA9422_BUCK2_OUT_MAX  (3400000U) /* 3400mV */
 #define PCA9422_BUCK2_OUT_VAL(_volt) \
-    (((_volt) - PCA9422_BUCK2_OUT_MIN + PCA9422_BUCK2_OUT_STEP - 1U) / PCA9422_BUCK2_OUT_STEP)
+    ((((_volt) - PCA9422_BUCK2_OUT_MIN + PCA9422_BUCK2_OUT_STEP - 1U) / PCA9422_BUCK2_OUT_STEP) & 0xFFU)
 #define PCA9422_BUCK2_OUT_VOLT(_val) (((uint32_t)(_val) * PCA9422_BUCK2_OUT_STEP) + PCA9422_BUCK2_OUT_MIN)
 
 /*! @brief PCA9422 Buck3 OUT voltage definition. (uV unit) */
@@ -1014,7 +1014,7 @@ typedef enum _pca9422_bx_fpwm_mode
 #define PCA9422_BUCK3_OUT_STEP (6250UL)   /* 6.25mV */
 #define PCA9422_BUCK3_OUT_MAX  (1975000U) /* 1975mV */
 #define PCA9422_BUCK3_OUT_VAL(_volt) \
-    (((_volt) - PCA9422_BUCK3_OUT_MIN + PCA9422_BUCK3_OUT_STEP - 1U) / PCA9422_BUCK3_OUT_STEP)
+    ((((_volt) - PCA9422_BUCK3_OUT_MIN + PCA9422_BUCK3_OUT_STEP - 1U) / PCA9422_BUCK3_OUT_STEP) & 0xFFU)
 #define PCA9422_BUCK3_OUT_VOLT(_val) (((uint32_t)(_val) * PCA9422_BUCK3_OUT_STEP) + PCA9422_BUCK3_OUT_MIN)
 
 /*! @brief PCA9422 LDO2/3 output capacitor selection definition. */
@@ -1055,7 +1055,7 @@ typedef enum _pca9422_ldo23_mode
 #define PCA9422_LDO1_OUT_STEP (25000U)   /* 25mV */
 #define PCA9422_LDO1_OUT_MAX  (3000000U) /* 3000mV */
 #define PCA9422_LDO1_OUT_VAL(_volt) \
-    (((_volt) - PCA9422_LDO1_OUT_MIN + PCA9422_LDO1_OUT_STEP - 1U) / PCA9422_LDO1_OUT_STEP)
+    ((((_volt) - PCA9422_LDO1_OUT_MIN + PCA9422_LDO1_OUT_STEP - 1U) / PCA9422_LDO1_OUT_STEP) & 0xFFU)
 #define PCA9422_LDO1_OUT_VOLT(_val) (((uint32_t)(_val) * PCA9422_LDO1_OUT_STEP) + PCA9422_LDO1_OUT_MIN)
 
 /*! @brief PCA9422 LDO2/3 OUT voltage definition. (uV unit) */
@@ -1063,7 +1063,7 @@ typedef enum _pca9422_ldo23_mode
 #define PCA9422_LDO23_OUT_STEP (25000U)   /* 25mV */
 #define PCA9422_LDO23_OUT_MAX  (1950000U) /* 1950mV */
 #define PCA9422_LDO23_OUT_VAL(_volt) \
-    (((_volt) - PCA9422_LDO23_OUT_MIN + PCA9422_LDO23_OUT_STEP - 1U) / PCA9422_LDO23_OUT_STEP)
+    ((((_volt) - PCA9422_LDO23_OUT_MIN + PCA9422_LDO23_OUT_STEP - 1U) / PCA9422_LDO23_OUT_STEP) & 0xFFU)
 #define PCA9422_LDO23_OUT_VOLT(_val) (((uint32_t)(_val) * PCA9422_LDO23_OUT_STEP) + PCA9422_LDO23_OUT_MIN)
 
 /*! @brief PCA9422 LDO4 OUT voltage definition. (uV unit) */
@@ -1071,7 +1071,7 @@ typedef enum _pca9422_ldo23_mode
 #define PCA9422_LDO4_OUT_STEP (25000U)   /* 25mV */
 #define PCA9422_LDO4_OUT_MAX  (3300000U) /* 3300mV */
 #define PCA9422_LDO4_OUT_VAL(_volt) \
-    (((_volt) - PCA9422_LDO4_OUT_MIN + PCA9422_LDO4_OUT_STEP - 1U) / PCA9422_LDO4_OUT_STEP)
+    ((((_volt) - PCA9422_LDO4_OUT_MIN + PCA9422_LDO4_OUT_STEP - 1U) / PCA9422_LDO4_OUT_STEP) & 0xFFU)
 #define PCA9422_LDO4_OUT_VOLT(_val) (((uint32_t)(_val) * PCA9422_LDO4_OUT_STEP) + PCA9422_LDO4_OUT_MIN)
 
 /*! @brief PCA9422 Buck-Boost FPWM mode definition. */
@@ -1148,7 +1148,7 @@ typedef enum _pca9422_reg_lpmode
 #define PCA9422_BB_OUT_MIN        (1800000U) /* 1800mV */
 #define PCA9422_BB_OUT_STEP       (25000U)   /* 25mV */
 #define PCA9422_BB_OUT_MAX        (5000000U) /* 5000mV */
-#define PCA9422_BB_OUT_VAL(_volt) (((_volt) - PCA9422_BB_OUT_MIN + PCA9422_BB_OUT_STEP - 1U) / PCA9422_BB_OUT_STEP)
+#define PCA9422_BB_OUT_VAL(_volt) ((((_volt) - PCA9422_BB_OUT_MIN + PCA9422_BB_OUT_STEP - 1U) / PCA9422_BB_OUT_STEP) & 0xFFU)
 #define PCA9422_BB_OUT_VOLT(_val) (((uint32_t)(_val) * PCA9422_BB_OUT_STEP) + PCA9422_BB_OUT_MIN)
 
 /*! @brief PCA9422 Regulator Voltage definition. */

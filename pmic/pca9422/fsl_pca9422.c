@@ -169,6 +169,7 @@ void PCA9422_InitCharger(pca9422_handle_t *handle, const pca9422_charger_config_
     chgCntl[0] = PCA9422_CHARGER_LOCK_UNLOCK;
     chgCntl[1] = (uint8_t)(PCA9422_CHARGER_CNTL_1_AUTOSTOP_CHG_EN | PCA9422_CHARGER_CNTL_1_CHARGER_EN |
                            (uint8_t)config->warmPlusVolt | (uint8_t)config->prechgI | (uint8_t)config->chgIStep);
+    assert((config->vbatReg <= PCA9422_VBAT_REG_MAX) && (config->vbatReg >= PCA9422_VBAT_REG_MIN));
     chgCntl[2] = (uint8_t)(PCA9422_VBAT_REG(config->vbatReg));
     chgCntl[3] = (uint8_t)PCA9422_I_FAST_CHG_DFT;
     chgCntl[4] = (uint8_t)((uint8_t)config->rechgVolt | (uint8_t)config->topoffI | (uint8_t)config->prechgTime);
@@ -1468,7 +1469,7 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO2_OUT */
-        regVal  = ((uint8_t)config->ldo[0].activeDischg << 7U) | (uint8_t)PCA9422_LDO23_OUT_VAL(config->ldo[0].vout);
+        regVal  = (config->ldo[0].activeDischg ? 0x80U : 0x00U) | (uint8_t)PCA9422_LDO23_OUT_VAL(config->ldo[0].vout);
         regAddr = PCA9422_LDO2_OUT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
@@ -1493,7 +1494,7 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO3_OUT */
-        regVal = (uint8_t)(((uint32_t)config->ldo[1].activeDischg << 7UL) | PCA9422_LDO23_OUT_VAL(config->ldo[1].vout));
+        regVal  = (config->ldo[1].activeDischg ? 0x80U : 0x00U) | (uint8_t)PCA9422_LDO23_OUT_VAL(config->ldo[1].vout);
         regAddr = PCA9422_LDO3_OUT;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
@@ -1517,7 +1518,7 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO4_CFG */
-        regVal  = ((uint8_t)config->ldo[2].activeDischg << 4U) | ((uint8_t)(config->ldo[2].enMode));
+        regVal  = (config->ldo[2].activeDischg ? 0x10U : 0x00U) | ((uint8_t)(config->ldo[2].enMode));
         regAddr = PCA9422_LDO4_CFG;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
@@ -1543,12 +1544,12 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO1_CFG1 */
-        regVal  = (uint8_t)(((uint32_t)config->ldo1.activeDischg << 7UL) | PCA9422_LDO1_OUT_VAL(config->ldo1.vout));
+        regVal  = (config->ldo1.activeDischg ? 0x80U : 0x00U) | (uint8_t)PCA9422_LDO1_OUT_VAL(config->ldo1.vout);
         regAddr = PCA9422_LDO1_CFG1;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
         /* LDO1_CFG2 */
-        regVal  = (uint8_t)config->ldo1.enMode;
+        regVal  = config->ldo1.enMode ? 1U : 0U;
         regAddr = PCA9422_LDO1_CFG2;
         result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
         assert(result);
@@ -2667,6 +2668,7 @@ void PCA9422_SetBuckDVSControl(pca9422_handle_t *handle, pca9422_regulator_t reg
     uint8_t regVal, regAddr, regMask;
     bool result;
 
+    assert(dvsCtrl< 4U);
     regAddr = PCA9422_BUCK123_DVS_CFG2;
     switch (reg)
     {
