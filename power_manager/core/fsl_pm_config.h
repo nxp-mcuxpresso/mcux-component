@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 NXP
+ * Copyright 2021, 2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -182,7 +182,6 @@
 #define PM_IF_NOT_END_0(expr) expr
 #define PM_IF_NOT_END_1(expr)
 
-//#define PM_END
 
 #define PM_BIT_IF_INDEX_MATCH(idx, id) \
     (((uint32_t)(id) / 32U == (idx)) ? (1UL << ((uint32_t)(id) % 32U)) : 0UL)
