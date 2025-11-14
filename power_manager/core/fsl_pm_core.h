@@ -374,7 +374,7 @@ void PM_EnablePowerManager(bool enable);
  *   b. resConstraintsMask logical AND state's lossFeature should equal to 0, because constraint can be understand as
  * some features can not loss.
  *
- * @param duration The time in low power mode, this value is calculate from RTOS API.
+ * @param duration duration The time spent in low power mode, calculated from RTOS API, in microseconds (us).
  */
 void PM_EnterLowPower(uint64_t duration);
 
