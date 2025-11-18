@@ -61,6 +61,12 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.wifi_nb_combo_fw)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.compress_firmware)
+    mcux_add_macro(
+        "-DCONFIG_COMPRESS_FIRMWARE=1"
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.slim)
     mcux_add_macro(
         "-DCONFIG_LWIP_LOW_MEM_FOOTPRINT=1\
