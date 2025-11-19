@@ -445,8 +445,11 @@
 
 @if dox_section_pcm512x
 @section pcm512x PCM512X
-  The current pcm512x driver version is 2.0.1.
+  The current pcm512x driver version is 2.1.0.
 
+  - 2.1.0
+    - New features
+      - Added support for slave mode.
   - 2.0.1
     - Improvements
       - Remove CODEC_I2C_Deinit in PCM186x_Deinit.
