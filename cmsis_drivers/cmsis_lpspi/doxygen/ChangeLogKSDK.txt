@@ -2,7 +2,12 @@
 @page driver_log Driver Change Log
 
 @section lpspi_cmsis LPSPI_CMSIS
-  Current LPSPI_CMSIS driver version is 2.12
+  Current LPSPI_CMSIS driver version is 2.13
+
+  - 2.13
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 10.3.
 
   - 2.12
     - Improvement

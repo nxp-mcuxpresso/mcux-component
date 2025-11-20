@@ -37,7 +37,7 @@
      (defined(RTE_SPI18) && RTE_SPI18 && (defined(LPSPI18) || defined(LPSPI_18))) || (defined(RTE_SPI19) && RTE_SPI19 && (defined(LPSPI19) || defined(LPSPI_19))) || \
      (defined(RTE_SPI20) && RTE_SPI20 && (defined(LPSPI20) || defined(LPSPI_20))))
 
-#define ARM_LPSPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (12)) /* driver version */
+#define ARM_LPSPI_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (13)) /* driver version */
 
 /*
  * ARMCC does not support split the data section automatically, so the driver
@@ -581,8 +581,8 @@ static int32_t LPSPI_EdmaPowerControl(ARM_POWER_STATE state, cmsis_lpspi_edma_dr
             EDMA_CreateHandle(lpspi->edmaRxRegToRxDataHandle, dmaResource->rxEdmaBase, dmaResource->rxEdmaChannel);
             EDMA_CreateHandle(lpspi->edmaTxDataToTxRegHandle, dmaResource->txEdmaBase, dmaResource->txEdmaChannel);
 #if defined(FSL_FEATURE_EDMA_HAS_CHANNEL_MUX) && FSL_FEATURE_EDMA_HAS_CHANNEL_MUX
-            EDMA_SetChannelMux(dmaResource->txEdmaBase, dmaResource->txEdmaChannel, (int32_t)dmaResource->txDmaRequest);
-            EDMA_SetChannelMux(dmaResource->rxEdmaBase, dmaResource->rxEdmaChannel, (int32_t)dmaResource->rxDmaRequest);
+            EDMA_SetChannelMux(dmaResource->txEdmaBase, dmaResource->txEdmaChannel, dmaResource->txDmaRequest);
+            EDMA_SetChannelMux(dmaResource->rxEdmaBase, dmaResource->rxEdmaChannel, dmaResource->rxDmaRequest);
 #endif
 
 #if (defined(FSL_FEATURE_SOC_DMAMUX_COUNT) && FSL_FEATURE_SOC_DMAMUX_COUNT)
