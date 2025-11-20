@@ -32,7 +32,7 @@
      (defined(RTE_I2C18) && RTE_I2C18 && (defined(LPI2C18) || defined(LPI2C_18))) || (defined(RTE_I2C19) && RTE_I2C19 && (defined(LPI2C19) || defined(LPI2C_19))) || \
      (defined(RTE_I2C20) && RTE_I2C20 && (defined(LPI2C20) || defined(LPI2C_20))))
 
-#define ARM_LPI2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (6))
+#define ARM_LPI2C_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (7))
 
 /*
  * ARMCC does not support split the data section automatically, so the driver
@@ -182,9 +182,9 @@ static int32_t LPI2C_Master_EdmaInitialize(ARM_I2C_SignalEvent_t cb_event, cmsis
 
 #if defined(FSL_FEATURE_EDMA_HAS_CHANNEL_MUX) && FSL_FEATURE_EDMA_HAS_CHANNEL_MUX
         EDMA_SetChannelMux(lpi2c->edmaResource->txEdmaBase, lpi2c->edmaResource->txEdmaChannel,
-                           (int32_t)lpi2c->edmaResource->txDmaRequest);
+                           lpi2c->edmaResource->txDmaRequest);
         EDMA_SetChannelMux(lpi2c->edmaResource->rxEdmaBase, lpi2c->edmaResource->rxEdmaChannel,
-                           (int32_t)lpi2c->edmaResource->rxDmaRequest);
+                           lpi2c->edmaResource->rxDmaRequest);
 #endif
         /* Create master_edma_handle */
         LPI2C_MasterCreateEDMAHandle(lpi2c->resource->base, lpi2c->master_edma_handle, lpi2c->edmaRxHandle,

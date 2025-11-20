@@ -2,7 +2,12 @@
 @page driver_log Driver Change Log
 
 @section lpi2c_cmsis LPI2C_CMSIS
-  Current LPI2C_CMSIS driver version is 2.6
+  Current LPI2C_CMSIS driver version is 2.7
+
+  - 2.7
+    - Bug Fixes
+      - Fixed the MISRA-2012 violations.
+        - Fixed rule 10.3.
 
   - 2.6
     - Improvement
