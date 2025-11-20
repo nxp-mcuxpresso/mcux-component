@@ -2268,46 +2268,54 @@ void PCA9422_SetRegulatorVoltage(pca9422_handle_t *handle, pca9422_regulator_t r
         switch (reg)
         {
             case kPCA9422_RegulatorSwitch1:
+                assert((volt >= PCA9422_BUCK1_OUT_MIN) && (volt <= PCA9422_BUCK1_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_BUCK1_OUT_VAL(volt);
                 regMask = PCA9422_BUCKXOUT_DVS0_BX_DVS0;
                 regAddr = PCA9422_GetBUCK123RegAddr(0U, vout);
                 break;
 
             case kPCA9422_RegulatorSwitch2:
+                assert((volt >= PCA9422_BUCK2_OUT_MIN) && (volt <= PCA9422_BUCK2_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_BUCK2_OUT_VAL(volt);
                 regMask = PCA9422_BUCKXOUT_DVS0_BX_DVS0;
                 regAddr = PCA9422_GetBUCK123RegAddr(1U, vout);
                 break;
 
             case kPCA9422_RegulatorSwitch3:
+                assert((volt >= PCA9422_BUCK3_OUT_MIN) && (volt <= PCA9422_BUCK3_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_BUCK3_OUT_VAL(volt);
                 regMask = PCA9422_BUCKXOUT_DVS0_BX_DVS0;
                 regAddr = PCA9422_GetBUCK123RegAddr(2U, vout);
                 break;
             case kPCA9422_RegulatorSwitch4:
+                assert((volt >= PCA9422_BB_OUT_MIN) && (volt <= PCA9422_BB_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_BB_OUT_VAL(volt);
                 regMask = PCA9422_BUCKXOUT_DVS0_BX_DVS0;
                 regAddr = PCA9422_GetSW4RegAddr(vout);
                 break;
 
             case kPCA9422_RegulatorLdo1:
+                assert((volt >= PCA9422_LDO1_OUT_MIN) && (volt <= PCA9422_LDO1_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_LDO1_OUT_VAL(volt);
                 regMask = PCA9422_LDO1_CFG1_L1_OUT;
                 regAddr = PCA9422_GetLDO1RegAddr(vout);
                 break;
 
             case kPCA9422_RegulatorLdo2:
+                assert((volt >= PCA9422_LDO23_OUT_MIN) && (volt <= PCA9422_LDO23_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_LDO23_OUT_VAL(volt);
                 regMask = PCA9422_LDO2_OUT_L2_OUT;
                 regAddr = PCA9422_GetLDO23RegAddr(0U, vout);
                 break;
 
             case kPCA9422_RegulatorLdo3:
+                assert((volt >= PCA9422_LDO23_OUT_MIN) && (volt <= PCA9422_LDO23_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_LDO23_OUT_VAL(volt);
                 regMask = PCA9422_LDO3_OUT_L3_OUT;
                 regAddr = PCA9422_GetLDO23RegAddr(1U, vout);
                 break;
             case kPCA9422_RegulatorLdo4:
+                assert((volt >= PCA9422_LDO4_OUT_MIN) && (volt <= PCA9422_LDO4_OUT_MAX));
                 regVal  = (uint8_t)PCA9422_LDO4_OUT_VAL(volt);
                 regMask = PCA9422_LDO4_OUT_L4_OUT;
                 regAddr = PCA9422_GetLDO4RegAddr(vout);
