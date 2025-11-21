@@ -25,6 +25,9 @@ if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader.fw_bin)
         SOURCES fw_bin/rw61x_sb_wifi_a2.bin
                 fw_bin/rw61x_sb_ble_a2.bin
                 fw_bin/rw61x_sb_ble_15d4_combo_a2.bin
+                fw_bin/rw61x_sb_wifi_a2_compressed.bin
+                fw_bin/rw61x_sb_ble_a2_compressed.bin
+                fw_bin/rw61x_sb_ble_15d4_combo_a2_compressed.bin
                 fw_bin/script/wlan_gen_fw_incs.py
                 fw_bin/inc/*.inc
                 fw_bin/rw61x/rw61x_cpu1.c
