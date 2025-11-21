@@ -61,9 +61,9 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.wifi_nb_combo_fw)
     )
 endif()
 
-if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.compress_firmware)
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.uncompressed_firmware)
     mcux_add_macro(
-        "-DCONFIG_COMPRESS_FIRMWARE=1"
+        "-DCONFIG_UNCOMPRESSED_FIRMWARE=1"
     )
 endif()
 
