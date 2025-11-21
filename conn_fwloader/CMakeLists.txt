@@ -22,21 +22,30 @@ endif()
 
 if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader.fw_bin)
     mcux_add_source(
-        SOURCES fw_bin/rw61x_sb_wifi_a2.bin
-                fw_bin/rw61x_sb_ble_a2.bin
-                fw_bin/rw61x_sb_ble_15d4_combo_a2.bin
-                fw_bin/rw61x_sb_wifi_a2_compressed.bin
-                fw_bin/rw61x_sb_ble_a2_compressed.bin
-                fw_bin/rw61x_sb_ble_15d4_combo_a2_compressed.bin
+        SOURCES fw_bin/rw61x/rw61x_sb_wifi_a2.bin
+                fw_bin/rw61x/rw61x_sb_ble_a2.bin
+                fw_bin/rw61x/rw61x_sb_ble_15d4_combo_a2.bin
+                fw_bin/rw61x/rw61x_sb_wifi_a2_compressed.bin
+                fw_bin/rw61x/rw61x_sb_ble_a2_compressed.bin
+                fw_bin/rw61x/rw61x_sb_ble_15d4_combo_a2_compressed.bin
                 fw_bin/script/wlan_gen_fw_incs.py
-                fw_bin/inc/*.inc
+                fw_bin/inc/rw61x/*.inc
                 fw_bin/rw61x/rw61x_cpu1.c
                 fw_bin/rw61x/rw61x_cpu2.c
+                fw_bin/inc/iw610x/*.inc
+                fw_bin/iw610x/sduart_iw610_se.h
+                fw_bin/iw610x/sd_iw610_se.h
+                fw_bin/iw610x/uart_iw610_se.h
+                fw_bin/iw610x/iw610_cpu12_se.c
+                fw_bin/iw610x/iw610_cpu2_se.c
+                fw_bin/iw610x/iw610_cpu1_se.c
     )
     mcux_add_include(
         INCLUDES fw_bin
-                 fw_bin/inc
+                 fw_bin/inc/rw61x
                  fw_bin/rw61x
+                 fw_bin/inc/iw610x
+                 fw_bin/iw610x
                  fw_bin/script
     )
 endif()
