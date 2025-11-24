@@ -241,6 +241,8 @@ static uint32_t sdu_dbg_level = SDU_DBG_LEVEL_WARN | SDU_DBG_LEVEL_ERROR;
 #define sdu_d(_fmt_, ...)
 #endif
 
+static uint32_t sdu_phase3_en = 1;
+
 /*******************************************************************************
  * Public Functions
  ******************************************************************************/
@@ -298,6 +300,53 @@ static inline void SDU_dump_hex(uint32_t level, const void *data, unsigned len)
     }
 
     (void)PRINTF("\n\r******** End Dump *******\n\r");
+}
+
+bool SDU_IsPhase3En(void)
+{
+    if (sdu_phase3_en == 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+status_t SDU_ReadReg(uint32_t fn, uint32_t offset, uint8_t *val)
+{
+    uint32_t addr = 0;
+
+    if (fn > SDU_USED_FUN_NUM)
+    {
+        return (status_t)kStatus_InvalidArgument;
+    }
+    if (offset >= SDIO_CCR_FUNC_OFFSET)
+    {
+        return (status_t)kStatus_InvalidArgument;
+    }
+
+    addr = (uint32_t)SDU_SDIO_CFG_BASE + (uint32_t)(SDIO_CCR_FUNC_OFFSET * (uint32_t)fn + offset);
+    SDU_READ_REGS8(addr, *val);
+
+    return (status_t)kStatus_Success;
+}
+
+status_t SDU_WriteReg(uint32_t fn, uint32_t offset, uint8_t val)
+{
+    uint32_t addr = 0;
+
+    if (fn > SDU_USED_FUN_NUM)
+    {
+        return (status_t)kStatus_InvalidArgument;
+    }
+    if (offset >= SDIO_CCR_FUNC_OFFSET)
+    {
+        return (status_t)kStatus_InvalidArgument;
+    }
+
+    addr = (uint32_t)SDU_SDIO_CFG_BASE + (uint32_t)(SDIO_CCR_FUNC_OFFSET * (uint32_t)fn + offset);
+    SDU_WRITE_REGS8(addr, val);
+
+    return (status_t)kStatus_Success;
 }
 
 
@@ -595,15 +644,18 @@ static status_t SDU_InitBuffer(void)
         goto done;
     }
 
-    /* reguest for command buffer */
-    config.cmd_callback(kStatus_SDIOSLV_FuncRequestBuffer, (sdioslv_func_t)(config.fun_num), kSDIOSLV_CmdPortNum0, NULL,
+    if (SDU_IsPhase3En() == false)
+    {
+        /* reguest for command buffer */
+        config.cmd_callback(kStatus_SDIOSLV_FuncRequestBuffer, (sdioslv_func_t)(config.fun_num), kSDIOSLV_CmdPortNum0, NULL,
                          config.cmd_user_data);
 
-    /* request for data buffer */
-    for (i = 0; i < config.used_port_num; i++)
-    {
-        config.data_callback(kStatus_SDIOSLV_FuncRequestBuffer, (sdioslv_func_t)(config.fun_num), (sdioslv_port_t)i, NULL,
+        /* request for data buffer */
+        for (i = 0; i < config.used_port_num; i++)
+        {
+            config.data_callback(kStatus_SDIOSLV_FuncRequestBuffer, (sdioslv_func_t)(config.fun_num), (sdioslv_port_t)i, NULL,
                               config.data_user_data);
+        }
     }
 
 done:
@@ -613,6 +665,39 @@ done:
     }
     return rc;
 }
+
+static status_t SDU_AttachBuffer(void)
+{
+    sdioslv_handle_config_t config;
+    status_t rc = kStatus_Success;
+    uint32_t i = 0;
+
+    config.fun_num        = 1;
+    config.used_port_num  = SDU_ACTUAL_USE_PORT_NUM;
+    config.cpu_num        = 1;//kSDIOSLV_INT_CPUNum3;
+    config.cmd_tx_format  = 2;
+    config.cmd_rd_format  = 1;
+    config.data_tx_format = 2;
+    config.data_rd_format = 1;
+    config.cmd_callback   = SDU_CmdCallback;
+    config.cmd_user_data  = &ctrl_sdu;
+    config.data_callback  = SDU_DataCallback;
+    config.data_user_data = &ctrl_sdu;
+
+    /* reguest for command buffer */
+    config.cmd_callback(kStatus_SDIOSLV_FuncRequestBuffer, (sdioslv_func_t)(config.fun_num), kSDIOSLV_CmdPortNum0, NULL,
+            config.cmd_user_data);
+
+    /* request for data buffer */
+    for (i = 0; i < config.used_port_num; i++)
+    {
+        config.data_callback(kStatus_SDIOSLV_FuncRequestBuffer, (sdioslv_func_t)(config.fun_num), (sdioslv_port_t)i, NULL,
+                config.data_user_data);
+    }
+
+    return rc;
+}
+
 
 static status_t SDU_DeinitBuffer(void)
 {
@@ -2060,8 +2145,49 @@ done:
 
 status_t SDU_Init(void)
 {
+    status_t ret = kStatus_Success;
+
+    ret = SDU_InitPhase1();
+    if (ret != kStatus_Success)
+    {
+        sdu_e("Failed to init SDIO Phase 1");
+        return ret;
+    }
+    sdu_d("%s: phase 1 done", __FUNCTION__);
+
+    ret = SDU_InitPhase2();
+    if (ret != kStatus_Success)
+    {
+        sdu_e("Failed to init SDIO Phase 2");
+        return ret;
+    }
+    sdu_d("%s: phase 2 done", __FUNCTION__);
+
+    if (SDU_IsPhase3En() == true)
+    {
+        SDU_InitPhase3();
+        sdu_d("%s: InitPhase3 done\r\n", __FUNCTION__);
+    }
+
+    sdu_d("%s: done", __FUNCTION__);
+    return ret;
+}
+
+AT_QUICKACCESS_SECTION_CODE(void sdu_switch_ahb_clk( uint32_t divider))
+{
+    uint32_t irq_mask;
+
+    irq_mask = DisableGlobalIRQ();
+    CLOCK_SetClkDiv(kCLOCK_DivSysCpuAhbClk, divider);
+    EnableGlobalIRQ(irq_mask);
+}
+
+status_t SDU_InitPhase1(void)
+{
     status_t rc = kStatus_Success;
     OSA_SR_ALLOC();
+
+    sdu_switch_ahb_clk(4);
 
     OSA_ENTER_CRITICAL();
     sdu_d("Enter %s: sdu_state=%d.\r\n", __FUNCTION__, ctrl_sdu.sdu_state);
@@ -2088,6 +2214,26 @@ status_t SDU_Init(void)
         sdu_e("%s: SDU_InnerInit fail: 0x%x\r\n", __FUNCTION__, rc);
         goto done;
     }
+
+    sdu_d("Leave %s: sdu_state=%d rc=0x%x.\r\n", __FUNCTION__, ctrl_sdu.sdu_state, rc);
+    OSA_EXIT_CRITICAL();
+    return rc;
+
+done:
+    sdu_e("Leave %s: sdu_state=%d rc=0x%x.\r\n", __FUNCTION__, ctrl_sdu.sdu_state, rc);
+    OSA_EXIT_CRITICAL();
+    return rc;
+}
+
+status_t SDU_InitPhase2(void)
+{
+    status_t rc = kStatus_Success;
+    OSA_SR_ALLOC();
+
+    sdu_switch_ahb_clk(1);
+
+    OSA_ENTER_CRITICAL();
+    sdu_d("Enter %s: sdu_state=%d.\r\n", __FUNCTION__, ctrl_sdu.sdu_state);
 
     sdu_d("SDU Inner Init.\r\n");
     rc = SDU_InitBuffer();
@@ -2125,7 +2271,10 @@ status_t SDU_Init(void)
         goto done_destroy_event;
     }
 
-    ctrl_sdu.sdu_state = SDU_INITIALIZED;
+    if (SDU_IsPhase3En() == false)
+    {
+        ctrl_sdu.sdu_state = SDU_INITIALIZED;
+    }
 
 #ifdef CONFIG_SDIO_TEST_LOOPBACK
     (void)SDU_InstallCallback(SDU_TYPE_FOR_WRITE_CMD, SDU_LoopbackRecvCmdHandler);
@@ -2142,8 +2291,25 @@ done_destroy_task:
     (void)OSA_TaskDestroy((osa_task_handle_t)ctrl_sdu.recvTaskId);
 done_deinit:
     SDU_InnerDeinit();
-done:
     sdu_e("Leave %s: sdu_state=%d rc=0x%x.\r\n", __FUNCTION__, ctrl_sdu.sdu_state, rc);
+    OSA_EXIT_CRITICAL();
+    return rc;
+}
+
+status_t SDU_InitPhase3(void)
+{
+    status_t rc = kStatus_Success;
+    OSA_SR_ALLOC();
+
+    OSA_ENTER_CRITICAL();
+    sdu_d("Enter %s: sdu_state=%d.\r\n", __FUNCTION__, ctrl_sdu.sdu_state);
+
+    SDU_AttachBuffer();
+
+    ctrl_sdu.sdu_state = SDU_INITIALIZED;
+
+    sdu_d("Leave %s: sdu_state=%d rc=0x%x.\r\n", __FUNCTION__, ctrl_sdu.sdu_state, rc);
+    OSA_EXIT_CRITICAL();
     return rc;
 }
 
@@ -2313,11 +2479,31 @@ status_t SDU_ExitPowerDownPhase2(void)
 
     (void)SDU_SetFwReady();
 
-    ctrl_sdu.sdu_state = SDU_INITIALIZED;
+    if (SDU_IsPhase3En() == false)
+    {
+        ctrl_sdu.sdu_state = SDU_INITIALIZED;
+    }
 
     OSA_EXIT_CRITICAL();
 
     return (status_t)kStatus_Success;
+}
+
+status_t SDU_ExitPowerDownPhase3(void)
+{
+    status_t rc = kStatus_Success;
+    OSA_SR_ALLOC();
+
+    OSA_ENTER_CRITICAL();
+    sdu_d("Enter %s: sdu_state=%d.\r\n", __FUNCTION__, ctrl_sdu.sdu_state);
+
+    SDU_AttachBuffer();
+
+    ctrl_sdu.sdu_state = SDU_INITIALIZED;
+
+    sdu_d("Leave %s: sdu_state=%d rc=0x%x.\r\n", __FUNCTION__, ctrl_sdu.sdu_state, rc);
+    OSA_EXIT_CRITICAL();
+    return rc;
 }
 
 status_t SDU_WritePowerMode(int32_t pm_state)
