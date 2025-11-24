@@ -198,6 +198,12 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_m2)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw300_rd_usd)
+     mcux_add_macro(
+        "-DBT_NW61X_BOARD_NXP_RD_USD"
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_usd)
      mcux_add_macro(
         "-DWIFI_IW612_BOARD_MURATA_2EL_USD"

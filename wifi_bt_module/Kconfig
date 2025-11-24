@@ -296,6 +296,13 @@ menu "wifi_bt_module"
                         Detailed information about Type 2EL module you can find on
                         https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2el
 
+                config MCUX_COMPONENT_component.wifi_bt_module.board_aw300_rd_usd
+                    bool "NXP IW612-AW300-RD-USD"
+                    help
+                        AW300-RD-USD is a Bluetooth-only very high performance module,
+                        based on NXP IW612 chipset. This module supports Bluetooth® 5.3 BR/EDR/LE with up to 2Mbps PHY data rate.
+
+
                 config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2el_usd
                     bool "NXP IW612-MURATA-2EL-USD"
                     help
