@@ -79,6 +79,29 @@
 #define gSerialManagerLpConstraint_c 0
 #endif
 
+/* Low power constraint management macros - single constraint per serial manager */
+#define SERIAL_MANAGER_SET_LP_CONSTRAINT(serHandle)                                  \
+    do {                                                                              \
+        uint32_t regPrimask = DisableGlobalIRQ();                                    \
+        if ((serHandle)->lpConstraintSet == 0U)                                      \
+        {                                                                             \
+            (void)SerialManager_SetLpConstraint(gSerialManagerLpConstraint_c);       \
+            (serHandle)->lpConstraintSet = 1U;                                       \
+        }                                                                             \
+        EnableGlobalIRQ(regPrimask);                                                 \
+    } while(0)
+
+#define SERIAL_MANAGER_RELEASE_LP_CONSTRAINT(serHandle)                              \
+    do {                                                                              \
+        uint32_t regPrimask = DisableGlobalIRQ();                                    \
+        if ((serHandle)->lpConstraintSet != 0U)                                      \
+        {                                                                             \
+            (void)SerialManager_ReleaseLpConstraint(gSerialManagerLpConstraint_c);   \
+            (serHandle)->lpConstraintSet = 0U;                                       \
+        }                                                                             \
+        EnableGlobalIRQ(regPrimask);                                                 \
+    } while(0)
+
 #if (defined(SERIAL_MANAGER_NON_BLOCKING_MODE) && (SERIAL_MANAGER_NON_BLOCKING_MODE > 0U))
 typedef enum _serial_manager_transmission_mode
 {
@@ -159,6 +182,7 @@ typedef struct _serial_manager_handle
     serial_port_type_t serialPortType;
     serial_manager_read_handle_t *volatile openedReadHandleHead;
     volatile uint32_t openedWriteHandleCount;
+    uint8_t lpConstraintSet;  /* Track if LP constraint is set for this serial manager instance */
     union
     {
         uint32_t lowLevelhandleBuffer[1];
@@ -292,7 +316,6 @@ static serial_manager_status_t SerialManager_StartWriting(serial_manager_handle_
 
     if (writeHandle != NULL)
     {
-        (void)SerialManager_SetLpConstraint(gSerialManagerLpConstraint_c);
         switch (serHandle->serialPortType)
         {
 #if (defined(SERIAL_PORT_TYPE_UART) && (SERIAL_PORT_TYPE_UART > 0U))
@@ -353,10 +376,6 @@ static serial_manager_status_t SerialManager_StartWriting(serial_manager_handle_
             default:
                 status = kStatus_SerialManager_Error;
                 break;
-        }
-        if (kStatus_SerialManager_Success != status)
-        {
-            (void)SerialManager_ReleaseLpConstraint(gSerialManagerLpConstraint_c);
         }
     }
     return status;
@@ -660,8 +679,17 @@ static void SerialManager_Task(void *param)
                 }
                 serialWriteHandle =
                     (serial_manager_write_handle_t *)(void *)LIST_GetHead(&serHandle->completedWriteHandleHead);
-                (void)SerialManager_ReleaseLpConstraint(gSerialManagerLpConstraint_c);
             }
+
+            /* Release constraint when both queues are empty */
+            primask = DisableGlobalIRQ();
+            if ((NULL == LIST_GetHead(&serHandle->runningWriteHandleHead)) &&
+                (NULL == LIST_GetHead(&serHandle->completedWriteHandleHead)))
+            {
+                SERIAL_MANAGER_RELEASE_LP_CONSTRAINT(serHandle);
+            }
+            EnableGlobalIRQ(primask);
+
 #if defined(OSA_USED)
 #if (defined(SERIAL_MANAGER_USE_COMMON_TASK) && (SERIAL_MANAGER_USE_COMMON_TASK > 0U))
 #else
@@ -814,7 +842,12 @@ static void SerialManager_TxCallback(void *callbackParam,
         else
         {
             writeHandle->transfer.buffer = NULL;
-            (void)SerialManager_ReleaseLpConstraint(gSerialManagerLpConstraint_c);
+
+            /* Only release if no more writes pending */
+            if (NULL == LIST_GetHead(&serHandle->runningWriteHandleHead))
+            {
+                SERIAL_MANAGER_RELEASE_LP_CONSTRAINT(serHandle);
+            }
         }
     }
 }
@@ -1026,7 +1059,7 @@ static serial_manager_status_t SerialManager_Write(serial_write_handle_t writeHa
     serial_manager_handle_t *serHandle;
 #if (defined(SERIAL_PORT_TYPE_USBCDC) && (SERIAL_PORT_TYPE_USBCDC > 0U))
     serial_manager_status_t status = kStatus_SerialManager_Success;
-#endif /* SERIAL_PORT_TYPE_USBCDC */ 
+#endif /* SERIAL_PORT_TYPE_USBCDC */
     uint32_t primask;
     uint8_t isEmpty = 0U;
 
@@ -1057,6 +1090,11 @@ static serial_manager_status_t SerialManager_Write(serial_write_handle_t writeHa
         isEmpty = 1U;
     }
     SerialManager_AddTail(&serHandle->runningWriteHandleHead, serialWriteHandle);
+    if (0U != isEmpty)
+    {
+        /* Set constraint when starting first transmission */
+        SERIAL_MANAGER_SET_LP_CONSTRAINT(serHandle);
+    }
     EnableGlobalIRQ(primask);
 
     if (0U != isEmpty)
@@ -1073,7 +1111,7 @@ static serial_manager_status_t SerialManager_Write(serial_write_handle_t writeHa
             return status;
         }
     }
-#endif /* SERIAL_PORT_TYPE_USBCDC */    
+#endif /* SERIAL_PORT_TYPE_USBCDC */
 #if (defined(OSA_USED) && defined(SERIAL_MANAGER_TASK_HANDLE_TX) && (SERIAL_MANAGER_TASK_HANDLE_TX == 1))
 #if (defined(SERIAL_MANAGER_USE_COMMON_TASK) && (SERIAL_MANAGER_USE_COMMON_TASK > 0U))
         /* Need to support common_task. */
