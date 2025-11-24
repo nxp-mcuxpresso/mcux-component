@@ -93,7 +93,7 @@ static xspi_device_config_t deviceconfig = {
     .ptrDeviceRegInfo = NULL,                      /*!< Not used in this example. */
 };
 
-const uint32_t customLUT[CUSTOM_LUT_LENGTH] = {
+RAMVARIABLE (const uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
     /*Read*/
     [5 * NOR_CMD_LUT_SEQ_IDX_READ] =
         XSPI_LUT_SEQ(kXSPI_Command_DDR, kXSPI_8PAD, 0xEE, kXSPI_Command_DDR, kXSPI_8PAD, 0x11),
