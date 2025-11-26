@@ -1536,12 +1536,16 @@ static status_t PM_DEV_ManageWakeupSource(pm_wakeup_source_t *ws, bool enable)
     if (enable)
     {
         // Enabled selected wakeup source, including enable it in NVIC and GPC.
+        /* INT31-C: Validate IRQ number before enum conversion */
+        assert(irqId <= 255U);
         (void)EnableIRQ((IRQn_Type)irqId);
         GPC_CM_EnableIrqWakeup(CURRENT_GPC_INSTANCE, irqId, true);
     }
     else
     {
         // Disable selected wakeup source, including disable it in NVIC and GPC.
+        /* INT31-C: Validate IRQ number before enum conversion */
+        assert(irqId <= 255U);
         (void)DisableIRQ((IRQn_Type)irqId);
         GPC_CM_EnableIrqWakeup(CURRENT_GPC_INSTANCE, irqId, false);
     }

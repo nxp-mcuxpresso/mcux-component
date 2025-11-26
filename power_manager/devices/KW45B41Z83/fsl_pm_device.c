@@ -425,7 +425,10 @@ static void PM_DEV_SetRAMOperateMode(uint8_t operateMode, pm_dev_resource_recode
         tmp8 = operateMode;
     }
 
-    sramId = pResourceRecode - resourceDB;
+    /* INT31-C: Validate pointer difference before narrowing conversion */
+    ptrdiff_t diff = pResourceRecode - resourceDB;
+    assert(diff >= 0 && diff <= UINT8_MAX);
+    sramId = (uint8_t)diff;
 
     switch (tmp8) /* GCOVR_EXCL_BR_LINE */
     {
@@ -674,11 +677,15 @@ static status_t PM_DEV_ManageWakeupSource(pm_wakeup_source_t *ws, bool enable)
             /* Wakeup source is internal module. */
             (void)EnableIRQ(WUU0_IRQn);
             WUU_SetInternalWakeUpModulesConfig(WUU0, (uint8_t)inputId, kWUU_InternalModuleInterrupt);
+            /* INT31-C: Validate IRQ number before enum conversion */
+            assert(irqn <= 255U);
             (void)EnableIRQ((IRQn_Type)irqn);
         }
         else
         {
             WUU0->ME &= ~(1UL << inputId);
+            /* INT31-C: Validate IRQ number before enum conversion */
+            assert(irqn <= 255U);
             (void)DisableIRQ((IRQn_Type)irqn);
             (void)DisableIRQ(WUU0_IRQn);
         }
