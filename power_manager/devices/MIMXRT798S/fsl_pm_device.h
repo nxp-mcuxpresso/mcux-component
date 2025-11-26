@@ -9,8 +9,6 @@
 
 #include "fsl_common.h"
 
-#include "fsl_pm_config.h"
-
 /*!
  * @addtogroup PM Framework: Power Manager Framework
  * @brief This section includes Power Mode macros, System Constraints macros, and Wakeup source macros.

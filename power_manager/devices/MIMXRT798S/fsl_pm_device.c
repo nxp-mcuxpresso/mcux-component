@@ -380,12 +380,14 @@ static void PM_DEV_DisablePeripheralsSleep(pm_resc_mask_t *pSoftRescMask, pm_res
             if ((rescGroup & PM_RESOURCE_FULL_ON) != 0U)
             {
                 /* Clear APD bit in PDRUNCFG and PPD bit for each enabled SRAM */
+                assert(enResSRAMs[feature].group > 0U);
                 PMC_PDRCFG_REG(enResSRAMs[feature].group - 1UL) &= ~enResSRAMs[feature].mask;
                 PMC_PDRCFG_REG(enResSRAMs[feature].group) &= ~enResSRAMs[feature].mask;
             }
             else if ((rescGroup & PM_RESOURCE_PARTABLE_ON1) != 0U)
             {
                 /* Clear APD bit in PDRUNCFG for each retained SRAM */
+                assert(enResSRAMs[feature].group > 0U);
                 PMC_PDRCFG_REG(enResSRAMs[feature].group - 1UL) &= ~enResSRAMs[feature].mask;
                 /* Set PPD bit in PDRUNCFG for each retained SRAM */
                 PMC_PDRCFG_REG(enResSRAMs[feature].group) |= enResSRAMs[feature].mask;
@@ -398,6 +400,7 @@ static void PM_DEV_DisablePeripheralsSleep(pm_resc_mask_t *pSoftRescMask, pm_res
         else
         {
             /* Set APD bit and PPD bit in PDRUNCFG for each disabled SRAM */
+            assert(enResSRAMs[feature].group > 0U);
             PMC_PDRCFG_REG(enResSRAMs[feature].group - 1UL) |= enResSRAMs[feature].mask;
             PMC_PDRCFG_REG(enResSRAMs[feature].group) |= enResSRAMs[feature].mask;
         }
@@ -419,6 +422,7 @@ static void PM_DEV_DisablePeripheralsSleep(pm_resc_mask_t *pSoftRescMask, pm_res
             else
             {
                 /* Clear peripheral bit in corresponding PDRUNCFG register */
+                assert(enResPeripherals[feature].group > 0U);
                 PMC_PDRCFG_REG(enResPeripherals[feature].group - 1UL) &= ~enResPeripherals[feature].mask;
             }
         }
@@ -432,6 +436,7 @@ static void PM_DEV_DisablePeripheralsSleep(pm_resc_mask_t *pSoftRescMask, pm_res
             else
             {
                 /* Clear peripheral bit in corresponding PDRUNCFG register */
+                assert(enResPeripherals[feature].group > 0U);
                 PMC_PDRCFG_REG(enResPeripherals[feature].group - 1UL) |= enResPeripherals[feature].mask;
             }
         }
