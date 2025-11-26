@@ -174,6 +174,8 @@ AT_ALWAYS_ON_DATA_INIT(cmc_power_domain_config_t g_mainWakePDConfig) = {
     .wake_domain = kCMC_DeepSleepMode,
 };
 
+AT_ALWAYS_ON_DATA(uint32_t primask_mask);
+AT_ALWAYS_ON_DATA(uint32_t basepri_mask);
 AT_ALWAYS_ON_DATA(jmp_buf g_coreContext);
 AT_ALWAYS_ON_DATA(uint32_t g_scbVtor);
 AT_ALWAYS_ON_DATA(uint32_t g_scbIcsr);
@@ -569,6 +571,9 @@ static void PM_DEV_SaveRuntimeContext(void)
 {
     uint32_t i = 0UL;
 
+    primask_mask = __get_PRIMASK();
+    basepri_mask = __get_BASEPRI();
+
     g_scbVtor  = SCB->VTOR;
     g_scbIcsr  = SCB->ICSR;
     g_scbAircr = ((SCB->AIRCR) & ~SCB_AIRCR_VECTKEY_Msk) | (0x5FAUL << (uint32_t)SCB_AIRCR_VECTKEY_Pos);
@@ -594,6 +599,11 @@ static void PM_DEV_SaveRuntimeContext(void)
 static void PM_DEV_RestoreRuntimeContext(void)
 {
     uint32_t i;
+
+    __set_PRIMASK(primask_mask);
+    __set_BASEPRI(basepri_mask);
+    __DSB();
+    __ISB();
 
     SCB->VTOR  = g_scbVtor;
     SCB->ICSR  = g_scbIcsr;
