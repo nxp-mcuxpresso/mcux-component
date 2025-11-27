@@ -136,6 +136,8 @@ static void OSA_TranslateTCBToZephyrThread(struct k_thread *zephyrThread, freeRt
     zephyrThread->stack_info.size  = freeRTosTaskInfo->stackSize;
     zephyrThread->stack_info.delta = 0U;
 #endif
+    /* INT31-C: Validate before narrowing conversion */
+    assert(freeRTosTcb->uxPriority <= SCHAR_MAX);
     zephyrThread->base.prio = freeRTosTcb->uxPriority;
 
     vTaskGetInfo((TaskHandle_t)freeRTosTcb, &curTaskStatus, pdFALSE, eInvalid);
