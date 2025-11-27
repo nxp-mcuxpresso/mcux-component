@@ -65,6 +65,9 @@ static void coredump_mflash_page_sync(uint8_t *buf, size_t bufLen, bool flush, b
     uint8_t *ptr     = buf;
     size_t copySize  = 0UL;
 
+    /* INT30-C: Prevent unsigned integer overflow in addition */
+    assert(backend_ctx.bytesWritten <= SIZE_MAX - backend_ctx.pageBufferOffset);
+    assert(bufLen <= SIZE_MAX - backend_ctx.bytesWritten - backend_ctx.pageBufferOffset);
     if ((bufLen + backend_ctx.bytesWritten + backend_ctx.pageBufferOffset) > backend_ctx.bytesAvailble)
     {
         assert(false);
@@ -265,6 +268,9 @@ static int coredump_mflash_process_stored_dump(data_read_cb_t cb, void *cb_arg)
             }
         }
 
+        /* INT30-C: Prevent unsigned integer underflow in subtraction */
+        assert(copySize >= adjustSize);
+        assert(remaining >= (copySize - adjustSize));
         remaining -= (copySize - adjustSize);
         addr += copySize;
     }
@@ -302,6 +308,8 @@ static int coredump_mflash_get_stored_dump(uint32_t addr, uint8_t *dst, size_t l
     /* Return the dump size if no destination buffer available. */
     if (dst == NULL)
     {
+        /* INT31-C: Validate before casting unsigned to signed */
+        assert(hdr.size <= INT_MAX);
         ret = (int)hdr.size;
         return ret;
     }
@@ -387,6 +395,8 @@ static int coredump_mflash_backend_cmd(enum coredump_cmd_id cmd_id, void *arg)
             {
                 struct coredump_cmd_copy_arg *copy_arg = (struct coredump_cmd_copy_arg *)arg;
 
+                /* INT31-C: Validate signed to unsigned conversion */
+                assert(copy_arg->offset >= 0);
                 ret = coredump_mflash_get_stored_dump(copy_arg->offset, copy_arg->buffer, copy_arg->length);
             }
             else
