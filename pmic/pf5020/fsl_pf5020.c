@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022, 2024 NXP
+ * Copyright 2021-2022, 2024-2025 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -205,9 +205,9 @@ static status_t PF5020_SetRegulatorCommonConfig(pf5020_handle_t *handle,
         regAddrShift = (uint8_t)regulatorName * 8U;
     }
 
-    tmp8 = PF5020_REGULATOR_PG_EN(enablePGMonitor) | PF5020_REGULATOR_WDBYPASS(enableWatchdogBypass) |
-           PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass) |
-           PF5020_REGULATOR_UV_BYPASS(enableUVBypass);
+    tmp8 = PF5020_REGULATOR_PG_EN(enablePGMonitor ? 1U : 0U) | PF5020_REGULATOR_WDBYPASS(enableWatchdogBypass ? 1U : 0U) |
+           PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass ? 1U : 0U) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass ? 1U : 0U) |
+           PF5020_REGULATOR_UV_BYPASS(enableUVBypass ? 1U : 0U);
 
     status = PF5020_ModifyReg(handle, PF5020_SW2_CONFIG1 + regAddrShift, 0xE3U, tmp8);
 
@@ -355,6 +355,8 @@ status_t PF5020_DumpReg(pf5020_handle_t *handle, uint8_t regAddr, uint8_t *buffe
 
     for (i = 0U; i < length; i++)
     {
+        /* INT30-C: Prevent unsigned integer overflow */
+        assert(regAddr < 0xFFU);
         status = PF5020_ReadReg(handle, regAddr++, buffer++);
         if (status != kStatus_Success)
         {
@@ -535,8 +537,12 @@ status_t PF5020_SetPowerDownGroupDelay(pf5020_handle_t *handle,
 {
     assert(handle);
 
-    return PF5020_ModifyReg(handle, PF5020_PWRDN_DLY1, (0x3U << (2U * (3U - (uint8_t)group))),
-                            (uint8_t)delay << (2U * (3U - (uint8_t)group)));
+    /* INT31-C: Validate before narrowing conversion */
+    uint32_t shift_amount = 2U * (3U - (uint8_t)group);
+    uint8_t mask = (uint8_t)(0x3U << shift_amount);
+    uint8_t value = (uint8_t)((uint32_t)delay << shift_amount);
+
+    return PF5020_ModifyReg(handle, PF5020_PWRDN_DLY1, mask, value);
 }
 
 /*!
@@ -586,7 +592,8 @@ status_t PF5020_CLK_ConfigHighSpeedClock(pf5020_handle_t *handle, const pf5020_h
 
     uint8_t tmp8;
 
-    tmp8 = ((uint8_t)(config->clkFreq) | ((uint8_t)(config->enableSS) << 5U) | ((uint8_t)(config->ssRange) << 4U));
+    /* INT31-C: Safe bool to uint8_t conversion */
+    tmp8 = ((uint8_t)(config->clkFreq) | ((config->enableSS ? 1U : 0U) << 5U) | ((uint8_t)(config->ssRange) << 4U));
     return PF5020_ModifyReg(handle, PF5020_FREQ_CTRL, 0x3FU, tmp8);
 }
 
@@ -818,7 +825,7 @@ status_t PF5020_SW1_SetFaultDetection(pf5020_handle_t *handle,
     }
 
     sw1Config2Mask |= PF5020_REGULATOR_FLT_REN_MASK;
-    sw1Config2Value |= PF5020_REGULATOR_FLT_REN(faultReEnabled);
+    sw1Config2Value |= PF5020_REGULATOR_FLT_REN(faultReEnabled ? 1U : 0U);
     status = PF5020_ModifyReg(handle, PF5020_SW1_CONFIG2, sw1Config2Mask, sw1Config2Value);
 
     if (status == kStatus_Success)
@@ -876,7 +883,7 @@ status_t PF5020_SW1_EnablePGMonitor(pf5020_handle_t *handle, bool enable)
 {
     assert(handle);
 
-    return PF5020_ModifyReg(handle, PF5020_SW1_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable));
+    return PF5020_ModifyReg(handle, PF5020_SW1_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable ? 1U : 0U));
 }
 
 /*!
@@ -893,7 +900,7 @@ status_t PF5020_SW1_EnableWatchDogBypass(pf5020_handle_t *handle, bool enable)
     assert(handle);
 
     return PF5020_ModifyReg(handle, PF5020_SW1_CONFIG1, PF5020_REGULATOR_WDBYPASS_MASK,
-                            PF5020_REGULATOR_WDBYPASS(enable));
+                            PF5020_REGULATOR_WDBYPASS(enable ? 1U : 0U));
 }
 
 /*!
@@ -1098,7 +1105,7 @@ status_t PF5020_SW2_SetPhaseShift(pf5020_handle_t *handle, pf5020_buck_regulator
 status_t PF5020_SW2_EnableVTTOperation(pf5020_handle_t *handle, bool enable)
 {
     return PF5020_ModifyReg(handle, PF5020_SW2_CONFIG2, PF5020_SW2_CONFIG2_VTTEN_MASK,
-                            PF5020_SW2_CONFIG2_VTTEN(enable));
+                            PF5020_SW2_CONFIG2_VTTEN(enable ? 1U : 0U));
 }
 
 /*!
@@ -1138,7 +1145,7 @@ status_t PF5020_SW2_SetFaultDetection(pf5020_handle_t *handle,
     }
 
     sw2Config2Mask |= PF5020_REGULATOR_FLT_REN_MASK;
-    sw2Config2Value |= PF5020_REGULATOR_FLT_REN(faultReEnabled);
+    sw2Config2Value |= PF5020_REGULATOR_FLT_REN(faultReEnabled ? 1U : 0U);
     status = PF5020_ModifyReg(handle, PF5020_SW1_CONFIG2, sw2Config2Mask, sw2Config2Value);
 
     if (status == kStatus_Success)
@@ -1164,7 +1171,7 @@ status_t PF5020_SW2_SetFaultDetection(pf5020_handle_t *handle,
  */
 status_t PF5020_SW2_EnablePGMonitor(pf5020_handle_t *handle, bool enable)
 {
-    return PF5020_ModifyReg(handle, PF5020_SW2_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable));
+    return PF5020_ModifyReg(handle, PF5020_SW2_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable ? 1U : 0U));
 }
 
 /*!
@@ -1179,7 +1186,7 @@ status_t PF5020_SW2_EnablePGMonitor(pf5020_handle_t *handle, bool enable)
 status_t PF5020_SW2_EnableWatchDogBypass(pf5020_handle_t *handle, bool enable)
 {
     return PF5020_ModifyReg(handle, PF5020_SW2_CONFIG1, PF5020_REGULATOR_WDBYPASS_MASK,
-                            PF5020_REGULATOR_WDBYPASS(enable));
+                            PF5020_REGULATOR_WDBYPASS(enable ? 1U : 0U));
 }
 
 /*!
@@ -1293,13 +1300,15 @@ status_t PF5020_SWND1_SetOperateMode(pf5020_handle_t *handle,
 
     if (swnd1RunMode != (uint8_t)runOperateMode)
     {
-        tmp8 =
-            ((tmp8 & (uint8_t)(~PF5020_BUCK_REGULATOR_RUN_MODE_MASK)) | PF5020_BUCK_REGULATOR_RUN_MODE(runOperateMode));
+         /* INT31-C: Safe bitwise inversion */
+        tmp8 = ((tmp8 & (uint8_t)(PF5020_BUCK_REGULATOR_RUN_MODE_MASK ^ 0xFFU)) | \
+            PF5020_BUCK_REGULATOR_RUN_MODE(runOperateMode));
     }
 
     if (swnd1StandbyMode != (uint8_t)standbyOperateMode)
     {
-        tmp8 = ((tmp8 & (uint8_t)(~PF5020_BUCK_REGULATOR_STANDBY_MODE_MASK)) |
+        /* INT31-C: Safe bitwise inversion with explicit mask */
+        tmp8 = ((tmp8 & (uint8_t)(PF5020_BUCK_REGULATOR_STANDBY_MODE_MASK ^ 0xFFU)) |
                 PF5020_BUCK_REGULATOR_STANDBY_MODE(standbyOperateMode));
     }
 
@@ -1375,7 +1384,7 @@ status_t PF5020_SWND1_SetFaultDetection(pf5020_handle_t *handle,
     }
 
     swnd1Config2Mask |= PF5020_REGULATOR_FLT_REN_MASK;
-    swnd1Config2Value |= PF5020_REGULATOR_FLT_REN(faultReEnabled);
+    swnd1Config2Value |= PF5020_REGULATOR_FLT_REN(faultReEnabled ? 1U : 0U);
     status = PF5020_ModifyReg(handle, PF5020_SWND1_CONFIG2, swnd1Config2Mask, swnd1Config2Value);
 
     if (status == kStatus_Success)
@@ -1403,7 +1412,7 @@ status_t PF5020_SWND1_EnablePGMonitor(pf5020_handle_t *handle, bool enable)
 {
     assert(handle);
 
-    return PF5020_ModifyReg(handle, PF5020_SWND1_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable));
+    return PF5020_ModifyReg(handle, PF5020_SWND1_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable ? 1U : 0U));
 }
 
 /*!
@@ -1420,7 +1429,7 @@ status_t PF5020_SWND1_EnableWatchDogBypass(pf5020_handle_t *handle, bool enable)
     assert(handle);
 
     return PF5020_ModifyReg(handle, PF5020_SWND1_CONFIG1, PF5020_REGULATOR_WDBYPASS_MASK,
-                            PF5020_REGULATOR_WDBYPASS(enable));
+                            PF5020_REGULATOR_WDBYPASS(enable ? 1U : 0U));
 }
 
 /*!
@@ -1452,7 +1461,7 @@ status_t PF5020_LDO1_SetGlobalConfig(pf5020_handle_t *handle, const pf5020_ldo1_
     {
         status = PF5020_ModifyReg(
             handle, PF5020_LDO1_CONFIG2, PF5020_LDO1_CONFIG2_RUN_EN_MASK | PF5020_LDO1_CONFIG2_STBY_EN_MASK,
-            PF5020_LDO1_CONFIG2_STBY_EN(config->ldo1StandbyEnable) | PF5020_LDO1_CONFIG2_RUN_EN(config->ldo1RunEnable));
+            PF5020_LDO1_CONFIG2_STBY_EN(config->ldo1StandbyEnable ? 1U : 0U) | PF5020_LDO1_CONFIG2_RUN_EN(config->ldo1RunEnable ? 1U : 0U));
     }
 
     if (status == kStatus_Success)
@@ -1550,13 +1559,13 @@ status_t PF5020_LDO1_SetFaultDetection(
     status = PF5020_ModifyReg(
         handle, PF5020_LDO1_CONFIG1,
         PF5020_REGULATOR_ILIM_BYPASS_MASK | PF5020_REGULATOR_OV_BYPASS_MASK | PF5020_REGULATOR_UV_BYPASS_MASK,
-        PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass) |
-            PF5020_REGULATOR_UV_BYPASS(enableUVBypass));
+        PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass ? 1U : 0U) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass ? 1U : 0U) |
+            PF5020_REGULATOR_UV_BYPASS(enableUVBypass ? 1U : 0U));
 
     if (status == kStatus_Success)
     {
         status = PF5020_ModifyReg(handle, PF5020_LDO1_CONFIG2, PF5020_REGULATOR_FLT_REN_MASK,
-                                  PF5020_REGULATOR_FLT_REN(faultReEnabled));
+                                  PF5020_REGULATOR_FLT_REN(faultReEnabled ? 1U : 0U));
     }
 
     return status;
@@ -1575,7 +1584,7 @@ status_t PF5020_LDO1_EnablePGMonitor(pf5020_handle_t *handle, bool enable)
 {
     assert(handle);
 
-    return PF5020_ModifyReg(handle, PF5020_LDO1_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable));
+    return PF5020_ModifyReg(handle, PF5020_LDO1_CONFIG1, PF5020_REGULATOR_PG_EN_MASK, PF5020_REGULATOR_PG_EN(enable ? 1U : 0U));
 }
 
 /*!
@@ -1592,7 +1601,7 @@ status_t PF5020_LDO1_EnableWatchDogBypass(pf5020_handle_t *handle, bool enable)
     assert(handle);
 
     return PF5020_ModifyReg(handle, PF5020_LDO1_CONFIG1, PF5020_REGULATOR_WDBYPASS_MASK,
-                            PF5020_REGULATOR_WDBYPASS(enable));
+                            PF5020_REGULATOR_WDBYPASS(enable ? 1U : 0U));
 }
 
 /*!
@@ -1636,25 +1645,25 @@ status_t PF5020_EnableVoltageMonitor(pf5020_handle_t *handle, pf5020_regulator_n
         case kPF5020_BuckRegulatorSw1:
         {
             status = PF5020_ModifyReg(handle, PF5020_VMONEN1, PF5020_VMONEN1_SW1VMON_EN_MASK,
-                                      PF5020_VMONEN1_SW1VMON_EN(enable));
+                                      PF5020_VMONEN1_SW1VMON_EN(enable ? 1U : 0U));
             break;
         }
         case kPF5020_BuckRegulatorSw2:
         {
             status = PF5020_ModifyReg(handle, PF5020_VMONEN1, PF5020_VMONEN1_SW2VMON_EN_MASK,
-                                      PF5020_VMONEN1_SW2VMON_EN(enable));
+                                      PF5020_VMONEN1_SW2VMON_EN(enable ? 1U : 0U));
             break;
         }
         case kPF5020_BuckRegulatorSwnd1:
         {
             status = PF5020_ModifyReg(handle, PF5020_VMONEN1, PF5020_VMONEN1_SWND1VMON_EN_MASK,
-                                      PF5020_VMONEN1_SWND1VMON_EN(enable));
+                                      PF5020_VMONEN1_SWND1VMON_EN(enable ? 1U : 0U));
             break;
         }
         case kPF5020_RegulatorLdo1:
         {
             status = PF5020_ModifyReg(handle, PF5020_VMONEN2, PF5020_VMONEN2_LDO1VMON_EN_MASK,
-                                      PF5020_VMONEN2_LDO1VMON_EN(enable));
+                                      PF5020_VMONEN2_LDO1VMON_EN(enable ? 1U : 0U));
             break;
         }
         default:
@@ -1749,7 +1758,7 @@ status_t PF5020_WDOG_EnableWDIStanby(pf5020_handle_t *handle, bool enable)
 {
     assert(handle);
 
-    return PF5020_ModifyReg(handle, PF5020_CTRL1, 0x2U, (((uint8_t)enable << 1U) & 0x2U));
+    return PF5020_ModifyReg(handle, PF5020_CTRL1, 0x2U, (((enable ? 1U : 0U) << 1U) & 0x2U));
 }
 
 /*!
@@ -1869,7 +1878,7 @@ status_t PF5020_TMP_SetThermalMonitorConfig(pf5020_handle_t *handle,
 
     status_t status;
 
-    status = PF5020_ModifyReg(handle, PF5020_CTRL1, PF5020_CTRL1_TMP_MON_EN_MASK, PF5020_CTRL1_TMP_MON_EN(enable));
+    status = PF5020_ModifyReg(handle, PF5020_CTRL1, PF5020_CTRL1_TMP_MON_EN_MASK, PF5020_CTRL1_TMP_MON_EN(enable ? 1U : 0U));
 
     if (status == kStatus_Success)
     {
@@ -1894,7 +1903,7 @@ status_t PF5020_AMUX_SetAnalogMuxConfig(pf5020_handle_t *handle, bool enable, pf
     assert(handle);
 
     return PF5020_ModifyReg(handle, PF5020_AMUX, PF5020_AMUX_AMUX_SEL_MASK | PF5020_AMUX_AMUX_EN_MASK,
-                            PF5020_AMUX_MAUX_SEL(amuxSel) | PF5020_AMUX_AMUX_EN(enable));
+                            PF5020_AMUX_MAUX_SEL(amuxSel) | PF5020_AMUX_AMUX_EN(enable ? 1U : 0U));
 }
 
 /*!
@@ -2043,7 +2052,9 @@ status_t PF5020_ClearInterruptStatus(pf5020_handle_t *handle, uint64_t interrupt
                 tmp64 &= (uint64_t)(~(uint64_t)kPF5020_OV_Ldo1OvInterrupt);
             }
 
-            tmp8 = (uint8_t)(tmp64 >> (8ULL * i)) & (0xFFU);
+            /* INT31-C: Validate before narrowing conversion */
+            assert((tmp64 >> (8ULL * i)) <= 0xFFU);
+            tmp8 = (uint8_t)((tmp64 >> (8ULL * i)) & 0xFFU);
 
             if (status == kStatus_Success)
             {
