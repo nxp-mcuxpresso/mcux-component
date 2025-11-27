@@ -393,7 +393,9 @@ static status_t spifi_nor_quad_mode_enable(SPIFI_Type *base,
             /* Read status register1 to combine the value of two status registers, then write it back.
                This opration can maintain the state of all other writable status register bits*/
             valueStatus = spifi_nor_read_status(base, memHandle->commandSet.readStatusCommand);
-            valueSwitch = valueStatus | ((quadValue | (0x1U << config->quadDualEnableBitShift)) << 8);
+            /* INT31-C: Validate before narrowing conversion */
+            assert((valueStatus | ((quadValue | (0x1U << config->quadDualEnableBitShift)) << 8)) <= 0xFFFFU);
+            valueSwitch = (uint16_t)(valueStatus | ((quadValue | (0x1U << config->quadDualEnableBitShift)) << 8));
 
             /* Enable quad/dual spi mode. */
             cmd.dataLen           = 0x02U;
@@ -417,7 +419,9 @@ static status_t spifi_nor_quad_mode_enable(SPIFI_Type *base,
             cmd.type              = kSPIFI_CommandOpcodeOnly;
             cmd.opcode            = config->quadDualEnableCommand;
             SPIFI_SetCommand(base, &cmd);
-            SPIFI_WriteDataByte(base, (quadValue | (0x1U << config->quadDualEnableBitShift)));
+            /* INT31-C: Validate before narrowing conversion */
+            assert((quadValue | (0x1U << config->quadDualEnableBitShift)) <= 0xFFU);
+            SPIFI_WriteDataByte(base, (uint8_t)(quadValue | (0x1U << config->quadDualEnableBitShift)));
         }
 
         status = spifi_check_norflash_finish(base, memHandle);
@@ -593,7 +597,9 @@ static status_t spifi_get_page_sector_size_from_sfdp(nor_handle_t *handle, jedec
     }
     else
     {
-        page_size               = 1 << (param_tbl->chip_erase_progrm_info.page_size);
+        /* INT31-C: Validate shift result before assignment */
+        assert((1 << param_tbl->chip_erase_progrm_info.page_size) <= UINT32_MAX);
+        page_size               = (uint32_t)(1 << param_tbl->chip_erase_progrm_info.page_size);
         handle->bytesInPageSize = page_size == (1 << 15) ? 256U : page_size;
     }
 
@@ -679,6 +685,8 @@ static status_t spifi_nor_parse_sfdp(spifi_nor_config_t *config,
             memHandle->commandSet.readMemoryCommand      = kSerialNorCmd_ReadMemoryA32;
         }
 
+        /* INT31-C: Validate enum conversion */
+        assert(memConfig->cmd_format <= kSPIFI_CommandOpcodeSerial);
         memHandle->readmemCommandFormt = (spifi_command_format_t)memConfig->cmd_format;
 
         if (kSPIFI_CommandAllSerial != memHandle->readmemCommandFormt)
@@ -742,7 +750,9 @@ static status_t spifi_nor_parse_sfdp(spifi_nor_config_t *config,
             {
                 /* Use quad mode setting paraments provided in the configure option block.
                  This setting is used for the flash devices which only support JESD216 initial version. */
-                quadModeSetting = memConfig->quad_mode_setting;
+                /* INT31-C: Validate before narrowing conversion */
+                assert(memConfig->quad_mode_setting <= 0xFFU);
+                quadModeSetting = (uint8_t)memConfig->quad_mode_setting;
             }
             switch (quadModeSetting)
             {
@@ -852,6 +862,7 @@ status_t Nor_Flash_Init(nor_config_t *config, nor_handle_t *handle)
     /* Set SPIFI configuration parameter. */
     SPIFI_Type *base = (SPIFI_Type *)config->driverBaseAddr;
     status_t status;
+    /* EXP33-C: Initialize structure before use */
     jedec_info_table_t jedec_info_tbl;
     spifi_mem_nor_config_t *memSpiNorConfig = (spifi_mem_nor_config_t *)config->memControlConfig;
     spifi_nor_config_t spiNorConfig;
@@ -859,6 +870,8 @@ status_t Nor_Flash_Init(nor_config_t *config, nor_handle_t *handle)
     /* Clear spifi nor flash configuration. */
     memset(&spiNorConfig, 0, sizeof(spifi_nor_config_t));
     memset(&spifi_handle, 0, sizeof(spifi_handle));
+    /* EXP33-C: Initialize jedec_info_tbl to prevent uninitialized use */
+    memset(&jedec_info_tbl, 0, sizeof(jedec_info_tbl));
     /* Set default configuration to configuration block. */
     SPIFI_GetDefaultConfig(&spiNorConfig.memConfig);
     /* Store parameters in handler. */
@@ -933,6 +946,8 @@ status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_B
         {
             break;
         }
+        /* INT30-C: Prevent unsigned integer overflow */
+        assert(startAddress <= UINT32_MAX - handle->bytesInSectorSize);
         startAddress += handle->bytesInSectorSize;
     }
 
@@ -967,6 +982,8 @@ status_t Nor_Flash_Page_Program(nor_handle_t *handle, uint32_t address, uint8_t 
     }
 
     /* Keep address as page align. */
+    /* INT30-C: Prevent unsigned integer underflow */
+    assert(pageSize >= 1U);
     address &= ~(pageSize - 1U);
     SPIFI_SetCommandAddress(base, address);
 
@@ -977,6 +994,8 @@ status_t Nor_Flash_Page_Program(nor_handle_t *handle, uint32_t address, uint8_t 
     cmd.format            = kSPIFI_CommandAllSerial;
     cmd.type              = memSpifiHandler->commandType;
     cmd.opcode            = memSpifiHandler->commandSet.pageWriteMemoryCommand;
+    /* INT31-C: Validate before narrowing conversion */
+    assert(pageSize <= 0xFFFFU);
     SPIFI_SetCommand(base, &cmd);
     for (i = 0; i < pageSize; i += 4U)
     {
@@ -1020,6 +1039,8 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
         if (length >= handle->bytesInPageSize)
         {
             buffer += handle->bytesInPageSize;
+            /* INT30-C: Prevent unsigned integer overflow */
+            assert(startAddress <= UINT32_MAX - handle->bytesInPageSize);
             startAddress += handle->bytesInPageSize;
         }
     }
@@ -1031,7 +1052,9 @@ status_t Nor_Flash_Erase_Sector(nor_handle_t *handle, uint32_t address)
 {
     status_t status;
 
-    address &= ~(handle->bytesInSectorSize - 1);
+    /* INT30-C: Prevent unsigned integer underflow */
+    assert(handle->bytesInSectorSize >= 1U);
+    address &= ~(handle->bytesInSectorSize - 1U);
 
     status = spifi_nor_erase_sector(handle, address);
 
@@ -1042,7 +1065,9 @@ status_t Nor_Flash_Erase_Block(nor_handle_t *handle, uint32_t address)
 {
     status_t status;
 
-    address &= ~(handle->bytesInSectorSize - 1);
+    /* INT30-C: Prevent unsigned integer underflow */
+    assert(handle->bytesInSectorSize >= 1U);
+    address &= ~(handle->bytesInSectorSize - 1U);
 
     status = spifi_nor_erase_sector(handle, address);
 
