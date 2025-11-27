@@ -1143,7 +1143,10 @@ osa_status_t OSA_EventWait(osa_event_handle_t eventHandle,
         {
             pEventStruct->flags &= ~flagsToWait;
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
-            pEventStruct->waitingTask->haveToRun = 0U;
+            if(pEventStruct->waitingTask != NULL)
+            {
+                pEventStruct->waitingTask->haveToRun = 0U;
+            }
 #endif
         }
         retVal = KOSA_StatusSuccess;
@@ -1177,7 +1180,10 @@ osa_status_t OSA_EventWait(osa_event_handle_t eventHandle,
         else
         {
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
-            pEventStruct->waitingTask->haveToRun = 0U;
+            if(pEventStruct->waitingTask != NULL)
+            {
+                pEventStruct->waitingTask->haveToRun = 0U;
+            }
 #endif
         }
     }
