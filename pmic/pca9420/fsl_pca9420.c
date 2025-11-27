@@ -469,9 +469,10 @@ void PCA9420_EnableInterrupts(pca9420_handle_t *handle, uint32_t source)
 
     regValues[0] = regValues[2] = regValues[4] = 0U;      /* Don't clear int status */
 
-    regValues[1] &= (uint8_t)(~(source & 0xFFU));         /* SUB_INT0_MASK */
-    regValues[3] &= (uint8_t)(~((source >> 8) & 0xFFU));  /* SUB_INT1_MASK */
-    regValues[5] &= (uint8_t)(~((source >> 16) & 0xFFU)); /* SUB_INT2_MASK */
+    /* INT31-C: Safe bitwise inversion using XOR with 0xFF */
+    regValues[1] &= (uint8_t)((source & 0xFFU) ^ 0xFFU);         /* SUB_INT0_MASK */
+    regValues[3] &= (uint8_t)(((source >> 8) & 0xFFU) ^ 0xFFU);  /* SUB_INT1_MASK */
+    regValues[5] &= (uint8_t)(((source >> 16) & 0xFFU) ^ 0xFFU); /* SUB_INT2_MASK */
 
     result = PCA9420_WriteRegs(handle, PCA9420_SUB_INT0, regValues, sizeof(regValues));
     if (!result)
