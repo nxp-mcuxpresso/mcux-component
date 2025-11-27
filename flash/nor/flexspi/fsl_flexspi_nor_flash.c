@@ -3372,6 +3372,8 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
 
                     /* The difference between the SDR mode and DDR mode is 1.*/
                     temp                       = (uint32_t)config->CurrentCommandMode + 0x01U;
+                    /* INT31-C: Validate enum value before casting */
+                    assert(temp <= (uint32_t)kSerialNorCommandMode_max); /* Assuming enum has MAX value */
                     config->CurrentCommandMode = (serial_nor_command_mode_t)temp;
                     temp                       = (uint32_t)config->transferMode + 0x01U;
                     config->transferMode       = (serial_nor_transfer_mode_t)temp;
