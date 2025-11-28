@@ -337,7 +337,7 @@ osa_task_priority_t OSA_TaskGetPriority(osa_task_handle_t taskHandle)
         return 0U;
     }
 
-    return PRIORITY_THREAD_TO_OSA(priority_tmp);
+    return PRIORITY_RTOS_TO_OSA(priority_tmp);
 }
 #endif
 
@@ -360,7 +360,7 @@ osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority
     UINT priority;
 
     status =
-        tx_thread_priority_change((TX_THREAD *)&ptask->taskHandle, PRIORITY_OSA_TO_THREAD(taskPriority), &priority);
+        tx_thread_priority_change((TX_THREAD *)&ptask->taskHandle, PRIORITY_OSA_TO_RTOS(taskPriority), &priority);
 
     if (status != TX_SUCCESS)
     {
@@ -394,8 +394,8 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
             (ULONG)((ULONG *)task_param),                  /* entry input */
             (void *)thread_def->tstack,                    /* stack start */
             (ULONG)thread_def->stacksize,                  /* stack size */
-            PRIORITY_OSA_TO_THREAD(thread_def->tpriority), /* initial priority */
-            PRIORITY_OSA_TO_THREAD(
+            PRIORITY_OSA_TO_RTOS(thread_def->tpriority), /* initial priority */
+            PRIORITY_OSA_TO_RTOS(
                 thread_def->tpriority), /* preempt threshold (same value than the priority means disabled) */
             0U,                         /* time slice */
             true                        /* auto start */

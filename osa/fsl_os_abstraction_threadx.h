@@ -39,9 +39,9 @@
  * @brief To provide unified task priority for upper layer, OSA layer makes conversion.
  */
 
-#define PRIORITY_OSA_TO_THREAD(osa_prio) \
+#define PRIORITY_OSA_TO_RTOS(osa_prio) \
     (((TX_MAX_PRIORITIES - 1U) * osa_prio) / (OSA_TASK_PRIORITY_MIN - OSA_TASK_PRIORITY_MAX))
-#define PRIORITY_THREAD_TO_OSA(rtos_prio) \
+#define PRIORITY_RTOS_TO_OSA(rtos_prio) \
     ((rtos_prio * ((OSA_TASK_PRIORITY_MIN - OSA_TASK_PRIORITY_MAX))) / (TX_MAX_PRIORITIES - 1U))
 
 #endif /* __FSL_OS_ABSTRACTION_THREADX_H__ */
