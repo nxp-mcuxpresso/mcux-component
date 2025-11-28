@@ -308,8 +308,6 @@ static int coredump_mflash_get_stored_dump(uint32_t addr, uint8_t *dst, size_t l
     /* Return the dump size if no destination buffer available. */
     if (dst == NULL)
     {
-        /* INT31-C: Validate before casting unsigned to signed */
-        assert(hdr.size <= INT_MAX);
         ret = (int)hdr.size;
         return ret;
     }
