@@ -48,6 +48,13 @@ if MCUX_COMPONENT_utility.shell.generated_config
                 Macro to set echo feature.
                 No prefix in generated macro
 
+        config SHELL_MAX_ARGS
+            int "SHELL_MAX_ARGS"
+            default 8
+            help
+                Macro to set maximum number of arguments in command.
+                No prefix in generated macro
+
         config SHELL_HISTORY_COUNT
             int "SHELL_HISTORY_COUNT"
             default 3

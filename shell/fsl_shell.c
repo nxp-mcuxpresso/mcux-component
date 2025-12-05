@@ -661,7 +661,7 @@ static void SHELL_ProcessCommand(shell_context_handle_t *shellContextHandle, con
     shell_command_t *tmpCommand = NULL;
     const char *tmpCommandString;
     int32_t argc;
-    char *argv[SHELL_BUFFER_SIZE] = {0};
+    char *argv[SHELL_MAX_ARGS] = {NULL};
     list_element_handle_t p;
     uint8_t flag = 1;
     uint8_t tmpCommandLen;
@@ -927,6 +927,11 @@ static int32_t SHELL_ParseLine(const char *cmd, uint32_t len, char *argv[])
                 p++;
                 position++;
             }
+        }
+
+        if (argc >= SHELL_MAX_ARGS)
+        {
+            break;
         }
     }
     return (int32_t)argc;
