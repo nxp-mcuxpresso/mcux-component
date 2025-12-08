@@ -355,8 +355,6 @@ status_t PF5020_DumpReg(pf5020_handle_t *handle, uint8_t regAddr, uint8_t *buffe
 
     for (i = 0U; i < length; i++)
     {
-        /* INT30-C: Prevent unsigned integer overflow */
-        assert(regAddr < 0xFFU);
         status = PF5020_ReadReg(handle, regAddr++, buffer++);
         if (status != kStatus_Success)
         {
