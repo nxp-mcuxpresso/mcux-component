@@ -862,7 +862,6 @@ status_t Nor_Flash_Init(nor_config_t *config, nor_handle_t *handle)
     /* Set SPIFI configuration parameter. */
     SPIFI_Type *base = (SPIFI_Type *)config->driverBaseAddr;
     status_t status;
-    /* EXP33-C: Initialize structure before use */
     jedec_info_table_t jedec_info_tbl;
     spifi_mem_nor_config_t *memSpiNorConfig = (spifi_mem_nor_config_t *)config->memControlConfig;
     spifi_nor_config_t spiNorConfig;
