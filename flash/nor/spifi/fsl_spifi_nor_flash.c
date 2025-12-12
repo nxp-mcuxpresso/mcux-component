@@ -924,6 +924,8 @@ status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_B
 {
     assert(handle != NULL);
     assert(size_Byte > 0x00U);
+    /* INT30-C: Prevent unsigned integer overflow */
+    assert(startAddress <= UINT32_MAX - handle->bytesInSectorSize);
     uint32_t startAddress = address;
     status_t status       = kStatus_Success;
 
@@ -945,8 +947,7 @@ status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_B
         {
             break;
         }
-        /* INT30-C: Prevent unsigned integer overflow */
-        assert(startAddress <= UINT32_MAX - handle->bytesInSectorSize);
+
         startAddress += handle->bytesInSectorSize;
     }
 
@@ -1013,6 +1014,8 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
 {
     assert(handle != NULL);
     assert(buffer != NULL);
+    /* INT30-C: Prevent unsigned integer overflow */
+    assert(startAddress <= UINT32_MAX - handle->bytesInPageSize);
     uint32_t startAddress = address;
     status_t status       = kStatus_Success;
 
@@ -1038,8 +1041,6 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
         if (length >= handle->bytesInPageSize)
         {
             buffer += handle->bytesInPageSize;
-            /* INT30-C: Prevent unsigned integer overflow */
-            assert(startAddress <= UINT32_MAX - handle->bytesInPageSize);
             startAddress += handle->bytesInPageSize;
         }
     }
