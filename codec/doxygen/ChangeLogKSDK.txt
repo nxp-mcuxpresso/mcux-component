@@ -247,7 +247,11 @@
 
 @if dox_section_da7212
 @section da7212 DA7212
-  The current da7212 driver version is 2.3.1.
+  The current da7212 driver version is 2.3.2.
+
+  - 2.3.2
+    - Bug Fixes
+      - Fixed MSG violations of CERT-INT31-C
 
   - 2.3.1
     - Improvements
