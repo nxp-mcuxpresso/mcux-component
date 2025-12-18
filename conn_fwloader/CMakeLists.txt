@@ -39,6 +39,29 @@ if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader.fw_bin)
                 fw_bin/iw610x/iw610_cpu12_se.c
                 fw_bin/iw610x/iw610_cpu2_se.c
                 fw_bin/iw610x/iw610_cpu1_se.c
+                fw_bin/inc/8987/*.inc
+                fw_bin/8987/sduart8987_wlan_bt.h
+                fw_bin/8987/sd8987_wlan.h
+                fw_bin/8987/uart8987_bt.h
+                fw_bin/8987/8987_cpu12.c
+                fw_bin/8987/8987_cpu1.c
+                fw_bin/8987/8987_cpu2.c
+                fw_bin/inc/IW416/*.inc
+                fw_bin/IW416/sduartIW416_wlan_bt.h
+                fw_bin/IW416/sdIW416_wlan.h
+                fw_bin/IW416/uartIW416_bt.h
+                fw_bin/IW416/IW416_cpu12.c
+                fw_bin/IW416/IW416_cpu1.c
+                fw_bin/IW416/IW416_cpu2.c
+                fw_bin/inc/nw61x/*.inc
+                fw_bin/nw61x/sduart_nw61x_se.h
+                fw_bin/nw61x/sd_nw61x_se.h
+                fw_bin/nw61x/uart_nw61x_se.h
+                fw_bin/nw61x/sduart_nw61x_zb_dual_pan_se.h
+                fw_bin/nw61x/uart_nw61x_zb_dual_pan_se.h
+                fw_bin/nw61x/nw61x_cpu12_se.c
+                fw_bin/nw61x/nw61x_cpu1_se.c
+                fw_bin/nw61x/nw61x_cpu2_se.c
     )
     mcux_add_include(
         INCLUDES fw_bin
@@ -46,6 +69,12 @@ if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader.fw_bin)
                  fw_bin/rw61x
                  fw_bin/inc/iw610x
                  fw_bin/iw610x
+                 fw_bin/inc/8987
+                 fw_bin/8987
+                 fw_bin/inc/IW416
+                 fw_bin/IW416
+                 fw_bin/inc/nw61x
+                 fw_bin/nw61x
                  fw_bin/script
     )
 endif()
