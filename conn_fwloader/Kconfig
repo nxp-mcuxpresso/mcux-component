@@ -11,6 +11,7 @@ menu "connectivity firmware loader"
     config MCUX_COMPONENT_driver.conn_fwloader.fw_bin
         bool "Firmware Binary"
         default y if MCUX_COMPONENT_driver.conn_fwloader
+        select MCUX_COMPONENT_component.wifi_bt_module.config
 
     config MCUX_COMPONENT_driver.conn_fwloader_ns
         bool "conn_fwloader_ns"
