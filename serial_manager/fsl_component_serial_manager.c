@@ -388,54 +388,51 @@ static serial_manager_status_t SerialManager_StartReading(serial_manager_handle_
 {
     serial_manager_status_t status = kStatus_SerialManager_Error;
 
-    if (NULL != readHandle)
-    {
 #if (defined(SERIAL_PORT_TYPE_UART) && (SERIAL_PORT_TYPE_UART > 0U))
-        if (kSerialPort_Uart == serHandle->serialPortType) /* Serial port UART */
-        {
-            status = Serial_UartRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
-        }
+    if (kSerialPort_Uart == serHandle->serialPortType) /* Serial port UART */
+    {
+        status = Serial_UartRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
+    }
 #endif
 #if (defined(SERIAL_PORT_TYPE_USBCDC) && (SERIAL_PORT_TYPE_USBCDC > 0U))
-        if (serHandle->serialPortType == kSerialPort_UsbCdc)
-        {
-            status = Serial_UsbCdcRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
-        }
+    if (serHandle->serialPortType == kSerialPort_UsbCdc)
+    {
+        status = Serial_UsbCdcRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
+    }
 #endif
 #if (defined(SERIAL_PORT_TYPE_VIRTUAL) && (SERIAL_PORT_TYPE_VIRTUAL > 0U))
-        if (serHandle->serialPortType == kSerialPort_Virtual)
-        {
-            status = Serial_PortVirtualRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
-        }
+    if (serHandle->serialPortType == kSerialPort_Virtual)
+    {
+        status = Serial_PortVirtualRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
+    }
 #endif
 #if (defined(SERIAL_PORT_TYPE_SPI_MASTER) && (SERIAL_PORT_TYPE_SPI_MASTER > 0U))
-        if (serHandle->serialPortType == kSerialPort_SpiMaster)
-        {
-            status = Serial_SpiMasterRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
-        }
+    if (serHandle->serialPortType == kSerialPort_SpiMaster)
+    {
+        status = Serial_SpiMasterRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
+    }
 #endif
 #if (defined(SERIAL_PORT_TYPE_SPI_SLAVE) && (SERIAL_PORT_TYPE_SPI_SLAVE > 0U))
-        if (serHandle->serialPortType == kSerialPort_SpiSlave)
-        {
-            status = Serial_SpiSlaveRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
-        }
+    if (serHandle->serialPortType == kSerialPort_SpiSlave)
+    {
+        status = Serial_SpiSlaveRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
+    }
 #endif
 
 #if 0
 #if (defined(SERIAL_PORT_TYPE_RPMSG) && (SERIAL_PORT_TYPE_RPMSG > 0U))
-        if (serHandle->serialPortType == kSerialPort_Rpmsg)
-        {
-            status = Serial_RpmsgRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
-        }
+    if (serHandle->serialPortType == kSerialPort_Rpmsg)
+    {
+        status = Serial_RpmsgRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
+    }
 #endif
 #endif
 #if (defined(SERIAL_PORT_TYPE_BLE_WU) && (SERIAL_PORT_TYPE_BLE_WU > 0U))
-        if (serHandle->serialPortType == kSerialPort_BleWu)
-        {
-            status = Serial_PortBleWuRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
-        }
-#endif
+    if (serHandle->serialPortType == kSerialPort_BleWu)
+    {
+        status = Serial_PortBleWuRead(((serial_handle_t)&serHandle->lowLevelhandleBuffer[0]), buffer, length);
     }
+#endif
     return status;
 }
 
