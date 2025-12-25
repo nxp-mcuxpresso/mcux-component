@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2022-2025 NXP
+ * Copyright 2020, 2022-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -357,8 +357,10 @@ static status_t I3C_MasterAdapterProcessDAA(i3c_device_t *master)
         if ((!mctrlDone) || (rxSize < 8U))
         {
             I3C_MasterGetFifoCounts(base, &rxCount, NULL);
-            while (rxCount-- != 0U)
+            /* INT30-C: Use explicit loop to avoid post-decrement underflow warning */
+            while (rxCount > 0U)
             {
+                rxCount--;
                 assert(rxSize < sizeof(rxBuffer));
                 rxBuffer[rxSize++] = (uint8_t)(base->MRDATAB & I3C_MRDATAB_VALUE_MASK);
             }

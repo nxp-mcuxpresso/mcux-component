@@ -127,7 +127,10 @@ static status_t I3C_BusMasterGetMaxReadLength(i3c_device_t *master, i3c_device_i
         info->maxIBILength = pData[2];
     }
 
-    info->maxReadLength = (uint16_t)pData[0] << 8UL | (uint16_t)pData[1];
+    /* INT31-C: Unify operand types before narrowing conversion */
+    uint32_t tempReadLen = ((uint32_t)pData[0] << 8U) | (uint32_t)pData[1];
+    assert(tempReadLen <= 0xFFFFU);
+    info->maxReadLength = (uint16_t)tempReadLen;
 
     free(pData);
 
@@ -716,6 +719,8 @@ status_t I3C_BusMasterSendSlavesList(i3c_device_t *masterDev)
 
     for (listItem = i2cDevList->head; listItem != NULL; listItem = listItem->next)
     {
+        /* INT30-C: Prevent unsigned integer overflow */
+        assert(devCount < UINT8_MAX);
         devCount++;
         if (devCount > I3C_BUS_MAX_DEVS)
         {
@@ -732,6 +737,8 @@ status_t I3C_BusMasterSendSlavesList(i3c_device_t *masterDev)
         }
         else
         {
+            /* INT30-C: Prevent unsigned integer overflow */
+            assert(devCount < UINT8_MAX);
             devCount++;
             if (devCount > I3C_BUS_MAX_DEVS)
             {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2023-2025 NXP
+ * Copyright 2020, 2023-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -97,6 +97,8 @@ void APP_PrintDeviceInfo(i3c_bus_t *demo_i3cBus)
                 PRINTF("BCR - 0x%X. DCR - 0x%X.\r\n\r\n", devInfo.bcr, devInfo.dcr);
             }
 
+            /* CERT INT30-C: Prevent unsigned integer overflow */
+            assert(i < UINT32_MAX);
             i++;
         }
     }
