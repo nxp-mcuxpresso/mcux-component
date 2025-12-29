@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 NXP
+ * Copyright 2024,2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -54,17 +54,16 @@ enum _pm_resc_name
     kResc_STCM7 = 9U,
     kResc_STCM8 = 10U,
     kResc_Fro192M = 11U,
-    kResc_Fro6M = 12U,
-    kResc_WakePowerDomainPeri = 13U,
+    kResc_WakePowerDomainPeri = 12U,
     
     /* Following resource is not configurable. */
-    kResc_MainPowerDomainPeriOpt1 = 14U,
-    kResc_MainPowerDomainPeriOpt2 = 15U,
-    kResc_BusSysClk = 16U,
-    kResc_CoreClk = 17U,
+    kResc_MainPowerDomainPeriOpt1 = 13U,
+    kResc_MainPowerDomainPeriOpt2 = 14U,
+    kResc_BusSysClk = 15U,
+    kResc_CoreClk = 16U,
 };
 
-#define PM_CONFIGURABLE_RESOURCE_COUNT (14U)
+#define PM_CONFIGURABLE_RESOURCE_COUNT (13U)
 
 #define PM_RESC_TO_BIT(resc) ((uint32_t)(1UL << (uint32_t)(resc)))
 

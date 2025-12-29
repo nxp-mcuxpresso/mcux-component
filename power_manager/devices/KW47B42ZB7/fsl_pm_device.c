@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -51,7 +51,6 @@ static void PM_CleanExitLowPowerMode(void);
 static uint8_t PM_FindOperateMode(uint32_t rescIndex, pm_resc_group_t *pSysRescGroup);
 static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
 static void PM_SetFro192MOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
-static void PM_SetFro6MOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
 static void PM_SetWakePowerDomainOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
 static void PM_SaveRuntimeContext(void);
 static void PM_RestoreRuntimeContext(void);
@@ -93,8 +92,8 @@ static bool PM_IsWakeupSource(pm_wakeup_source_t *ws);
                         PM_RESC_TO_BIT(kResc_STCM0) | PM_RESC_TO_BIT(kResc_STCM1) | PM_RESC_TO_BIT(kResc_STCM2) |\
                         PM_RESC_TO_BIT(kResc_STCM3) | PM_RESC_TO_BIT(kResc_STCM4) | PM_RESC_TO_BIT(kResc_STCM5) | \
                         PM_RESC_TO_BIT(kResc_STCM6) | PM_RESC_TO_BIT(kResc_STCM7) | PM_RESC_TO_BIT(kResc_STCM8) | \
-                        PM_RESC_TO_BIT(kResc_Fro192M) | PM_RESC_TO_BIT(kResc_Fro6M) | \
-                        PM_RESC_TO_BIT(kResc_WakePowerDomainPeri) | PM_RESC_TO_BIT(kResc_BusSysClk))
+                        PM_RESC_TO_BIT(kResc_Fro192M) | PM_RESC_TO_BIT(kResc_WakePowerDomainPeri) | \
+                        PM_RESC_TO_BIT(kResc_BusSysClk))
 
 #define PM_DS_FIX_CONSTR_MASK   (PM_RESC_TO_BIT(kResc_CoreClk) | PM_RESC_TO_BIT(kResc_BusSysClk) |\
                                 PM_RESC_TO_BIT(kResc_MainPowerDomainPeriOpt2) | PM_RESC_TO_BIT(kResc_Fro192M))
@@ -102,7 +101,7 @@ static bool PM_IsWakeupSource(pm_wakeup_source_t *ws);
                         PM_RESC_TO_BIT(kResc_STCM0) | PM_RESC_TO_BIT(kResc_STCM1) | PM_RESC_TO_BIT(kResc_STCM2) |\
                         PM_RESC_TO_BIT(kResc_STCM3) | PM_RESC_TO_BIT(kResc_STCM4) | PM_RESC_TO_BIT(kResc_STCM5) | \
                         PM_RESC_TO_BIT(kResc_STCM6) | PM_RESC_TO_BIT(kResc_STCM7) | PM_RESC_TO_BIT(kResc_STCM8) | \
-                        PM_RESC_TO_BIT(kResc_Fro6M) | PM_RESC_TO_BIT(kResc_WakePowerDomainPeri))
+                        PM_RESC_TO_BIT(kResc_WakePowerDomainPeri))
 
 #define PM_PD_FIX_CONSTR_MASK (PM_RESC_TO_BIT(kResc_CoreClk) | PM_RESC_TO_BIT(kResc_BusSysClk) | \
                             PM_RESC_TO_BIT(kResc_MainPowerDomainPeriOpt1) | \
@@ -111,7 +110,7 @@ static bool PM_IsWakeupSource(pm_wakeup_source_t *ws);
                         PM_RESC_TO_BIT(kResc_STCM0) | PM_RESC_TO_BIT(kResc_STCM1) | PM_RESC_TO_BIT(kResc_STCM2) |\
                         PM_RESC_TO_BIT(kResc_STCM3) | PM_RESC_TO_BIT(kResc_STCM4) | PM_RESC_TO_BIT(kResc_STCM5) | \
                         PM_RESC_TO_BIT(kResc_STCM6) | PM_RESC_TO_BIT(kResc_STCM7) | PM_RESC_TO_BIT(kResc_STCM8) | \
-                        PM_RESC_TO_BIT(kResc_Fro6M) | PM_RESC_TO_BIT(kResc_WakePowerDomainPeri))
+                        PM_RESC_TO_BIT(kResc_WakePowerDomainPeri))
 
 #define PM_DPD_FIX_CONSTR_MASK (PM_RESC_TO_BIT(kResc_CoreClk) | PM_RESC_TO_BIT(kResc_BusSysClk) | \
                             PM_RESC_TO_BIT(kResc_MainPowerDomainPeriOpt1) | \
@@ -119,7 +118,7 @@ static bool PM_IsWakeupSource(pm_wakeup_source_t *ws);
                             PM_RESC_TO_BIT(kResc_CTCM0) | PM_RESC_TO_BIT(kResc_CTCM1) | PM_RESC_TO_BIT(kResc_STCM0) | \
                             PM_RESC_TO_BIT(kResc_STCM1) | PM_RESC_TO_BIT(kResc_STCM2) | PM_RESC_TO_BIT(kResc_STCM3) | \
                             PM_RESC_TO_BIT(kResc_STCM4) | PM_RESC_TO_BIT(kResc_STCM5) | PM_RESC_TO_BIT(kResc_STCM6) | \
-                            PM_RESC_TO_BIT(kResc_STCM7) | PM_RESC_TO_BIT(kResc_Fro6M))
+                            PM_RESC_TO_BIT(kResc_STCM7))
 #define PM_DPD_VAR_CONSTR_MASK (PM_RESC_TO_BIT(kResc_WakePowerDomainPeri) | PM_RESC_TO_BIT(kResc_STCM8))
 
 const pm_device_option_t g_devicePMOption = {
@@ -203,7 +202,6 @@ AT_ALWAYS_ON_DATA_INIT(pm_resource_recode_t resourceDB[PM_CONFIGURABLE_RESOURCE_
     {PM_RESOURCE_OFF, 0U, PM_SetRAMOperateMode},    /* STCM7 */
     {PM_RESOURCE_FULL_ON, 0U, PM_SetRAMOperateMode},    /* STCM8 */
     {PM_RESOURCE_OFF, 0U, PM_SetFro192MOperateMode},
-    {PM_RESOURCE_OFF, 0U, PM_SetFro6MOperateMode},
     {PM_RESOURCE_FULL_ON, PM_RESOURCE_FULL_ON, PM_SetWakePowerDomainOperateMode},
 };
 
@@ -537,27 +535,6 @@ static void PM_SetFro192MOperateMode(uint8_t operateMode, pm_resource_recode_t *
     if (tmp8 == PM_RESOURCE_FULL_ON)
     {
         SCG0->FIRCCSR |= SCG_FIRCCSR_FIRCSTEN_MASK;
-    }
-
-    pResourceRecode->currentOperateMode = tmp8;
-}
-
-static void PM_SetFro6MOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode)
-{
-    assert(pResourceRecode);
-
-    uint8_t tmp8;
-
-    tmp8 = pResourceRecode->defaultOperateMode;
-
-    if (operateMode != tmp8)
-    {
-        tmp8 = operateMode;
-    }
-
-    if (tmp8 == PM_RESOURCE_FULL_ON)
-    {
-        SCG0->SIRCCSR |= SCG_SIRCCSR_SIRCSTEN_MASK;
     }
 
     pResourceRecode->currentOperateMode = tmp8;
