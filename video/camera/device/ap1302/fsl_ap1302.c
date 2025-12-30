@@ -43,6 +43,7 @@
 #define AP1302_BOOTDATA_CHECKSUM        (uint16_t)(0x6134U)
 #define AP1302_SIP_CRC                  (uint16_t)(0xF052U)
 #define AP1302_PLL_DIV                  (uint16_t)(0x602CU)
+#define AP1302_PREVIEW_HINF_CTRL_SPOOF  (uint16_t)(0x10U)
 
 #define AP1302_WriteReg(handle, reg, size, val)                                                       \
     VIDEO_I2C_WriteReg(AP1302_I2C_ADDR, kVIDEO_RegAddr16Bit, (reg), (video_reg_width_t)(size), (val), \
@@ -223,6 +224,9 @@ status_t AP1302_Init(camera_device_handle_t *handle, const camera_config_t *conf
     /* disable auto focus */
     AP1302_CHECK_RET(AP1302_WriteReg(handle, 0x5058, 2, 0x0002));
     AP1302_CHECK_RET(AP1302_WriteReg(handle, 0x505C, 2, 0x0064));
+
+    /* Update data lane */
+    AP1302_CHECK_RET(AP1302_WriteReg(handle, 0x2030, 2, AP1302_PREVIEW_HINF_CTRL_SPOOF | config->csiLanes));
 
     if ((uint32_t)kVIDEO_Resolution1080P == config->resolution)
     {
