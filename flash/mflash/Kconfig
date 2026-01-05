@@ -33,3 +33,7 @@ config MCUX_COMPONENT_component.mflash_offchip
     imply MCUX_COMPONENT_driver.cache_armv7_m7 if MCUX_HAS_COMPONENT_driver.cache_armv7_m7
     imply MCUX_COMPONENT_driver.cache_xcache if MCUX_HAS_COMPONENT_driver.cache_xcache
     imply MCUX_COMPONENT_driver.xspi if MCUX_HAS_COMPONENT_driver.xspi
+
+config MCUX_COMPONENT_component.mflash_custom
+    bool "Custom mflash component in case of special requirements the mflash_custom folder should be created manually"
+    default n

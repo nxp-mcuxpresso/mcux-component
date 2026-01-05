@@ -244,4 +244,8 @@ if ((${board} STREQUAL frdmmcxe31b))
     mcux_set_variable(drv_folder mcxe3x)
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.mflash_custom)
+    mcux_set_variable(drv_folder mflash_custom)
+endif()
+
 mcux_add_cmakelists(${SdkRootDirPath}/components/flash/mflash/${drv_folder} OPTIONAL)
