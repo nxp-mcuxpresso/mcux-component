@@ -785,7 +785,7 @@ wpl_ret_t WPL_Join(char *label)
     if (status == WPLRET_SUCCESS)
     {
         syncBit = xEventGroupWaitBits(s_wplSyncEvent, WPL_SYNC_CONNECT_GROUP, pdTRUE, pdFALSE, WPL_SYNC_TIMEOUT_MS);
-        if ((syncBit & EVENT_BIT(WLAN_REASON_SUCCESS)) != 0U)
+        if ((syncBit & EVENT_BIT(WPL_EVENT_SUCCESS)) != 0U)
         {
             status = WPLRET_SUCCESS;
         }
