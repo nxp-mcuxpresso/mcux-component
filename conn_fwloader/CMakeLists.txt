@@ -1,4 +1,4 @@
-# Copyright 2024-2025 NXP
+# Copyright 2024-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader)
@@ -70,4 +70,97 @@ if (CONFIG_MCUX_COMPONENT_driver.conn_fwloader.monolithic)
         PREINCLUDE TRUE
         SOURCES monolithic_config.h
     )
+endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.wifi.libcsi_cm33)
+    mcux_add_library(
+        LIBS cm33/armgcc/libcsi.a
+        TOOLCHAINS armgcc
+        CORES cm33
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi
+    )
+
+    mcux_add_library(
+        LIBS cm33/iar/libcsi.a
+        TOOLCHAINS iar
+        CORES cm33
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi
+    )
+
+    mcux_add_library(
+        LIBS cm33/mdk/libcsi.lib
+        TOOLCHAINS mdk
+        CORES cm33
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi
+    )
+
+    mcux_add_library(
+        LIBS cm33/mcux/libcsi.a
+        TOOLCHAINS mcux
+        CORES cm33
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi
+    )
+
+endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.wifi.libcsi_cm7.cm7f)
+    mcux_add_library(
+        LIBS cm7f/armgcc/libcsi.a
+        TOOLCHAINS armgcc
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
+    mcux_add_library(
+        LIBS cm7f/iar/libcsi.a
+        TOOLCHAINS iar
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
+    mcux_add_library(
+        LIBS cm7f/mdk/libcsi.lib
+        TOOLCHAINS mdk
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
+    mcux_add_library(
+        LIBS cm7f/mcux/libcsi.a
+        TOOLCHAINS mcux
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
+endif()
+
+if (CONFIG_MCUX_COMPONENT_driver.wifi.libcsi_cm7.cm7f_sta_20M_only)
+    mcux_add_library(
+        LIBS cm7f_sta_20M_only/armgcc/libcsi.a
+        TOOLCHAINS armgcc
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
+    mcux_add_library(
+        LIBS cm7f_sta_20M_only/iar/libcsi.a
+        TOOLCHAINS iar
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
+    mcux_add_library(
+        LIBS cm7f_sta_20M_only/mdk/libcsi.lib
+        TOOLCHAINS mdk
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
+    mcux_add_library(
+        LIBS cm7f_sta_20M_only/mcux/libcsi.a
+        TOOLCHAINS mcux
+        CORES cm7f
+        BASE_PATH ${SdkRootDirPath}/components/conn_fwloader/fw_bin/lib/libcsi/cm7
+    )
+
 endif()
