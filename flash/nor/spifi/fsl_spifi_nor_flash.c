@@ -597,8 +597,6 @@ static status_t spifi_get_page_sector_size_from_sfdp(nor_handle_t *handle, jedec
     }
     else
     {
-        /* INT31-C: Validate shift result before assignment */
-        assert((1 << param_tbl->chip_erase_progrm_info.page_size) <= UINT32_MAX);
         page_size               = (uint32_t)(1 << param_tbl->chip_erase_progrm_info.page_size);
         handle->bytesInPageSize = page_size == (1 << 15) ? 256U : page_size;
     }
@@ -924,9 +922,9 @@ status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_B
 {
     assert(handle != NULL);
     assert(size_Byte > 0x00U);
+    uint32_t startAddress = address;
     /* INT30-C: Prevent unsigned integer overflow */
     assert(startAddress <= UINT32_MAX - handle->bytesInSectorSize);
-    uint32_t startAddress = address;
     status_t status       = kStatus_Success;
 
     if ((address % (handle->bytesInSectorSize)) != 0UL)
@@ -1014,11 +1012,11 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
 {
     assert(handle != NULL);
     assert(buffer != NULL);
-    /* INT30-C: Prevent unsigned integer overflow */
-    assert(startAddress <= UINT32_MAX - handle->bytesInPageSize);
     uint32_t startAddress = address;
     status_t status       = kStatus_Success;
 
+    /* INT30-C: Prevent unsigned integer overflow */
+    assert(startAddress <= UINT32_MAX - handle->bytesInPageSize);
     if ((address % (handle->bytesInPageSize)) != 0UL)
     {
         return kStatus_InvalidArgument;

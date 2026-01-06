@@ -167,8 +167,6 @@ static void semc_nand_crc16_onfi_finalize(crc16_data_t *crc16Info, uint16_t *has
     assert(crc16Info != NULL);
     assert(hash != NULL);
 
-    /* INT31-C: Value already fits in uint16_t from crc16_data_t structure */
-    assert(crc16Info->currentCrc <= UINT16_MAX);
     *hash = (uint16_t)crc16Info->currentCrc;
 }
 
