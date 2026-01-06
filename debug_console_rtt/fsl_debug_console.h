@@ -49,10 +49,14 @@
  *  if SDK_DEBUGCONSOLE defined to 2,it represents disable debugconsole function.
  */
 #if SDK_DEBUGCONSOLE == DEBUGCONSOLE_DISABLE /* Disable debug console */
-#define PRINTF(...)
-#define SCANF(...) 0U
-#define PUTCHAR(...)
-#define GETCHAR() 0U
+static inline int DbgConsole_Disabled(void)
+{
+    return -1;
+}
+#define PRINTF(...)  DbgConsole_Disabled()
+#define SCANF(...)   DbgConsole_Disabled()
+#define PUTCHAR(...) DbgConsole_Disabled()
+#define GETCHAR()    DbgConsole_Disabled()
 #elif SDK_DEBUGCONSOLE == DEBUGCONSOLE_REDIRECT_TO_SDK
 #define PRINTF(...) SEGGER_RTT_printf(0, __VA_ARGS__)
 #define SCANF       DbgConsole_Scanf
