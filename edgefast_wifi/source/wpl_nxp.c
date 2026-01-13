@@ -561,6 +561,10 @@ static int WLP_process_results(unsigned int count)
             {
                 (void)strcat(security, "WPA3_SAE ");
             }
+            if (scan_result.wpa2_sha256 == 1U)
+            {
+                (void)strcat(security, "WPA2_SHA256 ");
+            }
 
             if (i != 0U)
             {
