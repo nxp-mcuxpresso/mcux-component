@@ -59,3 +59,7 @@ menu "Flash"
 
         endif
 endmenu
+
+config MCUX_SETTING.mflash_custom
+    bool
+    default MCUX_COMPONENT_component.mflash_custom
