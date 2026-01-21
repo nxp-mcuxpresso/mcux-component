@@ -58,7 +58,7 @@
 #else
 #define XSPI_INVALIDATE_CACHES do { \
   XSPI_Cache64_InvalidateCache(CACHE64_CTRL0); \
-  } while(0)    
+  } while(0)
 #endif
 /*******************************************************************************
  * Prototypes
@@ -392,7 +392,7 @@ RAMFUNC static int32_t mflash_drv_init_internal(XSPI_Type *base, bool useOctal)
     primask = __get_PRIMASK();
     __asm("cpsid i");
 
-#if USE_XSPI1    
+#if USE_XSPI1
     CLOCK_AttachClk(kMAIN_PLL_PFD2_to_XSPI1);
     CLOCK_SetClkDiv(kCLOCK_DivXspi1Clk, 1u); /*400MHz*/
 
@@ -500,8 +500,6 @@ RAMFUNC static int32_t mflash_drv_sector_erase_internal(uint32_t sector_addr)
 
     status = xspi_nor_flash_erase_sector(XSPI_INSTANCE, sector_addr, USE_OCTAL_MODE);
 
-    // invalidate_caches();
-    DCACHE_InvalidateByRange(MFLASH_BASE_ADDRESS + sector_addr, MFLASH_SECTOR_SIZE);
     XSPI_INVALIDATE_CACHES;
 
     if (primask == 0U)
@@ -537,7 +535,6 @@ RAMFUNC static int32_t mflash_drv_page_program_internal(uint32_t page_addr, uint
     status_t status;
     status = xspi_nor_flash_page_program(XSPI_INSTANCE, page_addr, data, USE_OCTAL_MODE);
 
-    DCACHE_InvalidateByRange(MFLASH_BASE_ADDRESS + page_addr, MFLASH_PAGE_SIZE);
     XSPI_INVALIDATE_CACHES;
 
     if (primask == 0U)
