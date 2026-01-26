@@ -551,9 +551,9 @@ static status_t SDU_InitBuffer(void)
     config.fun_num        = 1;
     config.used_port_num  = SDU_ACTUAL_USE_PORT_NUM;
     config.cpu_num        = 1;//kSDIOSLV_INT_CPUNum3;
-    config.cmd_tx_format  = 2;
+    config.cmd_tx_format  = 1;
     config.cmd_rd_format  = 1;
-    config.data_tx_format = 2;
+    config.data_tx_format = 1;
     config.data_rd_format = 1;
     config.cmd_callback   = SDU_CmdCallback;
     config.cmd_user_data  = &ctrl_sdu;
