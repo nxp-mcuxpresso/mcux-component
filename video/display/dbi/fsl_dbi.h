@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, 2024 NXP
+ * Copyright 2019, 2024, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -275,7 +275,7 @@ status_t DBI_IFACE_SelectArea(dbi_iface_t *dbiIface, uint16_t startX, uint16_t s
  */
 static inline status_t DBI_IFACE_SetPixelFormat(dbi_iface_t *dbiIface, video_pixel_format_t format)
 {
-    if (dbiIface->configOps->setPixelFormat != NULL)
+    if ((dbiIface->configOps != NULL) && (dbiIface->configOps->setPixelFormat != NULL))
     {
         return dbiIface->configOps->setPixelFormat(dbiIface, format);
     }
@@ -293,7 +293,7 @@ static inline status_t DBI_IFACE_SetPixelFormat(dbi_iface_t *dbiIface, video_pix
  */
 static inline uint32_t DBI_IFACE_GetProperty(dbi_iface_t *dbiIface)
 {
-    if (dbiIface->configOps->getProperty != NULL)
+    if ((dbiIface->configOps != NULL) && (dbiIface->configOps->getProperty != NULL))
     {
         return dbiIface->configOps->getProperty(dbiIface);
     }
