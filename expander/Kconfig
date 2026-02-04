@@ -1,4 +1,4 @@
-# Copyright 2024 NXP
+# Copyright 2024-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 config MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
@@ -39,5 +39,10 @@ config MCUX_COMPONENT_driver.adp5585
     bool "Select expander adp5585 driver"
     help
       Say yes here to select adp5585 driver.
+
+config MCUX_COMPONENT_driver.pi4io6408
+    bool "Select expander pi4io6408 driver"
+    help
+      Say yes here to select pi4io6408 driver.
 
 endif

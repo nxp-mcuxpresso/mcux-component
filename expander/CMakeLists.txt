@@ -44,4 +44,15 @@ if (CONFIG_MCUX_COMPONENT_driver.adp5585)
                 ./adp5585/fsl_adp5585.c
     )
 
+if (CONFIG_MCUX_COMPONENT_driver.pi4io6408)
+    mcux_add_include(
+        INCLUDES ./pi4io6408
+    )
+
+    mcux_add_source(
+        SOURCES ./pi4io6408/fsl_pi4io6408.c
+                ./pi4io6408/fsl_pi4io6408.h
+    )
+endif()
+
 endif()
