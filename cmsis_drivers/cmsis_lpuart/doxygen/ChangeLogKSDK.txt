@@ -2,7 +2,11 @@
 @page driver_log Driver Change Log
 
 @section lpuart_cmsis  LPUART_CMSIS
-  Current LPUART_CMSIS driver version is 2.7
+  Current LPUART_CMSIS driver version is 2.8
+
+  - 2.8
+    - Improvement
+      - Placed LPUARTn_EdmaHandle to non-cacheable section.
 
   - 2.7
     - Improvement

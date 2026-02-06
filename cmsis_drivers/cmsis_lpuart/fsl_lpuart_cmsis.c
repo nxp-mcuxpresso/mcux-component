@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
  * Copyright (c) 2016, Freescale Semiconductor, Inc. Not a Contribution.
- * Copyright 2016-2017,2020,2021,2024-2025 NXP. Not a Contribution.
+ * Copyright 2016-2017,2020,2021,2024-2026 NXP. Not a Contribution.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -218,7 +218,7 @@
      (defined(RTE_USART19) && RTE_USART19 && (defined(LPUART19) || defined(LPUART_19))) || \
      (defined(RTE_USART20) && RTE_USART10 && (defined(LPUART20) || defined(LPUART_20))))
 
-#define ARM_LPUART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (7))
+#define ARM_LPUART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (8))
 
 /*
  * ARMCC does not support split the data section automatically, so the driver
@@ -1489,7 +1489,7 @@ static cmsis_lpuart_edma_resource_t LPUART0_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART0_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART0_EdmaHandle);
 static edma_handle_t LPUART0_EdmaRxHandle;
 static edma_handle_t LPUART0_EdmaTxHandle;
 
@@ -1815,7 +1815,7 @@ static cmsis_lpuart_edma_resource_t LPUART1_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART1_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART1_EdmaHandle);
 static edma_handle_t LPUART1_EdmaRxHandle;
 static edma_handle_t LPUART1_EdmaTxHandle;
 
@@ -2130,7 +2130,7 @@ static cmsis_lpuart_edma_resource_t LPUART2_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART2_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART2_EdmaHandle);
 static edma_handle_t LPUART2_EdmaRxHandle;
 static edma_handle_t LPUART2_EdmaTxHandle;
 
@@ -2445,7 +2445,7 @@ static cmsis_lpuart_edma_resource_t LPUART3_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART3_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART3_EdmaHandle);
 static edma_handle_t LPUART3_EdmaRxHandle;
 static edma_handle_t LPUART3_EdmaTxHandle;
 
@@ -2760,7 +2760,7 @@ static cmsis_lpuart_edma_resource_t LPUART4_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART4_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART4_EdmaHandle);
 static edma_handle_t LPUART4_EdmaRxHandle;
 static edma_handle_t LPUART4_EdmaTxHandle;
 
@@ -3077,7 +3077,7 @@ static cmsis_lpuart_edma_resource_t LPUART5_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART5_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART5_EdmaHandle);
 static edma_handle_t LPUART5_EdmaRxHandle;
 static edma_handle_t LPUART5_EdmaTxHandle;
 
@@ -3394,7 +3394,7 @@ static cmsis_lpuart_edma_resource_t LPUART6_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART6_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART6_EdmaHandle);
 static edma_handle_t LPUART6_EdmaRxHandle;
 static edma_handle_t LPUART6_EdmaTxHandle;
 
@@ -3711,7 +3711,7 @@ static cmsis_lpuart_edma_resource_t LPUART7_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART7_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART7_EdmaHandle);
 static edma_handle_t LPUART7_EdmaRxHandle;
 static edma_handle_t LPUART7_EdmaTxHandle;
 
@@ -4028,7 +4028,7 @@ static cmsis_lpuart_edma_resource_t LPUART8_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART8_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART8_EdmaHandle);
 static edma_handle_t LPUART8_EdmaRxHandle;
 static edma_handle_t LPUART8_EdmaTxHandle;
 
@@ -4345,7 +4345,7 @@ static cmsis_lpuart_edma_resource_t LPUART9_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART9_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART9_EdmaHandle);
 static edma_handle_t LPUART9_EdmaRxHandle;
 static edma_handle_t LPUART9_EdmaTxHandle;
 
@@ -4662,7 +4662,7 @@ static cmsis_lpuart_edma_resource_t LPUART10_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART10_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART10_EdmaHandle);
 static edma_handle_t LPUART10_EdmaRxHandle;
 static edma_handle_t LPUART10_EdmaTxHandle;
 
@@ -4979,7 +4979,7 @@ static cmsis_lpuart_edma_resource_t LPUART11_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART11_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART11_EdmaHandle);
 static edma_handle_t LPUART11_EdmaRxHandle;
 static edma_handle_t LPUART11_EdmaTxHandle;
 
@@ -5296,7 +5296,7 @@ static cmsis_lpuart_edma_resource_t LPUART12_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART12_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART12_EdmaHandle);
 static edma_handle_t LPUART12_EdmaRxHandle;
 static edma_handle_t LPUART12_EdmaTxHandle;
 
@@ -5613,7 +5613,7 @@ static cmsis_lpuart_edma_resource_t LPUART13_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART13_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART13_EdmaHandle);
 static edma_handle_t LPUART13_EdmaRxHandle;
 static edma_handle_t LPUART13_EdmaTxHandle;
 
@@ -5930,7 +5930,7 @@ static cmsis_lpuart_edma_resource_t LPUART14_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART14_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART14_EdmaHandle);
 static edma_handle_t LPUART14_EdmaRxHandle;
 static edma_handle_t LPUART14_EdmaTxHandle;
 
@@ -6247,7 +6247,7 @@ static cmsis_lpuart_edma_resource_t LPUART15_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART15_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART15_EdmaHandle);
 static edma_handle_t LPUART15_EdmaRxHandle;
 static edma_handle_t LPUART15_EdmaTxHandle;
 
@@ -6564,7 +6564,7 @@ static cmsis_lpuart_edma_resource_t LPUART16_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART16_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART16_EdmaHandle);
 static edma_handle_t LPUART16_EdmaRxHandle;
 static edma_handle_t LPUART16_EdmaTxHandle;
 
@@ -6881,7 +6881,7 @@ static cmsis_lpuart_edma_resource_t LPUART17_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART17_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART17_EdmaHandle);
 static edma_handle_t LPUART17_EdmaRxHandle;
 static edma_handle_t LPUART17_EdmaTxHandle;
 
@@ -7198,7 +7198,7 @@ static cmsis_lpuart_edma_resource_t LPUART18_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART18_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART18_EdmaHandle);
 static edma_handle_t LPUART18_EdmaRxHandle;
 static edma_handle_t LPUART18_EdmaTxHandle;
 
@@ -7515,7 +7515,7 @@ static cmsis_lpuart_edma_resource_t LPUART19_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART19_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART19_EdmaHandle);
 static edma_handle_t LPUART19_EdmaRxHandle;
 static edma_handle_t LPUART19_EdmaTxHandle;
 
@@ -7832,7 +7832,7 @@ static cmsis_lpuart_edma_resource_t LPUART20_EdmaResource = {
 #endif
 };
 
-static lpuart_edma_handle_t LPUART20_EdmaHandle;
+AT_NONCACHEABLE_SECTION(static lpuart_edma_handle_t LPUART20_EdmaHandle);
 static edma_handle_t LPUART20_EdmaRxHandle;
 static edma_handle_t LPUART20_EdmaTxHandle;
 
