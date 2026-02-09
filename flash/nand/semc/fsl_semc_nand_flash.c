@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2021, 2025 NXP
+ * Copyright 2018-2021, 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -739,9 +739,7 @@ static status_t semc_nand_issue_read_status(nand_handle_t *handle, uint8_t *stat
     }
 
     /* Set SR value according to readout data from Device */
-    /* INT31-C: Validate before narrowing conversion */
-    assert(readoutData <= UINT8_MAX);
-    *stat = (uint8_t)readoutData;
+    *stat = (uint8_t)(readoutData & 0xFFU);
 
     return kStatus_Success;
 }
@@ -834,7 +832,7 @@ status_t Nand_Flash_Read_Page_Partial(
     uint32_t pageSize   = handle->bytesInPageDataArea + handle->bytesInPageSpareArea;
     /* INT30-C: Prevent multiplication overflow */
     assert(handle->pagesInBlock == 0U || handle->blocksInPlane <= UINT32_MAX / handle->pagesInBlock);
-    assert((handle->pagesInBlock * handle->blocksInPlane) == 0U || 
+    assert((handle->pagesInBlock * handle->blocksInPlane) == 0U ||
            handle->planesInDevice <= UINT32_MAX / (handle->pagesInBlock * handle->blocksInPlane));
     uint32_t ipgCmdAddr = pageIndex * (1UL << ((semc_mem_nand_handle_t *)handle->deviceSpecific)->columnWidth);
     uint32_t pageNum    = handle->pagesInBlock * handle->blocksInPlane * handle->planesInDevice;
@@ -1004,7 +1002,7 @@ status_t Nand_Flash_Read_Page(nand_handle_t *handle, uint32_t pageIndex, uint8_t
     semc_mem_nand_handle_t *semcHandle = (semc_mem_nand_handle_t *)handle->deviceSpecific;
     /* INT30-C: Prevent multiplication overflow */
     assert(handle->pagesInBlock == 0U || handle->blocksInPlane <= UINT32_MAX / handle->pagesInBlock);
-    assert((handle->pagesInBlock * handle->blocksInPlane) == 0U || 
+    assert((handle->pagesInBlock * handle->blocksInPlane) == 0U ||
            handle->planesInDevice <= UINT32_MAX / (handle->pagesInBlock * handle->blocksInPlane));
     uint32_t pageNum                   = handle->pagesInBlock * handle->blocksInPlane * handle->planesInDevice;
 
@@ -1061,7 +1059,7 @@ status_t Nand_Flash_Page_Program(nand_handle_t *handle, uint32_t pageIndex, cons
     status_t status  = kStatus_Success;
     /* INT30-C: Prevent multiplication overflow */
     assert(handle->pagesInBlock == 0U || handle->blocksInPlane <= UINT32_MAX / handle->pagesInBlock);
-    assert((handle->pagesInBlock * handle->blocksInPlane) == 0U || 
+    assert((handle->pagesInBlock * handle->blocksInPlane) == 0U ||
            handle->planesInDevice <= UINT32_MAX / (handle->pagesInBlock * handle->blocksInPlane));
     uint32_t pageNum = handle->pagesInBlock * handle->blocksInPlane * handle->planesInDevice;
     uint32_t ipgCmdAddr;
