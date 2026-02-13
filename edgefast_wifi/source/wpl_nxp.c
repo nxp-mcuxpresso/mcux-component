@@ -75,7 +75,9 @@ typedef enum _wpl_state
  ******************************************************************************/
 static wpl_state_t s_wplState            = WPL_NOT_INITIALIZED;
 static bool s_wplStaConnected            = false;
+#if UAP_SUPPORT
 static bool s_wplUapActivated            = false;
+#endif
 static EventGroupHandle_t s_wplSyncEvent = NULL;
 static linkLostCb_t s_linkLostCb         = NULL;
 static char *ssids_json                  = NULL;
@@ -337,6 +339,7 @@ wpl_ret_t WPL_Stop(void)
 wpl_ret_t WPL_Start_AP(const char *ssid, const char *password, int chan)
 {
     wpl_ret_t status = WPLRET_SUCCESS;
+#if UAP_SUPPORT
     int ret;
     enum wlan_security_type security = WLAN_SECURITY_NONE;
     EventBits_t syncBit;
@@ -442,6 +445,9 @@ wpl_ret_t WPL_Start_AP(const char *ssid, const char *password, int chan)
     {
         s_wplUapActivated = true;
     }
+#else
+    status = WPLRET_FAIL;
+#endif
 
     return status;
 }
@@ -449,6 +455,7 @@ wpl_ret_t WPL_Start_AP(const char *ssid, const char *password, int chan)
 wpl_ret_t WPL_Stop_AP(void)
 {
     wpl_ret_t status = WPLRET_SUCCESS;
+#if UAP_SUPPORT
     int ret;
     EventBits_t syncBit;
 
@@ -500,6 +507,9 @@ wpl_ret_t WPL_Stop_AP(void)
     {
         s_wplUapActivated = false;
     }
+#else
+    status = WPLRET_FAIL;
+#endif
 
     return status;
 }
