@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
  * Copyright (c) 2016, Freescale Semiconductor, Inc. Not a Contribution.
- * Copyright 2016-2017，2020 NXP. Not a Contribution.
+ * Copyright 2016-2017, 2020, 2026 NXP. Not a Contribution.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -28,7 +28,7 @@
 #if ((defined(UART1) && defined(RTE_USART1) && RTE_USART1) || (defined(UART2) && defined(RTE_USART2) && RTE_USART2) || \
      (defined(UART3) && defined(RTE_USART3) && RTE_USART3) || (RTE_USART4 && defined(UART4)))
 
-#define ARM_UART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (1))
+#define ARM_UART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (2))
 
 /*
  * ARMCC does not support split the data section automatically, so the driver
@@ -51,6 +51,11 @@ typedef struct _cmsis_uart_non_blocking_driver_state
     ARM_USART_SignalEvent_t cb_event; /*!< Callback function.        */
     uint8_t flags;                    /*!< Control and state flags.  */
 } cmsis_uart_non_blocking_driver_state_t;
+
+#if ((defined(RTE_USART1_DMA_EN) && RTE_USART1_DMA_EN) || \
+     (defined(RTE_USART2_DMA_EN) && RTE_USART2_DMA_EN) || \
+     (defined(RTE_USART3_DMA_EN) && RTE_USART3_DMA_EN) || \
+     (defined(RTE_USART4_DMA_EN) && RTE_USART4_DMA_EN))
 #if (defined(FSL_FEATURE_SOC_SDMA_COUNT) && FSL_FEATURE_SOC_SDMA_COUNT)
 typedef struct _cmsis_uart_sdma_resource
 {
@@ -75,6 +80,7 @@ typedef struct _cmsis_uart_sdma_driver_state
     ARM_USART_SignalEvent_t cb_event;         /*!< Callback function.         */
     uint8_t flags;                            /*!< Control and state flags.   */
 } cmsis_uart_sdma_driver_state_t;
+#endif
 #endif
 
 enum _uart_transfer_states

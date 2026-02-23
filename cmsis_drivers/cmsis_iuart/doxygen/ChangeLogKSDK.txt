@@ -2,7 +2,11 @@
 @page driver_log Driver Change Log
 
 @section uart cmsis  UART CMSIS
-  The current UART CMSIS driver version is 2.1
+  The current UART CMSIS driver version is 2.2
+
+  - 2.2
+    - Improvement
+      - Make DMA related parts depend on the definition of RTE_USARTn_DMA_EN.
 
   - 2.1
     - Bug Fixes

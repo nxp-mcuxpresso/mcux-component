@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013-2016 ARM Limited. All rights reserved.
  * Copyright (c) 2016, Freescale Semiconductor, Inc. Not a Contribution.
- * Copyright 2016-2017 NXP. Not a Contribution.
+ * Copyright 2016-2017, 2026 NXP. Not a Contribution.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -25,8 +25,13 @@
 #include "Driver_USART.h"
 #include "RTE_Device.h"
 #include "fsl_uart.h"
+#if ((defined(RTE_USART1_DMA_EN) && RTE_USART1_DMA_EN) || \
+     (defined(RTE_USART2_DMA_EN) && RTE_USART2_DMA_EN) || \
+     (defined(RTE_USART3_DMA_EN) && RTE_USART3_DMA_EN) || \
+     (defined(RTE_USART4_DMA_EN) && RTE_USART4_DMA_EN))
 #if (defined(FSL_FEATURE_SOC_SDMA_COUNT) && FSL_FEATURE_SOC_SDMA_COUNT)
 #include "fsl_uart_sdma.h"
+#endif
 #endif
 #if defined(UART1) && defined(RTE_USART1) && RTE_USART1
 extern ARM_DRIVER_USART Driver_USART1;
