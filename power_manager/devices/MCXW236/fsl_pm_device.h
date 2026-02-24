@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2025-2026 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -65,7 +65,7 @@ enum _pm_resc_name
     kResc_SecVioWake = (uint32_t)SEC_VIO_IRQn,          /*!< Security violation wake-up */
     kResc_TrngWake = (uint32_t)TRNG_IRQn,               /*!< True random number generator wake-up */
     kResc_Dma1Wake = (uint32_t)DMA1_IRQn,               /*!< DMA1 wake-up */
-    kResc_WakePadWake = (uint32_t)WAKE_PAD_IRQn,        /*!< Wake pad wake-up */
+    kResc_WakePadWake = (uint32_t)63,                   /*!< Wake pad wake-up */
 
     /* System resources */
     kResc_CpuClk = kResc_WakePadWake + 1,                /*!< CPU clock resource */
