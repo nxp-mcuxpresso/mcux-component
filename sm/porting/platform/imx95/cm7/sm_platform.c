@@ -85,6 +85,203 @@ void SM_Platform_Deinit(void)
 }
 
 /*!
+ * @brief Handle system power state notification.
+ */
+static void SM_Platform_HandleSystemNotification(void)
+{
+    uint32_t notifyFlags, systemState;
+
+    if (SCMI_SystemPowerStateNotifier(SM_PLATFORM_NOTIFY, NULL, &notifyFlags, &systemState, NULL) ==
+        SCMI_ERR_SUCCESS)
+    {
+        bool graceful = (SCMI_SYS_NOTIFIER_GRACEFUL(notifyFlags) != 0U);
+
+        PRINTF("\nSCMI system notification: graceful=%u, state=0x%08X\r\n", graceful, systemState);
+
+        if (graceful)
+        {
+            switch (systemState)
+            {
+                case SCMI_SYS_STATE_FULL_SHUTDOWN:
+                case SCMI_SYS_STATE_SHUTDOWN:
+                    PRINTF("sm request M7 into shutdown\r\n");
+                    break;
+                case SCMI_SYS_STATE_FULL_RESET:
+                case SCMI_SYS_STATE_COLD_RESET:
+                case SCMI_SYS_STATE_WARM_RESET:
+                    PRINTF("sm request M7 into reset\r\n");
+                    break;
+                case SCMI_SYS_STATE_FULL_SUSPEND:
+                case SCMI_SYS_STATE_SUSPEND:
+#if SCMI_LM_REQUEST_M7_SUSPEND_ENABLE
+                    /* SCMI send lm 1 suspend -> M7 sm platform interrupt -> app power rtos case to deal with this request. */
+                    scmiRequestM7IntoSuspend = true;
+#endif
+                    PRINTF("sm request M7 into suspend\r\n");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+/*!
+ * @brief Handle LMM notification.
+ */
+static void SM_Platform_HandleLmmNotification(void)
+{
+    uint32_t notifyFlags, eventLm;
+
+    if (SCMI_LmmEvent(SM_PLATFORM_NOTIFY, NULL, &eventLm, &notifyFlags) == SCMI_ERR_SUCCESS)
+    {
+#if SCMI_LMM_POWER_CHANGE_PROCESSED
+        /* Handle peer acore power changes notification to assure right communication. */
+        APP_SRTM_HandleLmmPowerChange(eventLm, notifyFlags);
+#endif
+    }
+}
+
+/*!
+ * @brief Handle BBM notification.
+ */
+static void SM_Platform_HandleBbmNotification(uint32_t messageId)
+{
+    uint32_t notifyFlags;
+
+    if (messageId == SCMI_MSG_BBM_RTC_EVENT)
+    {
+        if (SCMI_BbmRtcEvent(SM_PLATFORM_NOTIFY, &notifyFlags) == SCMI_ERR_SUCCESS)
+        {
+            PRINTF("\nSCMI BBM RTC notification: flags=0x%08X\r\n", notifyFlags);
+        }
+    }
+    else
+    {
+        if (SCMI_BbmButtonEvent(SM_PLATFORM_NOTIFY, &notifyFlags) == SCMI_ERR_SUCCESS)
+        {
+            PRINTF("\nSCMI BBM button notification: flags=0x%08X\r\n", notifyFlags);
+        }
+    }
+}
+
+/*!
+ * @brief Handle sensor notification.
+ */
+static void SM_Platform_HandleSensorNotification(void)
+{
+    uint32_t sensorId, desc;
+
+    if (SCMI_SensorTripPointEvent(SM_PLATFORM_NOTIFY, NULL, &sensorId, &desc) == SCMI_ERR_SUCCESS)
+    {
+        PRINTF("\nSCMI sensor notification: sensor=%u, desc=0x%08X\r\n", sensorId, desc);
+    }
+}
+
+/*!
+ * @brief Handle general notification (GenInt1).
+ */
+static void SM_Platform_HandleGeneralNotification(void)
+{
+    uint32_t protocolId, messageId;
+
+    /* Get pending info */
+    if (SCMI_P2aPending(SM_PLATFORM_NOTIFY, &protocolId, &messageId) == SCMI_ERR_SUCCESS)
+    {
+        /* System event? */
+        if (protocolId == SCMI_PROTOCOL_SYS)
+        {
+            SM_Platform_HandleSystemNotification();
+        }
+        else if (protocolId == SCMI_PROTOCOL_LMM)
+        {
+            SM_Platform_HandleLmmNotification();
+        }
+        else if (protocolId == SCMI_PROTOCOL_BBM)
+        {
+            SM_Platform_HandleBbmNotification(messageId);
+        }
+        else if (protocolId == SCMI_PROTOCOL_SENSOR)
+        {
+            SM_Platform_HandleSensorNotification();
+        }
+        else
+        {
+            PRINTF("\nSCMI unknown notification: 0x%X, 0x%X\r\n", protocolId, messageId);
+        }
+    }
+}
+
+/*!
+ * @brief Handle FuSa FEENV state event.
+ */
+static void SM_Platform_HandleFusaFeenvEvent(void)
+{
+    uint32_t state, mSel;
+
+    if (SCMI_FusaFeenvStateEvent(SM_PLATFORM_PRIORITY, &state, &mSel) == SCMI_ERR_SUCCESS)
+    {
+        PRINTF("\nSCMI FuSa F-EENV notification: state=%u, mSel=%u\r\n", state, mSel);
+    }
+}
+
+/*!
+ * @brief Handle FuSa SEENV state request event.
+ */
+static void SM_Platform_HandleFusaSeenvEvent(void)
+{
+    uint32_t cookie;
+
+    if (SCMI_FusaSeenvStateReqEvent(SM_PLATFORM_PRIORITY, &cookie) == SCMI_ERR_SUCCESS)
+    {
+        PRINTF("\nSCMI FuSa S-EENV notification: cookie=%u\r\n", cookie);
+    }
+}
+
+/*!
+ * @brief Handle FuSa fault event.
+ */
+static void SM_Platform_HandleFusaFaultEvent(void)
+{
+    uint32_t faultId, flag;
+
+    if (SCMI_FusaFaultEvent(SM_PLATFORM_PRIORITY, &faultId, &flag) == SCMI_ERR_SUCCESS)
+    {
+        PRINTF("\nSCMI FuSa fault notification: faultId=%u, flags=%u\r\n", faultId, flag);
+
+        if (SCMI_FUSA_FAULT_FLAG_STATE(flag) != 0U)
+        {
+            SCMI_FusaFaultSet(SM_PLATFORM_A2P, faultId, SCMI_FUSA_FAULT_SET_STATE(0U));
+        }
+    }
+}
+
+/*!
+ * @brief Handle priority notification (GenInt2).
+ */
+static void SM_Platform_HandlePriorityNotification(void)
+{
+    uint32_t protocolId, messageId;
+
+    /* Get pending info */
+    if (SCMI_P2aPending(SM_PLATFORM_PRIORITY, &protocolId, &messageId) == SCMI_ERR_SUCCESS)
+    {
+        if (messageId == SCMI_MSG_FUSA_FEENV_STATE_EVENT)
+        {
+            SM_Platform_HandleFusaFeenvEvent();
+        }
+        else if (messageId == SCMI_MSG_FUSA_SEENV_STATE_REQ_EVENT)
+        {
+            SM_Platform_HandleFusaSeenvEvent();
+        }
+        else
+        {
+            SM_Platform_HandleFusaFaultEvent();
+        }
+    }
+}
+
+/*!
  * @brief SM Platform Handler.
  */
 static void SM_Platform_Handler(void)
@@ -101,140 +298,13 @@ static void SM_Platform_Handler(void)
     /* Notification pending? */
     if ((flags & (uint32_t)kMU_GenInt1Flag) != 0U)
     {
-        uint32_t protocolId, messageId;
-
-        /* Get pending info */
-        if (SCMI_P2aPending(SM_PLATFORM_NOTIFY, &protocolId, &messageId) == SCMI_ERR_SUCCESS)
-        {
-            /* System event? */
-            if (protocolId == SCMI_PROTOCOL_SYS)
-            {
-                uint32_t notifyFlags, systemState;
-
-                if (SCMI_SystemPowerStateNotifier(SM_PLATFORM_NOTIFY, NULL, &notifyFlags, &systemState, NULL) ==
-                    SCMI_ERR_SUCCESS)
-                {
-                    bool graceful = (SCMI_SYS_NOTIFIER_GRACEFUL(notifyFlags) != 0U);
-
-                    PRINTF("\nSCMI system notification: graceful=%u, state=0x%08X\r\n", graceful, systemState);
-
-                    if (graceful)
-                    {
-                        switch (systemState)
-                        {
-                            case SCMI_SYS_STATE_FULL_SHUTDOWN:
-                            case SCMI_SYS_STATE_SHUTDOWN:
-                                PRINTF("sm request M7 into shutdown\r\n");
-                                break;
-                            case SCMI_SYS_STATE_FULL_RESET:
-                            case SCMI_SYS_STATE_COLD_RESET:
-                            case SCMI_SYS_STATE_WARM_RESET:
-                                PRINTF("sm request M7 into reset\r\n");
-                                break;
-                            case SCMI_SYS_STATE_FULL_SUSPEND:
-                            case SCMI_SYS_STATE_SUSPEND:
-#if SCMI_LM_REQUEST_M7_SUSPEND_ENABLE
-                                /* SCMI send lm 1 suspend -> M7 sm platform interrupt -> app power rtos case to deal with this request. */
-                                scmiRequestM7IntoSuspend = true;
-#endif
-                                PRINTF("sm request M7 into suspend\r\n");
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            }
-            else if (protocolId == SCMI_PROTOCOL_LMM)
-            {
-                uint32_t notifyFlags, eventLm;
-
-                if (SCMI_LmmEvent(SM_PLATFORM_NOTIFY, NULL, &eventLm, &notifyFlags) == SCMI_ERR_SUCCESS)
-                {
-#if SCMI_LMM_POWER_CHANGE_PROCESSED
-                   /* Handle peer acore power changes notification to assure right communication. */
-                   APP_SRTM_HandleLmmPowerChange(eventLm, notifyFlags);
-#endif
-                }
-            }
-            else if (protocolId == SCMI_PROTOCOL_BBM)
-            {
-                if (messageId == SCMI_MSG_BBM_RTC_EVENT)
-                {
-                    uint32_t notifyFlags;
-
-                    if (SCMI_BbmRtcEvent(SM_PLATFORM_NOTIFY, &notifyFlags) == SCMI_ERR_SUCCESS)
-                    {
-                        PRINTF("\nSCMI BBM RTC notification: flags=0x%08X\r\n", flags);
-                    }
-                }
-                else
-                {
-                    uint32_t notifyFlags;
-
-                    if (SCMI_BbmButtonEvent(SM_PLATFORM_NOTIFY, &notifyFlags) == SCMI_ERR_SUCCESS)
-                    {
-                        PRINTF("\nSCMI BBM button notification: flags=0x%08X\r\n", flags);
-                    }
-                }
-            }
-            else if (protocolId == SCMI_PROTOCOL_SENSOR)
-            {
-                uint32_t sensorId, desc;
-
-                if (SCMI_SensorTripPointEvent(SM_PLATFORM_NOTIFY, NULL, &sensorId, &desc) == SCMI_ERR_SUCCESS)
-                {
-                    PRINTF("\nSCMI sensor notification: sensor=%u, desc=0x%08X\r\n", sensorId, desc);
-                }
-            }
-            else
-            {
-                PRINTF("\nSCMI unknown notification: 0x%X, 0x%X\r\n", protocolId, messageId);
-            }
-        }
+        SM_Platform_HandleGeneralNotification();
     }
 
     /* Priority notification pending? */
     if ((flags & (uint32_t)kMU_GenInt2Flag) != 0U)
     {
-        uint32_t protocolId, messageId;
-
-        /* Get pending info */
-        if (SCMI_P2aPending(SM_PLATFORM_PRIORITY, &protocolId, &messageId) == SCMI_ERR_SUCCESS)
-        {
-            if (messageId == SCMI_MSG_FUSA_FEENV_STATE_EVENT)
-            {
-                uint32_t state, mSel;
-
-                if (SCMI_FusaFeenvStateEvent(SM_PLATFORM_PRIORITY, &state, &mSel) == SCMI_ERR_SUCCESS)
-                {
-                    PRINTF("\nSCMI FuSa F-EENV notification: state=%u, mSel=%u\r\n", state, mSel);
-                }
-            }
-            else if (messageId == SCMI_MSG_FUSA_SEENV_STATE_REQ_EVENT)
-            {
-                uint32_t cookie;
-
-                if (SCMI_FusaSeenvStateReqEvent(SM_PLATFORM_PRIORITY, &cookie) == SCMI_ERR_SUCCESS)
-                {
-                    PRINTF("\nSCMI FuSa S-EENV notification: cookie=%u\r\n", cookie);
-                }
-            }
-            else
-            {
-                uint32_t faultId, flag;
-
-                if (SCMI_FusaFaultEvent(SM_PLATFORM_PRIORITY, &faultId, &flag) == SCMI_ERR_SUCCESS)
-                {
-                    PRINTF("\nSCMI FuSa fault notification: faultId=%u, flags=%u\r\n", faultId, flag);
-
-                    if (SCMI_FUSA_FAULT_FLAG_STATE(flag) != 0U)
-                    {
-                        SCMI_FusaFaultSet(SM_PLATFORM_A2P, faultId, SCMI_FUSA_FAULT_SET_STATE(0U));
-                    }
-                }
-            }
-        }
+        SM_Platform_HandlePriorityNotification();
     }
 }
 
