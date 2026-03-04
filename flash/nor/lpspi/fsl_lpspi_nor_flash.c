@@ -1,5 +1,5 @@
 /*
- * Copyright 2022, 2024-2025 NXP
+ * Copyright 2022, 2024-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -219,6 +219,11 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
             {
                 break;
             }
+        }
+
+        if (writeStatus != kStatus_Success)
+        {
+            break;
         }
 
         writeStatus = LPSPI_MemWritePage(address, buffer, length, blocking, base);
