@@ -93,8 +93,6 @@ typedef EventBits_t event_flags_t;
 /*! @brief The default interrupt handler installed in vector table. */
 #define OSA_DEFAULT_INT_HANDLER ((osa_int_handler_t)(&DefaultISR))
 
-extern void DefaultISR(void);
-
 /*!
  * @name Thread management
  * @{
