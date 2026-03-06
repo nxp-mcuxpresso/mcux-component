@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 NXP
+ * Copyright 2022, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -38,7 +38,7 @@ static status_t PCAL6524_ModifyPortRegBits(pcal6524_handle_t *handle,
                                            uint32_t bits,
                                            pcal6524_reg_ops_t ops)
 {
-    uint32_t regValue;
+    uint32_t regValue = 0U;
     status_t status;
 
     status = PCAL6524_ReadPort(handle, startReg, &regValue);
@@ -94,7 +94,7 @@ void PCAL6524_Init(pcal6524_handle_t *handle, const pcal6524_config_t *config)
  * For example, the following code set pin2 and pin3 to output:
  *
  * code
-   PCAL6524_SetDirection(handle, (1<<2) | (1<<3), pkPCAL6524_Output);
+   PCAL6524_SetDirection(handle, (1<<2) | (1<<3), kPCAL6524_Output);
    endcode
  *
  * param handle Pointer to the PCAL6524 handle.
@@ -169,4 +169,110 @@ status_t PCAL6524_ClearPins(pcal6524_handle_t *handle, uint32_t pins)
 status_t PCAL6524_TogglePins(pcal6524_handle_t *handle, uint32_t pins)
 {
     return PCAL6524_ModifyPortRegBits(handle, PCAL6524_OUTPUT_PORT0, pins, kPCAL6524_ToggleRegBits);
+}
+
+/*
+ * brief Inverse PCAL6524 pins polarity.
+ *
+ * This function changes multiple pins polarity, the pins to modify are passed in
+ * as a bit OR'ed value.
+ *
+ * For example, the following code set pin2 and pin3 to NOT inverse:
+ *
+ * code
+   PCAL6524_InversePolarity(handle, (1<<2) | (1<<3), false);
+   endcode
+ *
+ * param handle Pointer to the PCAL6524 handle.
+ * param pins The pins to change, for example: (1<<2) | (1<<3) means pin 2 and pin 3.
+ * param inverse Use true to inverse, false to not inverse.
+ * return Return ref kStatus_Success if successed, otherwise returns error code.
+ */
+status_t PCAL6524_InversePolarity(pcal6524_handle_t *handle, uint32_t pins, bool inverse)
+{
+    return PCAL6524_ModifyPortRegBits(handle, PCAL6524_POLARITY_INV_PORT0, pins,
+                                      inverse ? kPCAL6524_SetRegBits : kPCAL6524_ClearRegBits);
+}
+
+/*
+ * brief Read PCAL6524 pins value.
+ *
+ * param handle Pointer to the PCAL6524 handle.
+ * param pinsValue Variable to save the read out pin values.
+ * return Return ref kStatus_Success if successed, otherwise returns error code.
+ */
+status_t PCAL6524_ReadPins(pcal6524_handle_t *handle, uint32_t *pinsValue)
+{
+    return PCAL6524_ReadPort(handle, PCAL6524_INPUT_PORT0, pinsValue);
+}
+
+/*
+ * brief Set PCAL6524 interrupt mask.
+ *
+ * This function configures which pins can generate interrupts.
+ * In the interrupt mask register, a bit value of 0 enables interrupt, a bit value of 1 disables interrupt.
+ *
+ * For example, the following code enables interrupt on pin2 and pin3:
+ *
+ * code
+   PCAL6524_SetInterruptMask(handle, (1<<2) | (1<<3), true);
+   endcode
+ *
+ * param handle Pointer to the PCAL6524 handle.
+ * param pins The pins to change, for example: (1<<2) | (1<<3) means pin 2 and pin 3.
+ * param enable Use true to enable interrupt, false to disable interrupt.
+ * return Return ref kStatus_Success if successed, otherwise returns error code.
+ */
+status_t PCAL6524_SetInterruptMask(pcal6524_handle_t *handle, uint32_t pins, bool enable)
+{
+    return PCAL6524_ModifyPortRegBits(handle, PCAL6524_INT_MASK_PORT0, pins,
+                                      enable ? kPCAL6524_ClearRegBits : kPCAL6524_SetRegBits);
+}
+
+/*
+ * brief Get PCAL6524 interrupt status.
+ *
+ * param handle Pointer to the PCAL6524 handle.
+ * param pinsStatus Variable to save the interrupt status.
+ * return Return ref kStatus_Success if successed, otherwise returns error code.
+ */
+status_t PCAL6524_GetInterruptStatus(pcal6524_handle_t *handle, uint32_t *pinsStatus)
+{
+    return PCAL6524_ReadPort(handle, PCAL6524_INT_STATUS_PORT0, pinsStatus);
+}
+
+/*
+ * brief Clear PCAL6524 interrupt.
+ *
+ * This function clears the interrupt by reading the input port registers.
+ *
+ * param handle Pointer to the PCAL6524 handle.
+ * param pinsValue Variable to save the read out pin values.
+ * return Return ref kStatus_Success if successed, otherwise returns error code.
+ */
+status_t PCAL6524_ClearInterrupt(pcal6524_handle_t *handle, uint32_t *pinsValue)
+{
+    return PCAL6524_ReadPort(handle, PCAL6524_INPUT_PORT0, pinsValue);
+}
+
+/*
+ * brief Set PCAL6524 input latch.
+ *
+ * This function configures whether input ports are latched or not.
+ *
+ * For example, the following code enables latch on pin2 and pin3:
+ *
+ * code
+   PCAL6524_SetInputLatch(handle, (1<<2) | (1<<3), true);
+   endcode
+ *
+ * param handle Pointer to the PCAL6524 handle.
+ * param pins The pins to change, for example: (1<<2) | (1<<3) means pin 2 and pin 3.
+ * param enable Use true to enable latch, false to disable latch.
+ * return Return ref kStatus_Success if successed, otherwise returns error code.
+ */
+status_t PCAL6524_SetInputLatch(pcal6524_handle_t *handle, uint32_t pins, bool enable)
+{
+    return PCAL6524_ModifyPortRegBits(handle, PCAL6524_INPUT_LATCH_PORT0, pins,
+                                      enable ? kPCAL6524_SetRegBits : kPCAL6524_ClearRegBits);
 }
