@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022, 2023, 2025 NXP
+ * Copyright 2018-2022, 2023, 2025-2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -140,7 +140,7 @@ hal_timer_status_t HAL_TimerUpdateTimeout(hal_timer_handle_t halTimerHandle, uin
     timerTicks += USEC_TO_COUNT(timeout, halTimerState->timerClock_Hz);
 
     /* Set the match value with unit of ticks. */
-    OSTIMER_SetMatchValue(s_ostimerBase[halTimerState->instance], timerTicks,
+    OSTIMER_SetMatchValueSafe(s_ostimerBase[halTimerState->instance], timerTicks,
                           ostimer_callback_table[halTimerState->instance]);
     return kStatus_HAL_TimerSuccess;
 }
@@ -165,7 +165,7 @@ uint64_t HAL_TimerGetCurrentTicks(hal_timer_handle_t halTimerHandle)
 void HAL_TimerUpdateMatchValueInTicks(hal_timer_handle_t halTimerHandle, uint64_t matchValue)
 {
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
-    status_t status = OSTIMER_SetMatchValue(s_ostimerBase[halTimerState->instance], matchValue, ostimer_callback_table[halTimerState->instance]);
+    status_t status = OSTIMER_SetMatchValueSafe(s_ostimerBase[halTimerState->instance], matchValue, ostimer_callback_table[halTimerState->instance]);
     (void)status;
     assert(status == kStatus_Success);
 }
