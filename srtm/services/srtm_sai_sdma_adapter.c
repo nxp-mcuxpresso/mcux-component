@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 NXP
+ * Copyright 2018-2022,2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -933,9 +933,8 @@ static void SRTM_SaiSdmaAdapter_SetFormat(srtm_sai_sdma_adapter_t handle, srtm_a
         if (rtm->format >= (uint8_t)SRTM_Audio_DSD8bits) /* DSD mode */
         {
             cfg->config.channelMask          = 1U << cfg->dataLine1 | 1U << cfg->dataLine2;
-            cfg->config.serialData.dataOrder = kSAI_DataLSB; /* LSB transfer first */
-            cfg->config.serialData.dataFirstBitShifted =
-                1U; /* The value should be fixed to 1 when in LSB transfer mode */
+            cfg->config.serialData.dataOrder = kSAI_DataMSB; /* MSB transfer first */
+            cfg->config.serialData.dataFirstBitShifted = bitWidth;
         }
         else
         {
