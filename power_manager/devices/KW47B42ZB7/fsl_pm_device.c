@@ -574,6 +574,8 @@ static void PM_SetWakePowerDomainOperateMode(uint8_t operateMode, pm_resource_re
 
 static void PM_WakeupFunction(void) /* GCOVR_EXCL_FUNCTION */
 {
+    uint32_t sp;
+
     /*
      * $Line Coverage Justification$
      * $ref pm_device_c_ref_2$
@@ -587,6 +589,11 @@ static void PM_WakeupFunction(void) /* GCOVR_EXCL_FUNCTION */
 #endif                                                    /* (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U) */
 #endif                                                    /* ((__FPU_PRESENT == 1) && (__FPU_USED == 1)) */
 
+    /* Initialize PSP to MSP before switching over to the process stack */
+    sp = __get_MSP();
+    __set_PSP(sp);
+    __DSB();
+    __ISB();
     /* Restore the CONTROL register. */
     __set_CONTROL(g_cpuControl);
     longjmp(g_coreContext, (int32_t) true);
