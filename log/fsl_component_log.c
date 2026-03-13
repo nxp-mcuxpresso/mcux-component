@@ -523,7 +523,7 @@ void LOG_Printf(log_module_t const *module, log_level_t level, unsigned int time
 {
     va_list ap;
     log_print_buffer_t buffer;
-    uint8_t printBuf[LOG_MAX_MESSAGE_LENGTH];
+    uint8_t printBuf[LOG_MAX_MESSAGE_LENGTH + 1];
 
     (void)module;
 
@@ -547,6 +547,7 @@ void LOG_Printf(log_module_t const *module, log_level_t level, unsigned int time
     else
 #endif
     {
+        (void)memset(printBuf, 0, sizeof(printBuf));
         buffer.buffer = printBuf;
         buffer.length = LOG_MAX_MESSAGE_LENGTH;
         buffer.sofar  = 0;

@@ -38,10 +38,7 @@ static void log_init_backend_debugconsole_puts(uint8_t *buffer, size_t length)
         return;
     }
 
-    for (size_t i = 0; i < length; i++)
-    {
-        (void)PUTCHAR((int)buffer[i]);
-    }
+    (void)PRINTF("%s", buffer);
 }
 
 void LOG_InitBackendDebugconsole(void)
