@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 NXP
+ * Copyright 2021-2022, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -32,6 +32,8 @@
 
 /*! @brief Defines the timeout macro. */
 #define PHY_TIMEOUT_COUNT 500000U
+/*! @brief Defines the reset completion poll count. */
+#define PHY_RESET_COMPLETE_POLL_COUNT PHY_TIMEOUT_COUNT
 
 /*! @brief Defines the PHY resource interface. */
 #define PHY_LAN8720A_WRITE(handle, regAddr, data) \
@@ -85,26 +87,36 @@ status_t PHY_LAN8720A_Init(phy_handle_t *handle, const phy_config_t *config)
     {
         return kStatus_Fail;
     }
-    counter = PHY_TIMEOUT_COUNT;
 
-    /* Reset PHY and wait until completion. */
+    /* Reset PHY and wait until completion. Always perform at least one read. */
     result = PHY_LAN8720A_WRITE(handle, PHY_BASICCONTROL_REG, PHY_BCTL_RESET_MASK);
     if (result != kStatus_Success)
     {
         return result;
     }
-    do
+
+    counter = PHY_RESET_COMPLETE_POLL_COUNT;
+
+    while (true)
     {
         result = PHY_LAN8720A_READ(handle, PHY_BASICCONTROL_REG, &regValue);
         if (result != kStatus_Success)
         {
             return result;
         }
-    } while ((counter-- != 0U) && (regValue & PHY_BCTL_RESET_MASK) != 0U);
 
-    if (counter == 0U)
-    {
-        return kStatus_Fail;
+        if ((regValue & PHY_BCTL_RESET_MASK) == 0U)
+        {
+            break;
+        }
+
+        if (counter == 0U)
+        {
+            /* Give up waiting for reset to complete. */
+            return kStatus_Fail;
+        }
+
+        counter--;
     }
 
     if (config->autoNeg)

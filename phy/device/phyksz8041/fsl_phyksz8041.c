@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 NXP
+ * Copyright 2020-2022, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -26,6 +26,8 @@
 
 /*! @brief Defines the timeout macro. */
 #define PHY_READID_TIMEOUT_COUNT 1000U
+/*! @brief Defines the reset completion poll count. */
+#define PHY_RESET_COMPLETE_POLL_COUNT 500000U
 
 /*! @brief Defines the PHY resource interface. */
 #define PHY_KSZ8041_WRITE(handle, regAddr, data) \
@@ -80,44 +82,70 @@ status_t PHY_KSZ8041_Init(phy_handle_t *handle, const phy_config_t *config)
         return kStatus_Fail;
     }
 
-    /* Reset PHY. */
+    /* Reset PHY and wait until completion. Always perform at least one read. */
     result = PHY_KSZ8041_WRITE(handle, PHY_BASICCONTROL_REG, PHY_BCTL_RESET_MASK);
-    if (result == kStatus_Success)
+    if (result != kStatus_Success)
     {
-        if (config->autoNeg)
-        {
-            /* Set the negotiation. */
-            result = PHY_KSZ8041_WRITE(handle, PHY_AUTONEG_ADVERTISE_REG,
-                                       PHY_100BASETX_FULLDUPLEX_MASK | PHY_100BASETX_HALFDUPLEX_MASK |
-                                           PHY_10BASETX_FULLDUPLEX_MASK | PHY_10BASETX_HALFDUPLEX_MASK |
-                                           PHY_IEEE802_3_SELECTOR_MASK);
-            if (result == kStatus_Success)
-            {
-                result = PHY_KSZ8041_WRITE(handle, PHY_BASICCONTROL_REG,
-                                           PHY_BCTL_AUTONEG_MASK | PHY_BCTL_RESTART_AUTONEG_MASK);
-            }
-        }
-        else
-        {
-            /* This PHY only supports 10/100M speed. */
-            assert(config->speed <= kPHY_Speed100M);
+        return result;
+    }
 
-            /* Disable isolate mode */
-            result = PHY_KSZ8041_READ(handle, PHY_BASICCONTROL_REG, &regValue);
-            if (result != kStatus_Success)
-            {
-                return result;
-            }
-            regValue &= ~PHY_BCTL_ISOLATE_MASK;
-            result = PHY_KSZ8041_WRITE(handle, PHY_BASICCONTROL_REG, regValue);
-            if (result != kStatus_Success)
-            {
-                return result;
-            }
+    counter = PHY_RESET_COMPLETE_POLL_COUNT;
 
-            /* Disable the auto-negotiation and set user-defined speed/duplex configuration. */
-            result = PHY_KSZ8041_SetLinkSpeedDuplex(handle, config->speed, config->duplex);
+    while (true)
+    {
+        result = PHY_KSZ8041_READ(handle, PHY_BASICCONTROL_REG, &regValue);
+        if (result != kStatus_Success)
+        {
+            return result;
         }
+
+        if ((regValue & PHY_BCTL_RESET_MASK) == 0U)
+        {
+            break;
+        }
+
+        if (counter == 0U)
+        {
+            /* Give up waiting for reset to complete. */
+            return kStatus_Fail;
+        }
+
+        counter--;
+    }
+
+    if (config->autoNeg)
+    {
+        /* Set the negotiation. */
+        result = PHY_KSZ8041_WRITE(handle, PHY_AUTONEG_ADVERTISE_REG,
+                                   PHY_100BASETX_FULLDUPLEX_MASK | PHY_100BASETX_HALFDUPLEX_MASK |
+                                       PHY_10BASETX_FULLDUPLEX_MASK | PHY_10BASETX_HALFDUPLEX_MASK |
+                                       PHY_IEEE802_3_SELECTOR_MASK);
+        if (result == kStatus_Success)
+        {
+            result =
+                PHY_KSZ8041_WRITE(handle, PHY_BASICCONTROL_REG, PHY_BCTL_AUTONEG_MASK | PHY_BCTL_RESTART_AUTONEG_MASK);
+        }
+    }
+    else
+    {
+        /* This PHY only supports 10/100M speed. */
+        assert(config->speed <= kPHY_Speed100M);
+
+        /* Disable isolate mode */
+        result = PHY_KSZ8041_READ(handle, PHY_BASICCONTROL_REG, &regValue);
+        if (result != kStatus_Success)
+        {
+            return result;
+        }
+        regValue &= ~PHY_BCTL_ISOLATE_MASK;
+        result = PHY_KSZ8041_WRITE(handle, PHY_BASICCONTROL_REG, regValue);
+        if (result != kStatus_Success)
+        {
+            return result;
+        }
+
+        /* Disable the auto-negotiation and set user-defined speed/duplex configuration. */
+        result = PHY_KSZ8041_SetLinkSpeedDuplex(handle, config->speed, config->duplex);
     }
 
     return result;

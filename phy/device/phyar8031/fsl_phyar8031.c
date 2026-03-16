@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 NXP
+ * Copyright 2020-2022, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -65,6 +65,8 @@
 
 /*! @brief Defines the timeout macro. */
 #define PHY_READID_TIMEOUT_COUNT 1000U
+/*! @brief Defines the reset completion poll count. */
+#define PHY_RESET_COMPLETE_POLL_COUNT 500000U
 
 /*! @brief Defines the PHY resource interface. */
 #define PHY_AR8031_WRITE(handle, regAddr, data) \
@@ -139,121 +141,147 @@ status_t PHY_AR8031_Init(phy_handle_t *handle, const phy_config_t *config)
         return result;
     }
 
-    /* Reset PHY. */
+    /* Reset PHY and wait until completion. Always perform at least one read. */
     result = PHY_AR8031_WRITE(handle, PHY_BASICCONTROL_REG, PHY_BCTL_RESET_MASK);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+
+    counter = PHY_RESET_COMPLETE_POLL_COUNT;
+
+    while (true)
+    {
+        result = PHY_AR8031_READ(handle, PHY_BASICCONTROL_REG, &regValue);
+        if (result != kStatus_Success)
+        {
+            return result;
+        }
+
+        if ((regValue & PHY_BCTL_RESET_MASK) == 0U)
+        {
+            break;
+        }
+
+        if (counter == 0U)
+        {
+            /* Give up waiting for reset to complete. */
+            return kStatus_Fail;
+        }
+
+        counter--;
+    }
+
+    /* Close smartEEE. */
+    result =
+        PHY_AR8031_MMD_SetDevice(handle, PHY_MMD_DEVICEID3, PHY_MMD_SMARTEEE_CTL_OFFSET, kPHY_MMDAccessNoPostIncrement);
     if (result == kStatus_Success)
     {
-        /* Close smartEEE. */
-        result = PHY_AR8031_MMD_SetDevice(handle, PHY_MMD_DEVICEID3, PHY_MMD_SMARTEEE_CTL_OFFSET,
-                                          kPHY_MMDAccessNoPostIncrement);
+        result = PHY_AR8031_MMD_ReadData(handle, &regValue);
         if (result == kStatus_Success)
         {
-            result = PHY_AR8031_MMD_ReadData(handle, &regValue);
+            result = PHY_AR8031_MMD_WriteData(handle, (regValue & ~((uint32_t)1 << PHY_MMD_SMARTEEE_LPI_EN_SHIFT)));
+        }
+    }
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+
+    /* Enable Tx clock delay */
+    result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_ADDR_REG, 0x5);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+    result = PHY_AR8031_READ(handle, PHY_DEBUGPORT_DATA_REG, &regValue);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+    result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_DATA_REG, regValue | 0x0100U);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+
+    /* Enable Rx clock delay */
+    result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_ADDR_REG, 0x0);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+    result = PHY_AR8031_READ(handle, PHY_DEBUGPORT_DATA_REG, &regValue);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+    result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_DATA_REG, regValue | 0x8000U);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+
+    /* Energy Efficient Ethernet config */
+    if (config->enableEEE)
+    {
+        /* Get capabilities */
+        result = PHY_AR8031_MMD_Read(handle, PHY_MDIO_MMD_PCS, PHY_MDIO_PCS_EEE_CAP, &regValue);
+        if (result == kStatus_Success)
+        {
+            /* Enable EEE for 100TX and 1000T */
+            result = PHY_AR8031_MMD_Write(handle, PHY_MDIO_MMD_AN, PHY_MDIO_AN_EEE_ADV,
+                                          regValue & (PHY_MDIO_EEE_1000T | PHY_MDIO_EEE_100TX));
+        }
+    }
+    else
+    {
+        result = PHY_AR8031_MMD_Write(handle, PHY_MDIO_MMD_AN, PHY_MDIO_AN_EEE_ADV, 0);
+    }
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
+
+    if (config->autoNeg)
+    {
+        /* Set the negotiation. */
+        result = PHY_AR8031_WRITE(handle, PHY_AUTONEG_ADVERTISE_REG,
+                                  PHY_100BASETX_FULLDUPLEX_MASK | PHY_100BASETX_HALFDUPLEX_MASK |
+                                      PHY_10BASETX_FULLDUPLEX_MASK | PHY_10BASETX_HALFDUPLEX_MASK |
+                                      PHY_IEEE802_3_SELECTOR_MASK);
+        if (result == kStatus_Success)
+        {
+            result = PHY_AR8031_WRITE(handle, PHY_1000BASET_CONTROL_REG,
+                                      PHY_1000BASET_FULLDUPLEX_MASK | PHY_1000BASET_HALFDUPLEX_MASK);
             if (result == kStatus_Success)
             {
-                result = PHY_AR8031_MMD_WriteData(handle, (regValue & ~((uint32_t)1 << PHY_MMD_SMARTEEE_LPI_EN_SHIFT)));
-            }
-        }
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-
-        /* Enable Tx clock delay */
-        result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_ADDR_REG, 0x5);
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-        result = PHY_AR8031_READ(handle, PHY_DEBUGPORT_DATA_REG, &regValue);
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-        result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_DATA_REG, regValue | 0x0100U);
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-
-        /* Enable Rx clock delay */
-        result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_ADDR_REG, 0x0);
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-        result = PHY_AR8031_READ(handle, PHY_DEBUGPORT_DATA_REG, &regValue);
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-        result = PHY_AR8031_WRITE(handle, PHY_DEBUGPORT_DATA_REG, regValue | 0x8000U);
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-
-        /* Energy Efficient Ethernet config */
-        if (config->enableEEE)
-        {
-            /* Get capabilities */
-            result = PHY_AR8031_MMD_Read(handle, PHY_MDIO_MMD_PCS, PHY_MDIO_PCS_EEE_CAP, &regValue);
-            if (result == kStatus_Success)
-            {
-                /* Enable EEE for 100TX and 1000T */
-                result = PHY_AR8031_MMD_Write(handle, PHY_MDIO_MMD_AN, PHY_MDIO_AN_EEE_ADV,
-                                              regValue & (PHY_MDIO_EEE_1000T | PHY_MDIO_EEE_100TX));
-            }
-        }
-        else
-        {
-            result = PHY_AR8031_MMD_Write(handle, PHY_MDIO_MMD_AN, PHY_MDIO_AN_EEE_ADV, 0);
-        }
-        if (result != kStatus_Success)
-        {
-            return result;
-        }
-
-        if (config->autoNeg)
-        {
-            /* Set the negotiation. */
-            result = PHY_AR8031_WRITE(handle, PHY_AUTONEG_ADVERTISE_REG,
-                                      PHY_100BASETX_FULLDUPLEX_MASK | PHY_100BASETX_HALFDUPLEX_MASK |
-                                          PHY_10BASETX_FULLDUPLEX_MASK | PHY_10BASETX_HALFDUPLEX_MASK |
-                                          PHY_IEEE802_3_SELECTOR_MASK);
-            if (result == kStatus_Success)
-            {
-                result = PHY_AR8031_WRITE(handle, PHY_1000BASET_CONTROL_REG,
-                                          PHY_1000BASET_FULLDUPLEX_MASK | PHY_1000BASET_HALFDUPLEX_MASK);
-                if (result == kStatus_Success)
+                result = PHY_AR8031_READ(handle, PHY_BASICCONTROL_REG, &regValue);
+                if (result != kStatus_Success)
                 {
-                    result = PHY_AR8031_READ(handle, PHY_BASICCONTROL_REG, &regValue);
-                    if (result != kStatus_Success)
-                    {
-                        return result;
-                    }
-                    result = PHY_AR8031_WRITE(handle, PHY_BASICCONTROL_REG,
-                                              regValue | PHY_BCTL_AUTONEG_MASK | PHY_BCTL_RESTART_AUTONEG_MASK);
+                    return result;
                 }
+                result = PHY_AR8031_WRITE(handle, PHY_BASICCONTROL_REG,
+                                          regValue | PHY_BCTL_AUTONEG_MASK | PHY_BCTL_RESTART_AUTONEG_MASK);
             }
         }
-        else
+    }
+    else
+    {
+        /* Disable isolate mode. */
+        result = PHY_AR8031_READ(handle, PHY_BASICCONTROL_REG, &regValue);
+        if (result != kStatus_Success)
         {
-            /* Disable isolate mode. */
-            result = PHY_AR8031_READ(handle, PHY_BASICCONTROL_REG, &regValue);
-            if (result != kStatus_Success)
-            {
-                return result;
-            }
-            result = PHY_AR8031_WRITE(handle, PHY_BASICCONTROL_REG, regValue & ~PHY_BCTL_ISOLATE_MASK);
-            if (result != kStatus_Success)
-            {
-                return result;
-            }
-
-            /* Disable the auto-negotiation and set user-defined speed/duplex configuration. */
-            result = PHY_AR8031_SetLinkSpeedDuplex(handle, config->speed, config->duplex);
+            return result;
         }
+        result = PHY_AR8031_WRITE(handle, PHY_BASICCONTROL_REG, regValue & ~PHY_BCTL_ISOLATE_MASK);
+        if (result != kStatus_Success)
+        {
+            return result;
+        }
+
+        /* Disable the auto-negotiation and set user-defined speed/duplex configuration. */
+        result = PHY_AR8031_SetLinkSpeedDuplex(handle, config->speed, config->duplex);
     }
 
     return result;
