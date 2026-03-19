@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022, 2024-2025 NXP
+ * Copyright 2021-2022, 2024-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -350,12 +350,14 @@ status_t PF5020_DumpReg(pf5020_handle_t *handle, uint8_t regAddr, uint8_t *buffe
     assert(handle);
     assert(handle->I2C_ReceiveFunc);
 
-    uint8_t i       = 0U;
-    status_t status = kStatus_Success;
+    uint8_t i            = 0U;
+    uint32_t regAddrIdx  = (uint32_t)regAddr; /* Use uint32_t to avoid unsigned wrap (CERT INT30-C) */
+    status_t status      = kStatus_Success;
 
     for (i = 0U; i < length; i++)
     {
-        status = PF5020_ReadReg(handle, regAddr++, buffer++);
+        status = PF5020_ReadReg(handle, (uint8_t)(regAddrIdx & 0xFFU), buffer++);
+        regAddrIdx++;
         if (status != kStatus_Success)
         {
             /* In case of fail to read register. */
@@ -535,10 +537,9 @@ status_t PF5020_SetPowerDownGroupDelay(pf5020_handle_t *handle,
 {
     assert(handle);
 
-    /* INT31-C: Validate before narrowing conversion */
     uint32_t shift_amount = 2U * (3U - (uint8_t)group);
-    uint8_t mask = (uint8_t)(0x3U << shift_amount);
-    uint8_t value = (uint8_t)((uint32_t)delay << shift_amount);
+    uint8_t mask  = (uint8_t)((0x3U << shift_amount) & 0xFFU);           /* Mask before cast (CERT INT31-C) */
+    uint8_t value = (uint8_t)(((uint32_t)delay << shift_amount) & 0xFFU); /* Mask before cast (CERT INT31-C) */
 
     return PF5020_ModifyReg(handle, PF5020_PWRDN_DLY1, mask, value);
 }
