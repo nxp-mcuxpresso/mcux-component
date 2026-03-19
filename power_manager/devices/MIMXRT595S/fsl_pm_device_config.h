@@ -1,10 +1,8 @@
 /*
- * Copyright 2022, 2024 NXP
+ * Copyright 2022, 2024, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
-#include "fsl_pm_device.h"
 
 #ifndef _FSL_PM_DEVICE_CONFIG_H_
 #define _FSL_PM_DEVICE_CONFIG_H_
