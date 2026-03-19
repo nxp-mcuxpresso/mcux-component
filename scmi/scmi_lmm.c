@@ -532,7 +532,7 @@ int32_t SCMI_LmmResetReason(uint32_t channel, uint32_t lmId,
         if (extInfo != NULL)
         {
             SCMI_MemCpy((uint8_t*) extInfo, (uint8_t*) &msgRx->extInfo,
-                (SCMI_LMM_NUM_EXTINFO * sizeof(uint32_t)));
+                SCMI_LMM_NUM_EXTINFO, sizeof(uint32_t), &status);
         }
     }
 

@@ -206,7 +206,7 @@ int32_t SCMI_SensorDescriptionGet(uint32_t channel, uint32_t descIndex,
         if (desc != NULL)
         {
             SCMI_MemCpy((uint8_t*) desc, (uint8_t*) &msgRx->desc,
-                (SCMI_SENSOR_NUM_DESC * sizeof(scmi_sensor_desc_t)));
+                SCMI_SENSOR_NUM_DESC, sizeof(scmi_sensor_desc_t), &status);
         }
     }
 
@@ -385,7 +385,8 @@ int32_t SCMI_SensorReadingGet(uint32_t channel, uint32_t sensorId,
         if (readings != NULL)
         {
             SCMI_MemCpy((uint8_t*) readings, (uint8_t*) &msgRx->readings,
-                (SCMI_SENSOR_NUM_READINGS * sizeof(scmi_sensor_reading_t)));
+                SCMI_SENSOR_NUM_READINGS, sizeof(scmi_sensor_reading_t),
+                &status);
         }
     }
 

@@ -306,7 +306,8 @@ int32_t SCMI_PerformanceDescribeLevels(uint32_t channel, uint32_t domainId,
         if (perfLevels != NULL)
         {
             SCMI_MemCpy((uint8_t*) perfLevels, (uint8_t*) &msgRx->perfLevels,
-                (SCMI_PERF_NUM_PERFLEVELS * sizeof(scmi_perf_level_t)));
+                SCMI_PERF_NUM_PERFLEVELS, sizeof(scmi_perf_level_t),
+                &status);
         }
     }
 

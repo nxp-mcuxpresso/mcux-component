@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023 NXP
+** Copyright 2023-2025 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -272,10 +272,13 @@ int32_t SCMI_P2aTx(uint32_t channel, uint32_t len, uint32_t header);
  * @param[out]    dst     Destination pointer
  * @param[in]     src     Source pointer
  * @param[in]     len     Length to copy
+ * @param[in]     lenMul  Length multiplier
+ * @param[in,out] status  Status to update
  *
  * This function copies a memory block from \a src to \a dst.
  */
-void SCMI_MemCpy(uint8_t *dst, const uint8_t *src, uint32_t len);
+void SCMI_MemCpy(uint8_t *dst, const uint8_t *src, uint32_t len,
+    uint32_t lenMul, int32_t *status);
 
 /*!
  * Bounded string copy.

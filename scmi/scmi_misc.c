@@ -105,7 +105,7 @@ int32_t SCMI_MiscControlSet(uint32_t channel, uint32_t ctrlId,
         msgTx->numVal = numVal;
 
         SCMI_MemCpy((uint8_t*) &msgTx->val, (const uint8_t*) val,
-            (SCMI_MISC_NUM_VAL_T * sizeof(uint32_t)));
+            SCMI_MISC_NUM_VAL_T, sizeof(uint32_t), &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
@@ -191,7 +191,7 @@ int32_t SCMI_MiscControlGet(uint32_t channel, uint32_t ctrlId,
         if (val != NULL)
         {
             SCMI_MemCpy((uint8_t*) val, (uint8_t*) &msgRx->val,
-                (SCMI_MISC_NUM_VAL * sizeof(uint32_t)));
+                SCMI_MISC_NUM_VAL, sizeof(uint32_t), &status);
         }
     }
 
@@ -248,7 +248,7 @@ int32_t SCMI_MiscControlAction(uint32_t channel, uint32_t ctrlId,
         msgTx->numArg = numArg;
 
         SCMI_MemCpy((uint8_t*) &msgTx->arg, (const uint8_t*) arg,
-            (SCMI_MISC_NUM_ARG_T * sizeof(uint32_t)));
+            SCMI_MISC_NUM_ARG_T, sizeof(uint32_t), &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
@@ -277,7 +277,7 @@ int32_t SCMI_MiscControlAction(uint32_t channel, uint32_t ctrlId,
         if (rtn != NULL)
         {
             SCMI_MemCpy((uint8_t*) rtn, (uint8_t*) &msgRx->rtn,
-                (SCMI_MISC_NUM_RTN * sizeof(uint32_t)));
+                SCMI_MISC_NUM_RTN, sizeof(uint32_t), &status);
         }
     }
 
@@ -419,7 +419,7 @@ int32_t SCMI_MiscRomPassoverGet(uint32_t channel, uint32_t *numPassover,
         if (passover != NULL)
         {
             SCMI_MemCpy((uint8_t*) passover, (uint8_t*) &msgRx->passover,
-                (SCMI_MISC_NUM_PASSOVER * sizeof(uint32_t)));
+                SCMI_MISC_NUM_PASSOVER, sizeof(uint32_t), &status);
         }
     }
 
@@ -629,7 +629,7 @@ int32_t SCMI_MiscResetReason(uint32_t channel, uint32_t flags,
         if (extInfo != NULL)
         {
             SCMI_MemCpy((uint8_t*) extInfo, (uint8_t*) &msgRx->extInfo,
-                (SCMI_MISC_NUM_EXTINFO * sizeof(uint32_t)));
+                SCMI_MISC_NUM_EXTINFO, sizeof(uint32_t), &status);
         }
     }
 
@@ -848,7 +848,7 @@ int32_t SCMI_MiscSyslog(uint32_t channel, uint32_t flags, uint32_t logIndex,
         if (syslog != NULL)
         {
             SCMI_MemCpy((uint8_t*) syslog, (uint8_t*) &msgRx->syslog,
-                (SCMI_MISC_NUM_SYSLOG * sizeof(uint32_t)));
+                SCMI_MISC_NUM_SYSLOG, sizeof(uint32_t), &status);
         }
     }
 
@@ -970,7 +970,7 @@ int32_t SCMI_MiscControlExtSet(uint32_t channel, uint32_t ctrlId,
         msgTx->numVal = numVal;
 
         SCMI_MemCpy((uint8_t*) &msgTx->extVal, (const uint8_t*) extVal,
-            (SCMI_MISC_NUM_EXTVAL_T * sizeof(uint32_t)));
+            SCMI_MISC_NUM_EXTVAL_T, sizeof(uint32_t), &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
@@ -1062,7 +1062,111 @@ int32_t SCMI_MiscControlExtGet(uint32_t channel, uint32_t ctrlId,
         if (extVal != NULL)
         {
             SCMI_MemCpy((uint8_t*) extVal, (uint8_t*) &msgRx->extVal,
-                (SCMI_MISC_NUM_EXTVAL * sizeof(uint32_t)));
+                SCMI_MISC_NUM_EXTVAL, sizeof(uint32_t), &status);
+        }
+    }
+
+    /* Release lock */
+    SCMI_A2P_UNLOCK(channel);
+
+    /* Return status */
+    return status;
+}
+
+/*--------------------------------------------------------------------------*/
+/* Get DDR memory region info                                               */
+/*--------------------------------------------------------------------------*/
+int32_t SCMI_MiscDdrInfoGet(uint32_t channel, uint32_t ddrRgdId,
+    uint32_t *attributes, uint32_t *mts, uint32_t *startLow,
+    uint32_t *startHigh, uint32_t *endLow, uint32_t *endHigh)
+{
+    int32_t status;
+    uint32_t header;
+    void *msg;
+
+    /* Response message structure */
+    typedef struct
+    {
+        uint32_t header;
+        int32_t status;
+        uint32_t attributes;
+        uint32_t mts;
+        uint32_t startLow;
+        uint32_t startHigh;
+        uint32_t endLow;
+        uint32_t endHigh;
+    } msg_rmiscd34_t;
+
+    /* Acquire lock */
+    SCMI_A2P_LOCK(channel);
+
+    /* Init buffer */
+    status = SCMI_BufInit(channel, &msg);
+
+    /* Send request */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        /* Request message structure */
+        typedef struct
+        {
+            uint32_t header;
+            uint32_t ddrRgdId;
+        } msg_tmiscd34_t;
+        msg_tmiscd34_t *msgTx = (msg_tmiscd34_t*) msg;
+
+        /* Fill in parameters */
+        msgTx->ddrRgdId = ddrRgdId;
+
+        /* Send message */
+        status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
+            SCMI_MSG_MISC_DDR_INFO_GET, sizeof(msg_tmiscd34_t), &header);
+    }
+
+    /* Receive response */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        status = SCMI_A2pRx(channel, sizeof(msg_rmiscd34_t), header);
+    }
+
+    /* Copy out if no error */
+    if (status == SCMI_ERR_SUCCESS)
+    {
+        const msg_rmiscd34_t *msgRx = (const msg_rmiscd34_t*) msg;
+
+        /* Extract attributes */
+        if (attributes != NULL)
+        {
+            *attributes = msgRx->attributes;
+        }
+
+        /* Extract mts */
+        if (mts != NULL)
+        {
+            *mts = msgRx->mts;
+        }
+
+        /* Extract startLow */
+        if (startLow != NULL)
+        {
+            *startLow = msgRx->startLow;
+        }
+
+        /* Extract startHigh */
+        if (startHigh != NULL)
+        {
+            *startHigh = msgRx->startHigh;
+        }
+
+        /* Extract endLow */
+        if (endLow != NULL)
+        {
+            *endLow = msgRx->endLow;
+        }
+
+        /* Extract endHigh */
+        if (endHigh != NULL)
+        {
+            *endHigh = msgRx->endHigh;
         }
     }
 

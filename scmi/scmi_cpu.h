@@ -175,9 +175,11 @@
  */
 /** @{ */
 /*! IRQ mux */
-#define SCMI_CPU_FLAGS_IRQ_MUX(x)    (((x) & 0x1U) << 0U)
+#define SCMI_CPU_FLAGS_IRQ_MUX(x)     (((x) & 0x1U) << 0U)
 /*! Platform wake */
-#define SCMI_CPU_FLAGS_PLAT_WAKE(x)  (((x) & 0x1U) << 1U)
+#define SCMI_CPU_FLAGS_PLAT_WAKE(x)   (((x) & 0x1U) << 1U)
+/*! LP compute */
+#define SCMI_CPU_FLAGS_LP_COMPUTE(x)  (((x) & 0x1U) << 2U)
 /** @} */
 
 /* Types */
@@ -402,7 +404,13 @@ int32_t SCMI_CpuResetVectorSet(uint32_t channel, uint32_t cpuId,
  * @param[in]     channel    A2P channel for comms
  * @param[in]     cpuId      Identifier for the CPU
  * @param[in]     flags      Sleep mode flags:<BR>
- *                           Bits[31:1] Reserved, must be zero.<BR>
+ *                           Bits[31:3] Reserved, must be zero.<BR>
+ *                           Bit[2] LP compute:<BR>
+ *                           If set to 1 system sleep can be entered even when
+ *                           the \a cpuId CPU is running.<BR>
+ *                           Bit[1] Platform wake:<BR>
+ *                           If set to 1 the \a cpuId will be awakened when
+ *                           it's platform/cluster wakes.<BR>
  *                           Bit[0] IRQ mux:<BR>
  *                           If set to 1 the wakeup mux source is the GIC, else
  *                           if 0 then the GPC
@@ -410,11 +418,14 @@ int32_t SCMI_CpuResetVectorSet(uint32_t channel, uint32_t cpuId,
  *
  * This function allows the calling agent to set sleep mode of a CPU. The CPU
  * will transition to this mode on its next WFI. An example sleep mode is
- * ::SCMI_CPU_SLEEP_RUN.
+ * ::SCMI_CPU_SLEEP_RUN. Note the LP compute flag indicates system sleep may be
+ * entered even when the CPU indicated by \a cpuId is running. It is only valid
+ * if \a sleepMode is ::SCMI_CPU_SLEEP_RUN.
  *
  * Access macros:
  * - ::SCMI_CPU_FLAGS_IRQ_MUX() - IRQ mux
  * - ::SCMI_CPU_FLAGS_PLAT_WAKE() - Platform wake
+ * - ::SCMI_CPU_FLAGS_LP_COMPUTE() - LP compute
  *
  * @return Returns the status (::SCMI_ERR_SUCCESS = success).
  *

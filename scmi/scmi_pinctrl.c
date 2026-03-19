@@ -279,7 +279,8 @@ int32_t SCMI_PinctrlSettingsGet(uint32_t channel, uint32_t identifier,
         if (configs != NULL)
         {
             SCMI_MemCpy((uint8_t*) configs, (uint8_t*) &msgRx->configs,
-                (SCMI_PINCTRL_NUM_CONFIGS * sizeof(scmi_pin_config_t)));
+                SCMI_PINCTRL_NUM_CONFIGS, sizeof(scmi_pin_config_t),
+                &status);
         }
     }
 
@@ -327,7 +328,8 @@ int32_t SCMI_PinctrlSettingsConfigure(uint32_t channel, uint32_t identifier,
         msgTx->attributes = attributes;
 
         SCMI_MemCpy((uint8_t*) &msgTx->configs, (const uint8_t*) configs,
-            (SCMI_PINCTRL_NUM_CONFIGS_T * sizeof(scmi_pin_config_t)));
+            SCMI_PINCTRL_NUM_CONFIGS_T, sizeof(scmi_pin_config_t),
+            &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,

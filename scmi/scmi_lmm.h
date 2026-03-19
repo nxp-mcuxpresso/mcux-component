@@ -123,7 +123,7 @@
  */
 /** @{ */
 /*! Number of logical machines */
-#define SCMI_LMM_PROTO_ATTR_NUM_LM(x)  (((x) & 0xFFU) >> 0U)
+#define SCMI_LMM_PROTO_ATTR_NUM_LM(x)  (((x) & 0x1FU) >> 0U)
 /** @} */
 
 /*!
@@ -239,10 +239,12 @@ int32_t SCMI_LmmProtocolVersion(uint32_t channel, uint32_t *version);
  * @param[in]     channel     A2P channel for comms
  * @param[out]    attributes  Protocol attributes:<BR>
  *                            Bits[31:8] Reserved, must be zero.<BR>
- *                            Bits[7:0] Number of logical machines
+ *                            Bits[4:0] Number of logical machines
  *
  * This function returns the implementation details associated with this
- * protocol.
+ * protocol. Note that due to both hardware limitations and reset reason field
+ * limitations the max number of LM is 16. The minimum is 1 as the platform
+ * (aka SM) itself is an LM.
  *
  * Access macros:
  * - ::SCMI_LMM_PROTO_ATTR_NUM_LM() - Number of logical machines

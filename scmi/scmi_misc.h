@@ -82,6 +82,8 @@
 #define SCMI_MSG_MISC_CONTROL_EXT_SET        0x20U
 /*! Get an extended control value */
 #define SCMI_MSG_MISC_CONTROL_EXT_GET        0x21U
+/*! Get DDR memory region info */
+#define SCMI_MSG_MISC_DDR_INFO_GET           0x22U
 /*! Read control notification event */
 #define SCMI_MSG_MISC_CONTROL_EVENT          0x0U
 /** @} */
@@ -154,6 +156,20 @@
 #define SCMI_MISC_CTRL_FLAG_BRD  0x8000U
 /** @} */
 
+/*!
+ * @name Type of DDR
+ */
+/** @{ */
+/*! LPDDR5 */
+#define SCMI_MISC_DDR_TYPE_LPDDR5   0
+/*! LPDDR5X */
+#define SCMI_MISC_DDR_TYPE_LPDDR5X  1
+/*! LPDDR4 */
+#define SCMI_MISC_DDR_TYPE_LPDDR4   2
+/*! LPDDR4X */
+#define SCMI_MISC_DDR_TYPE_LPDDR4X  3
+/** @} */
+
 /* Macros */
 
 /*!
@@ -224,6 +240,20 @@
 #define SCMI_MISC_NUM_LOG_FLAGS_NUM_LOGS(x)      (((x) & 0xFFFU) >> 0U)
 /** @} */
 
+/*!
+ * @name SCMI DDR memory region attributes
+ */
+/** @{ */
+/*! ECC enabled */
+#define SCMI_MISC_DDR_ATTR_ECC(x)      (((x) & 0x80000000U) >> 31U)
+/*! Number of DDR memory regions */
+#define SCMI_MISC_DDR_ATTR_NUM_RGD(x)  (((x) & 0x30000U) >> 16U)
+/*! Width */
+#define SCMI_MISC_DDR_ATTR_WIDTH(x)    (((x) & 0x700U) >> 8U)
+/*! DDR type */
+#define SCMI_MISC_DDR_ATTR_TYPE(x)     (((x) & 0x1FU) >> 0U)
+/** @} */
+
 /* Functions */
 
 /*!
@@ -231,7 +261,7 @@
  *
  * @param[in]     channel  A2P channel for comms
  * @param[out]    version  Protocol version. For this revision of the
- *                         specification, this value must be 0x10000
+ *                         specification, this value must be 0x10001
  *
  * On success, this function returns the Protocol version. For this version of
  * the specification, the return value must be 0x10000, which corresponds to
@@ -704,6 +734,68 @@ int32_t SCMI_MiscControlExtSet(uint32_t channel, uint32_t ctrlId,
  */
 int32_t SCMI_MiscControlExtGet(uint32_t channel, uint32_t ctrlId,
     uint32_t addr, uint32_t len, uint32_t *numVal, uint32_t *extVal);
+
+/*!
+ * Get DDR memory region info.
+ *
+ * @param[in]     channel     A2P channel for comms
+ * @param[in]     ddrRgdId    Identifier for the DDR memory region
+ * @param[out]    attributes  Region attributes:<BR>
+ *                            Bit[31] ECC enable.<BR>
+ *                            Set to 1 if ECC enabled.<BR>
+ *                            Set to 0 if ECC disabled or not configured.<BR>
+ *                            Bits[30:18] Reserved, must be zero.<BR>
+ *                            Bits[17:16] Number of DDR memory regions.<BR>
+ *                            Bits[15:11] Reserved, must be zero.<BR>
+ *                            Bits[10:8] Width.<BR>
+ *                            Bus width is 16 << this field.<BR>
+ *                            So 0=16, 1=32, 2=64, etc.<BR>
+ *                            Bits[7:5] Reserved, must be zero.<BR>
+ *                            Bits[4:0] DDR type.<BR>
+ *                            Set to 0 if LPDDR5.<BR>
+ *                            Set to 1 if LPDDR5X.<BR>
+ *                            Set to 2 if LPDDR4.<BR>
+ *                            Set to 3 if LPDDR4X
+ * @param[out]    mts         DDR speed in megatransfers per second
+ * @param[out]    startLow    Low address: The lower 32 bits of the physical
+ *                            start address of the region
+ * @param[out]    startHigh   High address: The upper 32 bits of the physical
+ *                            start address of the region
+ * @param[out]    endLow      Low address: The lower 32 bits of the physical
+ *                            end address of the region. This excludes any DDR
+ *                            used to store ECC data
+ * @param[out]    endHigh     High address: The upper 32 bits of the physical
+ *                            end address of the region. This excludes any DDR
+ *                            used to store ECC data
+ *
+ * This function allows the calling agent to get info about DDR memory regions
+ * and how the interface to them is configured. Info includes DDR type (e.g.
+ * ::SCMI_MISC_DDR_TYPE_LPDDR5), width, range, ECC enabled, etc. The width is
+ * 16 shifted left by the returned value. The info can be different for each
+ * region as they may exist in different DDR on different DDR controllers. As a
+ * result, this function can be called for each of them. The returned DDR
+ * region number attribute will indicate the total number of DDR memory
+ * regions. Looping over the regions can be done until a NOT_FOUND error is
+ * returned. Better would be to limit by the DDR region number attribute
+ * returned from the first call. Note these are the regions made available by
+ * the DDR controller(s) and their configuration and not necessarily those
+ * accessible to the calling agent.
+ *
+ * Access macros:
+ * - ::SCMI_MISC_DDR_ATTR_ECC() - ECC enabled
+ * - ::SCMI_MISC_DDR_ATTR_NUM_RGD() - Number of DDR memory regions
+ * - ::SCMI_MISC_DDR_ATTR_WIDTH() - Width
+ * - ::SCMI_MISC_DDR_ATTR_TYPE() - DDR type
+ *
+ * @return Returns the status (::SCMI_ERR_SUCCESS = success).
+ *
+ * Return errors (see @ref SCMI_STATUS "SCMI error codes"):
+ * - ::SCMI_ERR_SUCCESS: if the info is returned successfully.
+ * - ::SCMI_ERR_NOT_FOUND: if \a ddrRgdId does not point to a region.
+ */
+int32_t SCMI_MiscDdrInfoGet(uint32_t channel, uint32_t ddrRgdId,
+    uint32_t *attributes, uint32_t *mts, uint32_t *startLow,
+    uint32_t *startHigh, uint32_t *endLow, uint32_t *endHigh);
 
 /*!
  * Read control notification event.

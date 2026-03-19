@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2025 NXP
+** Copyright 2023-2026 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -76,7 +76,7 @@ int32_t SCMI_ClockProtocolMessageAttributes(uint32_t channel,
 /* Get clock attributes                                                     */
 /*--------------------------------------------------------------------------*/
 int32_t SCMI_ClockAttributes(uint32_t channel, uint32_t clockId,
-    uint32_t *attributes, uint8_t *name)
+    uint32_t *attributes, uint8_t *name, uint32_t *clockEnableDelay)
 {
     int32_t status;
     uint32_t header;
@@ -89,6 +89,7 @@ int32_t SCMI_ClockAttributes(uint32_t channel, uint32_t clockId,
         int32_t status;
         uint32_t attributes;
         uint8_t name[SCMI_CLOCK_MAX_NAME];
+        uint32_t clockEnableDelay;
     } msg_rclockd3_t;
 
     /* Acquire lock */
@@ -137,6 +138,12 @@ int32_t SCMI_ClockAttributes(uint32_t channel, uint32_t clockId,
         if (name != NULL)
         {
             SCMI_StrCpy(name, msgRx->name, SCMI_CLOCK_MAX_NAME);
+        }
+
+        /* Extract clockEnableDelay */
+        if (clockEnableDelay != NULL)
+        {
+            *clockEnableDelay = msgRx->clockEnableDelay;
         }
     }
 
@@ -216,7 +223,7 @@ int32_t SCMI_ClockDescribeRates(uint32_t channel, uint32_t clockId,
         if (rates != NULL)
         {
             SCMI_MemCpy((uint8_t*) rates, (uint8_t*) &msgRx->rates,
-                (SCMI_CLOCK_NUM_RATES * sizeof(scmi_clock_rate_t)));
+                SCMI_CLOCK_NUM_RATES, sizeof(scmi_clock_rate_t), &status);
         }
     }
 
@@ -553,7 +560,7 @@ int32_t SCMI_ClockPossibleParentsGet(uint32_t channel, uint32_t clockId,
         if (parents != NULL)
         {
             SCMI_MemCpy((uint8_t*) parents, (uint8_t*) &msgRx->parents,
-                (SCMI_CLOCK_NUM_PARENTS * sizeof(uint32_t)));
+                SCMI_CLOCK_NUM_PARENTS, sizeof(uint32_t), &status);
         }
     }
 

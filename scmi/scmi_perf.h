@@ -233,7 +233,7 @@ int32_t SCMI_PerfProtocolVersion(uint32_t channel, uint32_t *version);
  *                                       the calling agent. If the
  *                                       statisticsLen field is 0, then this
  *                                       field is invalid and must be ignored
- * @param[out]    statisticsAddressHigh  High address: The upper 32 bit of the
+ * @param[out]    statisticsAddressHigh  High address: The upper 32 bits of the
  *                                       physical address where the shared
  *                                       memory region is located. The address
  *                                       must be in the memory map of the

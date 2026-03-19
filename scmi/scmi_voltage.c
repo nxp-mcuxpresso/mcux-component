@@ -217,7 +217,7 @@ int32_t SCMI_VoltageDescribeLevels(uint32_t channel, uint32_t domainId,
         if (voltage != NULL)
         {
             SCMI_MemCpy((uint8_t*) voltage, (uint8_t*) &msgRx->voltage,
-                (SCMI_VOLTAGE_NUM_VOLTAGE * sizeof(int32_t)));
+                SCMI_VOLTAGE_NUM_VOLTAGE, sizeof(int32_t), &status);
         }
     }
 

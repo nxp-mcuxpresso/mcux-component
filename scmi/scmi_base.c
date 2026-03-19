@@ -309,7 +309,7 @@ int32_t SCMI_BaseDiscoverListProtocols(uint32_t channel, uint32_t skip,
         if (protocols != NULL)
         {
             SCMI_MemCpy((uint8_t*) protocols, (uint8_t*) &msgRx->protocols,
-                (SCMI_BASE_NUM_PROTOCOLS * sizeof(uint32_t)));
+                SCMI_BASE_NUM_PROTOCOLS, sizeof(uint32_t), &status);
         }
     }
 

@@ -382,7 +382,7 @@ int32_t SCMI_CpuIrqWakeSet(uint32_t channel, uint32_t cpuId,
         msgTx->numMask = numMask;
 
         SCMI_MemCpy((uint8_t*) &msgTx->mask, (const uint8_t*) mask,
-            (SCMI_CPU_NUM_MASK_T * sizeof(uint32_t)));
+            SCMI_CPU_NUM_MASK_T, sizeof(uint32_t), &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
@@ -438,7 +438,7 @@ int32_t SCMI_CpuNonIrqWakeSet(uint32_t channel, uint32_t cpuId,
         msgTx->numMask = numMask;
 
         SCMI_MemCpy((uint8_t*) &msgTx->mask, (const uint8_t*) mask,
-            (SCMI_CPU_NUM_MASK_T * sizeof(uint32_t)));
+            SCMI_CPU_NUM_MASK_T, sizeof(uint32_t), &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
@@ -492,8 +492,8 @@ int32_t SCMI_CpuPdLpmConfigSet(uint32_t channel, uint32_t cpuId,
         msgTx->numConfigs = numConfigs;
 
         SCMI_MemCpy((uint8_t*) &msgTx->pdConfigs,
-            (const uint8_t*) pdConfigs,
-            (SCMI_CPU_NUM_PDCONFIGS_T * sizeof(scmi_pd_lpm_config_t)));
+            (const uint8_t*) pdConfigs, SCMI_CPU_NUM_PDCONFIGS_T,
+            sizeof(scmi_pd_lpm_config_t), &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
@@ -548,8 +548,8 @@ int32_t SCMI_CpuPerLpmConfigSet(uint32_t channel, uint32_t cpuId,
         msgTx->numConfigs = numConfigs;
 
         SCMI_MemCpy((uint8_t*) &msgTx->perConfigs,
-            (const uint8_t*) perConfigs,
-            (SCMI_CPU_NUM_PERCONFIGS_T * sizeof(scmi_per_lpm_config_t)));
+            (const uint8_t*) perConfigs, SCMI_CPU_NUM_PERCONFIGS_T,
+            sizeof(scmi_per_lpm_config_t), &status);
 
         /* Send message */
         status = SCMI_A2pTx(channel, COMMAND_PROTOCOL,
