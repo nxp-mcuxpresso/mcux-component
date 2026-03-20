@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -217,6 +217,8 @@ uint8_t OSA_GetThreadNum(void)
 {
     UBaseType_t taskNum = uxTaskGetNumberOfTasks();
 
+    /* CERT INT31-C: validate before narrowing UBaseType_t to uint8_t */
+    assert(taskNum <= (UBaseType_t)UINT8_MAX);
     return (uint8_t)taskNum;
 }
 
