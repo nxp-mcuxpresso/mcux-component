@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2025 NXP
+ * Copyright 2018, 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -393,9 +393,7 @@ static status_t spifi_nor_quad_mode_enable(SPIFI_Type *base,
             /* Read status register1 to combine the value of two status registers, then write it back.
                This opration can maintain the state of all other writable status register bits*/
             valueStatus = spifi_nor_read_status(base, memHandle->commandSet.readStatusCommand);
-            /* INT31-C: Validate before narrowing conversion */
-            assert((valueStatus | ((quadValue | (0x1U << config->quadDualEnableBitShift)) << 8)) <= 0xFFFFU);
-            valueSwitch = (uint16_t)(valueStatus | ((quadValue | (0x1U << config->quadDualEnableBitShift)) << 8));
+            valueSwitch = (uint16_t)((valueStatus | ((quadValue | (0x1U << config->quadDualEnableBitShift)) << 8)) & 0xFFFFU);
 
             /* Enable quad/dual spi mode. */
             cmd.dataLen           = 0x02U;
@@ -419,9 +417,7 @@ static status_t spifi_nor_quad_mode_enable(SPIFI_Type *base,
             cmd.type              = kSPIFI_CommandOpcodeOnly;
             cmd.opcode            = config->quadDualEnableCommand;
             SPIFI_SetCommand(base, &cmd);
-            /* INT31-C: Validate before narrowing conversion */
-            assert((quadValue | (0x1U << config->quadDualEnableBitShift)) <= 0xFFU);
-            SPIFI_WriteDataByte(base, (uint8_t)(quadValue | (0x1U << config->quadDualEnableBitShift)));
+            SPIFI_WriteDataByte(base, (uint8_t)((quadValue | (0x1U << config->quadDualEnableBitShift)) & 0xFFU));
         }
 
         status = spifi_check_norflash_finish(base, memHandle);
@@ -597,8 +593,8 @@ static status_t spifi_get_page_sector_size_from_sfdp(nor_handle_t *handle, jedec
     }
     else
     {
-        page_size               = (uint32_t)(1 << param_tbl->chip_erase_progrm_info.page_size);
-        handle->bytesInPageSize = page_size == (1 << 15) ? 256U : page_size;
+        page_size               = (uint32_t)(1UL << param_tbl->chip_erase_progrm_info.page_size);
+        handle->bytesInPageSize = page_size == (1UL << 15U) ? 256U : page_size;
     }
 
     /* Calculate Sector Size */
