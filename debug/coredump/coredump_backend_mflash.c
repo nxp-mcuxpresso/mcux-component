@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -70,7 +70,9 @@ static void coredump_mflash_page_sync(uint8_t *buf, size_t bufLen, bool flush, b
     assert(bufLen <= SIZE_MAX - backend_ctx.bytesWritten - backend_ctx.pageBufferOffset);
     if ((bufLen + backend_ctx.bytesWritten + backend_ctx.pageBufferOffset) > backend_ctx.bytesAvailble)
     {
-        assert(false);
+        /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+         * stringification of a macro parameter inside assert(). */
+        assert(0 == 1U);
         return;
     }
 
@@ -79,14 +81,18 @@ static void coredump_mflash_page_sync(uint8_t *buf, size_t bufLen, bool flush, b
         status = mflash_drv_read(addr, (uint32_t *)(uint32_t)(backend_ctx.pageBuffer), MFLASH_PAGE_SIZE);
         if ((status_t)status != kStatus_Success)
         {
-            assert(false);
+            /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+             * stringification of a macro parameter inside assert(). */
+            assert(0 == 1U);
             return;
         }
         memcpy(backend_ctx.pageBuffer, ptr, backend_ctx.pageBufferOffset);
         status = mflash_drv_page_program(addr, (uint32_t *)(uint32_t)(backend_ctx.pageBuffer));
         if ((status_t)status != kStatus_Success)
         {
-            assert(false);
+            /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+             * stringification of a macro parameter inside assert(). */
+            assert(0 == 1U);
             return;
         }
         backend_ctx.pageBufferOffset = 0U;
@@ -111,7 +117,9 @@ static void coredump_mflash_page_sync(uint8_t *buf, size_t bufLen, bool flush, b
             status = mflash_drv_page_program(addr, (uint32_t *)(uint32_t)(backend_ctx.pageBuffer));
             if ((status_t)status != kStatus_Success)
             {
-                assert(false);
+                /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+             * stringification of a macro parameter inside assert(). */
+            assert(0 == 1U);
                 return;
             }
             addr += MFLASH_PAGE_SIZE;
@@ -132,7 +140,9 @@ static void coredump_mflash_page_sync(uint8_t *buf, size_t bufLen, bool flush, b
         status = mflash_drv_page_program(addr, (uint32_t *)(uint32_t)(backend_ctx.pageBuffer));
         if ((status_t)status != kStatus_Success)
         {
-            assert(false);
+            /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+             * stringification of a macro parameter inside assert(). */
+            assert(0 == 1U);
             return;
         }
         addr += MFLASH_PAGE_SIZE;
@@ -155,7 +165,9 @@ static void coredump_mflash_backend_start(void)
         status = mflash_drv_init();
         if (status == kStatus_Fail)
         {
-            assert(false);
+            /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+             * stringification of a macro parameter inside assert(). */
+            assert(0 == 1U);
             return;
         }
     }
@@ -166,7 +178,9 @@ static void coredump_mflash_backend_start(void)
         status = mflash_drv_sector_erase(CONFIG_MFLASH_COREDUMP_REGION_START_ADDR + i * MFLASH_SECTOR_SIZE);
         if (status != kStatus_Success)
         {
-            assert(false);
+            /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+             * stringification of a macro parameter inside assert(). */
+            assert(0 == 1U);
             return;
         }
         backend_ctx.bytesAvailble += MFLASH_SECTOR_SIZE;
@@ -222,7 +236,9 @@ static int coredump_mflash_process_stored_dump(data_read_cb_t cb, void *cb_arg)
 
     if (mflash_drv_read(addr, (uint32_t *)(uint32_t)&hdr, sizeof(hdr)) != kStatus_Success)
     {
-        assert(false);
+        /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+         * stringification of a macro parameter inside assert(). */
+        assert(0 == 1U);
         return 0;
     }
 
@@ -256,7 +272,9 @@ static int coredump_mflash_process_stored_dump(data_read_cb_t cb, void *cb_arg)
 
         if (mflash_drv_read(addr, (uint32_t *)(uint32_t)backend_ctx.pageBuffer, copySize) != kStatus_Success)
         {
-            assert(false);
+            /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+             * stringification of a macro parameter inside assert(). */
+            assert(0 == 1U);
             return 0;
         }
         if (cb != NULL)

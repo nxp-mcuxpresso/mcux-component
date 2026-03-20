@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -318,7 +318,9 @@ void fault_capture(uint32_t msp, uint32_t psp, uint32_t exc_return, _callee_save
     esf = get_esf(msp, psp, exc_return, &nested_exc);
     if (esf == NULL)
     {
-        assert(false);
+        /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+         * stringification of a macro parameter inside assert(). */
+        assert(0 == 1U);
     }
 
 #if defined(CONFIG_ARMV7_M_ARMV8_M_MAINLINE) || defined(CONFIG_ARMV6_M_ARMV8_M_BASELINE)
