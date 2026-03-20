@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 NXP
+ * Copyright 2021-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -24,7 +24,7 @@
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-extern pm_device_option_t g_devicePMOption;
+extern const pm_device_option_t g_devicePMOption;
 AT_ALWAYS_ON_DATA(static pm_handle_t *s_pmHandle);
 
 static uint32_t s_defaultPMIrqMask = 0UL;
@@ -53,9 +53,9 @@ static uint8_t PM_findDeepestState(uint64_t duration)
     uint8_t i              = 0U;
     uint8_t ret            = 0xFFU;
     uint8_t j              = 0U;
-    pm_state_t *state      = NULL;
-    bool stateSatisfy      = false;
-    pm_state_t *stateArray = s_pmHandle->deviceOption->states;
+    const pm_state_t *state      = NULL;
+    bool stateSatisfy            = false;
+    const pm_state_t *stateArray = s_pmHandle->deviceOption->states;
     uint8_t stateCount     = (s_pmHandle->deviceOption->stateCount);
     pm_resc_mask_t tmpSoftRescMask;
 
@@ -812,6 +812,7 @@ status_t PM_SetConstraints(uint8_t powerModeConstraint, int32_t rescNum, ...)
         for (i = 0; i < rescNum; i++)
         {
             inputResc = (int32_t)va_arg(ap, int32_t);
+            assert(inputResc >= 0); /* CERT INT31-C: ensure non-negative before unsigned conversion */
             PM_DECODE_RESC(inputResc);
 
             assert(rescShift < (uint32_t)PM_CONSTRAINT_COUNT);
@@ -924,8 +925,10 @@ status_t PM_ReleaseConstraints(uint8_t powerModeConstraint, int32_t rescNum, ...
         for (i = 0; i < rescNum; i++)
         {
             inputResc = (int32_t)va_arg(ap, int32_t);
+            assert(inputResc >= 0); /* CERT INT31-C: ensure non-negative before unsigned conversion */
             PM_DECODE_RESC(inputResc);
 
+            assert(rescShift < (uint32_t)PM_CONSTRAINT_COUNT); /* CERT ARR30-C: bounds check before array access */
             curRescOpMode   = s_pmHandle->sysRescGroup.groupSlice[rescShift / 8UL];
             opModeToRelease = ((uint32_t)opMode << (4UL * ((uint32_t)rescShift % 8UL)));
             if ((curRescOpMode & opModeToRelease) != 0UL)

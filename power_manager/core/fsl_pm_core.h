@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2024 NXP
+ * Copyright 2021-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -282,7 +282,7 @@ typedef struct _pm_handle
 {
     bool enable;                      /*!< Enable/disable power manager. */
     int8_t disableCount;              /*!< Used to support nested call to PM_EnablePowerManager. */
-    pm_device_option_t *deviceOption; /*!< Pointer to device specific power option. */
+    const pm_device_option_t *deviceOption; /*!< Pointer to device specific power option. */
     uint8_t targetState;              /*!< The target power state computed by the policy, actually it is the
                                            index in device states array. */
 
