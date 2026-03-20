@@ -121,6 +121,7 @@ static bool PM_IsWakeupSource(pm_wakeup_source_t *ws);
                             PM_RESC_TO_BIT(kResc_STCM7))
 #define PM_DPD_VAR_CONSTR_MASK (PM_RESC_TO_BIT(kResc_WakePowerDomainPeri) | PM_RESC_TO_BIT(kResc_STCM8))
 
+extern const pm_device_option_t g_devicePMOption; /* MISRA Rule 8.4: compatible declaration before definition */
 const pm_device_option_t g_devicePMOption = {
     .states =
         {
@@ -189,7 +190,7 @@ struct _pm_resource_recode
     void (*resourceConfigFunc)(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
 };
 
-AT_ALWAYS_ON_DATA_INIT(pm_resource_recode_t resourceDB[PM_CONFIGURABLE_RESOURCE_COUNT]) = {
+AT_ALWAYS_ON_DATA_INIT(static pm_resource_recode_t resourceDB[PM_CONFIGURABLE_RESOURCE_COUNT]) = {
     {PM_RESOURCE_OFF, 0U, PM_SetRAMOperateMode},    /* CTCM0 */
     {PM_RESOURCE_OFF, 0U, PM_SetRAMOperateMode},    /* CTCM1 */
     {PM_RESOURCE_OFF, 0U, PM_SetRAMOperateMode},    /* STCM0 */
@@ -205,29 +206,29 @@ AT_ALWAYS_ON_DATA_INIT(pm_resource_recode_t resourceDB[PM_CONFIGURABLE_RESOURCE_
     {PM_RESOURCE_FULL_ON, PM_RESOURCE_FULL_ON, PM_SetWakePowerDomainOperateMode},
 };
 
-AT_ALWAYS_ON_DATA_INIT(cmc_power_domain_config_t g_mainWakePDConfig) = {
+AT_ALWAYS_ON_DATA_INIT(static cmc_power_domain_config_t g_mainWakePDConfig) = {
     .clock_mode = kCMC_GateAllSystemClocksEnterLowPowerMode,
     /* we chose to put the main and wake domain in retention (deep sleep) by default if no constraints are set */
     .main_domain = kCMC_DeepSleepMode,
     .wake_domain = kCMC_DeepSleepMode,
 };
 
-AT_ALWAYS_ON_DATA(uint32_t primask_mask);
-AT_ALWAYS_ON_DATA(uint32_t basepri_mask);
-AT_ALWAYS_ON_DATA(jmp_buf g_coreContext);
-AT_ALWAYS_ON_DATA(uint32_t g_scbVtor);
-AT_ALWAYS_ON_DATA(uint32_t g_scbIcsr);
-AT_ALWAYS_ON_DATA(uint32_t g_scbAircr);
-AT_ALWAYS_ON_DATA(uint32_t g_scbCCR);
-AT_ALWAYS_ON_DATA(uint8_t g_scbShp[12]);
-AT_ALWAYS_ON_DATA(uint32_t g_scbShcsr);
-AT_ALWAYS_ON_DATA(uint32_t g_nvicIser[16U]);
-AT_ALWAYS_ON_DATA(uint8_t g_nvicIp[496U]);
-AT_ALWAYS_ON_DATA(uint32_t g_systickCtrl);
-AT_ALWAYS_ON_DATA(uint32_t g_systickLoad);
-AT_ALWAYS_ON_DATA(uint32_t g_cpuControl);
-AT_ALWAYS_ON_DATA(uint32_t g_wakeupEntry[12]);
-AT_ALWAYS_ON_DATA(uint32_t crcResult);
+AT_ALWAYS_ON_DATA(static uint32_t primask_mask);
+AT_ALWAYS_ON_DATA(static uint32_t basepri_mask);
+AT_ALWAYS_ON_DATA(static jmp_buf g_coreContext);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbVtor);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbIcsr);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbAircr);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbCCR);
+AT_ALWAYS_ON_DATA(static uint8_t g_scbShp[12]);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbShcsr);
+AT_ALWAYS_ON_DATA(static uint32_t g_nvicIser[16U]);
+AT_ALWAYS_ON_DATA(static uint8_t g_nvicIp[496U]);
+AT_ALWAYS_ON_DATA(static uint32_t g_systickCtrl);
+AT_ALWAYS_ON_DATA(static uint32_t g_systickLoad);
+AT_ALWAYS_ON_DATA(static uint32_t g_cpuControl);
+AT_ALWAYS_ON_DATA(static uint32_t g_wakeupEntry[12]);
+AT_ALWAYS_ON_DATA(static uint32_t crcResult);
 
 extern uint32_t m_warmboot_stack_end;
 
@@ -459,7 +460,9 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
         tmp8 = operateMode;
     }
 
-    sramId = pResourceRecode - resourceDB;
+    ptrdiff_t diff = pResourceRecode - resourceDB; /* CERT INT31-C: use ptrdiff_t before narrowing */
+    assert(diff >= 0 && diff <= UINT8_MAX);
+    sramId = (uint8_t)diff;
 
     if (sramId == 10U)
     {
@@ -482,15 +485,15 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
         {
             case PM_RESOURCE_FULL_ON:
             {
-                CMC_PowerOnSRAMAllMode(CMC0, 1U << sramId);
-                CMC_PowerOnSRAMLowPowerOnly(CMC0, 1U << sramId);
+                CMC_PowerOnSRAMAllMode(CMC0, 1UL << (uint32_t)sramId);
+                CMC_PowerOnSRAMLowPowerOnly(CMC0, 1UL << (uint32_t)sramId);
                 break;
             }
 
             case PM_RESOURCE_PARTABLE_ON1:
             {
-                CMC_PowerOnSRAMAllMode(CMC0, 1U << sramId);
-                CMC_PowerOffSRAMLowPowerOnly(CMC0, 1U << sramId);
+                CMC_PowerOnSRAMAllMode(CMC0, 1UL << (uint32_t)sramId);
+                CMC_PowerOffSRAMLowPowerOnly(CMC0, 1UL << (uint32_t)sramId);
                 break;
             }
 
@@ -500,8 +503,8 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
             */
             case PM_RESOURCE_OFF: /* GCOVR_EXCL_START */
             {
-                CMC_PowerOnSRAMLowPowerOnly(CMC0, 1U << sramId);
-                CMC_PowerOffSRAMAllMode(CMC0, 1U << sramId);
+                CMC_PowerOnSRAMLowPowerOnly(CMC0, 1UL << (uint32_t)sramId);
+                CMC_PowerOffSRAMAllMode(CMC0, 1UL << (uint32_t)sramId);
                 break;
             }
 
@@ -671,6 +674,7 @@ static status_t PM_ManageWakeupSource(pm_wakeup_source_t *ws, bool enable)
 
     PM_DECODE_WAKEUP_SOURCE_ID(ws->wsId);
 
+    assert(inputId <= (uint32_t)UINT8_MAX); /* CERT INT31-C: inputId is bits 4-11 of wsId (0-255) */
     if (inputType == 0UL)
     {
         /* Wakeup source is external pin. */
