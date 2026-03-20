@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2025 NXP
+ * Copyright 2021-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -84,6 +84,7 @@ static bool PM_DEV_IsWakeupSource(pm_wakeup_source_t *ws);
  *  |  VDD_SYS HVD    | Optional | Optional | Optional | OFF |
  *  |  VDD_SYS LVD    | Optional | Optional | Optional | OFF |
  */
+extern const pm_device_option_t g_devicePMOption; /* MISRA Rule 8.4: compatible declaration before definition */
 const pm_device_option_t g_devicePMOption = {
     .states =
         {
@@ -154,7 +155,7 @@ struct _pm_dev_resource_recode
 
 #define PM_RESOURCE_DB_COUNT (10U)
 
-AT_ALWAYS_ON_DATA_INIT(pm_dev_resource_recode_t resourceDB[PM_RESOURCE_DB_COUNT]) = {
+AT_ALWAYS_ON_DATA_INIT(static pm_dev_resource_recode_t resourceDB[PM_RESOURCE_DB_COUNT]) = {
     {PM_RESOURCE_OFF, 0U, PM_DEV_SetRAMOperateMode},
     {PM_RESOURCE_OFF, 0U, PM_DEV_SetRAMOperateMode},
     {PM_RESOURCE_OFF, 0U, PM_DEV_SetRAMOperateMode},
@@ -167,29 +168,29 @@ AT_ALWAYS_ON_DATA_INIT(pm_dev_resource_recode_t resourceDB[PM_RESOURCE_DB_COUNT]
     {PM_RESOURCE_FULL_ON, PM_RESOURCE_FULL_ON, PM_DEV_SetWakePowerDomainOperateMode},
 };
 
-AT_ALWAYS_ON_DATA_INIT(cmc_power_domain_config_t g_mainWakePDConfig) = {
+AT_ALWAYS_ON_DATA_INIT(static cmc_power_domain_config_t g_mainWakePDConfig) = {
     .clock_mode = kCMC_GateAllSystemClocksEnterLowPowerMode,
     /* we chose to put the main and wake domain in retention (deep sleep) by default if no constraints are set */
     .main_domain = kCMC_DeepSleepMode,
     .wake_domain = kCMC_DeepSleepMode,
 };
 
-AT_ALWAYS_ON_DATA(uint32_t primask_mask);
-AT_ALWAYS_ON_DATA(uint32_t basepri_mask);
-AT_ALWAYS_ON_DATA(jmp_buf g_coreContext);
-AT_ALWAYS_ON_DATA(uint32_t g_scbVtor);
-AT_ALWAYS_ON_DATA(uint32_t g_scbIcsr);
-AT_ALWAYS_ON_DATA(uint32_t g_scbAircr);
-AT_ALWAYS_ON_DATA(uint32_t g_scbCCR);
-AT_ALWAYS_ON_DATA(uint8_t g_scbShp[12]);
-AT_ALWAYS_ON_DATA(uint32_t g_scbShcsr);
-AT_ALWAYS_ON_DATA(uint32_t g_nvicIser[16U]);
-AT_ALWAYS_ON_DATA(uint8_t g_nvicIp[496U]);
-AT_ALWAYS_ON_DATA(uint32_t g_systickCtrl);
-AT_ALWAYS_ON_DATA(uint32_t g_systickLoad);
-AT_ALWAYS_ON_DATA(uint32_t g_cpuControl);
-AT_ALWAYS_ON_DATA(uint32_t g_wakeupEntry[12]);
-AT_ALWAYS_ON_DATA(uint32_t crcResult);
+AT_ALWAYS_ON_DATA(static uint32_t primask_mask);
+AT_ALWAYS_ON_DATA(static uint32_t basepri_mask);
+AT_ALWAYS_ON_DATA(static jmp_buf g_coreContext);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbVtor);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbIcsr);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbAircr);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbCCR);
+AT_ALWAYS_ON_DATA(static uint8_t g_scbShp[12]);
+AT_ALWAYS_ON_DATA(static uint32_t g_scbShcsr);
+AT_ALWAYS_ON_DATA(static uint32_t g_nvicIser[16U]);
+AT_ALWAYS_ON_DATA(static uint8_t g_nvicIp[496U]);
+AT_ALWAYS_ON_DATA(static uint32_t g_systickCtrl);
+AT_ALWAYS_ON_DATA(static uint32_t g_systickLoad);
+AT_ALWAYS_ON_DATA(static uint32_t g_cpuControl);
+AT_ALWAYS_ON_DATA(static uint32_t g_wakeupEntry[12]);
+AT_ALWAYS_ON_DATA(static uint32_t crcResult);
 
 extern uint32_t m_warmboot_stack_end;
 
@@ -434,15 +435,15 @@ static void PM_DEV_SetRAMOperateMode(uint8_t operateMode, pm_dev_resource_recode
     {
         case PM_RESOURCE_FULL_ON:
         {
-            CMC_PowerOnSRAMAllMode(CMC0, 1U << sramId);
-            CMC_PowerOnSRAMLowPowerOnly(CMC0, 1U << sramId);
+            CMC_PowerOnSRAMAllMode(CMC0, 1UL << (uint32_t)sramId);
+            CMC_PowerOnSRAMLowPowerOnly(CMC0, 1UL << (uint32_t)sramId);
             break;
         }
 
         case PM_RESOURCE_PARTABLE_ON1:
         {
-            CMC_PowerOnSRAMAllMode(CMC0, 1U << sramId);
-            CMC_PowerOffSRAMLowPowerOnly(CMC0, 1U << sramId);
+            CMC_PowerOnSRAMAllMode(CMC0, 1UL << (uint32_t)sramId);
+            CMC_PowerOffSRAMLowPowerOnly(CMC0, 1UL << (uint32_t)sramId);
             break;
         }
 
@@ -453,8 +454,8 @@ static void PM_DEV_SetRAMOperateMode(uint8_t operateMode, pm_dev_resource_recode
         /* GCOVR_EXCL_START */
         case PM_RESOURCE_OFF:
         {
-            CMC_PowerOnSRAMLowPowerOnly(CMC0, 1U << sramId);
-            CMC_PowerOffSRAMAllMode(CMC0, 1U << sramId);
+            CMC_PowerOnSRAMLowPowerOnly(CMC0, 1UL << (uint32_t)sramId);
+            CMC_PowerOffSRAMAllMode(CMC0, 1UL << (uint32_t)sramId);
             break;
         }
 
