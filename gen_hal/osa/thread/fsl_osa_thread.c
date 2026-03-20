@@ -115,7 +115,7 @@ static freeRtos_Task_Info_t g_freeRTOS_tcbs[CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK
 
 static bool find_slot(uint8_t *idx, void *desiredTcb)
 {
-    for (uint8_t i = 0; i < CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
+    for (uint8_t i = 0U; i < (uint8_t)CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
     {
         if (g_freeRTOS_tcbs[i].taskTcb == desiredTcb)
         {
@@ -137,7 +137,7 @@ static void OSA_TranslateTCBToZephyrThread(struct k_thread *zephyrThread, freeRt
     zephyrThread->stack_info.delta = 0U;
 #endif
     /* INT31-C: Validate before narrowing conversion */
-    assert(freeRTosTcb->uxPriority <= SCHAR_MAX);
+    assert(freeRTosTcb->uxPriority <= (UBaseType_t)SCHAR_MAX);
     zephyrThread->base.prio = freeRTosTcb->uxPriority;
 
     vTaskGetInfo((TaskHandle_t)freeRTosTcb, &curTaskStatus, pdFALSE, eInvalid);
@@ -171,7 +171,9 @@ void coredump_freertos_trace_task_create(void *tcb)
     else
     {
         /* Task registry full. */
-        assert(false);
+        /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+         * stringification of a macro parameter inside assert(). */
+        assert(0 == 1U);
     }
 }
 
@@ -192,7 +194,7 @@ struct k_thread *OSA_GetCurrentThread(void)
 {
     free_rtos_TCB *ptrFreeRtosTCB = (free_rtos_TCB *)(xTaskGetCurrentTaskHandle());
     uint32_t curTaskId            = 0UL;
-    for (uint8_t i = 0U; i < CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
+    for (uint8_t i = 0U; i < (uint8_t)CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
     {
         void *tmpTcb = g_freeRTOS_tcbs[i].taskTcb;
 
@@ -252,9 +254,9 @@ void OSA_PopulateKernelInstance(void *ptrThreads, uint32_t taskCount)
     current = (struct k_thread *)ptrThreads;
     next    = current->next_thread;
 
-    assert(taskCount <= CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK);
+    assert(taskCount <= (uint32_t)CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK);
     taskId = 0U;
-    for (uint8_t i = 0U; i < CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
+    for (uint8_t i = 0U; i < (uint8_t)CONFIG_GEN_HAL_OSA_FREERTOS_MAX_TASK; i++)
     {
         void *tmpTcb = g_freeRTOS_tcbs[i].taskTcb;
 
