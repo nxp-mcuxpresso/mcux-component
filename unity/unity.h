@@ -11,6 +11,11 @@
 
 #include "unity_internals.h"
 
+/* CodeWarrior DSC compiler does not support __has_include */
+#if (defined(__DSC__) && defined(__CW__))
+#include "unity_module.h"
+#else
+
 #if __has_include("unity_module.h")
 #include "unity_module.h"
 #else
@@ -203,6 +208,7 @@ enum _unity_module
     k_unity_cmu_fc             = 185,
     k_unity_tspc               = 186,
 };
+#endif
 #endif
 
 #define MAKE_UNITY_NUM(unity_module, caseID) (((uint32_t)(unity_module)*10000) + (uint32_t)(caseID))
