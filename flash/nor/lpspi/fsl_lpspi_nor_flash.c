@@ -174,7 +174,7 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
 
     assert(base);
 
-    status_t writeStatus = kStatus_Fail;
+    status_t writeStatus = kStatus_Success;
 
     bool blocking = true;
 
@@ -220,7 +220,8 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
                 break;
             }
         }
-
+        /* writeStatus must have been initialized as kStatus_Success, otherwise if length is smaller than 0xFFu
+         * the last call to LPSPI_MemWritePage would be skipped */
         if (writeStatus != kStatus_Success)
         {
             break;
