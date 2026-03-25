@@ -61,6 +61,10 @@ config MCUX_COMPONENT_component.phyyt8521
     bool "yt8521"
     select MCUX_COMPONENT_component.eth_phy_common
 
+config MCUX_COMPONENT_component.phyjl1111
+    bool "jl1111"
+    select MCUX_COMPONENT_component.eth_phy_common
+
 config MCUX_COMPONENT_component.phytenbaset
     bool "tenbaset_phy"
     select MCUX_COMPONENT_component.eth_phy_common

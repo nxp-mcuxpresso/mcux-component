@@ -195,6 +195,19 @@ if (CONFIG_MCUX_COMPONENT_component.phyyt8521)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.phyjl1111)
+    mcux_add_include(
+        INCLUDES
+            ./device/phyjl1111
+    )
+
+    mcux_add_source(
+        SOURCES
+            ./device/phyjl1111/fsl_phyjl1111.c
+            ./device/phyjl1111/fsl_phyjl1111.h
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.phytenbaset)
     mcux_add_include(
         INCLUDES
