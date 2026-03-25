@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2023, 2024-2025 NXP
+ * Copyright 2019-2023, 2024-2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -1206,7 +1206,7 @@ static status_t FLEXSPI_NOR_ReadSFDPInfo(FLEXSPI_Type *base, jedec_info_table_t 
         tbl->standard_version = sfdp_header.minor_rev;
 
         /* This number is 0-based. Therefore, 0 indicates 1 parameter header. */
-        uint8_t parameter_header_number = sfdp_header.param_hdr_num + 1U;
+        uint8_t parameter_header_number = (uint8_t)((sfdp_header.param_hdr_num + 1U) & 0xFFU);
 
         /*
          * Read parameter headers
@@ -3311,6 +3311,7 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
                     temp                       = (uint32_t)config->CurrentCommandMode + 0x01U;
                     config->CurrentCommandMode = (serial_nor_command_mode_t)temp;
                     temp                       = (uint32_t)config->transferMode + 0x01U;
+                    assert(temp <= (uint32_t)kSerialNorTransferMode_DDR); /* Assuming enum has MAX value */
                     config->transferMode       = (serial_nor_transfer_mode_t)temp;
 
                     if ((uint32_t)config->transferMode == 0x02U)
@@ -3376,6 +3377,7 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
                     assert(temp <= (uint32_t)kSerialNorCommandMode_max); /* Assuming enum has MAX value */
                     config->CurrentCommandMode = (serial_nor_command_mode_t)temp;
                     temp                       = (uint32_t)config->transferMode + 0x01U;
+                    assert(temp <= (uint32_t)kSerialNorTransferMode_DDR); /* Assuming enum has MAX value */
                     config->transferMode       = (serial_nor_transfer_mode_t)temp;
 
                     if ((uint32_t)config->transferMode == 0x02U)
