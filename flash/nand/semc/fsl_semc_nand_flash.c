@@ -125,6 +125,8 @@ static const char s_nandDeviceManufacturerList[][12] = {{'M', 'I', 'C', 'R', 'O'
 
 static semc_mem_nand_handle_t semc_handle;
 
+static semc_nand_timing_config_t s_defaultSemcNandTimingConfig;
+
 /*******************************************************************************
  * API
  ******************************************************************************/
@@ -159,7 +161,7 @@ static void semc_nand_crc16_onfi_update(crc16_data_t *crc16Info, const uint8_t *
         }
     }
 
-    crc16Info->currentCrc = (uint16_t)crc;
+    crc16Info->currentCrc = (uint16_t)(crc & 0xFFFFU);
 }
 
 static void semc_nand_crc16_onfi_finalize(crc16_data_t *crc16Info, uint16_t *hash)
@@ -366,6 +368,7 @@ static status_t semc_nand_get_onfi_timing_configure(nand_handle_t *handle, nand_
 
         /* Set the semc nand configuration again */
         timingArray                                  = &s_nandAcTimingParameterTable[acTimingTableIndex];
+        semcConfig->timingConfig = &s_defaultSemcNandTimingConfig;
         semcConfig->timingConfig->tCeSetup_Ns        = timingArray->min_tCS_ns;
         semcConfig->timingConfig->tCeHold_Ns         = timingArray->min_tCH_ns;
         semcConfig->timingConfig->tCeInterval_Ns     = timingArray->min_tCEITV_ns;
@@ -834,6 +837,9 @@ status_t Nand_Flash_Read_Page_Partial(
     assert(handle->pagesInBlock == 0U || handle->blocksInPlane <= UINT32_MAX / handle->pagesInBlock);
     assert((handle->pagesInBlock * handle->blocksInPlane) == 0U ||
            handle->planesInDevice <= UINT32_MAX / (handle->pagesInBlock * handle->blocksInPlane));
+    /* INT30-C: Prevent unsigned integer overflow */
+    assert(pageIndex == 0U ||
+           (1UL << ((semc_mem_nand_handle_t *)handle->deviceSpecific)->columnWidth) <= UINT32_MAX / pageIndex);
     uint32_t ipgCmdAddr = pageIndex * (1UL << ((semc_mem_nand_handle_t *)handle->deviceSpecific)->columnWidth);
     uint32_t pageNum    = handle->pagesInBlock * handle->blocksInPlane * handle->planesInDevice;
     bool eccCheckPassed;
@@ -1005,7 +1011,8 @@ status_t Nand_Flash_Read_Page(nand_handle_t *handle, uint32_t pageIndex, uint8_t
     assert((handle->pagesInBlock * handle->blocksInPlane) == 0U ||
            handle->planesInDevice <= UINT32_MAX / (handle->pagesInBlock * handle->blocksInPlane));
     uint32_t pageNum                   = handle->pagesInBlock * handle->blocksInPlane * handle->planesInDevice;
-
+    /* INT30-C: Prevent unsigned integer overflow */
+    assert(pageIndex == 0U || (1UL << semcHandle->columnWidth) <= UINT32_MAX / pageIndex);
     ipgCmdAddr = pageIndex * (1UL << semcHandle->columnWidth);
     /* Validate given length */
     if ((length > pageSize) || (pageIndex >= pageNum))
@@ -1074,6 +1081,8 @@ status_t Nand_Flash_Page_Program(nand_handle_t *handle, uint32_t pageIndex, cons
         return kStatus_Fail;
     }
 
+    /* INT30-C: Prevent unsigned integer overflow */
+    assert(pageIndex == 0U || (1UL << semcHandle->columnWidth) <= UINT32_MAX / pageIndex);
     ipgCmdAddr                    = pageIndex * (1UL << semcHandle->columnWidth);
     semcHandle->rowAddressToGetSR = ipgCmdAddr;
 
@@ -1145,9 +1154,11 @@ status_t Nand_Flash_Erase_Block(nand_handle_t *handle, uint32_t blockIndex)
     uint32_t ipgCmdAddr;
     bool eccCheckPassed                = false;
     semc_mem_nand_handle_t *semcHandle = (semc_mem_nand_handle_t *)handle->deviceSpecific;
-    /* INT30-C: Prevent multiplication overflow */
+    /* INT30-C: Prevent multiplication overflow (split triple-multiply into two guarded steps) */
     assert(blockIndex == 0U || handle->pagesInBlock <= UINT32_MAX / blockIndex);
-    ipgCmdAddr                         = blockIndex * handle->pagesInBlock * (1UL << semcHandle->columnWidth);
+    uint32_t pagesPerBlock = blockIndex * handle->pagesInBlock;
+    assert(pagesPerBlock == 0U || (1UL << semcHandle->columnWidth) <= UINT32_MAX / pagesPerBlock);
+    ipgCmdAddr                         = pagesPerBlock * (1UL << semcHandle->columnWidth);
 
     /* INT30-C: Prevent multiplication overflow */
     assert(handle->blocksInPlane == 0U || handle->planesInDevice <= UINT32_MAX / handle->blocksInPlane);
