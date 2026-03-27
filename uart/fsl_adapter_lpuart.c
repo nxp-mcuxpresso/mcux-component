@@ -2458,7 +2458,9 @@ hal_uart_dma_status_t HAL_UartDMAAbortSend(hal_uart_handle_t handle)
     LPUART_TransferAbortSendEDMA(s_LpuartAdapterBase[uartDmaHandle->instance], &uartDmaHandle->edmaHandle);
 #elif (defined(FSL_FEATURE_SOC_DMA_COUNT) && (FSL_FEATURE_SOC_DMA_COUNT > 0U))
 #endif /* FSL_FEATURE_SOC_EDMA_COUNT */
-
+    uartDmaHandle->dma_tx.buffer       = NULL;
+    uartDmaHandle->dma_tx.bufferLength = 0U;
+    uartDmaHandle->dma_tx.bufferSofar  = 0U;
     return kStatus_HAL_UartDmaSuccess;
 }
 #endif /* HAL_UART_DMA_ENABLE */
