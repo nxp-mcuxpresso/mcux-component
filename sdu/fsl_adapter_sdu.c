@@ -540,13 +540,99 @@ static void SDU_InnerDeinit(void)
     SDU_DeinitData();
 }
 
+static status_t SDU_InitCommandBuffers(void)
+{
+    uint32_t i, direction;
+    transfer_buffer_t *trans_buf;
+
+    for (direction = 0; direction < SDU_PORT_MAX_TRANSFER; direction++)
+    {
+        for (i = 0; i < SDU_MAX_CMD_BUFFER; i++)
+        {
+            trans_buf            = &cmd_buffer[direction][i].buffer;
+            if (direction == SDU_PORT_FOR_WRITE)
+            {
+                trans_buf->data_addr = (uint8_t *)cmd_trans_buffer[i];
+                trans_buf->data_size = (uint16_t)sizeof(cmd_trans_buffer[i]);
+                sdu_d("%s: cmd_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, cmd_trans_buffer[i], sizeof(cmd_trans_buffer[i]));
+            }
+            else
+            {
+                trans_buf->data_addr = (uint8_t *)cmdrsp_trans_buffer[i];
+                trans_buf->data_size = (uint16_t)sizeof(cmdrsp_trans_buffer[i]);
+                sdu_d("%s: cmdrsp_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, cmdrsp_trans_buffer[i], sizeof(cmdrsp_trans_buffer[i]));
+            }
+            if (trans_buf->data_addr == NULL)
+            {
+                sdu_e("%s: cmd free list buffer alloc fail!\r\n", __FUNCTION__);
+                return kStatus_Fail;
+            }
+            trans_buf->data_len  = 0;
+            trans_buf->user_data = 0;
+            (void)LIST_AddTail(&ctrl_sdu.cmd_free_buffer[direction], &cmd_buffer[direction][i].link);
+            sdu_d("%s: trans_buf: data_addr=%p data_size=%u\r\n", __FUNCTION__, trans_buf->data_addr, trans_buf->data_size);
+        }
+    }
+
+    return kStatus_Success;
+}
+
+static status_t SDU_InitEventBuffers(void)
+{
+    uint32_t i;
+    transfer_buffer_t *trans_buf;
+
+    for (i = 0; i < SDU_MAX_EVENT_BUFFER; i++)
+    {
+        trans_buf            = &event_buffer[i].buffer;
+        trans_buf->data_addr = (uint8_t *)event_trans_buffer[i];
+        if (trans_buf->data_addr == NULL)
+        {
+            sdu_e("%s: event free list buffer alloc fail!\r\n", __FUNCTION__);
+            return kStatus_Fail;
+        }
+        trans_buf->data_size = (uint16_t)sizeof(event_trans_buffer[i]);
+        trans_buf->data_len  = 0;
+        trans_buf->user_data = 0;
+        (void)LIST_AddTail(&ctrl_sdu.event_free_buffer, &event_buffer[i].link);
+        sdu_d("%s: event_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, event_trans_buffer[i], sizeof(event_trans_buffer[i]));
+        sdu_d("%s: trans_buf: data_addr=%p data_size=%u\r\n", __FUNCTION__, trans_buf->data_addr, trans_buf->data_size);
+    }
+
+    return kStatus_Success;
+}
+
+static status_t SDU_InitDataBuffers(void)
+{
+    uint32_t i;
+    transfer_buffer_t *trans_buf;
+
+    for (i = 0; i < (uint32_t)SDU_MAX_DATA_BUFFER; i++)
+    {
+        trans_buf            = &data_buffer[i].buffer;
+        trans_buf->data_addr = (uint8_t *)data_trans_buffer[i];
+        if (trans_buf->data_addr == NULL)
+        {
+            sdu_e("%s: data free list buffer alloc fail!\r\n", __FUNCTION__);
+            return kStatus_Fail;
+        }
+        trans_buf->data_size = (uint16_t)sizeof(data_trans_buffer[i]);
+        trans_buf->data_len  = 0;
+        trans_buf->user_data = 0;
+        (void)LIST_AddTail(&ctrl_sdu.data_free_buffer, &data_buffer[i].link);
+        sdu_d("%s: data_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, data_trans_buffer[i], sizeof(data_trans_buffer[i]));
+        sdu_d("%s: trans_buf: data_addr=%p data_size=%u\r\n", __FUNCTION__, trans_buf->data_addr, trans_buf->data_size);
+    }
+
+    return kStatus_Success;
+}
+
 static status_t SDU_InitBuffer(void)
 {
     sdioslv_handle_config_t config;
     status_t rc = kStatus_Success;
     uint32_t i = 0;
     uint32_t direction = 0;
-    transfer_buffer_t *trans_buf = NULL;
 
     config.fun_num        = 1;
     config.used_port_num  = SDU_ACTUAL_USE_PORT_NUM;
@@ -570,70 +656,22 @@ static status_t SDU_InitBuffer(void)
     LIST_Init(&ctrl_sdu.event_q, 0);
     LIST_Init(&ctrl_sdu.event_free_buffer, SDU_MAX_EVENT_BUFFER);
 
-    for (direction = 0; direction < SDU_PORT_MAX_TRANSFER; direction++)
+    rc = SDU_InitCommandBuffers();
+    if (rc != kStatus_Success)
     {
-        for (i = 0; i < SDU_MAX_CMD_BUFFER; i++)
-        {
-            trans_buf            = &cmd_buffer[direction][i].buffer;
-            if (direction == SDU_PORT_FOR_WRITE)
-            {
-                trans_buf->data_addr = (uint8_t *)cmd_trans_buffer[i];
-                trans_buf->data_size = (uint16_t)sizeof(cmd_trans_buffer[i]);
-                sdu_d("%s: cmd_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, cmd_trans_buffer[i], sizeof(cmd_trans_buffer[i]));
-            }
-            else
-            {
-                trans_buf->data_addr = (uint8_t *)cmdrsp_trans_buffer[i];
-                trans_buf->data_size = (uint16_t)sizeof(cmdrsp_trans_buffer[i]);
-                sdu_d("%s: cmdrsp_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, cmdrsp_trans_buffer[i], sizeof(cmdrsp_trans_buffer[i]));
-            }
-            if (trans_buf->data_addr == NULL)
-            {
-                sdu_e("%s: cmd free list buffer alloc fail!\r\n", __FUNCTION__);
-                rc = kStatus_Fail;
-                goto done;
-            }
-            trans_buf->data_len  = 0;
-            trans_buf->user_data = 0;
-            (void)LIST_AddTail(&ctrl_sdu.cmd_free_buffer[direction], &cmd_buffer[direction][i].link);
-            sdu_d("%s: trans_buf: data_addr=%p data_size=%u\r\n", __FUNCTION__, trans_buf->data_addr, trans_buf->data_size);
-        }
+        goto done;
     }
 
-    for (i = 0; i < SDU_MAX_EVENT_BUFFER; i++)
+    rc = SDU_InitEventBuffers();
+    if (rc != kStatus_Success)
     {
-        trans_buf            = &event_buffer[i].buffer;
-        trans_buf->data_addr = (uint8_t *)event_trans_buffer[i];
-        if (trans_buf->data_addr == NULL)
-        {
-            sdu_e("%s: event free list buffer alloc fail!\r\n", __FUNCTION__);
-            rc = kStatus_Fail;
-            goto done;
-        }
-        trans_buf->data_size = (uint16_t)sizeof(event_trans_buffer[i]);
-        trans_buf->data_len  = 0;
-        trans_buf->user_data = 0;
-        (void)LIST_AddTail(&ctrl_sdu.event_free_buffer, &event_buffer[i].link);
-        sdu_d("%s: event_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, event_trans_buffer[i], sizeof(event_trans_buffer[i]));
-        sdu_d("%s: trans_buf: data_addr=%p data_size=%u\r\n", __FUNCTION__, trans_buf->data_addr, trans_buf->data_size);
+        goto done;
     }
 
-    for (i = 0; i < (uint32_t)SDU_MAX_DATA_BUFFER; i++)
+    rc = SDU_InitDataBuffers();
+    if (rc != kStatus_Success)
     {
-        trans_buf            = &data_buffer[i].buffer;
-        trans_buf->data_addr = (uint8_t *)data_trans_buffer[i];
-        if (trans_buf->data_addr == NULL)
-        {
-            sdu_e("%s: data free list buffer alloc fail!\r\n", __FUNCTION__);
-            rc = kStatus_Fail;
-            goto done;
-        }
-        trans_buf->data_size = (uint16_t)sizeof(data_trans_buffer[i]);
-        trans_buf->data_len  = 0;
-        trans_buf->user_data = 0;
-        (void)LIST_AddTail(&ctrl_sdu.data_free_buffer, &data_buffer[i].link);
-        sdu_d("%s: data_trans_buffer[%u]=%p sizeof=%lu\r\n", __FUNCTION__, i, data_trans_buffer[i], sizeof(data_trans_buffer[i]));
-        sdu_d("%s: trans_buf: data_addr=%p data_size=%u\r\n", __FUNCTION__, trans_buf->data_addr, trans_buf->data_size);
+        goto done;
     }
 
     ctrl_sdu.handle = SDU_CreateHandle(&config);
@@ -1674,6 +1712,169 @@ status_t SDU_RecvData(void)
 
 }
 
+static sdu_buffer_t* SDU_GetSendBuffer(sdu_for_read_type_t type)
+{
+    sdu_buffer_t *send_buffer = NULL;
+
+    switch (type)
+    {
+        case SDU_TYPE_FOR_READ_CMD:
+            send_buffer = (sdu_buffer_t *)LIST_RemoveHead(&ctrl_sdu.cmd_free_buffer[SDU_PORT_FOR_READ]);
+            break;
+        case SDU_TYPE_FOR_READ_EVENT:
+            send_buffer = (sdu_buffer_t *)LIST_RemoveHead(&ctrl_sdu.event_free_buffer);
+            break;
+        case SDU_TYPE_FOR_READ_DATA:
+            send_buffer = (sdu_buffer_t *)LIST_RemoveHead(&ctrl_sdu.data_free_buffer);
+            break;
+        default:
+            sdu_e("%s: Unknown type %d.\n\r", __func__, type);
+            break;
+    }
+
+    return send_buffer;
+}
+
+static void SDU_UpdateRetryStats(sdu_for_read_type_t type,
+                                 uint32_t retry_cnt_cmdevent,
+                                 uint32_t retry_cnt_data,
+                                 uint8_t *data_addr,
+                                 uint16_t data_len)
+{
+    if (retry_cnt_cmdevent > 0)
+    {
+        if ((type == SDU_TYPE_FOR_READ_CMD) && (retry_cnt_cmdevent > ctrl_sdu.stat.max_retry_tx_cmd))
+        {
+            ctrl_sdu.stat.max_retry_tx_cmd = retry_cnt_cmdevent;
+        }
+        else if ((type == SDU_TYPE_FOR_READ_EVENT) && (retry_cnt_cmdevent > ctrl_sdu.stat.max_retry_tx_event))
+        {
+            ctrl_sdu.stat.max_retry_tx_event = retry_cnt_cmdevent;
+        }
+        sdu_d("Retry CMDEVT: %u-%u (%p %u)", type, retry_cnt_cmdevent, data_addr, data_len);
+    }
+    if (retry_cnt_data > 0)
+    {
+        if ((type == SDU_TYPE_FOR_READ_DATA) && (retry_cnt_data > ctrl_sdu.stat.max_retry_tx_data_no_buf))
+        {
+            ctrl_sdu.stat.max_retry_tx_data_no_buf = retry_cnt_data;
+        }
+        ctrl_sdu.stat.retry_tx_data_no_buf_arr[ctrl_sdu.stat.retry_tx_data_no_buf_cur] = retry_cnt_data;
+        ctrl_sdu.stat.retry_tx_data_no_buf_cur = (ctrl_sdu.stat.retry_tx_data_no_buf_cur + 1) % SDU_MAX_SAVE_TX_DATA;
+        ctrl_sdu.stat.retry_tx_data_no_buf_cnt++;
+        sdu_d("Retry DATA: %u-%u (%p %u)", type, retry_cnt_data, data_addr, data_len);
+    }
+}
+
+static void SDU_PrepareSDIOHeader(sdu_for_read_type_t type, sdio_header_t *sdio_hdr,
+                                  uint16_t data_len, uint16_t buffer_size)
+{
+    switch (type)
+    {
+        case SDU_TYPE_FOR_READ_CMD:
+            sdio_hdr->type = SDU_TYPE_CMD;
+            break;
+        case SDU_TYPE_FOR_READ_EVENT:
+            sdio_hdr->type = SDU_TYPE_EVENT;
+            break;
+        case SDU_TYPE_FOR_READ_DATA:
+            sdio_hdr->type = SDU_TYPE_DATA;
+            break;
+        default:
+            sdu_e("%s: Unknown type %d.\n\r", __func__, type);
+            break;
+    }
+
+    sdio_hdr->len = (uint16_t)MIN(data_len + sizeof(sdio_header_t), buffer_size);
+}
+
+static status_t SDU_PerformSend(sdu_for_read_type_t type, sdu_buffer_t *send_buffer)
+{
+    status_t status;
+
+    switch (type)
+    {
+        case SDU_TYPE_FOR_READ_CMD:
+            (void)LIST_AddTail(&ctrl_sdu.cmd_q[SDU_PORT_FOR_READ], &send_buffer->link);
+            status = SDU_SendCmdNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
+
+            if (status == (status_t)kStatus_Success)
+            {
+                sdu_d("%s: %d SendCmdNonBlocking ok 0x%x!\r\n", __FUNCTION__, type, status);
+            }
+            else if (status == (status_t)kStatus_SDIOSLV_CmdPending)
+            {
+                sdu_d("%s: SDU_SendCmdNonBlocking cmd full retry %u times 0x%x!\r\n", __FUNCTION__, status);
+            }
+            else
+            {
+                sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
+                (void)LIST_RemoveElement(&send_buffer->link);
+                (void)LIST_AddTail(&ctrl_sdu.cmd_free_buffer[SDU_PORT_FOR_READ], &send_buffer->link);
+                return (status_t)kStatus_Fail;
+            }
+            break;
+
+        case SDU_TYPE_FOR_READ_EVENT:
+            (void)LIST_AddTail(&ctrl_sdu.event_q, &send_buffer->link);
+            status = SDU_SendCmdNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
+
+            if (status == (status_t)kStatus_Success)
+            {
+                sdu_d("%s: %d SendCmdNonBlocking ok 0x%x!\r\n", __FUNCTION__, type, status);
+            }
+            else if (status == (status_t)kStatus_SDIOSLV_CmdPending)
+            {
+                sdu_d("%s: SDU_SendCmdNonBlocking event full retry %u times 0x%x!\r\n", __FUNCTION__, status);
+            }
+            else
+            {
+                sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
+                (void)LIST_RemoveElement(&send_buffer->link);
+                (void)LIST_AddTail(&ctrl_sdu.event_free_buffer, &send_buffer->link);
+                return (status_t)kStatus_Fail;
+            }
+            break;
+
+        case SDU_TYPE_FOR_READ_DATA:
+            (void)LIST_AddTail(&ctrl_sdu.data_q[SDU_PORT_FOR_READ], &send_buffer->link);
+            status = SDU_SendDataNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
+
+            if (status == (status_t)kStatus_Success)
+            {
+                sdu_d("%s: SendDataNonBlocking ok 0x%x!\r\n", __FUNCTION__, status);
+            }
+            else if (status == (status_t)kStatus_SDIOSLV_SendFull)
+            {
+                uint32_t retry_cnt_data = 1;
+                if (retry_cnt_data > ctrl_sdu.stat.max_retry_tx_data_no_port)
+                {
+                    ctrl_sdu.stat.max_retry_tx_data_no_port = retry_cnt_data;
+                }
+                ctrl_sdu.stat.retry_tx_data_no_port_arr[ctrl_sdu.stat.retry_tx_data_no_port_cur] = retry_cnt_data;
+                ctrl_sdu.stat.retry_tx_data_no_port_cur =
+                    (ctrl_sdu.stat.retry_tx_data_no_port_cur + 1) % SDU_MAX_SAVE_TX_DATA;
+                ctrl_sdu.stat.retry_tx_data_no_port_cnt++;
+                sdu_d("%s: SendDataNonBlocking full retry %u times 0x%x!\r\n",
+                      __FUNCTION__, retry_cnt_data, status);
+            }
+            else
+            {
+                sdu_e("%s: SendDataNonBlocking fail 0x%x!\r\n", __FUNCTION__, status);
+                (void)LIST_RemoveElement(&send_buffer->link);
+                (void)LIST_AddTail(&ctrl_sdu.data_free_buffer, &send_buffer->link);
+                return (status_t)kStatus_Fail;
+            }
+            break;
+
+        default:
+            sdu_e("%s: Unknown type %d.\n\r", __func__, type);
+            return (status_t)kStatus_Fail;
+    }
+
+    return (status_t)kStatus_Success;
+}
+
 /*!
  * @brief SDU send cmd/event/data.
  *
@@ -1689,7 +1890,6 @@ uint32_t g_SDU_Send_retry_cnt = 0xFFFFFFFF;
 status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_len)
 {
     sdu_buffer_t *send_buffer = NULL;
-    status_t status = kStatus_Fail;
     sdio_header_t *sdio_hdr = NULL;
 #if 0
     uint32_t retry_cnt = g_SDU_Send_retry_cnt;
@@ -1722,22 +1922,8 @@ status_t SDU_Send(sdu_for_read_type_t type, uint8_t *data_addr, uint16_t data_le
     }
 
 retry:
-    switch (type)
-    {
-        case SDU_TYPE_FOR_READ_CMD:
-            send_buffer = (sdu_buffer_t *)LIST_RemoveHead(&ctrl_sdu.cmd_free_buffer[SDU_PORT_FOR_READ]);
-            break;
-        case SDU_TYPE_FOR_READ_EVENT:
-            send_buffer = (sdu_buffer_t *)LIST_RemoveHead(&ctrl_sdu.event_free_buffer);
-            break;
-        case SDU_TYPE_FOR_READ_DATA:
-            send_buffer = (sdu_buffer_t *)LIST_RemoveHead(&ctrl_sdu.data_free_buffer);
-            break;
-        default:
-            sdu_e("%s: Unknown type %d.\n\r", __func__, type);
-            return (status_t)kStatus_Fail;
-            break;
-    }
+    send_buffer = SDU_GetSendBuffer(type);
+
 
     if (send_buffer == NULL)
     {
@@ -1782,29 +1968,8 @@ retry:
         }
 #endif
     }
-    if (retry_cnt_cmdevent > 0)
-    {
-        if ((type == SDU_TYPE_FOR_READ_CMD) && (retry_cnt_cmdevent > ctrl_sdu.stat.max_retry_tx_cmd))
-        {
-            ctrl_sdu.stat.max_retry_tx_cmd = retry_cnt_cmdevent;
-        }
-        else if ((type == SDU_TYPE_FOR_READ_EVENT) && (retry_cnt_cmdevent > ctrl_sdu.stat.max_retry_tx_event))
-        {
-            ctrl_sdu.stat.max_retry_tx_event = retry_cnt_cmdevent;
-        }
-        sdu_d("Retry CMDEVT: %u-%u (%p %u)", type, retry_cnt_cmdevent, data_addr, data_len);
-    }
-    if (retry_cnt_data > 0)
-    {
-        if ((type == SDU_TYPE_FOR_READ_DATA) && (retry_cnt_data > ctrl_sdu.stat.max_retry_tx_data_no_buf))
-        {
-            ctrl_sdu.stat.max_retry_tx_data_no_buf = retry_cnt_data;
-        }
-        ctrl_sdu.stat.retry_tx_data_no_buf_arr[ctrl_sdu.stat.retry_tx_data_no_buf_cur] = retry_cnt_data;
-        ctrl_sdu.stat.retry_tx_data_no_buf_cur = (ctrl_sdu.stat.retry_tx_data_no_buf_cur + 1) % SDU_MAX_SAVE_TX_DATA;
-        ctrl_sdu.stat.retry_tx_data_no_buf_cnt++;
-        sdu_d("Retry DATA: %u-%u (%p %u)", type, retry_cnt_data, data_addr, data_len);
-    }
+
+    SDU_UpdateRetryStats(type, retry_cnt_cmdevent, retry_cnt_data, data_addr, data_len);
 
     if (data_len + sizeof(sdio_header_t) > send_buffer->buffer.data_size)
     {
@@ -1814,22 +1979,7 @@ retry:
     }
 
     sdio_hdr = (sdio_header_t *)(send_buffer->buffer.data_addr);
-    switch (type)
-    {
-        case SDU_TYPE_FOR_READ_CMD:
-            sdio_hdr->type = SDU_TYPE_CMD;
-            break;
-        case SDU_TYPE_FOR_READ_EVENT:
-            sdio_hdr->type = SDU_TYPE_EVENT;
-            break;
-        case SDU_TYPE_FOR_READ_DATA:
-            sdio_hdr->type = SDU_TYPE_DATA;
-            break;
-        default:
-            sdu_e("%s: Unknown type %d.\n\r", __func__, type);
-            break;
-    }
-    sdio_hdr->len = (uint16_t)MIN(data_len + sizeof(sdio_header_t), send_buffer->buffer.data_size);
+    SDU_PrepareSDIOHeader(type, sdio_hdr, data_len, send_buffer->buffer.data_size);
 
     sdu_d("%s: buffer.data_size=%u data_len=%u sdio_hdr->len=%u\r\n", __FUNCTION__,
         send_buffer->buffer.data_size, data_len, sdio_hdr->len);
@@ -1840,89 +1990,7 @@ retry:
     sdu_d("%s: SDIO hdr: len=%d type=%d!\r\n", __FUNCTION__, sdio_hdr->len, sdio_hdr->type);
     SDU_dump_hex(sdu_dbg_level, sdio_hdr, sdio_hdr->len);
 
-    switch (type)
-    {
-        case SDU_TYPE_FOR_READ_CMD:
-            (void)LIST_AddTail(&ctrl_sdu.cmd_q[SDU_PORT_FOR_READ], &send_buffer->link);
-            status = SDU_SendCmdNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
-            if (status == (status_t)kStatus_Success)
-            {
-                sdu_d("%s: %d SendCmdNonBlocking ok 0x%x!\r\n", __FUNCTION__, type, status);
-            }
-            else
-            {
-                if (status == (status_t)kStatus_SDIOSLV_CmdPending)
-                {
-                    sdu_d("%s: SDU_SendCmdNonBlocking cmd full retry %u times 0x%x!\r\n", __FUNCTION__, status);
-                }
-                if ((status != (status_t)kStatus_Success) && (status != (status_t)kStatus_SDIOSLV_CmdPending))
-                {
-                    sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
-                    (void)LIST_RemoveElement(&send_buffer->link);
-                    (void)LIST_AddTail(&ctrl_sdu.cmd_free_buffer[SDU_PORT_FOR_READ], &send_buffer->link);
-                    return (status_t)kStatus_Fail;
-                }
-            }
-            break;
-        case SDU_TYPE_FOR_READ_EVENT:
-            (void)LIST_AddTail(&ctrl_sdu.event_q, &send_buffer->link);
-            status = SDU_SendCmdNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
-            if (status == (status_t)kStatus_Success)
-            {
-                sdu_d("%s: %d SendCmdNonBlocking ok 0x%x!\r\n", __FUNCTION__, type, status);
-            }
-            else
-            {
-                if (status == (status_t)kStatus_SDIOSLV_CmdPending)
-                {
-                    sdu_d("%s: SDU_SendCmdNonBlocking event full retry %u times 0x%x!\r\n", __FUNCTION__, status);
-                }
-                if ((status != (status_t)kStatus_Success) && (status != (status_t)kStatus_SDIOSLV_CmdPending))
-                {
-                    sdu_e("%s: %d SendCmdNonBlocking fail 0x%x!\r\n", __FUNCTION__, type, status);
-                    (void)LIST_RemoveElement(&send_buffer->link);
-                    (void)LIST_AddTail(&ctrl_sdu.event_free_buffer, &send_buffer->link);
-                    return (status_t)kStatus_Fail;
-                }
-            }
-            break;
-        case SDU_TYPE_FOR_READ_DATA:
-            (void)LIST_AddTail(&ctrl_sdu.data_q[SDU_PORT_FOR_READ], &send_buffer->link);
-            status = SDU_SendDataNonBlocking(ctrl_sdu.handle, &send_buffer->buffer);
-            if (status == (status_t)kStatus_Success)
-            {
-                sdu_d("%s: SendDataNonBlocking ok 0x%x!\r\n", __FUNCTION__, status);
-            }
-            else
-            {
-                if (status == (status_t)kStatus_SDIOSLV_SendFull)
-                {
-					uint32_t retry_cnt_data = 1;
-                    if (retry_cnt_data > ctrl_sdu.stat.max_retry_tx_data_no_port)
-                    {
-                        ctrl_sdu.stat.max_retry_tx_data_no_port = retry_cnt_data;
-                    }
-                    ctrl_sdu.stat.retry_tx_data_no_port_arr[ctrl_sdu.stat.retry_tx_data_no_port_cur] = retry_cnt_data;
-                    ctrl_sdu.stat.retry_tx_data_no_port_cur = (ctrl_sdu.stat.retry_tx_data_no_port_cur + 1) % SDU_MAX_SAVE_TX_DATA;
-                    ctrl_sdu.stat.retry_tx_data_no_port_cnt++;
-                    sdu_d("%s: SendDataNonBlocking full retry %u times 0x%x!\r\n", __FUNCTION__, retry_cnt_data, status);
-
-                }
-                if ((status != (status_t)kStatus_Success) && (status != (status_t)kStatus_SDIOSLV_SendFull))
-                {
-                    sdu_e("%s: SendDataNonBlocking fail 0x%x!\r\n", __FUNCTION__, status);
-                    (void)LIST_RemoveElement(&send_buffer->link);
-                    (void)LIST_AddTail(&ctrl_sdu.data_free_buffer, &send_buffer->link);
-                    return (status_t)kStatus_Fail;
-                }
-            }
-            break;
-        default:
-            sdu_e("%s: Unknown type %d.\n\r", __func__, type);
-            break;
-    }
-
-    return (status_t)kStatus_Success;
+    return SDU_PerformSend(type, send_buffer);
 }
 
 
