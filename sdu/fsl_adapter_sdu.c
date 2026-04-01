@@ -804,7 +804,7 @@ static void SDU_DataCallback(
 {
     sdu_ctrl_t *ctrl = (sdu_ctrl_t *)user_data;
     sdu_buffer_t *data_buf = NULL;
-    sdio_header_t *sdio_hdr = (sdio_header_t *)(buffer->data_addr);
+    sdio_header_t *sdio_hdr = NULL;
 
     switch (status)
     {
@@ -817,6 +817,7 @@ static void SDU_DataCallback(
             break;
 #endif
         case (status_t)kStatus_SDIOSLV_FuncReadComplete:
+            sdio_hdr = (sdio_header_t *)(buffer->data_addr);
             sdu_d("Dump %p %p len=%u\n\r", buffer, buffer->data_addr, MIN(sdio_hdr->len, buffer->data_size));
             SDU_dump_hex(sdu_dbg_level, buffer->data_addr, sdio_hdr->len);
             data_buf = (sdu_buffer_t *)buffer->user_data;
