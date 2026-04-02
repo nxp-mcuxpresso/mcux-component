@@ -603,6 +603,7 @@ typedef struct fsl_iap_api_interface_struct
     fsl_standard_version_t version; //!< IAP API version number.
     status_t (*api_init)(fsl_api_core_context_t *coreCtx, const fsl_kp_api_init_param_t *param);
     status_t (*api_deinit)(fsl_api_core_context_t *coreCtx);
+    // coverity[misra_c_2012_rule_5_8_violation:SUPPRESS]
     status_t (*mem_init)(fsl_api_core_context_t *ctx);
     status_t (*mem_read)(fsl_api_core_context_t *ctx, uint32_t addr, uint32_t len, uint8_t *buf, uint32_t memoryId);
     status_t (*mem_write)(fsl_api_core_context_t *ctx, uint32_t addr, uint32_t len, const uint8_t *buf, uint32_t memoryId);
