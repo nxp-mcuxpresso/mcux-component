@@ -35,6 +35,7 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
 {
     status_t ret;
     uint32_t primask;
+    uint32_t logaddr = MFLASH_BASE_ADDRESS + sector_addr;
 
     if ((sector_addr % MFLASH_SECTOR_SIZE) != 0UL)
     {
@@ -44,9 +45,13 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
     primask = __get_PRIMASK();
     __disable_irq();
 
-    ret = FLASH_Erase(&flash_ctx, sector_addr, MFLASH_SECTOR_SIZE, kFLASH_ApiEraseKey);
+    ret = FLASH_Erase(&flash_ctx, logaddr, MFLASH_SECTOR_SIZE, kFLASH_ApiEraseKey);
 
-    //L1CACHE_InvalidateDCacheByRange(sector_addr, MFLASH_SECTOR_SIZE);
+    /* Invalidate DCache if enabled */
+    if (SCB_CCR_DC_Msk == (SCB_CCR_DC_Msk & SCB->CCR))
+    {
+        DCACHE_InvalidateByRange(logaddr, MFLASH_SECTOR_SIZE);
+    }
 
     if (primask == 0UL)
     {
@@ -59,11 +64,11 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
 }
 
 /* API - Page program */
-
 int32_t mflash_drv_page_program(uint32_t page_addr, uint32_t *data)
 {
     status_t ret;
     uint32_t primask;
+    uint32_t logaddr = MFLASH_BASE_ADDRESS + page_addr;
 
     if ((page_addr % (uint32_t)MFLASH_PAGE_SIZE) != 0UL)
     {
@@ -73,9 +78,13 @@ int32_t mflash_drv_page_program(uint32_t page_addr, uint32_t *data)
     primask = __get_PRIMASK();
     __disable_irq();
 
-    ret = FLASH_Program(&flash_ctx, page_addr, data, MFLASH_PAGE_SIZE);
+    ret = FLASH_Program(&flash_ctx, logaddr, data, MFLASH_PAGE_SIZE);
 
-    //L1CACHE_InvalidateDCacheByRange(page_addr, MFLASH_PAGE_SIZE);
+    /* Invalidate DCache if enabled */
+    if (SCB_CCR_DC_Msk == (SCB_CCR_DC_Msk & SCB->CCR))
+    {
+        DCACHE_InvalidateByRange(logaddr, MFLASH_PAGE_SIZE);
+    }
 
     if (primask == 0UL)
     {
@@ -93,6 +102,7 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
 {
     status_t ret;
     uint32_t primask;
+    uint32_t logaddr = MFLASH_BASE_ADDRESS + phrase_addr;
 
     if ((phrase_addr % (uint32_t)MFLASH_PHRASE_SIZE) != 0UL)
     {
@@ -102,9 +112,13 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
     primask = __get_PRIMASK();
     __disable_irq();
 
-    ret = FLASH_Program(&flash_ctx, phrase_addr, data, MFLASH_PHRASE_SIZE);
+    ret = FLASH_Program(&flash_ctx, logaddr, data, MFLASH_PHRASE_SIZE);
 
-    //L1CACHE_InvalidateDCacheByRange(phrase_addr, MFLASH_PHRASE_SIZE);
+    /* Invalidate DCache if enabled */
+    if (SCB_CCR_DC_Msk == (SCB_CCR_DC_Msk & SCB->CCR))
+    {
+        DCACHE_InvalidateByRange(logaddr, MFLASH_PHRASE_SIZE);
+    }
 
     if (primask == 0UL)
     {
@@ -119,20 +133,24 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
 /* API - Read data */
 int32_t mflash_drv_read(uint32_t addr, uint32_t *buffer, uint32_t len)
 {
-    (void)memcpy(buffer, (void *)addr, len);
+    (void)memcpy(buffer, (void *)(addr + MFLASH_BASE_ADDRESS), len);
+
     return kStatus_Success;
 }
 
 /* API - Get pointer to FLASH region */
 void *mflash_drv_phys2log(uint32_t addr, uint32_t len)
 {
-    /* FLASH is directly mapped in the address space */
-    return (void *)(addr);
+    return (void *)(addr + MFLASH_BASE_ADDRESS);
 }
 
 /* API - Get pointer to FLASH region */
 uint32_t mflash_drv_log2phys(void *ptr, uint32_t len)
 {
-    /* FLASH is directly mapped in the address space */
-    return ((uint32_t)ptr);
+    if ((uint32_t)ptr < MFLASH_BASE_ADDRESS)
+    {
+        return MFLASH_INVALID_ADDRESS;
+    }
+
+    return ((uint32_t)ptr - MFLASH_BASE_ADDRESS);
 }
