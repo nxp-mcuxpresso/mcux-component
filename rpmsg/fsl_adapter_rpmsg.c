@@ -1,6 +1,5 @@
 /*
- * Copyright 2020, 2022-2023 NXP
- *
+ * Copyright 2020, 2022-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -327,10 +326,6 @@ static hal_rpmsg_status_t HAL_RpmsgRemoteInit(hal_rpmsg_handle_t handle, hal_rpm
 hal_rpmsg_status_t HAL_RpmsgMcmgrInit(void)
 {
     hal_rpmsg_status_t state;
-    if (0U == s_rpmsg_init_golbal)
-    {
-        (void)MCMGR_EarlyInit();
-    }
 
 #if (defined(HAL_RPMSG_SELECT_ROLE) && (HAL_RPMSG_SELECT_ROLE == 0U))
     state = HAL_RpmsgMcmgrMasterInit();
