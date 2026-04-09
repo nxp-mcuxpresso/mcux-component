@@ -29,4 +29,4 @@ config MCUX_COMPONENT_component.hal_clock.imx943
 
 config MCUX_COMPONENT_component.hal_clock.imx95
     bool
-    depends on MCUX_HW_BOARD_imx95lpd5evk19 || MCUX_HW_BOARD_imx95lp4xevk15 || MCUX_HW_BOARD_imx95verdinevk || MCUX_HW_BOARD_frdmimx95
+    depends on MCUX_HW_BOARD_imx95lpd5evk19 || MCUX_HW_BOARD_imx95lp4xevk15 || MCUX_HW_BOARD_imx95verdinevk || MCUX_HW_BOARD_frdmimx95 || MCUX_HW_BOARD_frdmimx95pro
