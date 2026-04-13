@@ -131,11 +131,11 @@ static OSA_TASK_HANDLE_DEFINE(ImuTaskHandleCpu13);
 static OSA_TASK_HANDLE_DEFINE(ImuTaskHandleCpu23);
 static OSA_TASK_DEFINE(HAL_ImuMainCpu13, IMU_TASK_PRIORITY, 1, IMU_TASK_STACK_SIZE, 0);
 static OSA_TASK_DEFINE(HAL_ImuMainCpu23, IMU_TASK_PRIORITY, 1, IMU_TASK_STACK_SIZE, 0);
-OSA_EVENT_HANDLE_DEFINE(ImuQ13FlagsRef);
-OSA_EVENT_HANDLE_DEFINE(ImuQ23FlagsRef);
+static OSA_EVENT_HANDLE_DEFINE(ImuQ13FlagsRef);
+static OSA_EVENT_HANDLE_DEFINE(ImuQ23FlagsRef);
 #endif
 
-OSA_EVENT_HANDLE_DEFINE(imumcQFlagsRef);
+static OSA_EVENT_HANDLE_DEFINE(imumcQFlagsRef);
 
 #if defined(IMU_GDMA_ENABLE) && (IMU_GDMA_ENABLE == 1)
 static gdma_handle_t gdmaHandle;
@@ -527,14 +527,14 @@ static hal_imumc_status_t HAL_ImuSendSync(hal_imu_handle_t *imuHandle)
     OSA_SR_ALLOC();
     assert(NULL != imuHandle);
 
-    *IMU_MSG_CUR_MAGIC_P(imuHandle->imuLink) = IMU_SYNC_MAGIC_PATTERN;
+    *IMU_MSG_CUR_MAGIC_P((imu_link_t)imuHandle->imuLink) = IMU_SYNC_MAGIC_PATTERN;
     while (IMU_SYNC_MAGIC_PATTERN != (*IMU_MSG_CUR_MAGIC_P((imu_link_t)imuHandle->imuLink)))
     {
     }
 
     OSA_ENTER_CRITICAL();
     if (((uint8_t)IMU_UNINITIALIZED == imuHandle->imuSyncState) &&
-        (IMU_SYNC_MAGIC_PATTERN == (*IMU_MSG_PEER_MAGIC_P(imuHandle->imuLink))))
+        (IMU_SYNC_MAGIC_PATTERN == (*IMU_MSG_PEER_MAGIC_P((imu_link_t)imuHandle->imuLink))))
     {
         if (kStatus_HAL_ImumcSuccess ==
             HAL_ImuSendMsgBlocking(imuHandle, (uint8_t)IMU_MSG_CONTROL, (uint8_t)IMU_MSG_CONTROL_SYNC, NULL, 0))
@@ -769,7 +769,7 @@ hal_imumc_status_t HAL_ImuSendCommand(uint8_t imuLink, uint8_t *cmdBuf, uint32_t
     if (length != 0U)
     {
         // To be DMAed
-        (void)HAL_IMU_MEMCPY((void *)imuHandle->cmd_buffer, cmdBuf, length);
+        (void)HAL_IMU_MEMCPY((uint8_t *)imuHandle->cmd_buffer, cmdBuf, length);
     }
     else
     {
@@ -1116,7 +1116,7 @@ static hal_imumc_status_t HAL_ImuCtrlHandler(hal_imu_handle_t *imuHandle, IMU_Ms
             IMU_ClearPendingInterrupts((imu_link_t)imuHandle->imuLink, IMU_MSG_FIFO_CNTL_SP_AV_INT_CLR_MASK);
             (void)os_InterruptMaskClear(IMULINKID_TO_IRQID((imu_link_t)imuHandle->imuLink));
             IMU_Deinit((imu_link_t)imuHandle->imuLink);
-            *IMU_MSG_CUR_MAGIC_P(imuHandle->imuLink) = 0;
+            *IMU_MSG_CUR_MAGIC_P((imu_link_t)imuHandle->imuLink) = 0U;
             imuHandle->wlanTxqCtl.writeIndex         = 0;
             imuHandle->wlanTxqCtl.readIndex          = 0;
             break;
@@ -1131,7 +1131,7 @@ static hal_imumc_status_t HAL_ImuCtrlHandler(hal_imu_handle_t *imuHandle, IMU_Ms
                 imumcStatus = HAL_ImuSendImumcEptQuiryRsp(imuHandle, pImuMsg->PayloadPtr[0], TRUE);
                 /* Make sure to unblock the task calling HAL_ImumcInit */
                 (void)OSA_EventSet((osa_event_handle_t)imumcQFlagsRef,
-                                   IMUMC_EVENT_ENDPOINT_QUERY_RSP << imuHandle->imuLink);
+                                   (uint32_t)IMUMC_EVENT_ENDPOINT_QUERY_RSP << imuHandle->imuLink);
             }
             else
             {
@@ -1201,14 +1201,14 @@ hal_imumc_status_t HAL_ImuReceive(uint8_t imuLink)
             IMU_ClearPendingInterrupts((imu_link_t)imuHandle->imuLink, IMU_MSG_FIFO_CNTL_MSG_RDY_INT_CLR_MASK);
             os_ClearPendingISR(IMULINKID_TO_IRQID((imu_link_t)imuHandle->imuLink));
 #ifndef CPU2
-            *IMU_SLEEP_FLAG_ADDR(imuHandle->imuLink) |= (uint32_t)(1 << 0U);
+            *IMU_SLEEP_FLAG_ADDR(imuHandle->imuLink) |= (uint32_t)(1U << 0U);
 #endif
             break;
         }
         else
         {
 #ifndef CPU2
-            *IMU_SLEEP_FLAG_ADDR(imuHandle->imuLink) &= (uint32_t)(~(1 << 0U));
+            *IMU_SLEEP_FLAG_ADDR(imuHandle->imuLink) &= (uint32_t)(~(1U << 0U));
 #endif
 
             /* Message buffer pMsg should be consumed (or copied for later
@@ -1600,18 +1600,18 @@ hal_imumc_status_t HAL_ImuDeinit(imu_link_t link, uint32_t flag)
     (void)os_InterruptMaskClear(IMULINKID_TO_IRQID((imu_link_t)imuHandle->imuLink));
     IMU_Deinit((imu_link_t)imuHandle->imuLink);
     imuHandle->imuSyncState                  = (uint8_t)IMU_UNINITIALIZED;
-    *IMU_MSG_CUR_MAGIC_P(imuHandle->imuLink) = 0;
+    *IMU_MSG_CUR_MAGIC_P((imu_link_t)imuHandle->imuLink) = 0U;
     imu_init_flag &= ~(1U << imuHandle->imuLink);
     imuHandle->wlanTxqCtl.writeIndex         = 0;
     imuHandle->wlanTxqCtl.readIndex          = 0;
     imuHandle->imuMsgBufIdx                  = 0;
     imuHandle->cmd_buffer                    = NULL;
-    imuHandle->cmd_buffer_available          = 0;
-    imuHandle->cmd_response_buffer_available = 0;
+    imuHandle->cmd_buffer_available          = false;
+    imuHandle->cmd_response_buffer_available = false;
 
     if ((flag & (1U << 0U)) == 0U)
     {
-        while (*IMU_MSG_PEER_MAGIC_P((imu_link_t)imuHandle->imuLink) != 0)
+        while (*IMU_MSG_PEER_MAGIC_P((imu_link_t)imuHandle->imuLink) != 0U)
         {
         }
     }
@@ -2064,10 +2064,10 @@ hal_imumc_status_t HAL_ImuCreateTaskLock(void)
 
 void HAL_ImuDeleteTaskLock(void)
 {
-    if ((*(uint32_t *)(osa_mutex_handle_t)imu_task_lock) != 0)
+    if ((*(uint32_t *)(osa_mutex_handle_t)imu_task_lock) != 0U)
     {
         (void)OSA_MutexDestroy((osa_mutex_handle_t)imu_task_lock);
-        (*(uint32_t *)(osa_mutex_handle_t)imu_task_lock) = 0;
+        (*(uint32_t *)(osa_mutex_handle_t)imu_task_lock) = 0U;
     }
 }
 

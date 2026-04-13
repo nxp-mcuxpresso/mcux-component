@@ -137,20 +137,20 @@ static inline void LIST_remove(LIST_ELEM_st *list, LIST_ELEM_st *elem)
 #endif
 
 #if defined(CPU2)
-#define IMU_MSG_SND_Q(imuLinkId) (((imuLinkId) == kIMU_LinkCpu1Cpu2) ? imuMsgQ12->msgQ[1] : imuMsgQ23->msgQ[0])
+#define IMU_MSG_SND_Q(imuLinkId) ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu2) ? imuMsgQ12->msgQ[1] : imuMsgQ23->msgQ[0])
 #define IMU_MSG_CUR_MAGIC_P(imuLinkId) \
-    (((imuLinkId) == kIMU_LinkCpu1Cpu2) ? (&imuMsgQ12->magic[1]) : (&imuMsgQ23->magic[0]))
+    ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu2) ? (&imuMsgQ12->magic[1]) : (&imuMsgQ23->magic[0]))
 #define IMU_MSG_PEER_MAGIC_P(imuLinkId) \
-    (((imuLinkId) == kIMU_LinkCpu1Cpu2) ? (&imuMsgQ12->magic[0]) : (&imuMsgQ23->magic[1]))
+    ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu2) ? (&imuMsgQ12->magic[0]) : (&imuMsgQ23->magic[1]))
 #define IRQID_TO_IMULINKID(irqId)     (((irqId) == IRQ_IMU_CPU12) ? kIMU_LinkCpu1Cpu2 : kIMU_LinkCpu2Cpu3)
-#define IMULINKID_TO_IRQID(imuLinkId) (((imuLinkId) == kIMU_LinkCpu1Cpu2) ? IRQ_IMU_CPU12 : IRQ_IMU_CPU32)
+#define IMULINKID_TO_IRQID(imuLinkId) ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu2) ? IRQ_IMU_CPU12 : IRQ_IMU_CPU32)
 #else
-#define IMU_MSG_SND_Q(imuLinkId) (((imuLinkId) == kIMU_LinkCpu1Cpu3) ? imuMsgQ13->msgQ[1] : imuMsgQ23->msgQ[1])
+#define IMU_MSG_SND_Q(imuLinkId) ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu3) ? imuMsgQ13->msgQ[1] : imuMsgQ23->msgQ[1])
 #define IMU_MSG_CUR_MAGIC_P(imuLinkId) \
-    (((imuLinkId) == kIMU_LinkCpu1Cpu3) ? (&imuMsgQ13->magic[1]) : (&imuMsgQ23->magic[1]))
+    ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu3) ? (&imuMsgQ13->magic[1]) : (&imuMsgQ23->magic[1]))
 #define IMU_MSG_PEER_MAGIC_P(imuLinkId) \
-    (((imuLinkId) == kIMU_LinkCpu1Cpu3) ? (&imuMsgQ13->magic[0]) : (&imuMsgQ23->magic[0]))
+    ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu3) ? (&imuMsgQ13->magic[0]) : (&imuMsgQ23->magic[0]))
 #define IRQID_TO_IMULINKID(irqId)     (((irqId) == IRQ_IMU_CPU13) ? kIMU_LinkCpu1Cpu3 : kIMU_LinkCpu2Cpu3)
-#define IMULINKID_TO_IRQID(imuLinkId) (((imuLinkId) == kIMU_LinkCpu1Cpu3) ? IRQ_IMU_CPU13 : IRQ_IMU_CPU23)
+#define IMULINKID_TO_IRQID(imuLinkId) ((((imu_link_t)imuLinkId) == kIMU_LinkCpu1Cpu3) ? IRQ_IMU_CPU13 : IRQ_IMU_CPU23)
 #endif
 #endif /* __FSL_ADAPTER_RFCOMMON_H__ */
