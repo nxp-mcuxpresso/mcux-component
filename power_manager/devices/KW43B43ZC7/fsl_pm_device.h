@@ -1,0 +1,382 @@
+/*
+ * Copyright 2026 NXP
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#ifndef FSL_PM_DEVICE_H_
+#define FSL_PM_DEVICE_H_
+
+#include "fsl_common.h"
+
+#include "fsl_pm_config.h"
+
+/*!
+ * @addtogroup PM Framework: Power Manager Framework
+ * @brief This section includes power-mode definitions, system resource
+ * constraints, and wakeup-source identifiers for KW43.
+ * @{
+ */
+
+/*!
+ * @name Power Mode Definition
+ * @{
+ */
+
+/*
+ * These framework state IDs select the KW43 low-power entry path managed by
+ * the PM device layer. They are not a one-to-one alias of the datasheet power
+ * numbers: the final current consumption depends on the resulting MAIN/WAKE/
+ * SYS/RF domain combination after resource constraints are applied.
+ *
+ * See KW43 datasheet Rev. 1 Draft F, Section 2.2.6, Table 18 for the
+ * characterized DSLP0..3, PD0..7, and DPDN operating points. That draft still
+ * lists the current values as TBD, so this file documents the mode mapping and
+ * hardware behavior rather than fixed current numbers.
+ */
+
+/* Power Mode Index */
+#define PM_LP_STATE_SLEEP           (0U)
+#define PM_LP_STATE_DEEP_SLEEP      (1U)
+#define PM_LP_STATE_POWER_DOWN      (2U)
+#define PM_LP_STATE_DEEP_POWER_DOWN (3U)
+#define PM_LP_STATE_NO_CONSTRAINT   (0xFFU)
+
+/*! @} */
+
+/*!
+ * @name System Basic Resource Constraint Definitions
+ * @{
+ */
+
+/*
+ * KW43 SRAM partition mapping used by the framework resource table:
+ *   CTCM0 -> SRAM0 lower 64 KB
+ *   CTCM1 -> SRAM0 upper 64 KB
+ *   STCM0 -> SRAM1 64 KB
+ *   STCM1 -> SRAM2 32 KB
+ *   STCM2 -> SRAM3 lower 16 KB
+ *   STCM3 -> SRAM3 upper 16 KB
+ *
+ * The first PM_CONFIGURABLE_RESOURCE_COUNT entries are runtime-configurable
+ * by the framework. The remaining entries are framework-visible resource
+ * identifiers used to express fixed constraints.
+ */
+enum _pm_resc_name
+{
+    kResc_CTCM0 = 0U,
+    kResc_CTCM1 = 1U,
+    kResc_STCM0 = 2U,
+    kResc_STCM1 = 3U,
+    kResc_STCM2 = 4U,
+    kResc_STCM3 = 5U,
+    kResc_Fro192M = 6U,
+    kResc_Fro6M = 7U,
+    kResc_WakePowerDomainPeri = 8U,
+    kResc_MainPowerDomainPeriOpt1 = 9U,
+    kResc_MainPowerDomainPeriOpt2 = 10U,
+    kResc_BusSysClk = 11U,
+    kResc_CoreClk = 12U,
+};
+
+/* Configurable resources are CTCM0..WakePowerDomainPeri. */
+#define PM_CONFIGURABLE_RESOURCE_COUNT (9U)
+
+#define PM_RESC_TO_BIT(resc) ((uint32_t)(1UL << (uint32_t)(resc)))
+
+/*!
+ * @name Core And Bus/System Clock Constraints
+ * @{
+ */
+#define PM_RESC_CORE_CLK_ON PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_CoreClk)
+
+#define PM_RESC_BUS_SYS_CLK_ON PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_BusSysClk)
+/*! @} */
+
+/*!
+ * @name SRAM Retention Constraints
+ * @brief For KW43, the SRAM resources map to CTCM/STCM slices listed above.
+ * PM_RESOURCE_PARTABLE_ON1 means retention in deep sleep while allowing the
+ * low-power state machine to power gate the slice in deeper states.
+ * @{
+ */
+#define PM_RESC_CTCM0_ACTIVE    PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_CTCM0)
+#define PM_RESC_CTCM0_DEEPSLEEP PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON1, kResc_CTCM0)
+#define PM_RESC_CTCM0_POWEROFF  PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_CTCM0)
+
+#define PM_RESC_CTCM1_ACTIVE    PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_CTCM1)
+#define PM_RESC_CTCM1_DEEPSLEEP PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON1, kResc_CTCM1)
+#define PM_RESC_CTCM1_POWEROFF  PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_CTCM1)
+
+#define PM_RESC_STCM0_ACTIVE    PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_STCM0)
+#define PM_RESC_STCM0_DEEPSLEEP PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON1, kResc_STCM0)
+#define PM_RESC_STCM0_POWEROFF  PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_STCM0)
+
+#define PM_RESC_STCM1_ACTIVE    PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_STCM1)
+#define PM_RESC_STCM1_DEEPSLEEP PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON1, kResc_STCM1)
+#define PM_RESC_STCM1_POWEROFF  PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_STCM1)
+
+#define PM_RESC_STCM2_ACTIVE    PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_STCM2)
+#define PM_RESC_STCM2_DEEPSLEEP PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON1, kResc_STCM2)
+#define PM_RESC_STCM2_POWEROFF  PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_STCM2)
+
+#define PM_RESC_STCM3_ACTIVE    PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_STCM3)
+#define PM_RESC_STCM3_DEEPSLEEP PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON1, kResc_STCM3)
+#define PM_RESC_STCM3_POWEROFF  PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_STCM3)
+/*! @} */
+
+/*!
+ * @name FRO Constraints
+ * @{
+ */
+#define PM_RESC_FRO_192M_ON  PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_Fro192M)
+#define PM_RESC_FRO_192M_OFF PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_Fro192M)
+
+#define PM_RESC_FRO_6M_ON  PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_Fro6M)
+#define PM_RESC_FRO_6M_OFF PM_ENCODE_RESC(PM_RESOURCE_OFF, kResc_Fro6M)
+/*! @} */
+
+/*!
+ * @name MAIN Power Domain Constraints
+ * @brief These resource IDs are not configurable by the resource database;
+ * they are used by the framework to keep peripherals in CORE_MAIN either
+ * operational or in state retention. Different combinations of MAIN/WAKE/SYS
+ * domain constraints determine which datasheet PD/DSLP operating point the
+ * device actually reaches.
+ * @{
+ */
+#define PM_RESC_MAIN_PD_PERI_OPERATIONAL PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_MainPowerDomainPeriOpt2)
+#define PM_RESC_MAIN_PD_PERI_STATE_RETENTION PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_MainPowerDomainPeriOpt1)
+/*! @} */
+
+/*!
+ * @name WAKE Power Domain Constraints
+ * @brief FULL_ON keeps CORE_WAKE active, PARTABLE_ON2 maps to operational
+ * sleep retention, and PARTABLE_ON1 maps to deep-sleep retention. In the
+ * datasheet power tables, CORE_WAKE retention state is one of the main knobs
+ * that differentiates DSLP and PD sub-modes.
+ * @{
+ */
+#define PM_RESC_WAKE_PD_PERI_ACTIVE PM_ENCODE_RESC(PM_RESOURCE_FULL_ON, kResc_WakePowerDomainPeri)
+#define PM_RESC_WAKE_PD_PERI_OPERATIONAL PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON2, kResc_WakePowerDomainPeri)
+#define PM_RESC_WAKE_PD_PERI_STATE_RETENTION PM_ENCODE_RESC(PM_RESOURCE_PARTABLE_ON1, kResc_WakePowerDomainPeri)
+/*! @} */
+
+/*! @} */
+
+#if FSL_PM_SUPPORT_WAKEUP_SOURCE_MANAGER
+
+/*!
+ * @name System Wakeup Source Definitions
+ * @{
+ */
+
+/*
+ * External pin wakeup sources (WUU PE1/PE2).
+ * Pin-to-WUU-index mapping from KW43 RM Table 338 "Wakeup sources for WUU0
+ * inputs".  KW43 uses GPIOx_INTn interrupts instead of PORTx_EFT interrupts.
+ * GPIO pins 0-15 route to INTx_INT0, pins 16-31 route to INTx_INT1.
+ */
+
+/* PTA0 - WUU_P0 */
+#define PM_WSID_PTA0_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 0UL, GPIOA_INT0_IRQn, 1UL)
+#define PM_WSID_PTA0_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 0UL, GPIOA_INT0_IRQn, 2UL)
+#define PM_WSID_PTA0_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 0UL, GPIOA_INT0_IRQn, 3UL)
+
+/* PTA1 - WUU_P1 */
+#define PM_WSID_PTA1_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 1UL, GPIOA_INT0_IRQn, 1UL)
+#define PM_WSID_PTA1_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 1UL, GPIOA_INT0_IRQn, 2UL)
+#define PM_WSID_PTA1_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 1UL, GPIOA_INT0_IRQn, 3UL)
+
+/* PTA4 - WUU_P2 */
+#define PM_WSID_PTA4_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 2UL, GPIOA_INT0_IRQn, 1UL)
+#define PM_WSID_PTA4_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 2UL, GPIOA_INT0_IRQn, 2UL)
+#define PM_WSID_PTA4_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 2UL, GPIOA_INT0_IRQn, 3UL)
+
+/* PTA17 - WUU_P3 */
+#define PM_WSID_PTA17_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 3UL, GPIOA_INT1_IRQn, 1UL)
+#define PM_WSID_PTA17_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 3UL, GPIOA_INT1_IRQn, 2UL)
+#define PM_WSID_PTA17_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 3UL, GPIOA_INT1_IRQn, 3UL)
+
+/* PTA19 - WUU_P4 */
+#define PM_WSID_PTA19_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 4UL, GPIOA_INT1_IRQn, 1UL)
+#define PM_WSID_PTA19_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 4UL, GPIOA_INT1_IRQn, 2UL)
+#define PM_WSID_PTA19_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 4UL, GPIOA_INT1_IRQn, 3UL)
+
+/* PTA21 - WUU_P5 */
+#define PM_WSID_PTA21_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 5UL, GPIOA_INT1_IRQn, 1UL)
+#define PM_WSID_PTA21_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 5UL, GPIOA_INT1_IRQn, 2UL)
+#define PM_WSID_PTA21_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 5UL, GPIOA_INT1_IRQn, 3UL)
+
+/* PTA2 - WUU_P6 */
+#define PM_WSID_PTA2_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 6UL, GPIOA_INT0_IRQn, 1UL)
+#define PM_WSID_PTA2_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 6UL, GPIOA_INT0_IRQn, 2UL)
+#define PM_WSID_PTA2_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 6UL, GPIOA_INT0_IRQn, 3UL)
+
+/* PTC0 - WUU_P7 */
+#define PM_WSID_PTC0_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 7UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC0_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 7UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC0_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 7UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTC1 - WUU_P8 */
+#define PM_WSID_PTC1_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 8UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC1_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 8UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC1_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 8UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTC2 - WUU_P9 */
+#define PM_WSID_PTC2_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 9UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC2_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 9UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC2_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 9UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTC4 - WUU_P10 */
+#define PM_WSID_PTC4_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 10UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC4_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 10UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC4_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 10UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTC6 - WUU_P11 */
+#define PM_WSID_PTC6_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 11UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC6_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 11UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC6_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 11UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTC7 - WUU_P12 */
+#define PM_WSID_PTC7_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 12UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC7_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 12UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC7_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 12UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTB0 - WUU_P13 */
+#define PM_WSID_PTB0_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 13UL, GPIOB_INT0_IRQn, 1UL)
+#define PM_WSID_PTB0_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 13UL, GPIOB_INT0_IRQn, 2UL)
+#define PM_WSID_PTB0_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 13UL, GPIOB_INT0_IRQn, 3UL)
+
+/* PTB3 - WUU_P14 */
+#define PM_WSID_PTB3_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 14UL, GPIOB_INT0_IRQn, 1UL)
+#define PM_WSID_PTB3_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 14UL, GPIOB_INT0_IRQn, 2UL)
+#define PM_WSID_PTB3_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 14UL, GPIOB_INT0_IRQn, 3UL)
+
+/* PTB4 - WUU_P15 */
+#define PM_WSID_PTB4_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 15UL, GPIOB_INT0_IRQn, 1UL)
+#define PM_WSID_PTB4_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 15UL, GPIOB_INT0_IRQn, 2UL)
+#define PM_WSID_PTB4_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 15UL, GPIOB_INT0_IRQn, 3UL)
+
+/* PTB5 - WUU_P16 */
+#define PM_WSID_PTB5_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 16UL, GPIOB_INT0_IRQn, 1UL)
+#define PM_WSID_PTB5_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 16UL, GPIOB_INT0_IRQn, 2UL)
+#define PM_WSID_PTB5_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 16UL, GPIOB_INT0_IRQn, 3UL)
+
+/* PTA3 - WUU_P17 */
+#define PM_WSID_PTA3_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 17UL, GPIOA_INT0_IRQn, 1UL)
+#define PM_WSID_PTA3_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 17UL, GPIOA_INT0_IRQn, 2UL)
+#define PM_WSID_PTA3_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 17UL, GPIOA_INT0_IRQn, 3UL)
+
+/* PTA5 - WUU_P18 */
+#define PM_WSID_PTA5_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 18UL, GPIOA_INT0_IRQn, 1UL)
+#define PM_WSID_PTA5_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 18UL, GPIOA_INT0_IRQn, 2UL)
+#define PM_WSID_PTA5_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 18UL, GPIOA_INT0_IRQn, 3UL)
+
+/* PTA16 - WUU_P19 */
+#define PM_WSID_PTA16_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 19UL, GPIOA_INT1_IRQn, 1UL)
+#define PM_WSID_PTA16_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 19UL, GPIOA_INT1_IRQn, 2UL)
+#define PM_WSID_PTA16_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 19UL, GPIOA_INT1_IRQn, 3UL)
+
+/* PTA18 - WUU_P20 */
+#define PM_WSID_PTA18_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 20UL, GPIOA_INT1_IRQn, 1UL)
+#define PM_WSID_PTA18_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 20UL, GPIOA_INT1_IRQn, 2UL)
+#define PM_WSID_PTA18_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 20UL, GPIOA_INT1_IRQn, 3UL)
+
+/* WUU_P21 is reserved on KW43 */
+
+/* PTC5 - WUU_P22 */
+#define PM_WSID_PTC5_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 22UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC5_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 22UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC5_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 22UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTA20 - WUU_P23 */
+#define PM_WSID_PTA20_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 23UL, GPIOA_INT1_IRQn, 1UL)
+#define PM_WSID_PTA20_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 23UL, GPIOA_INT1_IRQn, 2UL)
+#define PM_WSID_PTA20_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 23UL, GPIOA_INT1_IRQn, 3UL)
+
+/* PTC3 - WUU_P24 */
+#define PM_WSID_PTC3_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 24UL, GPIOC_INT0_IRQn, 1UL)
+#define PM_WSID_PTC3_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 24UL, GPIOC_INT0_IRQn, 2UL)
+#define PM_WSID_PTC3_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 24UL, GPIOC_INT0_IRQn, 3UL)
+
+/* PTB1 - WUU_P25 */
+#define PM_WSID_PTB1_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 25UL, GPIOB_INT0_IRQn, 1UL)
+#define PM_WSID_PTB1_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 25UL, GPIOB_INT0_IRQn, 2UL)
+#define PM_WSID_PTB1_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 25UL, GPIOB_INT0_IRQn, 3UL)
+
+/* PTB2 - WUU_P26 */
+#define PM_WSID_PTB2_RISING_EDGE  PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 26UL, GPIOB_INT0_IRQn, 1UL)
+#define PM_WSID_PTB2_FALLING_EDGE PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 26UL, GPIOB_INT0_IRQn, 2UL)
+#define PM_WSID_PTB2_ANY_EDGE     PM_ENCODE_WAKEUP_SOURCE_ID(0UL, 26UL, GPIOB_INT0_IRQn, 3UL)
+
+/*
+ * Internal module wakeup sources (WUU ME register).
+ * Module-to-peripheral mapping from KW43 RM Table 338.
+ * Note: WUU_M0IF (CMP0 Output) has no WUME0 bit in the ME register,
+ *       so it cannot be used as a module interrupt wakeup source.
+ */
+
+/* LPTMR0 - WUU_M1IF */
+#define PM_WSID_LPTMR0 PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 1UL, LPTMR0_IRQn, 0UL)
+
+/* GPIOD Interrupt 0 - WUU_M2IF */
+#define PM_WSID_GPIOD_LOW PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 2UL, GPIOD_INT0_IRQn, 0UL)
+
+/* GPIOD Interrupt 1 - WUU_M3IF */
+#define PM_WSID_GPIOD_HIGH PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 3UL, GPIOD_INT1_IRQn, 0UL)
+
+/* Wake-From-Radio - WUU_M4IF */
+#define PM_WSID_WFR PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 4UL, RFMC_IRQn, 0UL)
+
+/* Digital Tamper Detect - WUU_M5IF */
+#define PM_WSID_DIGITAL_TAMPER PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 5UL, TDET_IRQn, 0UL)
+
+/* RTC 0 Alarm - WUU_M6IF */
+#define PM_WSID_RTC_ALARM PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 6UL, RTC_Alarm_IRQn, 0UL)
+
+/* RTC 0 Seconds - WUU_M7IF */
+#define PM_WSID_RTC_SECOND PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 7UL, RTC_Seconds_IRQn, 0UL)
+
+/* LPTMR1 - WUU_M8IF */
+#define PM_WSID_LPTMR1 PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 8UL, LPTMR1_IRQn, 0UL)
+
+/*
+ * Internal module DMA/trigger wakeup sources (WUU DE register).
+ * Module-to-peripheral mapping from KW43 RM Table 338.
+ * misc=1 selects DMA/trigger mode (kWUU_InternalModuleDMATrigger).
+ *
+ * These WSIDs are valid for wakeup-source configuration through the WUU DE
+ * register. The current KW43 power-manager wake-cause query path only checks
+ * WUU external-pin flags and WUU MF interrupt flags, so DMA/trigger wakeups
+ * are not individually reportable through PM_DEV_IsWakeupSource(). This is
+ * aligned with the current KW47 implementation model.
+ */
+
+/* LPTMR0 Asynchronous DMA - WUU_M0DR */
+#define PM_WSID_LPTMR0_DMA PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 0UL, LPTMR0_IRQn, 1UL)
+
+/* LPTMR1 Asynchronous DMA - WUU_M1DR */
+#define PM_WSID_LPTMR1_DMA PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 1UL, LPTMR1_IRQn, 1UL)
+
+/* GPIOD Asynchronous DMA 0 - WUU_M3DR */
+#define PM_WSID_GPIOD_LOW_DMA PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 3UL, WUU0_IRQn, 1UL)
+
+/* GPIOD Asynchronous DMA 1 - WUU_M4DR */
+#define PM_WSID_GPIOD_HIGH_DMA PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 4UL, WUU0_IRQn, 1UL)
+
+/* LPTMR0 Asynchronous Trigger - WUU_M5DR */
+#define PM_WSID_LPTMR0_TRIG PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 5UL, WUU0_IRQn, 1UL)
+
+/* LPTMR1 Asynchronous Trigger - WUU_M6DR */
+#define PM_WSID_LPTMR1_TRIG PM_ENCODE_WAKEUP_SOURCE_ID(1UL, 6UL, WUU0_IRQn, 1UL)
+
+/*! @} */
+
+#endif /* FSL_PM_SUPPORT_WAKEUP_SOURCE_MANAGER */
+
+#define PM_RESC_BUS_SYS_CLK_INDEX kResc_BusSysClk
+
+/*! @} */
+
+#endif /* FSL_PM_DEVICE_H_ */
