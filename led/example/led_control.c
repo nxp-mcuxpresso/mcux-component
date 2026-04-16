@@ -283,7 +283,7 @@ void main_task(osa_task_param_t arg)
 #endif
     }
 
-#if USE_RTOS
+#if (defined(USE_RTOS) && (USE_RTOS > 0U))
     while (1)
 #endif
     {
