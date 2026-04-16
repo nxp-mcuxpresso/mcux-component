@@ -35,6 +35,24 @@ config MCUX_COMPONENT_driver.pcal6524
     help
       Say yes here to select pcal6524 driver.
 
+if MCUX_COMPONENT_driver.pcal6524
+
+config PCAL6524_CALLBACK_PER_PIN
+    bool "Use per-pin interrupt callbacks"
+    default y
+    help
+      When enabled (default), the PCAL6524 handle stores one callback per I/O
+      pin and PCAL6524_InterruptHandler dispatches per-pin callbacks
+      automatically. When disabled, a single global callback receives the
+      whole interrupt-source bitmask and the user does any per-pin dispatch
+      manually.
+
+      Per-pin mode adds 24 * 2 pointers (192 bytes on 32-bit ARM) to each
+      handle; disable it if memory is constrained and a single callback is
+      sufficient.
+
+endif
+
 config MCUX_COMPONENT_driver.adp5585
     bool "Select expander adp5585 driver"
     help
