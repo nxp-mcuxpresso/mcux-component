@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2025 NXP
+ * Copyright 2020, 2025-2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -364,6 +364,8 @@ __ECC_FCT_PLACEMENT static int flash_bus_fault_ecc_non_correctable_err_on_data_f
         {
             reg_val &= ~SYSCON_FMC0_CTRL_DNCBED_MASK;
         }
+        SYSCON->FMC0_CTRL = reg_val;
+        st                = 0;
     }
 #endif
     return st;
