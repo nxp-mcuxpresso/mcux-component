@@ -199,6 +199,11 @@ config MCUX_COMPONENT_driver.display-sn65dsi83
     select MCUX_COMPONENT_driver.display-common
     select MCUX_COMPONENT_driver.video-i2c
 
+config MCUX_COMPONENT_driver.display-waveshare-dsi2dpi
+    bool "waveshare-dsi2dpi"
+    select MCUX_COMPONENT_driver.display-common
+    select MCUX_COMPONENT_driver.video-i2c
+
 config MCUX_COMPONENT_driver.display-it6263
     bool "it6263"
     select MCUX_COMPONENT_driver.display-common

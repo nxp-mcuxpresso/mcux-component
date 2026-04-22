@@ -452,6 +452,19 @@ if (CONFIG_MCUX_COMPONENT_driver.display-sn65dsi83)
 
 endif()
 
+if (CONFIG_MCUX_COMPONENT_driver.display-waveshare-dsi2dpi)
+
+    mcux_add_source(
+        SOURCES display/waveshare_dsi2dpi/fsl_waveshare_dsi2dpi.h
+                display/waveshare_dsi2dpi/fsl_waveshare_dsi2dpi.c
+    )
+
+    mcux_add_include(
+        INCLUDES ./display/waveshare_dsi2dpi
+    )
+
+endif()
+
 if (CONFIG_MCUX_COMPONENT_driver.camera-common)
 
     mcux_add_source(
