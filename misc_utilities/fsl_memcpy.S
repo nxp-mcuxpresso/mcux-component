@@ -7,7 +7,7 @@
 
     .syntax unified
 
-    .text
+    .section .text.memcpy, "ax", %progbits
     .thumb
 
     .align 2
