@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -42,6 +42,18 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
         return kStatus_InvalidArgument;
     }
 
+    /* Check and unlock sector protection */
+    ret = FLASH_GetSectorProtection(&flash_ctx, logaddr);
+    
+    if (ret == kStatus_FLASH_SectorLocked)
+    {
+        ret = FLASH_SetSectorProtection(&flash_ctx, logaddr, false);
+        if (ret != kStatus_FLASH_Success)
+        {
+            return ret;
+        }
+    }
+
     primask = __get_PRIMASK();
     __disable_irq();
 
@@ -73,6 +85,17 @@ int32_t mflash_drv_page_program(uint32_t page_addr, uint32_t *data)
     if ((page_addr % (uint32_t)MFLASH_PAGE_SIZE) != 0UL)
     {
         return kStatus_InvalidArgument;
+    }
+
+    /* Check and unlock sector protection before programming */
+    ret = FLASH_GetSectorProtection(&flash_ctx, logaddr);
+    if (ret == kStatus_FLASH_SectorLocked)
+    {
+        ret = FLASH_SetSectorProtection(&flash_ctx, logaddr, false);
+        if (ret != kStatus_FLASH_Success)
+        {
+            return ret;
+        }
     }
 
     primask = __get_PRIMASK();
@@ -107,6 +130,17 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
     if ((phrase_addr % (uint32_t)MFLASH_PHRASE_SIZE) != 0UL)
     {
         return kStatus_InvalidArgument;
+    }
+
+    /* Check and unlock sector protection before programming */
+    ret = FLASH_GetSectorProtection(&flash_ctx, logaddr);
+    if (ret == kStatus_FLASH_SectorLocked)
+    {
+        ret = FLASH_SetSectorProtection(&flash_ctx, logaddr, false);
+        if (ret != kStatus_FLASH_Success)
+        {
+            return ret;
+        }
     }
 
     primask = __get_PRIMASK();
