@@ -9,6 +9,7 @@ menu "Component Configuration"
 
     menu "CMSIS Drivers"
         rsource "cmsis_drivers/cmsis_enet/Kconfig"
+        rsource "cmsis_drivers/cmsis_enet_phy/Kconfig"
         rsource "cmsis_drivers/cmsis_lpc_vusart/Kconfig"
         rsource "cmsis_drivers/cmsis_uart/Kconfig"
         rsource "cmsis_drivers/cmsis_lpuart/Kconfig"

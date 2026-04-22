@@ -1,0 +1,14 @@
+# Copyright 2024-2026 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+config MCUX_HAS_COMPONENT_driver.cmsis_enet_phy
+    bool
+    default y
+
+config MCUX_COMPONENT_driver.cmsis_enet_phy
+    bool "enet_phy"
+    select MCUX_COMPONENT_CMSIS_Driver_Include.Ethernet_PHY
+    select MCUX_COMPONENT_CMSIS_Driver_Include.Ethernet
+    select MCUX_COMPONENT_device.RTE
+    select MCUX_COMPONENT_component.eth_phy_common
+    depends on MCUX_HAS_COMPONENT_driver.cmsis_enet_phy

@@ -19,7 +19,6 @@
  */
 
 #include "fsl_enet_phy_cmsis.h"
-#include "fsl_enet.h"
 
 #define ARM_ETH_PHY_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR(2, 4)
 
@@ -44,6 +43,8 @@ static int32_t PHY_SetForcedSpeedDuplexMode(cmsis_enet_phy_state_t *ethPhy, uint
 {
     int32_t result;
     uint16_t bsctlReg;
+
+    (void)ethPhy;
 
     /* Reset PHY. */
     result = PHY_Write(&phyHandle, PHY_BASICCONTROL_REG, PHY_BCTL_RESET_MASK);
@@ -74,6 +75,8 @@ static void PHY_SetPowerDown(cmsis_enet_phy_resource_t *enet, bool down)
 {
     uint16_t data;
 
+    (void)enet;
+
     if (down)
     {
         (void)PHY_Read(&phyHandle, PHY_BASICCONTROL_REG, &data);
@@ -97,6 +100,8 @@ static cmsis_enet_phy_state_t ENETPHY0_State = {&ENETPHY0_Resource, ARM_ETH_PHY_
 
 static int32_t PHY0_Initialize(ARM_ETH_PHY_Read_t fn_read, ARM_ETH_PHY_Write_t fn_write)
 {
+    (void)fn_read;
+    (void)fn_write;
     return ARM_DRIVER_OK;
 }
 
