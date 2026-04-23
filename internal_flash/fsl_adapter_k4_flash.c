@@ -314,8 +314,13 @@ hal_flash_status_t HAL_FlashEraseSector(uint32_t dest, uint32_t size)
  */
 hal_flash_status_t HAL_FlashRead(uint32_t src, uint32_t size, uint8_t *pData)
 {
+#if !(defined(CONFIG_FLASH_K4_ASYNC_MODE) && (CONFIG_FLASH_K4_ASYNC_MODE == 1))
     (void)memcpy(pData, (uint8_t *)src, size);
     return kStatus_HAL_Flash_Success;
+#else
+    status_t status = FLASH_Read(pData, src, size);
+    return HAL_FlashGetStatus(status);
+#endif
 }
 
 #ifdef ECC_SIM_ON
