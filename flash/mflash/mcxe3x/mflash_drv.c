@@ -42,7 +42,10 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
         return kStatus_InvalidArgument;
     }
 
-    /* Check and unlock sector protection */
+    primask = __get_PRIMASK();
+    __disable_irq();
+
+    /* Check and unlock sector protection inside critical section */
     ret = FLASH_GetSectorProtection(&flash_ctx, logaddr);
     
     if (ret == kStatus_FLASH_SectorLocked)
@@ -50,12 +53,22 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
         ret = FLASH_SetSectorProtection(&flash_ctx, logaddr, false);
         if (ret != kStatus_FLASH_Success)
         {
+            if (primask == 0UL)
+            {
+                __enable_irq();
+            }
             return ret;
         }
     }
-
-    primask = __get_PRIMASK();
-    __disable_irq();
+    else if (ret != kStatus_FLASH_Success)
+    {
+        /* GetSectorProtection returned an error - abort */
+        if (primask == 0UL)
+        {
+            __enable_irq();
+        }
+        return ret;
+    }
 
     ret = FLASH_Erase(&flash_ctx, logaddr, MFLASH_SECTOR_SIZE, kFLASH_ApiEraseKey);
 
@@ -87,19 +100,33 @@ int32_t mflash_drv_page_program(uint32_t page_addr, uint32_t *data)
         return kStatus_InvalidArgument;
     }
 
-    /* Check and unlock sector protection before programming */
+    primask = __get_PRIMASK();
+    __disable_irq();
+
+    /* Check and unlock sector protection inside critical section */
     ret = FLASH_GetSectorProtection(&flash_ctx, logaddr);
+    
     if (ret == kStatus_FLASH_SectorLocked)
     {
         ret = FLASH_SetSectorProtection(&flash_ctx, logaddr, false);
         if (ret != kStatus_FLASH_Success)
         {
+            if (primask == 0UL)
+            {
+                __enable_irq();
+            }
             return ret;
         }
     }
-
-    primask = __get_PRIMASK();
-    __disable_irq();
+    else if (ret != kStatus_FLASH_Success)
+    {
+        /* GetSectorProtection returned an error - abort */
+        if (primask == 0UL)
+        {
+            __enable_irq();
+        }
+        return ret;
+    }
 
     ret = FLASH_Program(&flash_ctx, logaddr, data, MFLASH_PAGE_SIZE);
 
@@ -132,19 +159,33 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
         return kStatus_InvalidArgument;
     }
 
-    /* Check and unlock sector protection before programming */
+    primask = __get_PRIMASK();
+    __disable_irq();
+
+    /* Check and unlock sector protection inside critical section */
     ret = FLASH_GetSectorProtection(&flash_ctx, logaddr);
+    
     if (ret == kStatus_FLASH_SectorLocked)
     {
         ret = FLASH_SetSectorProtection(&flash_ctx, logaddr, false);
         if (ret != kStatus_FLASH_Success)
         {
+            if (primask == 0UL)
+            {
+                __enable_irq();
+            }
             return ret;
         }
     }
-
-    primask = __get_PRIMASK();
-    __disable_irq();
+    else if (ret != kStatus_FLASH_Success)
+    {
+        /* GetSectorProtection returned an error - abort */
+        if (primask == 0UL)
+        {
+            __enable_irq();
+        }
+        return ret;
+    }
 
     ret = FLASH_Program(&flash_ctx, logaddr, data, MFLASH_PHRASE_SIZE);
 
