@@ -62,12 +62,8 @@ int32_t mflash_drv_sector_erase(uint32_t sector_addr)
     }
     else if (ret != kStatus_FLASH_Success)
     {
-        /* GetSectorProtection returned an error - abort */
-        if (primask == 0UL)
-        {
-            __enable_irq();
-        }
-        return ret;
+        /* GetSectorProtection returned an error - continue anyway,
+        better handling to be implemented */
     }
 
     ret = FLASH_Erase(&flash_ctx, logaddr, MFLASH_SECTOR_SIZE, kFLASH_ApiEraseKey);
@@ -120,12 +116,8 @@ int32_t mflash_drv_page_program(uint32_t page_addr, uint32_t *data)
     }
     else if (ret != kStatus_FLASH_Success)
     {
-        /* GetSectorProtection returned an error - abort */
-        if (primask == 0UL)
-        {
-            __enable_irq();
-        }
-        return ret;
+        /* GetSectorProtection returned an error - continue anyway,
+        better handling to be implemented */
     }
 
     ret = FLASH_Program(&flash_ctx, logaddr, data, MFLASH_PAGE_SIZE);
@@ -179,12 +171,8 @@ int32_t mflash_drv_phrase_program(uint32_t phrase_addr, uint32_t *data)
     }
     else if (ret != kStatus_FLASH_Success)
     {
-        /* GetSectorProtection returned an error - abort */
-        if (primask == 0UL)
-        {
-            __enable_irq();
-        }
-        return ret;
+        /* GetSectorProtection returned an error - continue anyway,
+        better handling to be implemented */
     }
 
     ret = FLASH_Program(&flash_ctx, logaddr, data, MFLASH_PHRASE_SIZE);
