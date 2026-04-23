@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -35,11 +35,17 @@ osa_status_t LCE_Init(void)
         return osaStatus;
     }
 
+#if (defined(KW47_core0_SERIES) || defined(MCXW72_core0_SERIES))
     /* Enable MU interrupt */
     NVIC_SetPriority(DSP_IRQn, CE_ISR_PRIORITY);
     (void)EnableIRQ(DSP_IRQn);
     MU_EnableInterrupts(MUA, kMU_GenInt0InterruptEnable);
-
+#elif (defined(KW43_core0_SERIES) || defined(MCXW70_core0_SERIES))
+    /* Enable MU interrupt */
+    NVIC_SetPriority(MU1_IRQn, CE_ISR_PRIORITY);
+    (void)EnableIRQ(MU1_IRQn);
+    MU_EnableInterrupts(MU1_MUA, kMU_GenInt0InterruptEnable);
+#endif
     return osaStatus;
 }
 
@@ -49,6 +55,7 @@ osa_status_t LCE_Init(void)
  * This function handles the DSP IRQ request.
  *
  */
+#if (defined(KW47_core0_SERIES) || defined(MCXW72_core0_SERIES))
 void DSP_IRQHandler(void)
 {
     CE_CmdReset();
@@ -57,6 +64,16 @@ void DSP_IRQHandler(void)
     /* Signal LCE API caller */
     (void)OSA_EventSet(mCeEvent, gCeEvtCmdDone_c);
 }
+#elif (defined(KW43_core0_SERIES) || defined(MCXW70_core0_SERIES))
+void MU1_IRQHandler(void)
+{
+    CE_CmdReset();
+    /* Clear CE interrupt */
+    MU_ClearStatusFlags(MU1_MUA, kMU_GenInt0Flag);
+    /* Signal LCE API caller */
+    (void)OSA_EventSet(mCeEvent, gCeEvtCmdDone_c);
+}
+#endif
 
 /* CE matrix APIs with synchronized access control */
 LCE_API_DEFINE(CE_MatrixAdd_Q15,
