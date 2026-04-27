@@ -1280,8 +1280,8 @@ static serial_manager_status_t SerialManager_Write(serial_write_handle_t writeHa
     serial_manager_write_handle_t *serialWriteHandle;
     serial_manager_handle_t *serHandle;
 
-    assert(writeHandle);
-    assert(buffer);
+    assert(writeHandle != NULL);
+    assert(buffer != NULL);
     assert(length);
 
     serialWriteHandle = (serial_manager_write_handle_t *)writeHandle;
@@ -1297,8 +1297,8 @@ static serial_manager_status_t SerialManager_Read(serial_read_handle_t readHandl
     serial_manager_read_handle_t *serialReadHandle;
     serial_manager_handle_t *serHandle;
 
-    assert(readHandle);
-    assert(buffer);
+    assert(readHandle != NULL);
+    assert(buffer != NULL);
     assert(length);
 
     serialReadHandle = (serial_manager_read_handle_t *)readHandle;

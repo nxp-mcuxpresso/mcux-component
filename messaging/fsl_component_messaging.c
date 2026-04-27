@@ -27,14 +27,14 @@
 #if (defined(MSG_USE_MACRO) && (MSG_USE_MACRO == 0U))
 void MSG_QueueInit(messaging_t *msgQueue)
 {
-    assert(msgQueue);
+    assert(msgQueue != NULL);
 
     LIST_Init(msgQueue, 0);
 }
 
 void MSG_QueueDeinit(messaging_t *msgQueue)
 {
-    assert(msgQueue);
+    assert(msgQueue != NULL);
     while (NULL != MSG_QueueGetHead(msgQueue))
     {
         (void)MEM_BufferFree(LIST_RemoveHead(msgQueue));
@@ -45,8 +45,8 @@ messaging_status_t MSG_QueueAddTail(messaging_t *msgQueue, void *msg)
 {
     list_status_t listStatus;
 
-    assert(msgQueue);
-    assert(msg);
+    assert(msgQueue != NULL);
+    assert(msg != NULL);
 
     msg = (list_element_t *)msg - 1;
 
@@ -59,8 +59,8 @@ messaging_status_t MSG_QueueAddHead(messaging_t *msgQueue, void *msg)
 {
     list_status_t listStatus;
 
-    assert(msgQueue);
-    assert(msg);
+    assert(msgQueue != NULL);
+    assert(msg != NULL);
 
     msg = (list_element_t *)msg - 1;
 
@@ -75,8 +75,8 @@ messaging_status_t MSG_QueueAddPrev(void *msg, void *newMsg)
     list_element_t *pNewElem;
     list_status_t listStatus;
 
-    assert(msg);
-    assert(newMsg);
+    assert(msg != NULL);
+    assert(newMsg != NULL);
 
     pElem    = (list_element_t *)msg - 1;
     pNewElem = (list_element_t *)newMsg - 1;
@@ -91,7 +91,7 @@ messaging_status_t MSG_QueueRemove(void *msg)
     list_element_t *p;
     list_status_t listStatus;
 
-    assert(msg);
+    assert(msg != NULL);
 
     p          = (list_element_t *)msg - 1;
     listStatus = LIST_RemoveElement((list_element_t *)p);
@@ -103,7 +103,7 @@ void *MSG_QueueRemoveHead(messaging_t *msgQueue)
 {
     void *buffer;
 
-    assert(msgQueue);
+    assert(msgQueue != NULL);
 
     buffer = LIST_RemoveHead(msgQueue);
 
@@ -114,7 +114,7 @@ void *MSG_QueueGetHead(messaging_t *msgQueue)
 {
     void *buffer;
 
-    assert(msgQueue);
+    assert(msgQueue != NULL);
 
     buffer = LIST_GetHead(msgQueue);
 
@@ -125,7 +125,7 @@ void *MSG_QueueGetNext(void *msg)
 {
     list_element_t *p;
 
-    assert(msg);
+    assert(msg != NULL);
 
     p = (list_element_t *)msg - 1;
     p = LIST_GetNext(p);
@@ -137,7 +137,7 @@ void *MSG_QueueGetPrev(void *msg)
 {
     list_element_t *p;
 
-    assert(msg);
+    assert(msg != NULL);
 
     p = (list_element_t *)msg - 1;
     p = LIST_GetPrev(p);
@@ -149,7 +149,7 @@ void *MSG_Alloc(uint32_t length)
 {
     void *buffer;
 
-    assert(length);
+    assert(length != 0U);
 
     buffer = MEM_BufferAlloc(length + sizeof(list_element_t));
     if (buffer != NULL)
