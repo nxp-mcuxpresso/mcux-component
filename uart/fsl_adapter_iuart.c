@@ -219,10 +219,10 @@ hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t
     hal_uart_state_t *uartHandle;
     uart_config_t uartConfig;
     status_t status;
-    assert(handle);
-    assert(uart_config);
+    assert(handle != NULL);
+    assert(uart_config != NULL);
     assert(uart_config->instance < (sizeof(s_UartAdapterBase) / sizeof(UART_Type *)));
-    assert(s_UartAdapterBase[uart_config->instance]);
+    assert(s_UartAdapterBase[uart_config->instance] != NULL);
 
     assert(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t));
 
@@ -284,7 +284,7 @@ hal_uart_status_t HAL_UartDeinit(hal_uart_handle_t handle)
 {
     hal_uart_state_t *uartHandle;
 
-    assert(handle);
+    assert(handle != NULL);
 
     uartHandle = (hal_uart_state_t *)handle;
 
@@ -305,8 +305,8 @@ hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle, uint8_t *dat
 {
     hal_uart_state_t *uartHandle;
     status_t status;
-    assert(handle);
-    assert(data);
+    assert(handle != NULL);
+    assert(data != NULL);
     assert(length);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -326,8 +326,8 @@ hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle, uint8_t *dat
 hal_uart_status_t HAL_UartSendBlocking(hal_uart_handle_t handle, const uint8_t *data, size_t length)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
-    assert(data);
+    assert(handle != NULL);
+    assert(data != NULL);
     assert(length);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -346,14 +346,14 @@ hal_uart_status_t HAL_UartSendBlocking(hal_uart_handle_t handle, const uint8_t *
 
 hal_uart_status_t HAL_UartEnterLowpower(hal_uart_handle_t handle)
 {
-    assert(handle);
+    assert(handle != NULL);
 
     return kStatus_HAL_UartSuccess;
 }
 
 hal_uart_status_t HAL_UartExitLowpower(hal_uart_handle_t handle)
 {
-    assert(handle);
+    assert(handle != NULL);
 
     return kStatus_HAL_UartSuccess;
 }
@@ -368,7 +368,7 @@ hal_uart_status_t HAL_UartTransferInstallCallback(hal_uart_handle_t handle,
 {
     hal_uart_state_t *uartHandle;
 
-    assert(handle);
+    assert(handle != NULL);
     assert(HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -383,7 +383,7 @@ hal_uart_status_t HAL_UartTransferReceiveNonBlocking(hal_uart_handle_t handle, h
 {
     hal_uart_state_t *uartHandle;
     status_t status;
-    assert(handle);
+    assert(handle != NULL);
     assert(transfer);
     assert(HAL_UART_TRANSFER_MODE);
 
@@ -399,7 +399,7 @@ hal_uart_status_t HAL_UartTransferSendNonBlocking(hal_uart_handle_t handle, hal_
 {
     hal_uart_state_t *uartHandle;
     status_t status;
-    assert(handle);
+    assert(handle != NULL);
     assert(transfer);
     assert(HAL_UART_TRANSFER_MODE);
 
@@ -415,7 +415,7 @@ hal_uart_status_t HAL_UartTransferGetReceiveCount(hal_uart_handle_t handle, uint
 {
     hal_uart_state_t *uartHandle;
     status_t status;
-    assert(handle);
+    assert(handle != NULL);
     assert(count);
     assert(HAL_UART_TRANSFER_MODE);
 
@@ -430,7 +430,7 @@ hal_uart_status_t HAL_UartTransferGetSendCount(hal_uart_handle_t handle, uint32_
 {
     hal_uart_state_t *uartHandle;
     status_t status;
-    assert(handle);
+    assert(handle != NULL);
     assert(count);
     assert(HAL_UART_TRANSFER_MODE);
 
@@ -444,7 +444,7 @@ hal_uart_status_t HAL_UartTransferGetSendCount(hal_uart_handle_t handle, uint32_
 hal_uart_status_t HAL_UartTransferAbortReceive(hal_uart_handle_t handle)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -457,7 +457,7 @@ hal_uart_status_t HAL_UartTransferAbortReceive(hal_uart_handle_t handle)
 hal_uart_status_t HAL_UartTransferAbortSend(hal_uart_handle_t handle)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -476,7 +476,7 @@ hal_uart_status_t HAL_UartInstallCallback(hal_uart_handle_t handle,
 {
     hal_uart_state_t *uartHandle;
 
-    assert(handle);
+    assert(handle != NULL);
     assert(!HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -490,8 +490,8 @@ hal_uart_status_t HAL_UartInstallCallback(hal_uart_handle_t handle,
 hal_uart_status_t HAL_UartReceiveNonBlocking(hal_uart_handle_t handle, uint8_t *data, size_t length)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
-    assert(data);
+    assert(handle != NULL);
+    assert(data != NULL);
     assert(length);
     assert(!HAL_UART_TRANSFER_MODE);
 
@@ -514,8 +514,8 @@ hal_uart_status_t HAL_UartReceiveNonBlocking(hal_uart_handle_t handle, uint8_t *
 hal_uart_status_t HAL_UartSendNonBlocking(hal_uart_handle_t handle, uint8_t *data, size_t length)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
-    assert(data);
+    assert(handle != NULL);
+    assert(data != NULL);
     assert(length);
     assert(!HAL_UART_TRANSFER_MODE);
 
@@ -535,7 +535,7 @@ hal_uart_status_t HAL_UartSendNonBlocking(hal_uart_handle_t handle, uint8_t *dat
 hal_uart_status_t HAL_UartGetReceiveCount(hal_uart_handle_t handle, uint32_t *reCount)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(reCount);
     assert(!HAL_UART_TRANSFER_MODE);
 
@@ -552,7 +552,7 @@ hal_uart_status_t HAL_UartGetReceiveCount(hal_uart_handle_t handle, uint32_t *re
 hal_uart_status_t HAL_UartGetSendCount(hal_uart_handle_t handle, uint32_t *seCount)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(seCount);
     assert(!HAL_UART_TRANSFER_MODE);
 
@@ -569,7 +569,7 @@ hal_uart_status_t HAL_UartGetSendCount(hal_uart_handle_t handle, uint32_t *seCou
 hal_uart_status_t HAL_UartAbortReceive(hal_uart_handle_t handle)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(!HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -589,7 +589,7 @@ hal_uart_status_t HAL_UartAbortReceive(hal_uart_handle_t handle)
 hal_uart_status_t HAL_UartAbortSend(hal_uart_handle_t handle)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(!HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -610,7 +610,7 @@ hal_uart_status_t HAL_UartAbortSend(hal_uart_handle_t handle)
 void HAL_UartIsrFunction(hal_uart_handle_t handle)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;
@@ -630,7 +630,7 @@ void HAL_UartIsrFunction(hal_uart_handle_t handle)
 void HAL_UartIsrFunction(hal_uart_handle_t handle)
 {
     hal_uart_state_t *uartHandle;
-    assert(handle);
+    assert(handle != NULL);
     assert(!HAL_UART_TRANSFER_MODE);
 
     uartHandle = (hal_uart_state_t *)handle;

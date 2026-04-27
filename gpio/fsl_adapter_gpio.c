@@ -101,7 +101,7 @@ static void HAL_GpioInterruptHandle(uint8_t port)
 #else
     pinInterruptSetFlag = GPIO_GpioGetInterruptFlags(s_GpioPort[port]);
     /* Clear external interrupt flag. */
-    GPIO_GpioClearInterruptFlags(s_GpioPort[port], pinInterruptSetFlag);
+    (void)GPIO_GpioClearInterruptFlags(s_GpioPort[port], pinInterruptSetFlag);
 #endif
     if (0U != pinInterruptSetFlag)
     {
@@ -555,8 +555,8 @@ hal_gpio_status_t HAL_GpioInit(hal_gpio_handle_t gpioHandle, hal_gpio_pin_config
     hal_gpio_state_t *gpioState;
     hal_gpio_status_t status;
 
-    assert(gpioHandle);
-    assert(pinConfig);
+    assert(gpioHandle != NULL);
+    assert(pinConfig != NULL);
     assert(HAL_GPIO_HANDLE_SIZE >= sizeof(hal_gpio_state_t));
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
@@ -585,7 +585,7 @@ hal_gpio_status_t HAL_GpioDeinit(hal_gpio_handle_t gpioHandle)
 {
     hal_gpio_state_t *gpioState;
 
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
     if (kHAL_GpioDirectionIn == gpioState->direction)
@@ -600,8 +600,8 @@ hal_gpio_status_t HAL_GpioGetInput(hal_gpio_handle_t gpioHandle, uint8_t *pinSta
 {
     hal_gpio_state_t *gpioState;
 
-    assert(gpioHandle);
-    assert(pinState);
+    assert(gpioHandle != NULL);
+    assert(pinState != NULL);
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
 
@@ -613,7 +613,7 @@ hal_gpio_status_t HAL_GpioSetOutput(hal_gpio_handle_t gpioHandle, uint8_t pinSta
 {
     hal_gpio_state_t *gpioState;
 
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
 
@@ -627,7 +627,7 @@ hal_gpio_status_t HAL_GpioInstallCallback(hal_gpio_handle_t gpioHandle,
 {
     hal_gpio_state_t *gpioState;
 
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
 
@@ -641,7 +641,7 @@ hal_gpio_status_t HAL_GpioGetTriggerMode(hal_gpio_handle_t gpioHandle, hal_gpio_
 {
     hal_gpio_state_t *gpioState;
 
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
 
@@ -667,7 +667,7 @@ hal_gpio_status_t HAL_GpioSetTriggerMode(hal_gpio_handle_t gpioHandle, hal_gpio_
     static const IRQn_Type irqNo[] = GPIO_IRQS;
 #endif
 
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
     assert(kHAL_GpioDirectionOut != gpioState->direction);
@@ -743,7 +743,7 @@ hal_gpio_status_t HAL_GpioWakeUpSetting(hal_gpio_handle_t gpioHandle, uint8_t en
 {
     hal_gpio_state_t *gpioState;
 
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
 
@@ -761,7 +761,7 @@ hal_gpio_status_t HAL_GpioWakeUpSetting(hal_gpio_handle_t gpioHandle, uint8_t en
 
 hal_gpio_status_t HAL_GpioEnterLowpower(hal_gpio_handle_t gpioHandle)
 {
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     return kStatus_HAL_GpioSuccess;
 }
@@ -774,7 +774,7 @@ hal_gpio_status_t HAL_GpioExitLowpower(hal_gpio_handle_t gpioHandle)
         0,
     };
 
-    assert(gpioHandle);
+    assert(gpioHandle != NULL);
 
     gpioState                  = (hal_gpio_state_t *)gpioHandle;
     gpioPinconfig.pinDirection = kGPIO_DigitalInput;

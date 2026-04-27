@@ -143,8 +143,8 @@ hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_co
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     ctimer_config_t config;
     assert(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE);
-    assert(halTimerConfig);
-    assert(halTimerHandle);
+    assert(halTimerConfig != NULL);
+    assert(halTimerHandle != NULL);
     assert(halTimerConfig->instance < (sizeof(s_CtimerBase) / sizeof(CTIMER_Type *)));
     assert(halTimerConfig->instance < (sizeof(ctimer_callback_table) / sizeof(ctimer_callback_t)));
 
@@ -164,7 +164,7 @@ hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_co
 /*************************************************************************************/
 void HAL_TimerDeinit(hal_timer_handle_t halTimerHandle)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     s_timerHandle[halTimerState->instance]   = NULL;
     CTIMER_Deinit(s_CtimerBase[halTimerState->instance]);
@@ -172,7 +172,7 @@ void HAL_TimerDeinit(hal_timer_handle_t halTimerHandle)
 /*************************************************************************************/
 void HAL_TimerEnable(hal_timer_handle_t halTimerHandle)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     CTIMER_StartTimer(s_CtimerBase[halTimerState->instance]);
 }
@@ -180,7 +180,7 @@ void HAL_TimerEnable(hal_timer_handle_t halTimerHandle)
 /*************************************************************************************/
 void HAL_TimerDisable(hal_timer_handle_t halTimerHandle)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     CTIMER_StopTimer(s_CtimerBase[halTimerState->instance]);
 }
@@ -188,38 +188,38 @@ void HAL_TimerDisable(hal_timer_handle_t halTimerHandle)
 /*************************************************************************************/
 void HAL_TimerInstallCallback(hal_timer_handle_t halTimerHandle, hal_timer_callback_t callback, void *callbackParam)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     halTimerState->callback                  = callback;
     halTimerState->callbackParam             = callbackParam;
 }
 
-uint32_t HAL_TimerGetMaxTimeout(hal_timer_handle_t halTimerHandle)
+hal_timer_time_t HAL_TimerGetMaxTimeout(hal_timer_handle_t halTimerHandle)
 {
     uint32_t reserveCount;
     uint64_t retValue;
     uint32_t reserveMs = 4U;
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     reserveCount                             = (uint32_t)MSEC_TO_COUNT((reserveMs), (halTimerState->timerClock_Hz));
 
-    retValue = COUNT_TO_USEC(((uint64_t)0xFFFFFFFF - (uint64_t)reserveCount), (uint64_t)halTimerState->timerClock_Hz);
+    retValue = COUNT_TO_USEC(((uint64_t)0xFFFFFFFFU - (uint64_t)reserveCount), (uint64_t)halTimerState->timerClock_Hz);
     return (uint32_t)((retValue > 0xFFFFFFFFU) ? (0xFFFFFFFFU - reserveMs * 1000U) : (uint32_t)retValue);
 }
 
 /* return micro us */
 uint32_t HAL_TimerGetCurrentTimerCount(hal_timer_handle_t halTimerHandle)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     return (uint32_t)COUNT_TO_USEC(s_CtimerBase[halTimerState->instance]->TC, halTimerState->timerClock_Hz);
 }
 
-hal_timer_status_t HAL_TimerUpdateTimeout(hal_timer_handle_t halTimerHandle, uint32_t timeout)
+hal_timer_status_t HAL_TimerUpdateTimeout(hal_timer_handle_t halTimerHandle, hal_timer_time_t timeout)
 {
     ctimer_match_config_t mCtimerMatchConfig;
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
 
     halTimerState->timeout = timeout;
 
@@ -241,17 +241,17 @@ hal_timer_status_t HAL_TimerUpdateTimeout(hal_timer_handle_t halTimerHandle, uin
 
 void HAL_TimerExitLowpower(hal_timer_handle_t halTimerHandle)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
 }
 
 void HAL_TimerEnterLowpower(hal_timer_handle_t halTimerHandle)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
 }
 
 uint32_t HAL_TimerGetCurrentTicks(hal_timer_handle_t halTimerHandle)
 {
-    assert(halTimerHandle);
+    assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     return s_CtimerBase[halTimerState->instance]->TC;
 }

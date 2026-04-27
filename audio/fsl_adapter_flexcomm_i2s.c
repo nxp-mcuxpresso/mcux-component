@@ -105,8 +105,8 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     uint8_t channelNum;
     uint32_t u32Temp;
 
-    assert(handle);
-    assert(config);
+    assert(handle != NULL);
+    assert(config != NULL);
     assert(config->dmaConfig);
     /* If asserted, please check if the value of I2S_NUM_BUFFERS defined in the fsl_i2s.h is modified.
        If modified, please modify the value of HAL_AUDIO_QUEUE_SIZE defined in the fsl_adapter_audio.h to be the same as
@@ -343,7 +343,7 @@ static hal_audio_status_t HAL_AudioCommonDeinit(hal_audio_handle_t handle, bool 
     DMA_Type *dmaBases[] = DMA_BASE_PTRS;
 #endif /* HAL_AUDIO_DMA_INIT_ENABLE */
 
-    assert(handle);
+    assert(handle != NULL);
 
     audioHandle = (hal_audio_state_t *)handle;
 
@@ -412,7 +412,7 @@ hal_audio_status_t HAL_AudioTxInstallCallback(hal_audio_handle_t handle,
 {
     hal_audio_state_t *audioHandle;
 
-    assert(handle);
+    assert(handle != NULL);
 
     audioHandle = (hal_audio_state_t *)handle;
 
@@ -428,7 +428,7 @@ hal_audio_status_t HAL_AudioRxInstallCallback(hal_audio_handle_t handle,
 {
     hal_audio_state_t *audioHandle;
 
-    assert(handle);
+    assert(handle != NULL);
 
     audioHandle = (hal_audio_state_t *)handle;
 
@@ -443,7 +443,7 @@ hal_audio_status_t HAL_AudioTransferSendNonBlocking(hal_audio_handle_t handle, h
     i2s_transfer_t transfer;
     hal_audio_state_t *audioHandle;
 
-    assert(handle);
+    assert(handle != NULL);
 
     audioHandle = (hal_audio_state_t *)handle;
 
@@ -461,7 +461,7 @@ hal_audio_status_t HAL_AudioTransferReceiveNonBlocking(hal_audio_handle_t handle
     i2s_transfer_t transfer;
     hal_audio_state_t *audioHandle;
 
-    assert(handle);
+    assert(handle != NULL);
 
     audioHandle = (hal_audio_state_t *)handle;
 
@@ -476,7 +476,7 @@ hal_audio_status_t HAL_AudioTransferReceiveNonBlocking(hal_audio_handle_t handle
 
 hal_audio_status_t HAL_AudioTransferGetSendCount(hal_audio_handle_t handle, size_t *count)
 {
-    assert(handle);
+    assert(handle != NULL);
 
 #if (defined(FSL_FEATURE_SOC_DMA_COUNT) && (FSL_FEATURE_SOC_DMA_COUNT > 0U))
     *count = 0;
@@ -486,7 +486,7 @@ hal_audio_status_t HAL_AudioTransferGetSendCount(hal_audio_handle_t handle, size
 
 hal_audio_status_t HAL_AudioTransferGetReceiveCount(hal_audio_handle_t handle, size_t *count)
 {
-    assert(handle);
+    assert(handle != NULL);
 
 #if (defined(FSL_FEATURE_SOC_DMA_COUNT) && (FSL_FEATURE_SOC_DMA_COUNT > 0U))
     *count = 0;
@@ -498,7 +498,7 @@ hal_audio_status_t HAL_AudioTransferAbortSend(hal_audio_handle_t handle)
 {
     hal_audio_state_t *audioHandle;
 
-    assert(handle);
+    assert(handle != NULL);
 
     audioHandle = (hal_audio_state_t *)handle;
 
@@ -513,7 +513,7 @@ hal_audio_status_t HAL_AudioTransferAbortReceive(hal_audio_handle_t handle)
 {
     hal_audio_state_t *audioHandle;
 
-    assert(handle);
+    assert(handle != NULL);
 
     audioHandle = (hal_audio_state_t *)handle;
 

@@ -39,7 +39,7 @@ hal_pwm_status_t HAL_PwmInit(hal_pwm_handle_t halPwmHandle, uint8_t instance, ui
     hal_pwm_handle_struct_t *halPwmState = halPwmHandle;
 
     assert(instance < (sizeof(s_tpmBase) / sizeof(s_tpmBase[0])));
-    assert(s_tpmBase[instance]);
+    assert(s_tpmBase[instance] != NULL);
     assert(halPwmHandle);
     assert(sizeof(hal_pwm_handle_struct_t) == HAL_PWM_HANDLE_SIZE);
     halPwmState->pwmClock_Hz = srcClock_Hz;
