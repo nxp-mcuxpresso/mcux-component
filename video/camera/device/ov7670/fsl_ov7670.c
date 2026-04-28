@@ -258,7 +258,7 @@ status_t OV7670_Configure(camera_device_handle_t *handle, const ov7670_config_t 
     (void)OV7670_OutputFormat(handle, config->outputFormat);
     (void)OV7670_Resolution(handle, config->resolution);
 
-    switch ((video_resolution_t)config->resolution)
+    switch (config->resolution)
     {
         case kVIDEO_ResolutionVGA:
             windowConfig = (ov7670_windowing_config_t *)&OV7670_WINDOW_VGA;
@@ -340,7 +340,7 @@ status_t OV7670_Resolution(camera_device_handle_t *handle, uint32_t resolution)
     status_t status = kStatus_Success;
 
     ov7670_resolution_config_t *resolution_config;
-    switch ((video_resolution_t)resolution)
+    switch (resolution)
     {
         case kVIDEO_ResolutionVGA:
             resolution_config = (ov7670_resolution_config_t *)&OV7670_RESOLUTION_VGA;
@@ -526,25 +526,25 @@ status_t OV7670_SetWindowByCoordinates(camera_device_handle_t *handle,
 
     (void)OV7670_ModifyReg(handle, OV7670_TSLB_REG, 0x01, 0x00);
 
-    u16Temp = startPoint->hstartCoordinate + FSL_VIDEO_EXTRACT_WIDTH(resolution);
+    u16Temp = (uint16_t)((((uint32_t)startPoint->hstartCoordinate + (uint32_t)FSL_VIDEO_EXTRACT_WIDTH(resolution)) & 0xFFFFU));
     u16Href = (u16Temp & 0x07U);
     u16Href = u16Href << 3;
     u16Href |= (startPoint->hstartCoordinate & 0x07U);
     u16Href |= 0xc0U;
     (void)OV7670_WriteReg(handle, OV7670_HREF_REG, (uint8_t)u16Href);
     u16Temp = u16Temp >> 3;
-    (void)OV7670_WriteReg(handle, OV7670_HSTOP_REG, (uint8_t)u16Temp);
+    (void)OV7670_WriteReg(handle, OV7670_HSTOP_REG, (uint8_t)(u16Temp & 0xFFU));
     u16Temp = ((startPoint->hstartCoordinate & 0x7f8U) >> 3);
     (void)OV7670_WriteReg(handle, OV7670_HSTART_REG, (uint8_t)u16Temp);
 
-    u16Temp = startPoint->vstartCoordinate + FSL_VIDEO_EXTRACT_HEIGHT(resolution);
+    u16Temp = (uint16_t)((((uint32_t)startPoint->vstartCoordinate + (uint32_t)FSL_VIDEO_EXTRACT_HEIGHT(resolution)) & 0xFFFFU));
     u16Vref = (u16Temp & 0x03U);
     u16Vref = u16Vref << 2;
     u16Vref |= (startPoint->vstartCoordinate & 0x03U);
     u16Vref &= 0xF0U;
     (void)OV7670_ModifyReg(handle, OV7670_VREF_REG, 0xc0, (uint8_t)u16Vref);
     u16Temp = u16Temp >> 2;
-    (void)OV7670_WriteReg(handle, OV7670_VSTOP_REG, (uint8_t)u16Temp);
+    (void)OV7670_WriteReg(handle, OV7670_VSTOP_REG, (uint8_t)(u16Temp & 0xFFU));
     u16Temp = ((startPoint->vstartCoordinate & 0x3fcU) >> 2);
     (void)OV7670_WriteReg(handle, OV7670_VSTART_REG, (uint8_t)u16Temp);
 

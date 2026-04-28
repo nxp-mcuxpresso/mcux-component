@@ -29,7 +29,7 @@ status_t SCCB_WriteMultiRegs(uint8_t i2cAddr,
                              uint32_t len,
                              sccb_i2c_send_func_t i2cSendFunc)
 {
-    return i2cSendFunc(i2cAddr, startReg, addrType, value, len);
+    return i2cSendFunc(i2cAddr, startReg, addrType, value, (uint8_t)(len & 0xFFU));
 }
 
 status_t SCCB_ReadReg(
