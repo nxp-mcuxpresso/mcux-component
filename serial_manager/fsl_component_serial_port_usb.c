@@ -828,8 +828,8 @@ serial_manager_status_t Serial_UsbCdcInit(serial_handle_t serialHandle, void *co
     serial_port_usb_cdc_config_t *usbCdcConfig;
     usb_status_t usbState;
 
-    assert(config);
-    assert(serialHandle);
+    assert(config != NULL);
+    assert(serialHandle != NULL);
     assert(SERIAL_PORT_USB_CDC_HANDLE_SIZE >= sizeof(serial_usb_cdc_state_t));
 
 #if (defined(FSL_FEATURE_SOC_SYSMPU_COUNT) && (FSL_FEATURE_SOC_SYSMPU_COUNT > 0U))
@@ -868,7 +868,7 @@ serial_manager_status_t Serial_UsbCdcDeinit(serial_handle_t serialHandle)
     serial_usb_cdc_state_t *serialUsbCdc;
     usb_status_t usbState;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
 
@@ -890,7 +890,7 @@ serial_manager_status_t Serial_UsbCdcWrite(serial_handle_t serialHandle, uint8_t
     serial_usb_cdc_state_t *serialUsbCdc;
     uint32_t needToPrime = 0;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
 
@@ -934,7 +934,7 @@ serial_manager_status_t Serial_UsbCdcRead(serial_handle_t serialHandle, uint8_t 
     uint32_t primeLength;
     uint32_t regPrimask;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
 
@@ -984,7 +984,7 @@ serial_manager_status_t Serial_UsbCdcCancelWrite(serial_handle_t serialHandle)
 {
     serial_usb_cdc_state_t *serialUsbCdc;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
     (void)USB_DeviceCancel(serialUsbCdc->deviceHandle, (USB_IN << USB_DESCRIPTOR_ENDPOINT_ADDRESS_DIRECTION_SHIFT) |
@@ -998,7 +998,7 @@ serial_manager_status_t Serial_UsbCdcInstallTxCallback(serial_handle_t serialHan
 {
     serial_usb_cdc_state_t *serialUsbCdc;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
 
@@ -1014,7 +1014,7 @@ serial_manager_status_t Serial_UsbCdcInstallRxCallback(serial_handle_t serialHan
 {
     serial_usb_cdc_state_t *serialUsbCdc;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
 
@@ -1028,7 +1028,7 @@ serial_manager_status_t Serial_UsbCdcGetConnectedStatus(serial_handle_t serialHa
 {
 #if (defined(USB_CDC_SERIAL_MANAGER_RUN_NO_HOST) && (USB_CDC_SERIAL_MANAGER_RUN_NO_HOST == 1))
     serial_usb_cdc_state_t *serialUsbCdc;
-    assert(serialHandle);
+    assert(serialHandle != NULL);
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
     return ((serialUsbCdc->attach == 1U) && (serialUsbCdc->startTransactions == 1U)) ? kStatus_SerialManager_Success : kStatus_SerialManager_NotConnected;
 #else/* USB_CDC_SERIAL_MANAGER_RUN_NO_HOST == 1 */
@@ -1040,7 +1040,7 @@ void Serial_UsbCdcIsrFunction(serial_handle_t serialHandle)
 {
     serial_usb_cdc_state_t *serialUsbCdc;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
 
