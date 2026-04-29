@@ -248,6 +248,10 @@ if ((${board} STREQUAL frdmmcxe31b))
     mcux_set_variable(drv_folder mcxe3x)
 endif()
 
+if ((${board} STREQUAL frdmmcxc162))
+    mcux_set_variable(drv_folder frdmmcxc162)
+endif()
+
 if (CONFIG_MCUX_SETTING.mflash_custom)
     mcux_set_variable(drv_folder mflash_custom)
 endif()
