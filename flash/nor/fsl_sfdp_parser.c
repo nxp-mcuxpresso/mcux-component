@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2025, 2026 NXP
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -60,7 +60,8 @@ static inline uint16_t SFDP_GetParamRevision(sfdp_param_header_t *ptrParamHeader
 
 static void SFDP_InterpretSFDPParamHeaders(sfdp_param_header_t *ptrSfdpParamHeaders, sfdp_handle_t *handle)
 {
-    uint8_t paramTableCount                = handle->nph + 1U;
+    assert(handle->nph < UINT8_MAX); /* Ensure nph + 1 does not overflow uint8_t */
+    uint8_t paramTableCount                = (uint8_t)(handle->nph + 1U);
     sfdp_param_header_t *ptrCurParamHeader = NULL;
     SFDP_SpiReadFunc spiReadTable          = handle->spiRead;
 
@@ -426,7 +427,7 @@ static void SFDP_Get8PadReadCmd(sfdp_handle_t *handle,
             }
             else if (clkFreq == 133000000UL)
             {
-                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile1Table.dw5 & 0x3E0000UL) >> 12UL);
+                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile1Table.dw5 & 0x3E0000UL) >> 17UL);
             }
             else if (clkFreq == 166000000UL)
             {
@@ -448,7 +449,7 @@ static void SFDP_Get8PadReadCmd(sfdp_handle_t *handle,
             }
             else if (clkFreq == 133000000UL)
             {
-                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile2Table.dw3 & 0x3E0000UL) >> 12UL);
+                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile2Table.dw3 & 0x3E0000UL) >> 17UL);
             }
             else if (clkFreq == 166000000UL)
             {
@@ -477,7 +478,7 @@ static void SFDP_Get8PadReadCmd(sfdp_handle_t *handle,
             }
             else if (clkFreq == 133000000UL)
             {
-                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile1Table.dw5 & 0x3E0000UL) >> 12UL);
+                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile1Table.dw5 & 0x3E0000UL) >> 17UL);
             }
             else if (clkFreq == 166000000UL)
             {
@@ -499,7 +500,7 @@ static void SFDP_Get8PadReadCmd(sfdp_handle_t *handle,
             }
             else if (clkFreq == 133000000UL)
             {
-                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile2Table.dw3 & 0x3E0000UL) >> 12UL);
+                ptr8PadReadCmdInfo->dummyCycle = (uint8_t)((handle->xSPIProfile2Table.dw3 & 0x3E0000UL) >> 17UL);
             }
             else if (clkFreq == 166000000UL)
             {
@@ -604,6 +605,10 @@ sfdp_ret_type_t SFDP_ReadAllSupportedTable(sfdp_handle_t *handle)
     sfdp_param_header_t *ptrSfdpParamHeader = NULL;
 
     ptrSfdpParamHeader = (sfdp_param_header_t *)(uint32_t)malloc((handle->nph + 1U) * 8U);
+    if (ptrSfdpParamHeader == NULL)
+    {
+        return kSFDP_RET_HardwareIssue;
+    }
     ret                = SFDP_ReadSFDPParameterHeader(ptrSfdpParamHeader, handle->nph, handle->spiRead);
 
     if (ret != kSFDP_RET_Success)
@@ -649,7 +654,7 @@ uint32_t SFDP_GetFlashDensity(sfdp_handle_t *handle)
         bitsCount = (1ULL << dw);
     }
 
-    return (uint32_t)(bitsCount >> 13UL);
+    return (uint32_t)((bitsCount >> 13ULL) & 0xFFFFFFFFULL);
 }
 
 /*!
@@ -877,7 +882,7 @@ uint8_t SFDP_GetOctalDTRCmdExtension(sfdp_handle_t *handle, uint8_t cmd)
         }
         case kSFDP_OctalDTRCmdExtensionCmdForm16Bit:
         {
-            cmdExtension = (uint8_t)(0xFFFFU - cmd);
+            cmdExtension = (uint8_t)(0xFFU - (uint32_t)cmd);
             break;
         }
         default:
@@ -1013,7 +1018,7 @@ void SFDP_GetChipEraseCmdInfo(sfdp_handle_t *handle, sfdp_chip_erase_cmd_info_t 
     ptrChipEraseCmdInfo->typicalTime = 0UL;
     if (handle->curJEDECVersion >= kSFDP_JESD216A)
     {
-        uint8_t tmp8 = (uint8_t)((handle->bfp.dw11 & 0x7F0000000UL) >> 24UL);
+        uint8_t tmp8 = (uint8_t)((handle->bfp.dw11 & 0x7F000000UL) >> 24UL);
 
         switch ((tmp8 & 0x60U) >> 5U)
         {
