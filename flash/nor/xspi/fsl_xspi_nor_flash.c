@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 NXP
+ * Copyright 2024-2025, 2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -65,6 +65,7 @@ static status_t XSPI_NOR_ReadSFDP(uint32_t address, uint32_t *buffer, uint32_t b
 
     uint32_t xspiInstanceId = XSPI_GetInstance(curXSPIBase);
 
+    assert(address <= (UINT32_MAX - s_socXspiAmbaBase[xspiInstanceId]));
     flashXfer.deviceAddress = s_socXspiAmbaBase[xspiInstanceId] + address;
     flashXfer.cmdType       = kXSPI_Read;
     flashXfer.seqIndex      = NOR_CMD_LUT_SEQ_IDX_READ_SFDP;
@@ -363,7 +364,7 @@ static status_t XSPI_NOR_SetNorFlashDeviceConfig(xspi_memory_config_t *ptrUserIn
     externalDeviceDdrConfig.enableByteSwapInOctalMode = SFDP_CheckByteSwapInOctalMode(xspiMemNorHandle.ptrSfdpHandle);
     externalDeviceDdrConfig.ddrDataAlignedClk         = kXSPI_DDRDataAlignedWith2xInternalRefClk;
 
-    sfdp_wip_bit_info_t wipInfo;
+    sfdp_wip_bit_info_t wipInfo = {0};
     SFDP_GetBusyBitInfo(xspiMemNorHandle.ptrSfdpHandle, (sfdp_flash_pad_num_t)ptrUserInputMemConfig->numPadUsed,
                         &wipInfo);
 
@@ -391,6 +392,7 @@ static status_t XSPI_NOR_SetNorFlashDeviceConfig(xspi_memory_config_t *ptrUserIn
 
     status = XSPI_SetDeviceConfig(curXSPIBase, &externNorFlashConfig);
 
+    assert(externNorFlashConfig.deviceSize[0] <= (UINT32_MAX / 1024UL));
     xspiMemNorHandle.memSizeInByte         = externNorFlashConfig.deviceSize[0] * 1024UL;
     xspiMemNorHandle.norFlashStatusRegInfo = norFlashStatusRegInfo;
 
@@ -457,7 +459,7 @@ static void XSPI_NOR_FillSectorEraseLutSeq(void)
     cmdInstr   = g_xspiCommonInstr[instrDDR][XSPI_INSTR_CMD_IDX];
     raddrInstr = g_xspiCommonInstr[addrDDR][XSPI_INSTR_RADDR_IDX];
 
-    sfdp_erase_cmd_info_t sectorEraseCmdInfo;
+    sfdp_erase_cmd_info_t sectorEraseCmdInfo = {0};
 
     if (SFDP_GetSectorEraseCmdInfo(xspiMemNorHandle.ptrSfdpHandle, kSFDP_EraseCmdType1, &sectorEraseCmdInfo) ==
         kSFDP_RET_Success)
@@ -716,7 +718,7 @@ static void XSPI_NOR_FillReadStatusLutSeq(void)
     raddrInstr = g_xspiCommonInstr[addrDDR][XSPI_INSTR_RADDR_IDX];
     readInstr  = g_xspiCommonInstr[dataDDR][XSPI_INSTR_READ_IDX];
 
-    sfdp_read_status_cmd_info_t readStatusCmdInfo;
+    sfdp_read_status_cmd_info_t readStatusCmdInfo = {0};
     SFDP_GetReadStatusCmdInfo(xspiMemNorHandle.ptrSfdpHandle, xspiMemNorHandle.curProtocolType, &readStatusCmdInfo);
 
     /* @TODO: In case of dummy cycle is updated. */
