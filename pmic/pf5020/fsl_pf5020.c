@@ -214,7 +214,7 @@ static status_t PF5020_SetRegulatorCommonConfig(pf5020_handle_t *handle,
     if (status == kStatus_Success)
     {
         status = PF5020_ModifyReg(handle, PF5020_SW1_CONFIG2 + regAddrShift, 0x80U,
-                                  PF5020_REGULATOR_FLT_REN(faultReEnabled));
+                                  PF5020_REGULATOR_FLT_REN(faultReEnabled ? 1U : 0U));
     }
 
     return status;
@@ -832,8 +832,8 @@ status_t PF5020_SW1_SetFaultDetection(pf5020_handle_t *handle,
         status = PF5020_ModifyReg(
             handle, PF5020_SW1_CONFIG1,
             PF5020_REGULATOR_ILIM_BYPASS_MASK | PF5020_REGULATOR_OV_BYPASS_MASK | PF5020_REGULATOR_UV_BYPASS_MASK,
-            PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass) |
-                PF5020_REGULATOR_UV_BYPASS(enableUVBypass));
+            PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass ? 1U : 0U) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass ? 1U : 0U) |
+                PF5020_REGULATOR_UV_BYPASS(enableUVBypass ? 1U : 0U));
     }
 
     return status;
@@ -922,7 +922,7 @@ status_t PF5020_SW2_SetGlobalConfig(pf5020_handle_t *handle, const pf5020_sw2_re
     bool enableILIMBypass = true;
 
     /* Set SW2 DVS Ramp. */
-    status = PF5020_ModifyReg(handle, PF5020_SW_RAMP, 0xCU, ((uint8_t)config->sw2DvsRamp) << 2U);
+    status = PF5020_ModifyReg(handle, PF5020_SW_RAMP, 0xCU, (uint8_t)(((uint32_t)config->sw2DvsRamp << 2U) & 0xCU));
 
     if (status == kStatus_Success)
     {
@@ -958,7 +958,7 @@ status_t PF5020_SW2_SetGlobalConfig(pf5020_handle_t *handle, const pf5020_sw2_re
         if (status == kStatus_Success)
         {
             value |= PF5020_BUCK_REGULATOR_PHASE(config->sw2PhaseShift) |
-                     PF5020_SW2_CONFIG2_VTTEN(config->sw2EnableVTTOperation);
+                     PF5020_SW2_CONFIG2_VTTEN(config->sw2EnableVTTOperation ? 1U : 0U);
             mask |= PF5020_BUCK_REGULATOR_PHASE_MASK | PF5020_SW2_CONFIG2_VTTEN_MASK;
             /* Update SW2 CONFIG2 register, this register can be used to set current limitation and phase shift. */
             status = PF5020_ModifyReg(handle, PF5020_SW2_CONFIG2, mask, value);
@@ -1152,8 +1152,8 @@ status_t PF5020_SW2_SetFaultDetection(pf5020_handle_t *handle,
         status = PF5020_ModifyReg(
             handle, PF5020_SW1_CONFIG1,
             PF5020_REGULATOR_ILIM_BYPASS_MASK | PF5020_REGULATOR_OV_BYPASS_MASK | PF5020_REGULATOR_UV_BYPASS_MASK,
-            PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass) |
-                PF5020_REGULATOR_UV_BYPASS(enableUVBypass));
+            PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass ? 1U : 0U) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass ? 1U : 0U) |
+                PF5020_REGULATOR_UV_BYPASS(enableUVBypass ? 1U : 0U));
     }
 
     return status;
@@ -1391,8 +1391,8 @@ status_t PF5020_SWND1_SetFaultDetection(pf5020_handle_t *handle,
         status = PF5020_ModifyReg(
             handle, PF5020_SWND1_CONFIG1,
             PF5020_REGULATOR_ILIM_BYPASS_MASK | PF5020_REGULATOR_OV_BYPASS_MASK | PF5020_REGULATOR_UV_BYPASS_MASK,
-            PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass) |
-                PF5020_REGULATOR_UV_BYPASS(enableUVBypass));
+            PF5020_REGULATOR_ILIM_BYPASS(enableILIMBypass ? 1U : 0U) | PF5020_REGULATOR_OV_BYPASS(enableOVBypass ? 1U : 0U) |
+                PF5020_REGULATOR_UV_BYPASS(enableUVBypass ? 1U : 0U));
     }
 
     return status;
@@ -1780,13 +1780,13 @@ status_t PF5020_WDOG_ConfigInternalTimer(pf5020_handle_t *handle, const pf5020_w
 
     if (status == kStatus_Success)
     {
-        status = PF5020_ModifyReg(handle, PF5020_WD_EXPIRE, 0x70U, ((config->cyclicCounterMaxVale << 4U) & 0x70U));
+        status = PF5020_ModifyReg(handle, PF5020_WD_EXPIRE, 0x70U, (uint8_t)(((uint32_t)config->cyclicCounterMaxVale << 4U) & 0x70U));
     }
 
     if (status == kStatus_Success)
     {
         status = PF5020_ModifyReg(handle, PF5020_CTRL1, PF5020_CTRL1_WD_EN_MASK | PF5020_CTRL1_WD_STBY_EN_MASK,
-                                  PF5020_CTRL1_WD_STBY_EN(config->enableStandby) | PF5020_CTRL1_WD_EN(config->enable));
+                                  PF5020_CTRL1_WD_STBY_EN(config->enableStandby ? 1U : 0U) | PF5020_CTRL1_WD_EN(config->enable ? 1U : 0U));
     }
 
     return status;
