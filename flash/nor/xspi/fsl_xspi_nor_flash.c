@@ -1501,6 +1501,7 @@ status_t Nor_Flash_Program(nor_handle_t *handle, uint32_t address, uint8_t *buff
         if (length >= handle->bytesInPageSize)
         {
             buffer += handle->bytesInPageSize;
+            assert(startAddress <= (UINT32_MAX - handle->bytesInPageSize));
             startAddress += handle->bytesInPageSize;
         }
     }
@@ -1620,6 +1621,7 @@ status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_B
     for (uint32_t i = 0x00U; i < (size_Byte / handle->bytesInSectorSize); i++)
     {
         status = Nor_Flash_Erase_Sector(handle, startAddress);
+        assert(startAddress <= (UINT32_MAX - handle->bytesInSectorSize));
         startAddress += handle->bytesInSectorSize;
     }
 
