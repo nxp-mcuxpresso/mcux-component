@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2016, Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
+ * Copyright 2016-2017, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -402,9 +402,9 @@ bool PF1550_DumpReg(pf1550_handle_t *handle, uint8_t reg, uint8_t *buffer, uint8
 
     /* It seems that PF1550 only supports single-byte I2C transactions
        for read and write. */
-    for (i = 0; i < size; i++)
+    for (i = 0U; i < size; i++)
     {
-        if (false == PF1550_ReadReg(handle, reg++, buffer++))
+        if (false == PF1550_ReadReg(handle, (uint8_t)(reg + i), &buffer[i]))
         {
             result = false;
         }
@@ -825,13 +825,17 @@ uint32_t PF1550_GetRegulatorOutputVoltage(pf1550_handle_t *handle,
                     break;
 
                 case kPF1550_OperatingStatusStandby:
-                    (void)PF1550_ReadReg(handle, regulatorVoltRegAddr + (PF1550_SW1_STBY_VOLT - PF1550_SW1_VOLT),
+                    (void)PF1550_ReadReg(handle,
+                                         (uint8_t)((regulatorVoltRegAddr + (PF1550_SW1_STBY_VOLT - PF1550_SW1_VOLT)) &
+                                                   0xFFU),
                                          &regulatorVoltRegContent);
                     voltage = PF1550_GetRegulatorOutputVolt(handle, module, regulatorVoltRegContent);
                     break;
 
                 case kPF1550_OperatingStatusSleep:
-                    (void)PF1550_ReadReg(handle, regulatorVoltRegAddr + (PF1550_SW1_SLP_VOLT - PF1550_SW1_VOLT),
+                    (void)PF1550_ReadReg(handle,
+                                         (uint8_t)((regulatorVoltRegAddr + (PF1550_SW1_SLP_VOLT - PF1550_SW1_VOLT)) &
+                                                   0xFFU),
                                          &regulatorVoltRegContent);
                     voltage = PF1550_GetRegulatorOutputVolt(handle, module, regulatorVoltRegContent);
                     break;
