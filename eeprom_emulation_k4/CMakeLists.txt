@@ -1,7 +1,7 @@
 # Copyright 2024 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
-if (CONFIG_MCUX_COMPONENT_component.eeprom_emulation)
+if (CONFIG_MCUX_COMPONENT_component.eeprom_emulation_k4)
 
     mcux_add_source(
         SOURCES

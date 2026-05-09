@@ -171,7 +171,7 @@ menu "Component Configuration"
 
     menu "Storage"
         rsource "storage/Kconfig"
-        rsource "eeprom_emulation/Kconfig"
+        rsource "eeprom_emulation_k4/Kconfig"
     endmenu
 
     menu "Debug"
