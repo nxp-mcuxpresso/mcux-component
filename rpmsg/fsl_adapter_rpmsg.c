@@ -251,7 +251,7 @@ static hal_rpmsg_status_t HAL_RpmsgMasterInit(hal_rpmsg_handle_t handle, hal_rpm
 #endif /* HAL_RPMSG_SELECT_ROLE */
 
 #if (defined(HAL_RPMSG_SELECT_ROLE) && (HAL_RPMSG_SELECT_ROLE == 1U))
-static hal_rpmsg_status_t HAL_RpmsgMcmgrRemoteInit()
+static hal_rpmsg_status_t HAL_RpmsgMcmgrRemoteInit(void)
 {
     uint32_t startupData;
     mcmgr_status_t status;

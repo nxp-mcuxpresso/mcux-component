@@ -38,21 +38,21 @@ static shell_status_t uninstallbackendCommand(shell_handle_t shellHandle, int32_
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-SHELL_COMMAND_DEFINE(log,
+static SHELL_COMMAND_DEFINE(log,
                      "\r\n"
                      "\"log arg1\": show log message with entered level\r\n"
                      " Usage:\r\n"
                      "    arg1: trace|debug|info|warning|error|fatal\r\n",
                      logCommand,
                      1);
-SHELL_COMMAND_DEFINE(installbackend,
+static SHELL_COMMAND_DEFINE(installbackend,
                      "\r\n"
                      "\"installbackend arg1\": install backend with entered type\r\n"
                      " Usage:\r\n"
                      "    arg1: debugconsole|ringbuffer\r\n",
                      installbackendCommand,
                      1);
-SHELL_COMMAND_DEFINE(uninstallbackend,
+static SHELL_COMMAND_DEFINE(uninstallbackend,
                      "\r\n"
                      "\"uninstallbackend\": uninstall backend with entered type\r\n"
                      " Usage:\r\n"
@@ -75,7 +75,7 @@ static uint8_t s_logBackendString[16];
 
 static shell_status_t logCommand(shell_handle_t shellHandle, int32_t argc, char **argv)
 {
-    PRINTF("\r\n");
+    (void)PRINTF("\r\n");
     if (0 == strcmp("fatal", argv[1]))
     {
         LOG_FATAL("This is \"%s\" log message", argv[1]);
@@ -111,9 +111,9 @@ static shell_status_t installbackendCommand(shell_handle_t shellHandle, int32_t 
 {
     if ((0 == strcmp("debugconsole", argv[1])) || (0 == strcmp("ringbuffer", argv[1])))
     {
-        if (0 != strlen((char const *)s_logBackendString))
+        if (0U != strlen((char const *)s_logBackendString))
         {
-            PRINTF(
+            (void)PRINTF(
                 "\r\nLOG backend type \"%s\" has been installed. \r\nThe demo cannot support two types "
                 "backend at the same time due to the same hardware is used. \r\nOtherwise the ouput of "
                 "the two backends will be messed up.\r\nIf the new backend needs to be used, please"
@@ -141,7 +141,7 @@ static shell_status_t installbackendCommand(shell_handle_t shellHandle, int32_t 
     }
     else
     {
-        PRINTF("\r\nThe input arguement \"%s\" is not valid", argv[1]);
+        (void)PRINTF("\r\nThe input arguement \"%s\" is not valid", argv[1]);
     }
 
     return kStatus_SHELL_Success;
@@ -167,19 +167,19 @@ static shell_status_t uninstallbackendCommand(shell_handle_t shellHandle, int32_
     }
     else
     {
-        if (0 == strlen((char const *)s_logBackendString))
+        if (0U == strlen((char const *)s_logBackendString))
         {
-            PRINTF("\r\nNo log backend installed!\r\n");
+            (void)PRINTF("\r\nNo log backend installed!\r\n");
         }
         else
         {
             if ((0 == strcmp("debugconsole", argv[1])) || (0 == strcmp("ringbuffer", argv[1])))
             {
-                PRINTF("\r\nThe log backed \"%s\" is used.", s_logBackendString);
+                (void)PRINTF("\r\nThe log backed \"%s\" is used.", s_logBackendString);
             }
             else
             {
-                PRINTF("\r\nThe input arguement \"%s\" is not valid", argv[1]);
+                (void)PRINTF("\r\nThe input arguement \"%s\" is not valid", argv[1]);
             }
         }
     }
@@ -214,18 +214,18 @@ int main(void)
     BOARD_InitHardware();
 
     /* Init LOG */
-    LOG_Init();
+    (void)LOG_Init();
 
     /* Init SHELL */
     s_shellHandle = &s_shellHandleBuffer[0];
 
-    SHELL_Init(s_shellHandle, g_serialHandle, "LOG SHELL>> ");
+    (void)SHELL_Init(s_shellHandle, g_serialHandle, (char *)"LOG SHELL>> ");
     /* Add new command to commands list */
-    SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(installbackend));
-    SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(uninstallbackend));
-    SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(log));
+    (void)SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(installbackend));
+    (void)SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(uninstallbackend));
+    (void)SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(log));
 
-    while (1)
+    for (;;)
     {
 #if !(defined(SHELL_NON_BLOCKING_MODE) && (SHELL_NON_BLOCKING_MODE > 0U))
         SHELL_Task(s_shellHandle);

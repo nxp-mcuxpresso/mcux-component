@@ -47,7 +47,7 @@ uint8_t *FORMAT_Hex2Ascii(uint8_t hex)
 {
     s_convertedString[0] = (((hex >> 4U) & (uint8_t)0x0F) + ((((hex >> 4U) & (uint8_t)0x0F) <= 9U) ? '0' : ('A' - 10)));
     s_convertedString[1] = (((hex) & (uint8_t)0x0F) + ((((hex) & (uint8_t)0x0F) <= 9U) ? '0' : ('A' - 10)));
-    s_convertedString[2] = '\0';
+    s_convertedString[2] = (uint8_t)'\0';
 
     return &s_convertedString[0];
 }

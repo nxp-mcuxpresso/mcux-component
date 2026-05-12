@@ -441,7 +441,7 @@ osa_status_t OSA_TaskDestroy(osa_task_handle_t taskHandle)
 
     /*Change priority to avoid context switches*/
     oldPriority = uxTaskPriorityGet(xTaskGetCurrentTaskHandle());
-    vTaskPrioritySet(xTaskGetCurrentTaskHandle(), (configMAX_PRIORITIES - 1));
+    vTaskPrioritySet(xTaskGetCurrentTaskHandle(), (UBaseType_t)(configMAX_PRIORITIES - 1U));
 #if INCLUDE_vTaskDelete /* vTaskDelete() enabled */
     vTaskDelete((task_handler_t)ptask->taskHandle);
     status = KOSA_StatusSuccess;

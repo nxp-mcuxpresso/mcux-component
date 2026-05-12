@@ -559,7 +559,7 @@ static timer_status_t TimerStop(timer_handle_t timerHandle)
 TIMER_MANAGER_STATIC void TimerEnable(timer_handle_t timerHandle)
 {
     uint32_t currentTimerCount;
-    assert(timerHandle);
+    assert(timerHandle != NULL);
     uint32_t regPrimask = DisableGlobalIRQ();
 
     if ((uint8_t)kTimerStateInactive_c == TimerGetTimerStatus(timerHandle))
@@ -708,7 +708,7 @@ void TM_EnterTickless(timer_handle_t timerHandle, uint64_t timerTimeout)
     uint8_t timerType         = (uint8_t)kTimerModeSingleShot;
     uint32_t remainingUs;
 
-    assert(timerHandle);
+    assert(timerHandle != NULL);
 
     uint32_t regPrimask = DisableGlobalIRQ();
 
@@ -747,7 +747,7 @@ void TM_ExitTickless(timer_handle_t timerHandle)
 {
     uint32_t remainingUs;
 
-    assert(timerHandle);
+    assert(timerHandle != NULL);
 
     uint32_t regPrimask = DisableGlobalIRQ();
 
@@ -934,7 +934,7 @@ timer_status_t TM_Start(timer_handle_t timerHandle, uint8_t timerType, uint32_t 
 {
     timer_status_t status;
     timer_handle_struct_t *th = timerHandle;
-    assert(timerHandle);
+    assert(timerHandle != NULL);
     /* Stopping an already stopped timer is harmless. */
     status = TM_Stop(timerHandle);
     assert(status == kStatus_TimerSuccess);

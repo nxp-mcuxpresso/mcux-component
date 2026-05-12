@@ -53,8 +53,8 @@ serial_manager_status_t Serial_SwoInit(serial_handle_t serialHandle, void *confi
     serial_port_swo_config_t *swoConfig;
     uint32_t prescaler;
 
-    assert(config);
-    assert(serialHandle);
+    assert(config != NULL);
+    assert(serialHandle != NULL);
 
     assert(SERIAL_PORT_SWO_HANDLE_SIZE >= sizeof(serial_swo_state_t));
 
@@ -128,7 +128,7 @@ serial_manager_status_t Serial_SwoDeinit(serial_handle_t serialHandle)
 {
     serial_swo_state_t *serialSwoHandle;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialSwoHandle = (serial_swo_state_t *)serialHandle;
     /* disable ITM */
@@ -145,9 +145,9 @@ serial_manager_status_t Serial_SwoWrite(serial_handle_t serialHandle, uint8_t *b
     serial_manager_callback_message_t msg;
 #endif
 
-    assert(serialHandle);
-    assert(buffer);
-    assert(length);
+    assert(serialHandle != NULL);
+    assert(buffer != NULL);
+    assert(length != 0U);
 
     serialSwoHandle = (serial_swo_state_t *)serialHandle;
 
@@ -200,7 +200,7 @@ serial_manager_status_t Serial_SwoInstallTxCallback(serial_handle_t serialHandle
 {
     serial_swo_state_t *serialSwoHandle;
 
-    assert(serialHandle);
+    assert(serialHandle != NULL);
 
     serialSwoHandle = (serial_swo_state_t *)serialHandle;
 

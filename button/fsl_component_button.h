@@ -23,19 +23,19 @@
  ******************************************************************************/
 /*! @brief Definition of feature 'one click' enable macro. */
 #ifndef BUTTON_EVENT_ONECLICK_ENABLE
-#define BUTTON_EVENT_ONECLICK_ENABLE (1)
+#define BUTTON_EVENT_ONECLICK_ENABLE (1U)
 #endif
 /*! @brief Definition of feature 'double click' enable macro. */
 #ifndef BUTTON_EVENT_DOUBLECLICK_ENABLE
-#define BUTTON_EVENT_DOUBLECLICK_ENABLE (1)
+#define BUTTON_EVENT_DOUBLECLICK_ENABLE (1U)
 #endif
 /*! @brief Definition of feature 'short press' enable macro. */
 #ifndef BUTTON_EVENT_SHORTPRESS_ENABLE
-#define BUTTON_EVENT_SHORTPRESS_ENABLE (1)
+#define BUTTON_EVENT_SHORTPRESS_ENABLE (1U)
 #endif
 /*! @brief Definition of feature 'long press' enable macro. */
 #ifndef BUTTON_EVENT_LONGPRESS_ENABLE
-#define BUTTON_EVENT_LONGPRESS_ENABLE (1)
+#define BUTTON_EVENT_LONGPRESS_ENABLE (1U)
 #endif
 
 /*! @brief Definition of all buttons enter/exit lowpower handle macro. */

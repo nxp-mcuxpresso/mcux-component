@@ -136,7 +136,7 @@ static void BUTTON_Event(void *param)
     button_state_t *buttonState = (button_state_t *)param;
     uint8_t pinState            = 0U;
 
-    assert(param);
+    assert(param != NULL);
 
     (void)HAL_GpioGetInput(buttonState->gpioHandle, &pinState);
     pinState = (0U != pinState) ? 1U : 0U;
@@ -145,7 +145,7 @@ static void BUTTON_Event(void *param)
     {
         if (buttonState->pinStateDefault != pinState)
         {
-            buttonState->state.pressed++;
+            buttonState->state.pressed = buttonState->state.pressed + 1U;
             buttonState->pushPeriodCount = s_buttonList.periodCount;
 
             /* Start timer for interval scan button state. */
@@ -344,7 +344,7 @@ button_status_t BUTTON_Init(button_handle_t buttonHandle, button_config_t *butto
     hal_gpio_status_t gpioStatus;
     BUTTON_SR_ALLOC();
 
-    assert((NULL != buttonHandle) && (NULL != buttonConfig));
+    assert((buttonHandle != NULL) && (buttonConfig != NULL));
     assert(BUTTON_HANDLE_SIZE >= sizeof(button_state_t));
 
     buttonState = (button_state_t *)buttonHandle;
@@ -398,7 +398,7 @@ button_status_t BUTTON_Init(button_handle_t buttonHandle, button_config_t *butto
 button_status_t BUTTON_InstallCallback(button_handle_t buttonHandle, button_callback_t callback, void *callbackParam)
 {
     button_state_t *buttonState;
-    assert(buttonHandle);
+    assert(buttonHandle != NULL);
 
     buttonState = (button_state_t *)buttonHandle;
 
@@ -416,7 +416,7 @@ button_status_t BUTTON_Deinit(button_handle_t buttonHandle)
     button_state_t *buttonStatePre;
     BUTTON_SR_ALLOC();
 
-    assert(buttonHandle);
+    assert(buttonHandle != NULL);
 
     buttonState = (button_state_t *)buttonHandle;
 
@@ -463,7 +463,7 @@ button_status_t BUTTON_GetInput(button_handle_t buttonHandle, uint8_t *pinState)
 {
     button_state_t *buttonState;
 
-    assert(buttonHandle);
+    assert(buttonHandle != NULL);
 
     buttonState = (button_state_t *)buttonHandle;
 
@@ -477,7 +477,7 @@ button_status_t BUTTON_WakeUpSetting(button_handle_t buttonHandle, uint8_t enabl
     button_state_t *buttonState;
     hal_gpio_status_t status;
 
-    assert(buttonHandle);
+    assert(buttonHandle != NULL);
 
     buttonState = (button_state_t *)buttonHandle;
 
@@ -497,7 +497,7 @@ button_status_t BUTTON_EnterLowpower(button_handle_t buttonHandle)
     /* MISRA C-2012 Rule 11.6 */
     uint32_t *pLowpowerHandle = BUTTON_ALL_ENTER_EXIT_LOWPOWER_HANDLE;
 
-    assert(buttonHandle);
+    assert(buttonHandle != NULL);
 
     if ((button_handle_t)pLowpowerHandle != buttonHandle)
     {
@@ -533,7 +533,7 @@ button_status_t BUTTON_ExitLowpower(button_handle_t buttonHandle)
     /* MISRA C-2012 Rule 11.6 */
     uint32_t *pLowpowerHandle = BUTTON_ALL_ENTER_EXIT_LOWPOWER_HANDLE;
 
-    assert(buttonHandle);
+    assert(buttonHandle != NULL);
 
     if ((button_handle_t)pLowpowerHandle != buttonHandle)
     {

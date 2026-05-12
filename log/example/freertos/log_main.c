@@ -50,21 +50,21 @@ static shell_status_t uninstallbackendCommand(shell_handle_t shellHandle, int32_
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-SHELL_COMMAND_DEFINE(log,
+static SHELL_COMMAND_DEFINE(log,
                      "\r\n"
                      "\"log arg1\": show log message with entered level\r\n"
                      " Usage:\r\n"
                      "    arg1: trace|debug|info|warning|error|fatal\r\n",
                      logCommand,
                      1);
-SHELL_COMMAND_DEFINE(installbackend,
+static SHELL_COMMAND_DEFINE(installbackend,
                      "\r\n"
                      "\"installbackend arg1\": install backend with entered type\r\n"
                      " Usage:\r\n"
                      "    arg1: debugconsole|ringbuffer\r\n",
                      installbackendCommand,
                      1);
-SHELL_COMMAND_DEFINE(uninstallbackend,
+static SHELL_COMMAND_DEFINE(uninstallbackend,
                      "\r\n"
                      "\"uninstallbackend\": uninstall backend with entered type\r\n"
                      " Usage:\r\n"
@@ -152,7 +152,7 @@ static shell_status_t installbackendCommand(shell_handle_t shellHandle, int32_t 
 {
     if ((0 == strcmp("debugconsole", argv[1])) || (0 == strcmp("ringbuffer", argv[1])))
     {
-        if (0 != strlen((char const *)s_logBackendString))
+        if (0U != strlen((char const *)s_logBackendString))
         {
             PRINTF(
                 "\r\nLOG backend type \"%s\" has been installed. \r\nThe demo cannot support two types "
@@ -177,6 +177,7 @@ static shell_status_t installbackendCommand(shell_handle_t shellHandle, int32_t 
             }
             else
             {
+                assert(false);
             }
         }
     }
@@ -204,11 +205,12 @@ static shell_status_t uninstallbackendCommand(shell_handle_t shellHandle, int32_
         }
         else
         {
+            assert(false);
         }
     }
     else
     {
-        if (0 == strlen((char const *)s_logBackendString))
+        if (0U == strlen((char const *)s_logBackendString))
         {
             PRINTF("\r\nNo log backend installed!\r\n");
         }
@@ -257,7 +259,7 @@ int main(void)
     if (xTaskCreate(APP_LogTask, "APP_LogTask", APP_LOG_STACK_SIZE, NULL, APP_LOG_PRIORITY, NULL) != pdPASS)
     {
         PRINTF("Task creation failed!.\r\n");
-        while (1)
+        for (;;)
             ;
     }
     vTaskStartScheduler();
@@ -302,13 +304,13 @@ static void APP_LogTask(void *pvParameters)
     /* Init SHELL */
     s_shellHandle = &s_shellHandleBuffer[0];
 
-    SHELL_Init(s_shellHandle, g_serialHandle, "LOG SHELL>> ");
+    SHELL_Init(s_shellHandle, g_serialHandle, (char *)"LOG SHELL>> ");
     /* Add new command to commands list */
     SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(installbackend));
     SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(uninstallbackend));
     SHELL_RegisterCommand(s_shellHandle, SHELL_COMMAND(log));
 
-    while (1)
+    for (;;)
     {
 #if !(defined(SHELL_NON_BLOCKING_MODE) && (SHELL_NON_BLOCKING_MODE > 0U))
         SHELL_Task(s_shellHandle);
