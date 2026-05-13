@@ -1,0 +1,7 @@
+/*!
+@page driver_log Driver Change Log
+
+@section eeprom emulation EEPROM_EMULATION
+  - 1.0.0
+    - Original source is Zephyr repository
+*/
