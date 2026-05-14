@@ -94,6 +94,8 @@ static status_t SX1502_I2C_Init(void *handle, uint32_t i2cInstance, uint32_t i2c
 {
     hal_i2c_master_config_t masterConfig;
 
+    assert(i2cInstance <= 0xFFU);
+
     masterConfig.enableMaster = true;
     masterConfig.baudRate_Bps = i2cBaudrate;
     masterConfig.srcClock_Hz  = i2cSourceClockHz;
@@ -360,7 +362,7 @@ status_t SX1502_IO_OutputControl(sx1502_handle_t *handle, uint8_t ioMask, uint8_
         return result;
     }
 
-    dataValue = (dataValue & ~ioMask) | ioPattern;
+    dataValue = (uint8_t)((dataValue & (uint8_t)~ioMask) | ioPattern);
 
     result = SX1502_WriteRegister(handle, SX1502_REGDATA, dataValue);
     if (result != kStatus_Success)

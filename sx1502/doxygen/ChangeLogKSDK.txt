@@ -2,7 +2,11 @@
 @page component_log Component Change Log
 
 @section sx1502 SX1502
-  The current SX1502 component version is 2.0.1.
+  The current SX1502 component version is 2.0.2.
+
+  - 2.0.2
+    - Improvements
+      - Fixed coverity issues with CERT INT31-C compliance.
 
   - 2.0.1
     - Improvements
