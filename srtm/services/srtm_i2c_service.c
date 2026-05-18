@@ -73,6 +73,7 @@ static srtm_status_t SRTM_I2CService_ReadBus(
     i2c_switch_t switch_inst;
 
     targetBus    = SRTM_I2C_SearchBus(adapter, busID);
+    if (targetBus == NULL) { return SRTM_Status_Error; }
     base_addr    = targetBus->base_addr;
     switch_index = targetBus->switch_idx;
     type         = targetBus->type;
@@ -112,6 +113,7 @@ static srtm_status_t SRTM_I2CService_WriteBus(
     i2c_switch_t switch_inst;
 
     targetBus    = SRTM_I2C_SearchBus(adapter, busID);
+    if (targetBus == NULL) { return SRTM_Status_Error; }
     base_addr    = targetBus->base_addr;
     switch_index = targetBus->switch_idx;
     type         = targetBus->type;
@@ -202,7 +204,7 @@ static srtm_status_t SRTM_I2CService_Request(srtm_service_t service, srtm_reques
 
     response =
         SRTM_Response_Create(channel, SRTM_I2C_CATEGORY, SRTM_I2C_VERSION, command,
-                             (uint16_t)((sizeof(struct _srtm_i2c_payload) - sizeof(i2cReq->data[0])) + i2cReq->len));
+                             (uint16_t)(((sizeof(struct _srtm_i2c_payload) - sizeof(i2cReq->data[0])) + i2cReq->len) & 0xFFFFU));
     if (response == NULL)
     {
         return SRTM_Status_OutOfMemory;
@@ -262,7 +264,7 @@ static void SRTM_I2C_HandleBusRead(srtm_dispatcher_t dispatcher, void *param1, v
     srtm_i2c_payload_t i2c_payload = (srtm_i2c_payload_t)param1;
     srtm_service_t service         = (srtm_service_t)param2;
     status = SRTM_I2CService_ReadBus(service, i2c_payload->busID, i2c_payload->slaveAddr, i2c_payload->data,
-                                     (uint8_t)i2c_payload->len, i2c_payload->flags);
+                                     (uint8_t)(i2c_payload->len & 0xFFU), i2c_payload->flags);
     i2c_payload->retCode = (status == SRTM_Status_Success) ? SRTM_I2C_RETURN_CODE_SUCEESS : SRTM_I2C_RETURN_CODE_FAIL;
 }
 
@@ -272,7 +274,7 @@ static void SRTM_I2C_HandleBusWrite(srtm_dispatcher_t dispatcher, void *param1, 
     srtm_i2c_payload_t i2c_payload = (srtm_i2c_payload_t)param1;
     srtm_service_t service         = (srtm_service_t)param2;
     status = SRTM_I2CService_WriteBus(service, i2c_payload->busID, i2c_payload->slaveAddr, i2c_payload->data,
-                                      (uint8_t)i2c_payload->len, i2c_payload->flags);
+                                      (uint8_t)(i2c_payload->len & 0xFFU), i2c_payload->flags);
     i2c_payload->retCode = (status == SRTM_Status_Success) ? SRTM_I2C_RETURN_CODE_SUCEESS : SRTM_I2C_RETURN_CODE_FAIL;
 }
 
@@ -287,7 +289,7 @@ srtm_status_t SRTM_I2C_RequestBusRead(
      * Allocate an SRTM message and copy necessary information
      */
     request           = SRTM_Request_Create(NULL, SRTM_I2C_CATEGORY, SRTM_I2C_VERSION, (uint8_t)SRTM_I2C_CMD_READ,
-                                            (uint16_t)((sizeof(struct _srtm_i2c_payload) - sizeof(uint8_t)) + len));
+                                            (uint16_t)(((sizeof(struct _srtm_i2c_payload) - sizeof(uint8_t)) + len) & 0xFFFFU));
     i2cReq            = (struct _srtm_i2c_payload *)(void *)SRTM_CommMessage_GetPayload(request);
     i2cReq->busID     = busID;
     i2cReq->slaveAddr = slaveAddr;
@@ -323,7 +325,7 @@ srtm_status_t SRTM_I2C_RequestBusWrite(
      * Allocate an SRTM message and copy necessary information
      */
     request           = SRTM_Request_Create(NULL, SRTM_I2C_CATEGORY, SRTM_I2C_VERSION, (uint8_t)SRTM_I2C_CMD_WRITE,
-                                            (uint16_t)((sizeof(struct _srtm_i2c_payload) - sizeof(uint8_t)) + len));
+                                            (uint16_t)(((sizeof(struct _srtm_i2c_payload) - sizeof(uint8_t)) + len) & 0xFFFFU));
     i2cReq            = (struct _srtm_i2c_payload *)(void *)SRTM_CommMessage_GetPayload(request);
     i2cReq->busID     = busID;
     i2cReq->slaveAddr = slaveAddr;
