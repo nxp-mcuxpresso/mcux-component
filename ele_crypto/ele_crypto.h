@@ -468,6 +468,8 @@ and MAC field is the output buffer or expected HMAC buffer depending on verify i
 #define FAST_MAC_TRUNCATE_24B (0x00001800u)
 /*!< HMAC trunctation to 32 Bytes (no truncation done). */
 #define FAST_MAC_TRUNCATE_32B (0x00003800u)
+/*!< HMAC Reload 24h ELE watchdog (integrated PING command). */
+#define FAST_MAC_RELOAD_ELE_WDOG (0x00008000u)
 
 /*!< Check buffer 0 internal verification status returned by ELE_FastMacProceed(). Returns 1 if verification success. */
 #define FAST_MAC_CHECK_VERIFICATION_SUCCESS_BUF_0(x) ((uint32_t)x & 0x01)
@@ -815,6 +817,40 @@ typedef struct _ele_hsm_cipher_t
     key_permitted_alg_t alg; /*!< alg Algorithm identifier Refer to key_permitted_alg_t enum */
     cipher_mode_t mode;      /*!< mode Mode identifier - encryption or decryption Refer to mode_t enum  */
 } ele_hsm_cipher_t;
+
+
+/*!
+ * @brief ECDH operation algorithm identifier
+ */
+typedef enum _ecdh_algorithm_t
+{
+    kECDH = 0x89020000U, /*!< ECDH key agreement algorithm */
+} ecdh_algorithm_t;
+
+/*!
+ * @brief ECDH key size in bits
+ */
+typedef enum _ecdh_key_size_t
+{
+    kECDH_P256 = 256u, /*!< NIST P-256 curve (256 bits) */
+    kECDH_P384 = 384u, /*!< NIST P-384 curve (384 bits) */
+    kECDH_P521 = 521u, /*!< NIST P-521 curve (521 bits) */
+} ecdh_key_size_t;
+
+/*!
+ * @brief ELE ECDH configuration structure
+ */
+typedef struct _ele_ecdh_t
+{
+    ecdh_algorithm_t operation; /*!< Algorithm identifier (always kECDH = 0x09020000) */
+    ecdh_key_size_t key_size_bits; /*!< Key size in bits: 256 (P-256), 384 (P-384), or 521 (P-521) */
+    const uint8_t *private_key;       /*!< Pointer to private key buffer */
+    uint16_t private_key_size;  /*!< Size of private key in bytes */
+    const uint8_t *public_key;        /*!< Pointer to public key buffer (non-compressed form {x, y}) */
+    uint16_t public_key_size;   /*!< Size of public key in bytes */
+    uint8_t *shared_secret;     /*!< Pointer to output shared secret buffer */
+    uint16_t shared_secret_size; /*!< Size of shared secret buffer in bytes */
+} ele_ecdh_t;
 
 /*!
  *@}

@@ -4787,3 +4787,113 @@ status_t ELE_GetEvent(S3MU_Type *mu, ele_events_t *events)
         return kStatus_Fail;
     }
 }
+
+/*!
+ * brief ELE ECDH
+ *
+ * This function performs ECDH (Elliptic Curve Diffie-Hellman) key agreement
+ * using plaintext keys as described in SP800-56A Section 5.7.1.2.
+ * Only ECC NIST P-256, P-384, and P-521 curves are supported.
+ * Public keys must be in non-compressed form {x, y}.
+ *
+ * param mu MU peripheral base address
+ * param conf pointer where ECDH configuration structure can be found
+ * param output_size pointer where to save the resulting shared secret size or the expected
+ *        size of the shared secret buffer, if the buffer is found to be too small, in which case
+ *        an error is also returned
+ *
+ * return Status kStatus_Success if success, kStatus_Fail if fail,
+ *         kStatus_InvalidArgument if invalid argument
+ * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange,
+ *                  kStatus_ELE_BufferTooSmall
+ */
+status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size)
+{
+    status_t status              = kStatus_Fail;
+    uint32_t tmsg[ECDH_SIZE]     = {0u};
+    uint32_t rmsg[S3MU_RR_COUNT] = {0u};
+
+    /* Check argument validity */
+    if (mu == NULL || conf == NULL || output_size == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    /* Validate key size - must be 256, 384, or 521 bits */
+    if (conf->key_size_bits != kECDH_P256 && 
+        conf->key_size_bits != kECDH_P384 && 
+        conf->key_size_bits != kECDH_P521)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    /* Validate key pointers */
+    if (conf->private_key == NULL || conf->public_key == NULL || conf->shared_secret == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    /* Validate operation is ECDH */
+    if (conf->operation != kECDH)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    /****************** ECDH Command message ***********************/
+    tmsg[0] = ECDH;                                       // ECDH Command Header
+    tmsg[1] = 0x0u;                                       // Reserved
+    tmsg[2] = (uint32_t)conf->operation;                  // Operation (0x09020000 for ECDH)
+    tmsg[3] = ((uint32_t)conf->key_size_bits << SHIFT_16);              // Key size in bits (256, 384, or 521)
+    tmsg[4] = ADD_OFFSET((uint32_t)conf->private_key);    // Private key address
+    tmsg[5] = ADD_OFFSET((uint32_t)conf->public_key);     // Public key address
+    tmsg[6] = ((uint32_t)conf->public_key_size << SHIFT_16) | 
+              (uint32_t)conf->private_key_size;           // Public key size | Private key size
+    tmsg[7] = ADD_OFFSET((uint32_t)conf->shared_secret);  // Shared secret output address
+    tmsg[8] = (uint32_t)conf->shared_secret_size & 0xFFFFu; // Reserved (upper 16 bits) | Shared secret size (lower 16 bits)
+    tmsg[9] = S3MU_ComputeMsgCrc(tmsg, ECDH_SIZE - 1u);   // CRC
+
+    /* Send message to Security Sub-System */
+    status = S3MU_SendMessage(mu, tmsg, ECDH_SIZE);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    /* Wait for response from Security Sub-System */
+    status = ele_mu_get_response(mu, rmsg);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    /* Check that response corresponds to the sent command */
+    if (rmsg[0] != ECDH_RESPONSE_HDR)
+    {
+        return kStatus_Fail;
+    }
+
+    /* Header OK, check for success */
+    if (rmsg[1] == RESPONSE_SUCCESS)
+    {
+        /* Read the actual output shared secret size from word 2 (lower 16 bits) */
+        *output_size = rmsg[2] & 0xFFFFu;
+
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+        DCACHE_InvalidateByRange((uint32_t)conf->shared_secret, *output_size);
+#endif /* defined(ELE_CACHE_HANDLING) */
+
+        return kStatus_Success;
+    }
+    else if (rmsg[1] == 0xA729u) /* Invalid buffer size error */
+    {
+        /* Return expected size if available in word 2 */
+        *output_size = rmsg[2] & 0xFFFFu;
+        return kStatus_ELE_BufferTooSmall;
+    }
+    else
+    {
+        /* Other errors: 0x29 (general), 0x0229 (invalid address), 
+           0x0429 (invalid algo/key size), 0x0629 (out of memory) */
+        return kStatus_Fail;
+    }
+}
