@@ -70,7 +70,7 @@ static int32_t SRTM_RPMsgEndpoint_RxHandler(void *payload, uint32_t payload_len,
     {
         if (handle->rxCallback != NULL)
         {
-            return handle->rxCallback(&handle->channel, payload, payload_len, src, handle->rxCallbackParam);
+            return handle->rxCallback(&handle->channel, payload, (int)(payload_len & 0x7FFFFFFFU), src, handle->rxCallbackParam);
         }
 
         assert(handle->channel.core != NULL);
