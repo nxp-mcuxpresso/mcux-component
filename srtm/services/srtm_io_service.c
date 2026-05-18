@@ -257,7 +257,7 @@ static srtm_status_t SRTM_IoService_Request(srtm_service_t service, srtm_request
     }
 
     payload        = SRTM_CommMessage_GetPayload(response);
-    *payload       = (uint8_t)ioId;
+    *payload       = (uint8_t)(ioId & 0xFFU);
     *(payload + 1) = (uint8_t)(ioId >> 8U);
     *(payload + 2) = retCode;
     *(payload + 3) = data; /* Only used in SRTM_IO_CMD_GET_INPUT and SRTM_IO_CMD_GET_DIRECTION */
