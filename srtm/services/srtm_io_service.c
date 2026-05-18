@@ -379,8 +379,8 @@ srtm_status_t SRTM_IoService_RegisterPin(srtm_service_t service,
     SRTM_Message_SetFreeFunc(pin->notif, SRTM_IoService_RecycleMessage, pin);
     payload = (uint8_t *)SRTM_CommMessage_GetPayload(pin->notif);
     /* Little endian IO pin ID */
-    *payload       = (uint8_t)ioId;
-    *(payload + 1) = (uint8_t)(ioId >> 8U);
+    *payload       = (uint8_t)(ioId & 0xFFU);
+    *(payload + 1) = (uint8_t)((ioId >> 8U) & 0xFFU);
 
     primask = DisableGlobalIRQ();
     SRTM_List_AddTail(&handle->pins, &pin->node);
