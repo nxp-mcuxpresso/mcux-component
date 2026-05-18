@@ -234,6 +234,7 @@ static void SRTM_SaiEdmaAdapter_GetXfer(srtm_sai_edma_runtime_t rtm, sai_transfe
     {
         bufRtm         = &rtm->bufRtm;
         xfer->dataSize = rtm->periodSize;
+        /* coverity[cert_int30_c_violation] */
         xfer->data     = rtm->bufAddr + bufRtm->loadIdx * rtm->periodSize;
     }
 }
@@ -289,7 +290,9 @@ static void SRTM_SaiEdmaAdapter_DmaTransfer(srtm_sai_edma_adapter_t handle, srtm
             /* Audio queue full */
             break;
         }
+        /* coverity[cert_int30_c_violation] */
         bufRtm->loadIdx = (bufRtm->loadIdx + 1U) % periods;
+        /* coverity[cert_int30_c_violation] */
         bufRtm->remainingLoadPeriods--;
     }
 }
@@ -448,6 +451,7 @@ static void SRTM_SaiEdmaAdapter_AddNewPeriods(srtm_sai_edma_runtime_t rtm, uint3
 
     assert(periodIdx < rtm->periods);
 
+    /* coverity[cert_int30_c_violation] */
     newPeriods = (periodIdx + rtm->periods - bufRtm->leadIdx) % rtm->periods;
     if (newPeriods == 0U) /* in case buffer is empty and filled all */
     {
@@ -456,8 +460,10 @@ static void SRTM_SaiEdmaAdapter_AddNewPeriods(srtm_sai_edma_runtime_t rtm, uint3
     bufRtm->leadIdx = periodIdx;
 
     primask = DisableGlobalIRQ();
+    /* coverity[cert_int30_c_violation] */
     bufRtm->remainingPeriods += newPeriods;
     EnableGlobalIRQ(primask);
+    /* coverity[cert_int30_c_violation] */
     bufRtm->remainingLoadPeriods += newPeriods;
 }
 
@@ -578,8 +584,11 @@ static void SRTM_SaiEdmaTxCallback(I2S_Type *sai, sai_edma_handle_t *edmaHandle,
     else
 #endif
     {
+        /* coverity[cert_int30_c_violation] */
         rtm->bufRtm.remainingPeriods--;
+        /* coverity[cert_int30_c_violation] */
         rtm->bufRtm.chaseIdx   = (rtm->bufRtm.chaseIdx + 1U) % rtm->periods;
+        /* coverity[cert_int30_c_violation] */
         rtm->finishedBufOffset = rtm->bufRtm.chaseIdx * rtm->periodSize;
     }
 
@@ -634,9 +643,12 @@ static void SRTM_SaiEdmaRxCallback(I2S_Type *sai, sai_edma_handle_t *edmaHandle,
     else
 #endif
     {
+        /* coverity[cert_int30_c_violation] */
         rtm->bufRtm.remainingPeriods--;
         chaseIdx               = rtm->bufRtm.chaseIdx; /* For callback */
+        /* coverity[cert_int30_c_violation] */
         rtm->bufRtm.chaseIdx   = (rtm->bufRtm.chaseIdx + 1U) % rtm->periods;
+        /* coverity[cert_int30_c_violation] */
         rtm->finishedBufOffset = rtm->bufRtm.chaseIdx * rtm->periodSize;
 
         /* Rx is always freeRun, we assume filled period is consumed immediately. */
@@ -879,6 +891,7 @@ static srtm_status_t SRTM_SaiEdmaAdapter_Start(srtm_sai_adapter_t adapter, srtm_
     /* Caculate the threshold based on the guardTime.*/
     if (*guardTime != 0U)
     {
+        /* coverity[cert_int31_c_violation] */
         guardPeroids =
             (uint32_t)(((uint64_t)thisRtm->srate * (uint32_t)thisRtm->bitWidth * thisRtm->channels * (*guardTime) +
                         (uint64_t)thisRtm->periodSize * 8U * 1000U - 1U) /
