@@ -207,6 +207,7 @@ static void SRTM_PdmEdmaAdaptor_ResetLocalBuf(srtm_pdm_edma_runtime_t rtm)
     {
         (void)memset(&rtm->localRtm.bufRtm, 0, sizeof(struct _srtm_pdm_edma_buf_runtime));
 
+        /* coverity[cert_int31_c_violation] */
         bytePerSample = (rtm->bitWidth >> 3U) * rtm->pdmChannels;
 
         if (rtm->localBuf.samplesPerPeriod == 0U)
@@ -256,6 +257,7 @@ static status_t SRTM_PdmEdmaAdapter_PeriodReceiveEDMA(srtm_pdm_edma_adapter_t ha
         bufRtm = &rtm->localRtm.bufRtm;
 
         xfer.dataSize = rtm->localRtm.periodSize;
+        /* coverity[cert_int30_c_violation] */
         xfer.data     = rtm->localBuf.buf + bufRtm->loadIdx * rtm->localRtm.periodSize;
         status        = PDM_TransferReceiveEDMA(handle->pdm, &rtm->pdmHandle, &xfer);
 
@@ -264,7 +266,9 @@ static status_t SRTM_PdmEdmaAdapter_PeriodReceiveEDMA(srtm_pdm_edma_adapter_t ha
             /* Audio queue full */
             return status;
         }
+        /* coverity[cert_int30_c_violation] */
         bufRtm->loadIdx = (bufRtm->loadIdx + 1U) % rtm->localBuf.periods;
+        /* coverity[cert_int30_c_violation] */
         bufRtm->remainingLoadPeriods--;
     }
     else
@@ -275,11 +279,13 @@ static status_t SRTM_PdmEdmaAdapter_PeriodReceiveEDMA(srtm_pdm_edma_adapter_t ha
         while (count > rtm->maxXferSize) /* Split the period into several DMA transfer. */
         {
             xfer.dataSize = rtm->maxXferSize;
+            /* coverity[cert_int30_c_violation] */
             xfer.data     = rtm->bufAddr + bufRtm->loadIdx * rtm->periodSize + bufRtm->offset;
             status        = PDM_TransferReceiveEDMA(handle->pdm, &rtm->pdmHandle, &xfer);
             if (status == kStatus_Success)
             {
                 count = count - rtm->maxXferSize;
+                /* coverity[cert_int30_c_violation] */
                 bufRtm->offset += rtm->maxXferSize;
             }
             else
@@ -290,6 +296,7 @@ static status_t SRTM_PdmEdmaAdapter_PeriodReceiveEDMA(srtm_pdm_edma_adapter_t ha
         if (count > 0U)
         {
             xfer.dataSize = count;
+            /* coverity[cert_int30_c_violation] */
             xfer.data     = rtm->bufAddr + bufRtm->loadIdx * rtm->periodSize + bufRtm->offset;
             status        = PDM_TransferReceiveEDMA(handle->pdm, &rtm->pdmHandle, &xfer);
             if (status != kStatus_Success)
@@ -450,6 +457,7 @@ static void SRTM_PdmEdmaAdapter_AddNewPeriods(srtm_pdm_edma_runtime_t rtm, uint3
 
     assert(periodIdx < rtm->periods);
 
+    /* coverity[cert_int30_c_violation] */
     newPeriods = (periodIdx + rtm->periods - bufRtm->leadIdx) % rtm->periods;
     if (newPeriods == 0U) /* In case buffer is empty and filled all. */
     {
@@ -458,8 +466,10 @@ static void SRTM_PdmEdmaAdapter_AddNewPeriods(srtm_pdm_edma_runtime_t rtm, uint3
 
     bufRtm->leadIdx = periodIdx;
     primask         = DisableGlobalIRQ();
+    /* coverity[cert_int30_c_violation] */
     bufRtm->remainingPeriods += newPeriods;
     EnableGlobalIRQ(primask);
+    /* coverity[cert_int30_c_violation] */
     bufRtm->remainingLoadPeriods += newPeriods;
 }
 
@@ -552,6 +562,7 @@ static void SRTM_PdmEdmaAdapter_LocalBufFullDMACb(edma_handle_t *dmahandle,
     srtm_pdm_edma_adapter_t handle = (srtm_pdm_edma_adapter_t)param;
     srtm_pdm_edma_runtime_t rtm    = &handle->rxRtm;
     uint32_t periodsPerExt =
+        /* coverity[cert_int30_c_violation] */
         rtm->localBuf.periods - rtm->localBuf.threshold; /* The number of localBuf periods for each extra buffer. */
 
     if (transferDone)
@@ -559,8 +570,10 @@ static void SRTM_PdmEdmaAdapter_LocalBufFullDMACb(edma_handle_t *dmahandle,
         g_w_Transfer_Done = true;
         if (g_w_Transfer_End)
         {
+            /* coverity[cert_int30_c_violation] */
             rtm->extBufRtm.bufRtm.remainingPeriods--;                            /* A period is filled. */
             rtm->extBufRtm.bufRtm.chaseIdx =
+                /* coverity[cert_int30_c_violation] */
                 (rtm->extBufRtm.bufRtm.chaseIdx + 1U) % rtm->extBuf.periods;     /* Move the write pointer. */
 
             if (rtm->extBufRtm.bufRtm.chaseIdx == rtm->extBufRtm.bufRtm.leadIdx) /* Extra buffer overwrite. */
@@ -569,8 +582,11 @@ static void SRTM_PdmEdmaAdapter_LocalBufFullDMACb(edma_handle_t *dmahandle,
                 rtm->extBufRtm.bufRtm.remainingPeriods++;
             }
 
+            /* coverity[cert_int30_c_violation] */
             rtm->localRtm.bufRtm.leadIdx = (rtm->localRtm.bufRtm.leadIdx + periodsPerExt) % rtm->localBuf.periods;
+            /* coverity[cert_int30_c_violation] */
             rtm->localRtm.bufRtm.remainingLoadPeriods = rtm->localRtm.bufRtm.remainingLoadPeriods + periodsPerExt;
+            /* coverity[cert_int30_c_violation] */
             rtm->localRtm.bufRtm.remainingPeriods     = rtm->localRtm.bufRtm.remainingPeriods + periodsPerExt;
         }
     }
@@ -589,7 +605,9 @@ static void SRTM_PdmEdmaAdapter_LocalBufFullProc(srtm_dispatcher_t dispatcher, v
         rtm->localBuf.periods - rtm->localBuf.threshold; /* local buffer periods number for each extra period */
 
     periods = rtm->localBuf.periods - rtm->localRtm.bufRtm.leadIdx;
+    /* coverity[cert_int30_c_violation] */
     src     = rtm->localBuf.buf + rtm->localRtm.bufRtm.leadIdx * rtm->localRtm.periodSize;
+    /* coverity[cert_int30_c_violation] */
     dst     = rtm->extBuf.buf + rtm->extBufRtm.bufRtm.chaseIdx * rtm->extBufRtm.periodSize;
 
     if (rtm->extBuf.buff_access_cb != NULL)
@@ -1117,6 +1135,7 @@ static srtm_status_t SRTM_PdmEdmaAdapter_SetParam(
 
     /* Caluate the max bytes can be done by each EDMA transfer. */
     bytePerSample    = ((uint32_t)rtm->bitWidth >> 3U) * channels;
+    /* coverity[cert_int30_c_violation] */
     rtm->maxXferSize = (uint32_t)SRTM_EDMA_MAX_TRANSFER_SIZE / bytePerSample * bytePerSample;
 
     rtm->srate       = srate;
