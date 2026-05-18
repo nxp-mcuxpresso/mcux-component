@@ -33,6 +33,7 @@ void *SRTM_Heap_Malloc(uint32_t size)
 #ifdef SRTM_DEBUG_MESSAGE_FUNC
     size_t freeSize, minFreeSize;
 
+    /* coverity[cert_int30_c_violation] */
     if (((++count) & SRTM_HEAP_STAT_COUNT_MASK) == 0U)
     {
         freeSize    = xPortGetFreeHeapSize();
