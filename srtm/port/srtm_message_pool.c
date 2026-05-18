@@ -126,6 +126,7 @@ void SRTM_MessagePool_Free(void *buf)
         primask = DisableGlobalIRQ();
         SRTM_List_AddTail(&srtmMsgList, &msgBuf->node);
 #ifdef SRTM_DEBUG_MESSAGE_FUNC
+        /* coverity[cert_int30_c_violation] */
         freeMsgCount++;
 #endif
         EnableGlobalIRQ(primask);
