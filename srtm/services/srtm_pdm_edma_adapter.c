@@ -412,7 +412,7 @@ static void SRTM_PdmEdmaAdapter_PeriodCopyAndNotify(srtm_pdm_edma_adapter_t hand
 
             if ((adapter->service != NULL) && (adapter->periodDone != NULL))
             {
-                (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+                (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
             }
         }
     }
@@ -783,7 +783,7 @@ static void SRTM_PdmEdmaRxCallback(PDM_Type *sai, pdm_edma_handle_t *edmaHandle,
                 /* Rx is always freeRun */
                 if ((rtm->suspendState != SRTM_Suspended) || (rtm->dataCallback == NULL))
                 {
-                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
                 }
             }
         }
@@ -1569,7 +1569,7 @@ static void SRTM_PdmEdmaAdapter_ExtPeriodCopyAndNotifyProc(srtm_dispatcher_t dis
 
                 if ((adapter->service != NULL) && (adapter->periodDone != NULL))
                 {
-                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
                 }
             }
 
