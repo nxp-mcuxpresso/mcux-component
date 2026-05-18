@@ -168,6 +168,7 @@ static srtm_status_t SRTM_IoService_Request(srtm_service_t service, srtm_request
     }
     else
     {
+        /* coverity[cert_int31_c_violation] */
         ioId = (((uint16_t)(*(payload + 1))) << 8) | *payload;
         pin  = SRTM_IoService_FindPin(handle, ioId, false, false);
         if (!pin)
