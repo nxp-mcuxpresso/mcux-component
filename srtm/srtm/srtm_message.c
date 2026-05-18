@@ -31,6 +31,7 @@ srtm_message_t SRTM_Message_Create(uint32_t len)
 {
     srtm_message_t msg;
 
+    /* coverity[cert_int30_c_violation] */
     msg = (srtm_message_t)SRTM_MessagePool_Alloc(sizeof(struct _srtm_message) + len);
     if (msg != NULL)
     {
@@ -110,6 +111,7 @@ static srtm_message_t SRTM_CommMessage_Create(srtm_message_type_t type,
         head->majorVersion = (uint8_t)SRTM_MESSAGE_MAJOR_VERSION(version);
         head->minorVersion = (uint8_t)SRTM_MESSAGE_MINOR_VERSION(version);
         head->type         = (uint8_t)type;
+        /* coverity[cert_int31_c_violation] */
         head->command      = command;
         head->priority     = msg->priority;
     }
