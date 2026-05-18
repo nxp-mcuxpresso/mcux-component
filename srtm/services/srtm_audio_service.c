@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <limits.h>
 #include <string.h>
 
 #include "fsl_common.h"
@@ -900,6 +901,7 @@ srtm_status_t SRTM_AudioService_AddAudioInterface(srtm_service_t service, srtm_s
     srtm_status_t status = SRTM_Status_Success;
     srtm_audio_iface_t iface;
     srtm_audio_service_t handle = (srtm_audio_service_t)(void *)service;
+    assert(s_audIdx < UINT8_MAX);
     uint8_t index               = ++s_audIdx;
 
     assert(service != NULL);
