@@ -404,7 +404,7 @@ static void SRTM_SaiEdmaAdapter_RxPeriodCopyAndNotify(srtm_sai_edma_adapter_t ha
             {
                 if (((rtm->suspendState != SRTM_Suspended) || (rtm->dataCallback == NULL)))
                 {
-                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
                 }
             }
         }
@@ -598,7 +598,7 @@ static void SRTM_SaiEdmaTxCallback(I2S_Type *sai, sai_edma_handle_t *edmaHandle,
          (rtm->suspendState != SRTM_Suspended)))
     {
         /* In free run, we need to make buffer as full as possible, threshold is ignored. */
-        (void)adapter->periodDone(adapter->service, SRTM_AudioDirTx, handle->index, rtm->bufRtm.chaseIdx);
+        (void)adapter->periodDone(adapter->service, SRTM_AudioDirTx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
     }
 
     if ((adapter->service != NULL) && (rtm->state == SRTM_AudioStateStarted) && (rtm->proc != NULL))
@@ -657,7 +657,7 @@ static void SRTM_SaiEdmaRxCallback(I2S_Type *sai, sai_edma_handle_t *edmaHandle,
         if ((adapter->service != NULL) && (adapter->periodDone != NULL))
         {
             /* Rx is always freeRun */
-            (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+            (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
         }
     }
 
