@@ -254,6 +254,7 @@ static void MEM_BufferAllocates_memStatis(void *buffer, uint32_t time, uint32_t 
     void_ptr_t buffer_ptr;
     void_ptr_t blockHdr_ptr;
     blockHeader_t *BlockHdr;
+	memAreaPrivDesc_t *p_area;
 
     /* Using union to fix Misra */
     buffer_ptr.void_ptr      = buffer;
@@ -292,7 +293,11 @@ static void MEM_BufferAllocates_memStatis(void *buffer, uint32_t time, uint32_t 
     s_memStatis.ram_lost += (uint16_t)(block_size - requestedSize);
     UPDATE_PEAK(s_memStatis.ram_lost, s_memStatis.peak_ram_lost);
 
-    UPDATE_PEAK(((uint32_t)FreeBlockHdrList.tail + BLOCK_HDR_SIZE), s_memStatis.peak_upper_addr);
+    /* Find the highest FreeBlockHdrList.tail across all registered areas */
+    for (p_area = &heap_area_list; p_area != NULL; p_area = (memAreaPrivDesc_t *)(void *)p_area->next)
+    {
+        UPDATE_PEAK(((uint32_t)p_area->ctx.FreeBlockHdrList.tail + BLOCK_HDR_SIZE), s_memStatis.peak_upper_addr);
+    }
 
 #ifdef MEM_MANAGER_BENCH
     if (time != 0U)
@@ -1113,7 +1118,7 @@ mem_status_t MEM_BufferCheck(void *buffer, uint32_t size)
             if (p_area != NULL)
             {
                 /* Not memory manager buffer, do not care */
-                if (((uint8_t*)buffer < (uint8_t*)p_area->start_address.raw_address) || 
+                if (((uint8_t*)buffer < (uint8_t*)p_area->start_address.raw_address) ||
                     ((uint8_t*)buffer > (uint8_t*)p_area->end_address.raw_address))
                 {
                     ret = kStatus_MemUnknownError;
@@ -1127,7 +1132,7 @@ mem_status_t MEM_BufferCheck(void *buffer, uint32_t size)
                     }
                 }
             }
-            else 
+            else
             {
                 ret = kStatus_MemUnknownError;
             }
@@ -1372,7 +1377,7 @@ uint32_t MEM_GetAvailableBlocks(uint32_t size)
 void *MEM_CallocAlt(size_t len, size_t val)
 {
     size_t blk_size;
-    
+
     if (len > UINT16_MAX / val)
     {
         return NULL;
