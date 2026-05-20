@@ -86,7 +86,7 @@ static srtm_status_t SRTM_RtcAdapter_GetTime(srtm_rtc_adapter_t adapter, uint32_
 
     SRTM_DEBUG_MESSAGE(SRTM_DEBUG_VERBOSE_INFO, "%s\r\n", __func__);
 
-    *pSeconds = rtcGetTime(handle) / SECOND_TO_MICROSECOND;
+    *pSeconds = (uint32_t)((rtcGetTime(handle) / SECOND_TO_MICROSECOND) & 0xFFFFFFFFU);
 
     return SRTM_Status_Success;
 }
@@ -116,7 +116,7 @@ static srtm_status_t SRTM_RtcAdapter_GetAlarm(srtm_rtc_adapter_t adapter, struct
 
     SRTM_DEBUG_MESSAGE(SRTM_DEBUG_VERBOSE_INFO, "%s\r\n", __func__);
 
-    pAlarm->seconds = rtcGetAlarm(handle) / SECOND_TO_MICROSECOND;
+    pAlarm->seconds = (uint32_t)((rtcGetAlarm(handle) / SECOND_TO_MICROSECOND) & 0xFFFFFFFFU);
 
     pAlarm->enabled =
         (rtcGetEnabledInterrupts(handle) & kHAL_RTC_AlarmInterrupt) ? SRTM_RTC_ALARM_ENABLED : SRTM_RTC_ALARM_DISABLED;
