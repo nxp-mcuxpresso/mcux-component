@@ -35,7 +35,7 @@ void HAL_ClockSetRootClk(hal_clk_t *hal_clk)
     sm_clk.pclk_id    = (uint32_t)hal_clk->pclk_id;
     sm_clk.channel    = SM_PLATFORM_A2P;
     sm_clk.div        = hal_clk->div;
-    sm_clk.attributes = (uint32_t)SCMI_CLOCK_CONFIG_SET_ENABLE((uint32_t)hal_clk->enable_clk);
+    sm_clk.attributes = (uint32_t)SCMI_CLOCK_CONFIG_SET_ENABLE(hal_clk->enable_clk ? 1U : 0U);
 
     switch (hal_clk->clk_round_opt)
     {
@@ -66,7 +66,7 @@ void HAL_ClockEnableRootClk(hal_clk_t *hal_clk)
 
     sm_clk.clk_id     = (uint32_t)hal_clk->clk_id;
     sm_clk.channel    = SM_PLATFORM_A2P;
-    sm_clk.attributes = (uint32_t)SCMI_CLOCK_CONFIG_SET_ENABLE((uint32_t)hal_clk->enable_clk);
+    sm_clk.attributes = (uint32_t)SCMI_CLOCK_CONFIG_SET_ENABLE(hal_clk->enable_clk ? 1U : 0U);
 
     switch (hal_clk->clk_round_opt)
     {
