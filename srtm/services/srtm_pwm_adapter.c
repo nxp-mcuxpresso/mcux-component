@@ -9,6 +9,8 @@
 #include "srtm_pwm_service.h"
 #include "fsl_common.h"
 #include "fsl_adapter_pwm.h"
+#include <limits.h>
+#include <assert.h>
 
 /*******************************************************************************
  * Definitions
@@ -51,11 +53,12 @@ static srtm_status_t setPwm(srtm_hal_pwm_adapter_t adapter,
                             uint8_t enable)
 {
     uint8_t dutyCyclePercent;
-    uint32_t pwmFreq_Hz = SECOND_TO_NANOSECOND / period;
+    uint32_t pwmFreq_Hz = (uint32_t)((SECOND_TO_NANOSECOND / period) & 0xFFFFFFFFU);
     hal_pwm_mode_t mode = kHAL_CenterAlignedPwm;
     hal_pwm_level_select_t level;
 
-    dutyCyclePercent = dutyCycle * 100 / period;
+    assert(dutyCycle <= ULLONG_MAX / 100ULL);
+    dutyCyclePercent = (uint8_t)((dutyCycle * 100ULL / period) & 0xFFU);
 
     if (enable == PWM_ENABLE)
     {
