@@ -57,7 +57,7 @@ void HAL_RtcDeinit(hal_rtc_handle_t halRtcHandle)
 hal_rtc_status_t HAL_RtcSetTime(hal_rtc_handle_t halRtcHandle, uint64_t microseconds)
 {
     hal_rtc_handle_struct_t *halRtcState = halRtcHandle;
-    uint32_t seconds                     = (uint32_t)(microseconds / SECOND_TO_MICROSECOND);
+    uint32_t seconds                     = (uint32_t)((microseconds / SECOND_TO_MICROSECOND) & 0xFFFFFFFFU);
 
     assert(halRtcHandle);
     assert(halRtcState->instance < (sizeof(s_bbnsmBase) / sizeof(s_bbnsmBase[0])));
@@ -85,7 +85,7 @@ uint64_t HAL_RtcGetTime(hal_rtc_handle_t halRtcHandle)
  *---------------------------------------------------------------------------*/
 hal_rtc_status_t HAL_RtcSetAlarm(hal_rtc_handle_t halRtcHandle, uint64_t microseconds)
 {
-    uint32_t seconds                     = (uint32_t)(microseconds / SECOND_TO_MICROSECOND);
+    uint32_t seconds                     = (uint32_t)((microseconds / SECOND_TO_MICROSECOND) & 0xFFFFFFFFU);
     hal_rtc_handle_struct_t *halRtcState = halRtcHandle;
 
     assert(halRtcState);
