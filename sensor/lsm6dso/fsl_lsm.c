@@ -274,7 +274,7 @@ status_t LSM_GetPedometerCnt(lsm_handle_t *handle, uint16_t *stepCount)
         return kStatus_Fail;
     }
 
-    *stepCount = (((uint16_t)tmp[1] << 8U) | tmp[0]);
+    *stepCount = (uint16_t)(((uint16_t)tmp[1] << 8U) | (uint16_t)tmp[0]);
 
     return kStatus_Success;
 }
@@ -311,7 +311,7 @@ status_t LSM_WriteReg(lsm_handle_t *handle, uint8_t reg, uint8_t *val)
 status_t LSM_SetMemBank(lsm_handle_t *handle, lsm_reg_access_t bank)
 {
     status_t status = kStatus_Fail;
-    lsm_func_cfg_access_t val;
+    lsm_func_cfg_access_t val = {0};
 
     assert(handle);
 
@@ -328,7 +328,7 @@ status_t LSM_SetMemBank(lsm_handle_t *handle, lsm_reg_access_t bank)
 status_t LSM_GetMemBank(lsm_handle_t *handle, lsm_reg_access_t *bank)
 {
     status_t status = kStatus_Fail;
-    lsm_func_cfg_access_t val;
+    lsm_func_cfg_access_t val = {0};
     lsm_reg_access_t reg_access;
 
     assert(handle);
