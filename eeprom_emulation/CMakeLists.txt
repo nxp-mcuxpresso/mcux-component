@@ -15,10 +15,17 @@ if (CONFIG_MCUX_COMPONENT_component.eeprom_emulation)
         INCLUDES .
     )
 
-    if (CONFIG_MCUX_COMPONENT_driver.flash_k4)
-        mcux_add_source(
-            SOURCES flashapi/eeprom_emulation_flashapi_k4.c
-        )
-    endif()
+endif()
+
+if (CONFIG_MCUX_COMPONENT_component.eeprom_emulation_flashapi_k4)
+
+    mcux_add_source(
+        SOURCES
+            flashapi/eeprom_emulation_flashapi_k4.c
+    )
+
+    mcux_add_include(
+        INCLUDES ./flashapi
+    )
 
 endif()
