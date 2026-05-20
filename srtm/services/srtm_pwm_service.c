@@ -52,7 +52,7 @@ static srtm_status_t SRTM_PwmService_Request(srtm_service_t service, srtm_reques
     srtm_response_t response;
     struct _srtm_pwm_payload *pwmReq;
     struct _srtm_pwm_payload *pwmResp;
-    uint64_t period, duty;
+    uint64_t period = 0U, duty = 0U;
 
     assert(adapter);
     assert(service->dispatcher);
