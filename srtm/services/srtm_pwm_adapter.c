@@ -10,7 +10,6 @@
 #include "fsl_common.h"
 #include "fsl_adapter_pwm.h"
 #include <limits.h>
-#include <assert.h>
 
 /*******************************************************************************
  * Definitions
