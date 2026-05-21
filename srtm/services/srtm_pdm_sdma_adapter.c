@@ -404,6 +404,7 @@ static void SRTM_PdmSdmaAdapter_AddNewPeriods(srtm_pdm_sdma_runtime_t rtm, uint3
     uint32_t primask;
 
     assert(periodIdx < rtm->periods);
+    assert(periodIdx + rtm->periods >= bufRtm->leadIdx);
 
     newPeriods = (periodIdx + rtm->periods - bufRtm->leadIdx) % rtm->periods;
     if (newPeriods == 0U) /* In case buffer is empty and filled all. */
@@ -508,15 +509,16 @@ static void SRTM_PdmSdmaAdapter_LocalBufFullDMACb(sdma_handle_t *dmahandle,
                                                   uint32_t tcds)
 {
     srtm_pdm_sdma_adapter_t handle = (srtm_pdm_sdma_adapter_t)param;
+    assert(rtm->localBuf.periods >= rtm->localBuf.threshold);
     srtm_pdm_sdma_runtime_t rtm    = &handle->rxRtm;
     uint32_t periodsPerExt =
         rtm->localBuf.periods - rtm->localBuf.threshold; /* The number of localBuf periods for each extra buffer. */
 
     if (transferDone)
     {
-        rtm->extBufRtm.bufRtm.remainingPeriods--;                            /* A period is filled. */
+        assert(rtm->extBufRtm.bufRtm.remainingPeriods > 0U); rtm->extBufRtm.bufRtm.remainingPeriods--;                            /* A period is filled. */
         rtm->extBufRtm.bufRtm.chaseIdx =
-            (rtm->extBufRtm.bufRtm.chaseIdx + 1U) % rtm->extBuf.periods;     /* Move the write pointer. */
+            ((rtm->extBufRtm.bufRtm.chaseIdx + 1U)) % rtm->extBuf.periods;     /* Move the write pointer. */
 
         if (rtm->extBufRtm.bufRtm.chaseIdx == rtm->extBufRtm.bufRtm.leadIdx) /* Extra buffer overwrite. */
         {
@@ -544,7 +546,9 @@ static void SRTM_PdmSdmaAdapter_LocalBufFullProc(srtm_dispatcher_t dispatcher, v
     uint32_t size;
 
     uint32_t periodsPerExt =
+    assert(rtm->localRtm.bufRtm.leadIdx <= UINT32_MAX / rtm->localRtm.periodSize);
         rtm->localBuf.periods - rtm->localBuf.threshold; /* local buffer periods number for each extra period */
+    assert(rtm->extBufRtm.bufRtm.chaseIdx <= UINT32_MAX / rtm->extBufRtm.periodSize);
 
     periods = rtm->localBuf.periods - rtm->localRtm.bufRtm.leadIdx;
     src     = rtm->localBuf.buf + rtm->localRtm.bufRtm.leadIdx * rtm->localRtm.periodSize;
@@ -1005,6 +1009,7 @@ static srtm_status_t SRTM_PdmSdmaAdapter_SetParam(
 
     /* Caluate the max bytes can be done by each SDMA transfer. */
     bytePerSample    = ((uint32_t)rtm->bitWidth >> 3U) * channels;
+    assert(bytePerSample > 0U);
     rtm->maxXferSize = (uint32_t)SRTM_SDMA_MAX_TRANSFER_SIZE / bytePerSample * bytePerSample;
 
     rtm->srate       = srate;
