@@ -156,7 +156,7 @@ static hal_flash_status_t HAL_FlashProgramAdaptation(uint32_t dest, uint32_t siz
  * @retval #kStatus_HAL_Flash_ExecuteInRamFunctionNotReady Execute-in-RAM function is not available.
  * @retval #kStatus_HAL_Flash_PartitionStatusUpdateFailure Failed to update the partition status.
  */
-hal_flash_status_t HAL_FlashInit()
+hal_flash_status_t HAL_FlashInit(void)
 {
     static uint32_t flashInit = 0;
     status_t status           = (status_t)kStatus_HAL_Flash_Success;
@@ -239,8 +239,8 @@ hal_flash_status_t HAL_FlashProgramUnaligned(uint32_t dest, uint32_t size, uint8
             unalignedBytes = size;
         }
 
-        memcpy(buffer, (uint8_t *)(dest - bytes), PGM_SIZE_BYTE);
-        memcpy(&buffer[bytes], pData, unalignedBytes);
+        (void)memcpy(buffer, (uint8_t *)(dest - bytes), PGM_SIZE_BYTE);
+        (void)memcpy(&buffer[bytes], pData, unalignedBytes);
 
         status = HAL_FlashProgramAdaptation(dest - bytes, PGM_SIZE_BYTE, buffer);
         if (kStatus_HAL_Flash_Success == status)
@@ -270,8 +270,8 @@ hal_flash_status_t HAL_FlashProgramUnaligned(uint32_t dest, uint32_t size, uint8
         {
             if (size != 0U)
             {
-                memcpy(buffer, (uint8_t *)dest, PGM_SIZE_BYTE);
-                memcpy(buffer, pData, size);
+                (void)memcpy(buffer, (uint8_t *)dest, PGM_SIZE_BYTE);
+                (void)memcpy(buffer, pData, size);
                 status = HAL_FlashProgramAdaptation(dest, PGM_SIZE_BYTE, buffer);
             }
         }
@@ -392,7 +392,6 @@ __ECC_FCT_PLACEMENT int FLASH_ActivateEccFaultDetection(FMU_Type *base, uint32_t
 {
     int st = -1;
     uint32_t fcncf_val;
-    *sav_cfg = 0U;
 #if defined SMSCM
     *sav_cfg = SMSCM->OCMDR0;
 #else
@@ -433,7 +432,7 @@ __ECC_FCT_PLACEMENT int FLASH_DeactivateEccFaultDetection(FMU_Type *base, uint32
 
 bool HAL_FlashEccStatusRaised(void)
 {
-    return (FMU0->FSTAT & FLASH_FSTAT_DFDIF_MASK) ? true : false;
+    return ((FMU0->FSTAT & FLASH_FSTAT_DFDIF_MASK) == FLASH_FSTAT_DFDIF_MASK);
 }
 
 /*!

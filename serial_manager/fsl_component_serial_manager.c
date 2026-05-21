@@ -991,7 +991,7 @@ void SerialManager_RxCallback(void *callbackParam,
     if (0U != ringBufferLength)
     {
 #if (defined(SERIAL_MANAGER_TASK_HANDLE_RX_AVAILABLE_NOTIFY) && (SERIAL_MANAGER_TASK_HANDLE_RX_AVAILABLE_NOTIFY > 0U))
-        if (serHandle->serialManagerState[SERIAL_EVENT_DATA_RX_NOTIFY] == 0)
+        if (serHandle->serialManagerState[SERIAL_EVENT_DATA_RX_NOTIFY] == 0U)
         {
             serHandle->serialManagerState[SERIAL_EVENT_DATA_RX_NOTIFY]++;
             (void)OSA_SemaphorePost((osa_semaphore_handle_t)serHandle->serSemaphore);

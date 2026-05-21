@@ -40,8 +40,8 @@
  */
 
 #define PRIORITY_OSA_TO_RTOS(osa_prio) \
-    (((TX_MAX_PRIORITIES - 1U) * osa_prio) / (OSA_TASK_PRIORITY_MIN - OSA_TASK_PRIORITY_MAX))
+    ((UINT)(((TX_MAX_PRIORITIES - 1U) * (UINT)(osa_prio)) / (UINT)(OSA_TASK_PRIORITY_MIN - OSA_TASK_PRIORITY_MAX)))
 #define PRIORITY_RTOS_TO_OSA(rtos_prio) \
-    ((rtos_prio * ((OSA_TASK_PRIORITY_MIN - OSA_TASK_PRIORITY_MAX))) / (TX_MAX_PRIORITIES - 1U))
+    ((osa_task_priority_t)(((UINT)(rtos_prio) * (UINT)(OSA_TASK_PRIORITY_MIN - OSA_TASK_PRIORITY_MAX)) / (TX_MAX_PRIORITIES - 1U)))
 
 #endif /* __FSL_OS_ABSTRACTION_THREADX_H__ */

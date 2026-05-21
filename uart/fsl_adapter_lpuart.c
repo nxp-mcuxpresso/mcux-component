@@ -771,7 +771,7 @@ hal_uart_status_t HAL_UartDeinit(hal_uart_handle_t handle)
 
     uartHandle = (hal_uart_state_t *)handle;
 
-    LPUART_Deinit(s_LpuartAdapterBase[uartHandle->instance]); /*LPUART Deinitialization*/
+    (void)LPUART_Deinit(s_LpuartAdapterBase[uartHandle->instance]); /*LPUART Deinitialization*/
 
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
 

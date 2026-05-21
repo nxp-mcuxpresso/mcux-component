@@ -561,7 +561,7 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
                     st = kStatus_MemInitError; /* overlap with previously registered blocks */
                     break;
                 }
-                assert(id < UINT8_MAX);
+                assert(id < (uint8_t)UINT8_MAX);
                 id++;
             }
             if (st != kStatus_MemSuccess)
@@ -943,7 +943,7 @@ static void *MEM_BufferAllocate(uint32_t numBytes, uint8_t poolId)
                     break;
                 }
             }
-            assert(area_id < UINT8_MAX);
+            assert(area_id < (uint8_t)UINT8_MAX);
             area_id++;
         }
     }
@@ -965,7 +965,7 @@ void *MEM_BufferAllocWithId(uint32_t numBytes, uint8_t poolId)
 #endif
     void_ptr_t buffer_ptr;
 
-    if (numBytes > UINT16_MAX)
+    if (numBytes > (uint32_t)UINT16_MAX)
     {
         return NULL;
     }
@@ -1262,7 +1262,7 @@ void *MEM_BufferRealloc(void *buffer, uint32_t new_size)
     uint16_t block_size  = 0U;
     do
     {
-        if (new_size > UINT16_MAX)
+        if (new_size > (uint32_t)UINT16_MAX)
         {
             realloc_buffer = NULL;
             /* Bypass he whole procedure so keep original buffer that cannot be reallocated */
@@ -1378,7 +1378,7 @@ void *MEM_CallocAlt(size_t len, size_t val)
 {
     size_t blk_size;
 
-    if (len > UINT16_MAX / val)
+    if (len > (size_t)(UINT16_MAX / val))
     {
         return NULL;
     }

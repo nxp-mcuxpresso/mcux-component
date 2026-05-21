@@ -147,7 +147,7 @@ void *OSA_MemoryAllocateAlign(uint32_t memLength, uint32_t alignbytes)
     osa_mem_align_cb_t *p_cb = NULL;
     uint32_t alignedsize;
 
-    if ((alignbytes < 1U) || (alignbytes > UINT16_MAX))
+    if ((alignbytes < 1U) || (alignbytes > (uint32_t)UINT16_MAX))
     {
         return NULL;
     }
@@ -317,7 +317,7 @@ osa_task_priority_t OSA_TaskGetPriority(osa_task_handle_t taskHandle)
 {
     assert(taskHandle != NULL);
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
-    UINT status              = 0;
+    UINT status              = 0U;
     CHAR *task_name;
     UINT task_status;
     ULONG scheduled_count;
@@ -356,7 +356,7 @@ osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority
     assert(taskPriority <= OSA_TASK_PRIORITY_MIN);
     assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
-    UINT status              = 0;
+    UINT status              = 0U;
     UINT priority;
 
     status =
@@ -925,15 +925,15 @@ osa_status_t OSA_EventDestroy(osa_event_handle_t eventHandle)
 osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32_t msgSize)
 {
     assert(NULL != msgqHandle);
-    assert(msgSize <= UINT32_MAX - sizeof(uint32_t) + 1);
+    assert(msgSize <= UINT32_MAX - (uint32_t)sizeof(uint32_t) + 1U);
 
     /* ThreadX expects sizes in word, but OSA API passes byte size, so we have to convert it */
-    uint32_t sizeWord = (msgSize + sizeof(uint32_t) - 1) / sizeof(uint32_t);
+    uint32_t sizeWord = (msgSize + (uint32_t)sizeof(uint32_t) - 1U) / (uint32_t)sizeof(uint32_t);
     assert(msgNo <= UINT32_MAX / sizeWord);
 
     /* Create the message queue where the number and size is specified by msgNo and sizeWord */
     if (TX_SUCCESS == tx_queue_create((TX_QUEUE *)msgqHandle, (CHAR *)"queue 0", sizeWord,
-                                      (uint8_t *)msgqHandle + OSA_MSGQ_HANDLE_SIZE, msgNo * sizeWord))
+                                      (uint8_t *)msgqHandle + (uint32_t)OSA_MSGQ_HANDLE_SIZE, msgNo * sizeWord))
     {
         return KOSA_StatusSuccess;
     }
@@ -1107,7 +1107,7 @@ void OSA_EnableIRQGlobal(void)
 void OSA_DisableIRQGlobal(void)
 {
     /* call core API to disable the global interrupt*/
-    if (0 == s_osaState.disableIRQGlobalNesting)
+    if (0U == s_osaState.disableIRQGlobalNesting)
     {
         s_osaState.interruptRegPrimask = DisableGlobalIRQ();
     }
