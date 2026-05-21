@@ -8,6 +8,8 @@
 #include "fsl_common.h"
 #include "fsl_adapter_pwm.h"
 #include "fsl_tpm.h"
+#include <assert.h>
+#include <stdint.h>
 
 /************************************************************************************
 *************************************************************************************
@@ -103,6 +105,7 @@ hal_pwm_status_t HAL_PwmSetupPwm(hal_pwm_handle_t halPwmHandle, uint8_t channel,
     }
     TPM_StartTimer(s_tpmBase[halPwmState->instance], kTPM_SystemClock);
 
+    assert(s_pwmUsedChannel[halPwmState->instance] < UINT8_MAX);
     /* Increase the channel counter for the instance */
     s_pwmUsedChannel[halPwmState->instance] += 1U;
 
