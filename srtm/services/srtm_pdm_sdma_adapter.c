@@ -174,7 +174,7 @@ static void SRTM_PdmSdmaAdaptor_ResetLocalBuf(srtm_pdm_sdma_runtime_t rtm)
     {
         (void)memset(&rtm->localRtm.bufRtm, 0, sizeof(struct _srtm_pdm_sdma_buf_runtime));
 
-        bytePerSample = (uint8_t)(((rtm->bitWidth >> 3U) * rtm->pdmChannels) & 0xFFU);
+        bytePerSample = (uint8_t)(((uint32_t)(rtm->bitWidth >> 3U) * (uint32_t)rtm->pdmChannels) & 0xFFU);
 
         if (rtm->localBuf.samplesPerPeriod == 0U)
         {
@@ -509,8 +509,8 @@ static void SRTM_PdmSdmaAdapter_LocalBufFullDMACb(sdma_handle_t *dmahandle,
                                                   uint32_t tcds)
 {
     srtm_pdm_sdma_adapter_t handle = (srtm_pdm_sdma_adapter_t)param;
-    assert(rtm->localBuf.periods >= rtm->localBuf.threshold);
     srtm_pdm_sdma_runtime_t rtm    = &handle->rxRtm;
+    assert(rtm->localBuf.periods >= rtm->localBuf.threshold);
     uint32_t periodsPerExt =
         rtm->localBuf.periods - rtm->localBuf.threshold; /* The number of localBuf periods for each extra buffer. */
 
@@ -546,8 +546,8 @@ static void SRTM_PdmSdmaAdapter_LocalBufFullProc(srtm_dispatcher_t dispatcher, v
     uint32_t size;
 
     uint32_t periodsPerExt =
-    assert(rtm->localRtm.bufRtm.leadIdx <= UINT32_MAX / rtm->localRtm.periodSize);
         rtm->localBuf.periods - rtm->localBuf.threshold; /* local buffer periods number for each extra period */
+    assert(rtm->localRtm.bufRtm.leadIdx <= UINT32_MAX / rtm->localRtm.periodSize);
     assert(rtm->extBufRtm.bufRtm.chaseIdx <= UINT32_MAX / rtm->extBufRtm.periodSize);
 
     periods = rtm->localBuf.periods - rtm->localRtm.bufRtm.leadIdx;

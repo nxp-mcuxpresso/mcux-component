@@ -189,7 +189,7 @@ static void SRTM_SaiSdmaAdapter_RecycleRxMessage(srtm_message_t msg, void *param
 #if SRTM_SAI_CONFIG_SupportLocalBuf
 static void SRTM_SaiSdmaAdaptor_ResetLocalBuf(srtm_sai_sdma_runtime_t rtm, srtm_audio_dir_t dir)
 {
-    uint32_t i, n, alignment, maxPeriodSize;
+    uint32_t i, n = 0U, alignment, maxPeriodSize;
 
     alignment = ((uint32_t)(rtm->bitWidth) >> 3U) * (rtm->streamMode == kSAI_Stereo ? 2UL : 1UL);
 
@@ -207,12 +207,15 @@ static void SRTM_SaiSdmaAdaptor_ResetLocalBuf(srtm_sai_sdma_runtime_t rtm, srtm_
         if (dir == SRTM_AudioDirTx)
         {
             /* Calculate how many local periods each remote period */
+            assert(rtm->periodSize <= UINT32_MAX - maxPeriodSize);
             n = (rtm->periodSize + maxPeriodSize - 1U) / maxPeriodSize;
             /* Calculate local period size per remote period */
+            assert(rtm->periodSize <= UINT32_MAX - n);
             rtm->localRtm.periodSize =
                 ((rtm->periodSize + n - 1U) / n + SRTM_SAI_SDMA_MAX_LOCAL_PERIOD_ALIGNMENT_MASK) &
                 (~SRTM_SAI_SDMA_MAX_LOCAL_PERIOD_ALIGNMENT_MASK);
             /* The period size should be a multiple of bytes per sample */
+            assert(rtm->periodSize <= UINT32_MAX - n);
             rtm->localRtm.periodSize = (rtm->localRtm.periodSize + alignment - 1U) / alignment * alignment;
             if (rtm->localRtm.periodSize > maxPeriodSize)
             {
@@ -230,7 +233,9 @@ static void SRTM_SaiSdmaAdaptor_ResetLocalBuf(srtm_sai_sdma_runtime_t rtm, srtm_
 #if SRTM_SAI_CONFIG_Rx_Enabled
         else /* RX */
         {
+            assert(rtm->periodSize <= UINT32_MAX - n);
             rtm->localRtm.periodSize = rtm->localBuf.bufSize / rtm->localBuf.periods;
+            assert(rtm->periodSize <= UINT32_MAX - n);
             rtm->localRtm.periodSize = rtm->localRtm.periodSize / alignment * alignment;
 
             rtm->localRtm.bufRtm.remainingLoadPeriods = rtm->localBuf.periods;
@@ -398,6 +403,7 @@ static void SRTM_SaiSdmaAdapter_CopyData(srtm_sai_sdma_adapter_t handle)
     srcRtm = &rtm->bufRtm;
     dstRtm = &rtm->localRtm.bufRtm;
 
+    assert(rtm->localBuf.periods >= dstRtm->remainingPeriods);
     while ((srcRtm->remainingLoadPeriods != 0U) && ((rtm->localBuf.periods - dstRtm->remainingPeriods) != 0U))
     {
         src     = rtm->bufAddr + srcRtm->loadIdx * rtm->periodSize;
@@ -545,6 +551,7 @@ static void SRTM_SaiSdmaAdapter_AddNewPeriods(srtm_sai_sdma_runtime_t rtm, uint3
     uint32_t primask;
 
     assert(periodIdx < rtm->periods);
+    assert(periodIdx + rtm->periods >= bufRtm->leadIdx);
 
     newPeriods = (periodIdx + rtm->periods - bufRtm->leadIdx) % rtm->periods;
     if (newPeriods == 0U) /* in case buffer is empty and filled all */
@@ -963,13 +970,15 @@ static void SRTM_SaiSdmaAdapter_SetFormat(srtm_sai_sdma_adapter_t handle, srtm_a
     {
         if (rtm->format >= (uint8_t)SRTM_Audio_DSD8bits) /* DSD mode */
         {
-            cfg->config.channelMask          = 1U << cfg->dataLine1 | 1U << cfg->dataLine2;
+            assert(cfg->dataLine1 < 8U && cfg->dataLine2 < 8U);
+            cfg->config.channelMask          = (uint8_t)(((1U << cfg->dataLine1) | (1U << cfg->dataLine2)) & 0xFFU);
             cfg->config.serialData.dataOrder = kSAI_DataMSB; /* MSB transfer first */
             cfg->config.serialData.dataFirstBitShifted = bitWidth;
         }
         else
         {
-            cfg->config.channelMask          = 1U << cfg->dataLine1;
+            assert(cfg->dataLine1 < 8U);
+            cfg->config.channelMask          = (uint8_t)((1U << cfg->dataLine1) & 0xFFU);
             cfg->config.serialData.dataOrder = kSAI_DataMSB; /* MSB transfer first */
         }
         SAI_TransferTxSetConfigSDMA(handle->sai, &rtm->saiHandle, &cfg->config);
@@ -979,7 +988,8 @@ static void SRTM_SaiSdmaAdapter_SetFormat(srtm_sai_sdma_adapter_t handle, srtm_a
 #if SRTM_SAI_CONFIG_Rx_Enabled
     else
     {
-        cfg->config.channelMask = 1U << cfg->dataLine1;
+        assert(cfg->dataLine1 < 8U);
+        cfg->config.channelMask = (uint8_t)((1U << cfg->dataLine1) & 0xFFU);
         SAI_TransferRxSetConfigSDMA(handle->sai, &rtm->saiHandle, &cfg->config);
         /* set bit clock */
         SAI_RxSetBitClockRate(handle->sai, cfg->mclkConfig.mclkHz, paramRtm->srate, bitWidth, channels);
@@ -1142,9 +1152,12 @@ static srtm_status_t SRTM_SaiSdmaAdapter_Start(srtm_sai_adapter_t adapter, srtm_
     /* Caculate the threshold based on the guardTime.*/
     if (*guardTime != 0U)
     {
-        guardPeroids = (uint32_t)(((uint64_t)thisRtm->srate * thisRtm->bitWidth * channelNum * (*guardTime) +
+        assert((uint64_t)thisRtm->periodSize * 8U * 1000U > 0U);
+        assert((uint64_t)thisRtm->srate * (uint64_t)thisRtm->bitWidth <= UINT64_MAX / channelNum);
+        assert((uint64_t)thisRtm->srate * (uint64_t)thisRtm->bitWidth * channelNum <= UINT64_MAX / (*guardTime));
+        guardPeroids = (uint32_t)((((uint64_t)thisRtm->srate * thisRtm->bitWidth * channelNum * (*guardTime) +
                                    (uint64_t)thisRtm->periodSize * 8U * 1000U - 1U) /
-                                  ((uint64_t)thisRtm->periodSize * 8U * 1000U));
+                                  ((uint64_t)thisRtm->periodSize * 8U * 1000U)) & 0xFFFFFFFFU);
         /* If the guardPeroids calculated based on the guardTime is larger than the threshold value ,
          * then the threshold should be enlarged to make sure there is enough time for A core resume and fill the DDR
          * buffer.
@@ -1412,6 +1425,7 @@ static srtm_status_t SRTM_SaiSdmaAdapter_SetParam(
 
     /* Caluate the max bytes can be done by each SDMA transfer. */
     bytePerSample    = ((uint32_t)(rtm->bitWidth) >> 3U) * (channels != 0U ? (uint32_t)channels : 1UL);
+    assert(bytePerSample > 0U);
     rtm->maxXferSize = (uint32_t)SRTM_SDMA_MAX_TRANSFER_SIZE / bytePerSample * bytePerSample;
 
     rtm->format     = format;

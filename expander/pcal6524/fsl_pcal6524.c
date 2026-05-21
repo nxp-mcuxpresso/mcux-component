@@ -292,7 +292,7 @@ status_t PCAL6524_SetOutputPortConfig(pcal6524_handle_t *handle, uint8_t portMas
         }
         else
         {
-            regValue &= (uint8_t)~(portMask & 0x07U);
+            regValue &= (uint8_t)(~(portMask & 0x07U) & 0xFFU);
         }
         status = PCAL6524_WriteReg(handle, PCAL6524_OUTPUT_PORT_CONFIG, regValue);
     }
@@ -333,7 +333,7 @@ status_t PCAL6524_SetOutputDriveStrength(pcal6524_handle_t *handle,
     if (kStatus_Success == status)
     {
         regValue &= ~((uint8_t)0x03U << shift);
-        regValue |= (uint8_t)(((uint8_t)strength & 0x03U) << shift);
+        regValue |= (uint8_t)((((uint8_t)strength & 0x03U) << shift) & 0xFFU);
         status = PCAL6524_WriteReg(handle, reg, regValue);
     }
 
@@ -496,7 +496,7 @@ status_t PCAL6524_SetInterruptEdge(pcal6524_handle_t *handle, uint8_t pin, pcal6
     if (kStatus_Success == status)
     {
         regValue &= ~((uint8_t)0x03U << shift);
-        regValue |= (uint8_t)(((uint8_t)edge & 0x03U) << shift);
+        regValue |= (uint8_t)((((uint8_t)edge & 0x03U) << shift) & 0xFFU);
         status = PCAL6524_WriteReg(handle, reg, regValue);
     }
 
