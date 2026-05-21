@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -24,7 +24,7 @@
  ******************************************************************************/
 /*! @name Driver version */
 /*! @{ */
-#define FSL_LCE_VERSION (MAKE_VERSION(1, 0, 0)) /*!< Version 1.0.0. */
+#define FSL_LCE_VERSION (MAKE_VERSION(1, 1, 1)) /*!< Version 1.1.1. */
 /*! @} */
 
 #ifndef CE_ISR_PRIORITY
@@ -95,6 +95,12 @@ int32_t L##name(args_def) {                                                     
 #if defined(__cplusplus)
 extern "C" {
 #endif /* __cplusplus */
+
+#if (defined(KW47_core0_SERIES) || defined(MCXW72_core0_SERIES))
+void DSP_IRQHandler(void);
+#elif (defined(KW43_core0_SERIES) || defined(MCXW70_core0_SERIES))
+void MU1_IRQHandler(void);
+#endif
 
 /*!
  * @brief Initializes the variables used in this component and enable the DSP
