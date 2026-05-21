@@ -5,6 +5,8 @@
  */
 
 #include <string.h>
+#include <assert.h>
+#include <stdint.h>
 
 #include "srtm_pdm_sdma_adapter.h"
 #include "srtm_heap.h"
@@ -172,7 +174,7 @@ static void SRTM_PdmSdmaAdaptor_ResetLocalBuf(srtm_pdm_sdma_runtime_t rtm)
     {
         (void)memset(&rtm->localRtm.bufRtm, 0, sizeof(struct _srtm_pdm_sdma_buf_runtime));
 
-        bytePerSample = (rtm->bitWidth >> 3U) * rtm->pdmChannels;
+        bytePerSample = (uint8_t)(((rtm->bitWidth >> 3U) * rtm->pdmChannels) & 0xFFU);
 
         if (rtm->localBuf.samplesPerPeriod == 0U)
         {
@@ -218,6 +220,7 @@ static status_t SRTM_PdmSdmaAdapter_PeriodReceiveSDMA(srtm_pdm_sdma_adapter_t ha
         bufRtm = &rtm->localRtm.bufRtm;
 
         xfer.dataSize = rtm->localRtm.periodSize;
+        assert(bufRtm->loadIdx <= UINT32_MAX / rtm->localRtm.periodSize);
         xfer.data     = rtm->localBuf.buf + bufRtm->loadIdx * rtm->localRtm.periodSize;
         status        = PDM_TransferReceiveSDMA(handle->pdm, &rtm->pdmHandle, &xfer);
 
@@ -226,7 +229,9 @@ static status_t SRTM_PdmSdmaAdapter_PeriodReceiveSDMA(srtm_pdm_sdma_adapter_t ha
             /* Audio queue full */
             return status;
         }
+        assert(bufRtm->loadIdx < UINT32_MAX);
         bufRtm->loadIdx = (bufRtm->loadIdx + 1U) % rtm->localBuf.periods;
+        assert(bufRtm->remainingLoadPeriods > 0U);
         bufRtm->remainingLoadPeriods--;
     }
     else
@@ -237,11 +242,13 @@ static status_t SRTM_PdmSdmaAdapter_PeriodReceiveSDMA(srtm_pdm_sdma_adapter_t ha
         while (count > rtm->maxXferSize) /* Split the period into several DMA transfer. */
         {
             xfer.dataSize = rtm->maxXferSize;
+            assert(bufRtm->loadIdx <= UINT32_MAX / rtm->periodSize);
             xfer.data     = rtm->bufAddr + bufRtm->loadIdx * rtm->periodSize + bufRtm->offset;
             status        = PDM_TransferReceiveSDMA(handle->pdm, &rtm->pdmHandle, &xfer);
             if (status == kStatus_Success)
             {
                 count = count - rtm->maxXferSize;
+                assert(bufRtm->offset <= UINT32_MAX - rtm->maxXferSize);
                 bufRtm->offset += rtm->maxXferSize;
             }
             else
@@ -252,6 +259,7 @@ static status_t SRTM_PdmSdmaAdapter_PeriodReceiveSDMA(srtm_pdm_sdma_adapter_t ha
         if (count > 0U)
         {
             xfer.dataSize = count;
+            assert(bufRtm->loadIdx <= UINT32_MAX / rtm->periodSize);
             xfer.data     = rtm->bufAddr + bufRtm->loadIdx * rtm->periodSize + bufRtm->offset;
             status        = PDM_TransferReceiveSDMA(handle->pdm, &rtm->pdmHandle, &xfer);
             if (status != kStatus_Success)
@@ -263,7 +271,9 @@ static status_t SRTM_PdmSdmaAdapter_PeriodReceiveSDMA(srtm_pdm_sdma_adapter_t ha
 
         if (bufRtm->offset == 0U) /* The whole period is finished. */
         {
+            assert(bufRtm->loadIdx < UINT32_MAX);
             bufRtm->loadIdx = (bufRtm->loadIdx + 1U) % rtm->periods;
+            assert(bufRtm->remainingLoadPeriods > 0U);
             bufRtm->remainingLoadPeriods--;
         }
     }
@@ -316,14 +326,19 @@ static void SRTM_PdmSdmaAdapter_PeriodCopyAndNotify(srtm_pdm_sdma_adapter_t hand
         SRTM_PdmSdmaAdapter_LocalBufferUpdate((uint32_t *)(void *)(dst + dstRtm->offset),
                                               (uint32_t *)(void *)(src + srcRtm->offset), size / 4U);
 
+        assert(srcRtm->offset <= UINT32_MAX - size);
         srcRtm->offset += size;
+        assert(dstRtm->offset <= UINT32_MAX - size);
         dstRtm->offset += size;
         if (srcRtm->offset == rtm->localRtm.periodSize) /* whole local buffer copied */
         {
+            assert(srcRtm->leadIdx < UINT32_MAX);
             srcRtm->leadIdx = (srcRtm->leadIdx + 1U) % rtm->localBuf.periods;
             srcRtm->offset  = 0U;
             primask         = DisableGlobalIRQ();
+            assert(srcRtm->remainingPeriods < UINT32_MAX);
             srcRtm->remainingPeriods++;
+            assert(srcRtm->remainingLoadPeriods < UINT32_MAX);
             srcRtm->remainingLoadPeriods++;
             EnableGlobalIRQ(primask);
         }
@@ -331,10 +346,12 @@ static void SRTM_PdmSdmaAdapter_PeriodCopyAndNotify(srtm_pdm_sdma_adapter_t hand
         if (dstRtm->offset == rtm->periodSize)
         {
             /* One period is filled. */
+            assert(dstRtm->chaseIdx < UINT32_MAX);
             dstRtm->chaseIdx = (dstRtm->chaseIdx + 1U) % rtm->periods;
             dstRtm->remainingPeriods--; /* Now one of the remote buffer has been consumed. Assume the ready period is
                                            consumed by host immediately. */
             dstRtm->remainingLoadPeriods--; /* Unused. */
+            assert(dstRtm->chaseIdx <= UINT32_MAX / rtm->periodSize);
             rtm->finishedBufOffset = dstRtm->chaseIdx * rtm->periodSize;
             dstRtm->offset         = 0U;
 
@@ -343,7 +360,7 @@ static void SRTM_PdmSdmaAdapter_PeriodCopyAndNotify(srtm_pdm_sdma_adapter_t hand
 
             if ((adapter->service != NULL) && (adapter->periodDone != NULL))
             {
-                (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+                (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
             }
         }
     }
@@ -396,8 +413,10 @@ static void SRTM_PdmSdmaAdapter_AddNewPeriods(srtm_pdm_sdma_runtime_t rtm, uint3
 
     bufRtm->leadIdx = periodIdx;
     primask         = DisableGlobalIRQ();
+    assert(bufRtm->remainingPeriods <= UINT32_MAX - newPeriods);
     bufRtm->remainingPeriods += newPeriods;
     EnableGlobalIRQ(primask);
+    assert(bufRtm->remainingLoadPeriods <= UINT32_MAX - newPeriods);
     bufRtm->remainingLoadPeriods += newPeriods;
 }
 
@@ -502,11 +521,14 @@ static void SRTM_PdmSdmaAdapter_LocalBufFullDMACb(sdma_handle_t *dmahandle,
         if (rtm->extBufRtm.bufRtm.chaseIdx == rtm->extBufRtm.bufRtm.leadIdx) /* Extra buffer overwrite. */
         {
             rtm->extBufRtm.bufRtm.leadIdx = (rtm->extBufRtm.bufRtm.leadIdx + 1U) % rtm->extBuf.periods;
+            assert(rtm->extBufRtm.bufRtm.remainingPeriods < UINT32_MAX);
             rtm->extBufRtm.bufRtm.remainingPeriods++;
         }
 
         rtm->localRtm.bufRtm.leadIdx = (rtm->localRtm.bufRtm.leadIdx + periodsPerExt) % rtm->localBuf.periods;
+        assert(rtm->localRtm.bufRtm.remainingLoadPeriods <= UINT32_MAX - periodsPerExt);
         rtm->localRtm.bufRtm.remainingLoadPeriods = rtm->localRtm.bufRtm.remainingLoadPeriods + periodsPerExt;
+        assert(rtm->localRtm.bufRtm.remainingPeriods <= UINT32_MAX - periodsPerExt);
         rtm->localRtm.bufRtm.remainingPeriods     = rtm->localRtm.bufRtm.remainingPeriods + periodsPerExt;
     }
 }
@@ -642,9 +664,11 @@ static void SRTM_PdmSdmaRxCallback(PDM_Type *sai, pdm_sdma_handle_t *sdmaHandle,
             rtm->curXferIdx = 1U;
             periodDone      = true;
 
+            assert(rtm->bufRtm.remainingPeriods > 0U);
             rtm->bufRtm.remainingPeriods--;
             chaseIdx               = rtm->bufRtm.chaseIdx; /* For callback. */
             rtm->bufRtm.chaseIdx   = (rtm->bufRtm.chaseIdx + 1U) % rtm->periods;
+            assert(rtm->bufRtm.chaseIdx <= UINT32_MAX / rtm->periodSize);
             rtm->finishedBufOffset = rtm->bufRtm.chaseIdx * rtm->periodSize;
 
             /* Rx is always freeRun, we assume filled period is consumed immediately. */
@@ -655,7 +679,7 @@ static void SRTM_PdmSdmaRxCallback(PDM_Type *sai, pdm_sdma_handle_t *sdmaHandle,
                 /* Rx is always freeRun */
                 if ((rtm->suspendState != SRTM_Suspended) || (rtm->dataCallback == NULL))
                 {
-                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+                    (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
                 }
             }
         }
@@ -1340,18 +1364,22 @@ static void SRTM_PdmSdmaAdapter_DmaM2MCallback(sdma_handle_t *sdma_handle, void 
     {
         if (srcRtm->offset == rtm->extBufRtm.periodSize) /* A extra buffer period is copied. */
         {
+            assert(srcRtm->leadIdx < UINT32_MAX);
             srcRtm->leadIdx = (srcRtm->leadIdx + 1U) % rtm->extBuf.periods;
             srcRtm->offset  = 0U;
+            assert(srcRtm->remainingPeriods < UINT32_MAX);
             srcRtm->remainingPeriods++;
         }
 
         if (dstRtm->offset == rtm->periodSize)
         {
             /* One period is filled. */
+            assert(dstRtm->chaseIdx < UINT32_MAX);
             dstRtm->chaseIdx = (dstRtm->chaseIdx + 1U) % rtm->periods;
             dstRtm->remainingPeriods--; /* Now one of the remote buffer has been consumed. Assume the ready period is
                                            consumed by host immediately. */
             dstRtm->remainingLoadPeriods--; /* Unused. */
+            assert(dstRtm->chaseIdx <= UINT32_MAX / rtm->periodSize);
             rtm->finishedBufOffset = dstRtm->chaseIdx * rtm->periodSize;
             dstRtm->offset         = 0U;
 
@@ -1360,7 +1388,7 @@ static void SRTM_PdmSdmaAdapter_DmaM2MCallback(sdma_handle_t *sdma_handle, void 
 
             if ((adapter->service != NULL) && (adapter->periodDone != NULL))
             {
-                (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, handle->index, rtm->bufRtm.chaseIdx);
+                (void)adapter->periodDone(adapter->service, SRTM_AudioDirRx, (uint8_t)(handle->index & 0xFFU), rtm->bufRtm.chaseIdx);
             }
         }
 
@@ -1414,7 +1442,9 @@ static void SRTM_PdmSdmaAdapter_ExtPeriodCopyAndNotifyProc(srtm_dispatcher_t dis
             SRTM_PdmSdmaAdapter_DmaMemcpy(handle, (uint32_t *)(void *)(dst + dstRtm->offset),
                                           (uint32_t *)(void *)(src + srcRtm->offset), size);
 
+            assert(srcRtm->offset <= UINT32_MAX - size);
             srcRtm->offset += size;
+            assert(dstRtm->offset <= UINT32_MAX - size);
             dstRtm->offset += size;
         }
         else
