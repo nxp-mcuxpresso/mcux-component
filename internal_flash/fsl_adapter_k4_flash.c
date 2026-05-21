@@ -130,11 +130,7 @@ static hal_flash_status_t HAL_FlashProgramAdaptation(uint32_t dest, uint32_t siz
 {
     int32_t status;
 
-    uint32_t regPrimask = DisableGlobalIRQ();
-
     status = FLASH_Program(&s_flashConfig, FLASH, dest, (uint8_t *)pData, size);
-
-    EnableGlobalIRQ(regPrimask);
 
     return HAL_FlashGetStatus(status);
 }
@@ -181,7 +177,6 @@ hal_flash_status_t HAL_FlashInit(void)
 hal_flash_status_t HAL_FlashVerifyErase(uint32_t start, uint32_t lengthInBytes, hal_flash_margin_value_t margin)
 {
     int32_t status;
-    uint32_t regPrimask = DisableGlobalIRQ();
 
     (void)margin;
     if (start >= s_flashConfig.msf1Config[0].ifrDesc.pflashIfr0Start)
@@ -192,7 +187,6 @@ hal_flash_status_t HAL_FlashVerifyErase(uint32_t start, uint32_t lengthInBytes, 
     {
         status = FLASH_VerifyErasePhrase(&s_flashConfig, FLASH, start, lengthInBytes);
     }
-    EnableGlobalIRQ(regPrimask);
     return HAL_FlashGetStatus(status);
 }
 
@@ -292,11 +286,7 @@ hal_flash_status_t HAL_FlashEraseSector(uint32_t dest, uint32_t size)
 {
     int32_t status;
 
-    uint32_t regPrimask = DisableGlobalIRQ();
-
     status = FLASH_Erase(&s_flashConfig, FLASH, dest, size, (uint32_t)kFLASH_ApiEraseKey);
-
-    EnableGlobalIRQ(regPrimask);
 
     return HAL_FlashGetStatus(status);
 }
