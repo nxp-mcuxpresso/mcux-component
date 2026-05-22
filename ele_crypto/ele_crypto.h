@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 NXP
+ * Copyright 2024-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -2210,6 +2210,27 @@ status_t ELE_SetPolicyBbsm(S3MU_Type *mu, uint32_t alert_mask);
  * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
  */
 status_t ELE_GetEvent(S3MU_Type *mu, ele_events_t *events);
+
+/*!
+ * @brief ELE ECDH
+ *
+ * This function performs ECDH (Elliptic Curve Diffie-Hellman) key agreement
+ * using plaintext keys as described in SP800-56A Section 5.7.1.2.
+ * Only ECC NIST P-256, P-384, and P-521 curves are supported.
+ * Public keys must be in non-compressed form {x, y}.
+ *
+ * @param mu MU peripheral base address
+ * @param conf pointer where ECDH configuration structure can be found
+ * @param output_size pointer where to save the resulting shared secret size or the expected
+ *        size of the shared secret buffer, if the buffer is found to be too small, in which case
+ *        an error is also returned
+ *
+ * @return Status kStatus_Success if success, kStatus_Fail if fail,
+ *         kStatus_InvalidArgument if invalid argument
+ * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange,
+ *                  kStatus_ELE_BufferTooSmall
+ */
+status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size);
 
 #if defined(__cplusplus)
 }
