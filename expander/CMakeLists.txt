@@ -34,6 +34,17 @@ if (CONFIG_MCUX_COMPONENT_driver.pcal6524)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_driver.pca9555)
+    mcux_add_include(
+        INCLUDES ./pca9555
+    )
+
+    mcux_add_source(
+        SOURCES ./pca9555/fsl_pca9555.c
+                ./pca9555/fsl_pca9555.h
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_driver.adp5585)
     mcux_add_include(
         INCLUDES ./adp5585

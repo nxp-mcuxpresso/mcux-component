@@ -53,6 +53,26 @@ config PCAL6524_CALLBACK_PER_PIN
 
 endif
 
+config MCUX_COMPONENT_driver.pca9555
+    bool "Select expander pca9555 driver"
+    help
+      Say yes here to select pca9555 driver.
+
+if MCUX_COMPONENT_driver.pca9555
+
+config PCA9555_CALLBACK_PER_PIN
+    bool "Use per-pin interrupt callbacks"
+    default y
+    help
+      When enabled (default), the PCA9555 handle stores one callback per I/O
+      pin and PCA9555_InterruptHandler dispatches per-pin callbacks automatically.
+      When disabled, a single global callback receives changedPins and pinStates
+      bitmasks.
+
+      Per-pin mode adds 16 * 2 pointers (128 bytes on 32-bit ARM) to each handle.
+
+endif
+
 config MCUX_COMPONENT_driver.adp5585
     bool "Select expander adp5585 driver"
     help
