@@ -30,7 +30,8 @@
 
 /*! @brief wm8962 map protocol */
 #define HAL_WM8962_MAP_PROTOCOL(protocol)                                 \
-    ((protocol) == kCODEC_BusI2S            ? kWM8962_BusI2S :            \
+    ((protocol) == kCODEC_BusTDM            ? (kWM8962_BusTDM | kWM8962_BusPCMA) : \
+     (protocol) == kCODEC_BusI2S            ? kWM8962_BusI2S :            \
      (protocol) == kCODEC_BusLeftJustified  ? kWM8962_BusLeftJustified :  \
      (protocol) == kCODEC_BusRightJustified ? kWM8962_BusRightJustified : \
      (protocol) == kCODEC_BusPCMA           ? kWM8962_BusPCMA :           \
@@ -200,7 +201,7 @@ status_t HAL_CODEC_WM8962_SetVolume(void *handle, uint32_t playChannel, uint32_t
         {
             mappedVolume = (WM8962_DAC_MAX_VOLUME_vALUE * volume) / 100U;
         }
-        
+
         retVal = WM8962_SetModuleVolume((wm8962_handle_t *)((uintptr_t)(((codec_handle_t *)handle)->codecDevHandle)),
                                         kWM8962_ModuleDAC, mappedVolume);
     }

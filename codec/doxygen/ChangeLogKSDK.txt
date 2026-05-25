@@ -365,7 +365,13 @@
 
 @if dox_section_wm8962
 @section wm8962 WM8962
-  The current wm8962 driver version is 2.2.0.
+  The current wm8962 driver version is 2.3.0.
+
+  - 2.3.0
+    - Improvements
+      - Added WM8962 TDM protocol support in the driver and codec adapter.
+      - Enabled WM8962 TDM mode through the dedicated AIFDAC and AIFADC TDM interface bits while using PCM A framing.
+      - Updated WM8962 clock handling so TDM frame lengths and slave-mode operation are configured correctly.
 
   - 2.2.0
     - Improvements

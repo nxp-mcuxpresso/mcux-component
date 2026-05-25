@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023, 2025 NXP
+ * Copyright 2022-2023, 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -249,7 +249,18 @@ static status_t WM8962_SetMasterClock(wm8962_handle_t *handle,
                                       uint32_t bitWidth)
 {
     uint32_t bitClockDivider = 0U, regDivider = 0U;
+    uint32_t frameWordNum    = 2U;
     status_t ret = kStatus_Success;
+    bool isMaster = false;
+
+    if ((handle != NULL) && (handle->config != NULL))
+    {
+        isMaster = handle->config->masterSlave;
+        if ((((uint32_t)handle->config->bus & (uint32_t)kWM8962_BusTDM) != 0U))
+        {
+            frameWordNum = 4U;
+        }
+    }
 
     /* Validate input parameters first */
     if ((sampleRate == 0U) || (bitWidth == 0U))
@@ -258,15 +269,14 @@ static status_t WM8962_SetMasterClock(wm8962_handle_t *handle,
     }
     else
     {
-        /* Check for overflow: sampleRate * bitWidth * 2 */
-        /* Rearrange to: dspClock / sampleRate / bitWidth / 2 */
+        /* Rearrange to: dspClock / sampleRate / bitWidth / frameWordNum */
         uint32_t tempDivider = dspClock / sampleRate;
         if (tempDivider >= bitWidth)
         {
             tempDivider = tempDivider / bitWidth;
-            if (tempDivider >= 2U)
+            if (tempDivider >= frameWordNum)
             {
-                bitClockDivider = tempDivider / 2U;
+                bitClockDivider = tempDivider / frameWordNum;
             }
             else
             {
@@ -279,7 +289,20 @@ static status_t WM8962_SetMasterClock(wm8962_handle_t *handle,
         }
     }
 
-    if (ret == kStatus_Success)
+    if ((ret == kStatus_Success) && !isMaster)
+    {
+        /* In slave mode the host drives BCLK/LRCLK, so only the frame length needs updating. */
+        if (bitWidth <= (UINT16_MAX / frameWordNum))
+        {
+            WM8962_CHECK_RET(WM8962_WriteReg(handle, WM8962_IFACE2, (uint16_t)(bitWidth * frameWordNum)), ret);
+        }
+        else
+        {
+            ret = kStatus_InvalidArgument;
+        }
+    }
+
+    if ((ret == kStatus_Success) && isMaster)
     {
         switch (bitClockDivider)
         {
@@ -320,15 +343,15 @@ static status_t WM8962_SetMasterClock(wm8962_handle_t *handle,
         }
     }
 
-    if (ret == kStatus_Success)
+    if ((ret == kStatus_Success) && isMaster)
     {
         WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_CLOCK2, WM8962_CLOCK2_BCLK_DIV_MASK, (uint16_t)regDivider),
                          ret);
-        
-        /* Check for overflow in bitWidth * 2U before writing to register */
-        if (bitWidth <= (UINT16_MAX / 2U))
+
+        /* Check for overflow in bitWidth * frameWordNum before writing to register */
+        if (bitWidth <= (UINT16_MAX / frameWordNum))
         {
-            WM8962_CHECK_RET(WM8962_WriteReg(handle, WM8962_IFACE2, (uint16_t)(bitWidth * 2U)), ret);
+            WM8962_CHECK_RET(WM8962_WriteReg(handle, WM8962_IFACE2, (uint16_t)(bitWidth * frameWordNum)), ret);
         }
         else
         {
@@ -440,20 +463,41 @@ status_t WM8962_Deinit(wm8962_handle_t *handle)
 status_t WM8962_SetProtocol(wm8962_handle_t *handle, wm8962_protocol_t protocol)
 {
     status_t ret = kStatus_Success;
+    wm8962_protocol_t ifaceProtocol;
+    bool isTdm = (((uint32_t)protocol & (uint32_t)kWM8962_BusTDM) != 0U);
+    uint16_t tdmValue = isTdm ? (WM8962_IFACE0_AIFDAC_TDM_MODE_MASK | WM8962_IFACE0_AIFADC_TDM_MODE_MASK) : 0U;
 
-    if (protocol == kWM8962_BusPCMB)
+    if (protocol == kWM8962_BusTDM)
+    {
+        ifaceProtocol = kWM8962_BusPCMA;
+    }
+    else
+    {
+        ifaceProtocol = (wm8962_protocol_t)((uint32_t)protocol & (uint32_t)kWM8962_BusFormatMask);
+    }
+
+    WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_TDM_MASK, tdmValue), ret);
+
+    if ((uint32_t)ifaceProtocol > (uint32_t)kWM8962_BusPCMA)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    if (ifaceProtocol == kWM8962_BusPCMB)
     {
         WM8962_CHECK_RET(
-            WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_FORMAT_MASK, ((uint16_t)protocol | 0x10U)), ret);
+            WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_FORMAT_MASK, ((uint16_t)ifaceProtocol | 0x10U)), ret);
     }
-    else if (protocol == kWM8962_BusPCMA)
+    else if (ifaceProtocol == kWM8962_BusPCMA)
     {
-        WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_FORMAT_MASK, ((uint16_t)protocol - 1U)),
+        WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_FORMAT_MASK,
+                                          ((uint16_t)ifaceProtocol - 1U)),
                          ret);
     }
     else
     {
-        WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_FORMAT_MASK, (uint16_t)protocol), ret);
+        WM8962_CHECK_RET(
+            WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_FORMAT_MASK, (uint16_t)ifaceProtocol), ret);
     }
 
     return ret;
@@ -910,6 +954,7 @@ status_t WM8962_ConfigDataFormat(wm8962_handle_t *handle, uint32_t sysclk, uint3
     }
 
     WM8962_CHECK_RET(WM8962_WriteReg(handle, WM8962_CLK4, val), retval);
+    WM8962_CHECK_RET(WM8962_SetMasterClock(handle, sysclk, sample_rate, bits), retval);
 
     return retval;
 }

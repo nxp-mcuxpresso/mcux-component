@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023, 2025 NXP
+ * Copyright 2022-2023, 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -21,8 +21,8 @@
  ******************************************************************************/
 /*! @name Driver version */
 /*! @{ */
-/*! @brief CLOCK driver version 2.2.1 */
-#define FSL_WM8962_DRIVER_VERSION (MAKE_VERSION(2, 2, 1))
+/*! @brief WM8962 driver version 2.3.0. */
+#define FSL_WM8962_DRIVER_VERSION (MAKE_VERSION(2, 3, 0))
 /*! @} */
 
 /*! @brief wm8962 handle size */
@@ -124,6 +124,14 @@
 #define WM8962_IFACE0_FORMAT_I2S   0x02U
 #define WM8962_IFACE0_FORMAT_DSP   0x03U
 #define WM8962_IFACE0_FORMAT(x)    (((x) << WM8962_IFACE1_FORMAT_SHIFT) & WM8962_IFACE1_FORMAT_MASK)
+
+/*! @brief WM8962_IFACE0 TDM bits */
+#define WM8962_IFACE0_AIFDAC_TDM_MODE_MASK 0x1000U
+#define WM8962_IFACE0_AIFDAC_TDM_SLOT_MASK 0x0800U
+#define WM8962_IFACE0_AIFADC_TDM_MODE_MASK 0x0400U
+#define WM8962_IFACE0_AIFADC_TDM_SLOT_MASK 0x0200U
+#define WM8962_IFACE0_TDM_MASK             (WM8962_IFACE0_AIFDAC_TDM_MODE_MASK | WM8962_IFACE0_AIFDAC_TDM_SLOT_MASK | \
+                                           WM8962_IFACE0_AIFADC_TDM_MODE_MASK | WM8962_IFACE0_AIFADC_TDM_SLOT_MASK)
 
 /*! @brief WM8962_IFACE0 WL bits */
 #define WM8962_IFACE0_WL_MASK   0x0CU
@@ -284,15 +292,22 @@ enum
 
 /*!
  * @brief The audio data transfer protocol choice.
- * WM8962 only supports I2S format and PCM format.
+ *
+ * WM8962 supports classic stereo I2S/justified modes and DSP framed modes.
+ * The TDM flag can be ORed with any base interface format to enable the
+ * codec's dedicated TDM mode bits while preserving the selected digital audio
+ * interface format. For backward compatibility, using the TDM flag alone keeps
+ * the previous PCM/DSP A framing behavior.
  */
 typedef enum _wm8962_protocol
 {
-    kWM8962_BusPCMA           = 4, /*!< PCMA mode */
-    kWM8962_BusPCMB           = 3, /*!< PCMB mode */
-    kWM8962_BusI2S            = 2, /*!< I2S type */
-    kWM8962_BusLeftJustified  = 1, /*!< Left justified mode */
-    kWM8962_BusRightJustified = 0, /*!< Right justified mode */
+    kWM8962_BusRightJustified = 0x0U, /*!< Right justified mode */
+    kWM8962_BusLeftJustified  = 0x1U, /*!< Left justified mode */
+    kWM8962_BusI2S            = 0x2U, /*!< I2S type */
+    kWM8962_BusPCMB           = 0x3U, /*!< PCMB mode */
+    kWM8962_BusPCMA           = 0x4U, /*!< PCMA mode */
+    kWM8962_BusFormatMask     = 0x7U, /*!< Mask of the base interface format bits */
+    kWM8962_BusTDM            = 0x8U, /*!< TDM mode flag */
 } wm8962_protocol_t;
 
 /*! @brief wm8962 input source */
@@ -474,9 +489,10 @@ status_t WM8962_SetDataRoute(wm8962_handle_t *handle, const wm8962_route_config_
 /*!
  * @brief Set the audio transfer protocol.
  *
- * WM8960 only supports I2S, left justified, right justified, PCM A, PCM B format.
+ * WM8962 supports I2S, left justified, right justified, PCM A, and PCM B.
+ * OR the selected base format with kWM8962_BusTDM to enable TDM mode.
  *
- * @param handle WM8960 handle structure.
+ * @param handle WM8962 handle structure.
  * @param protocol Audio data transfer protocol.
  */
 status_t WM8962_SetProtocol(wm8962_handle_t *handle, wm8962_protocol_t protocol);
