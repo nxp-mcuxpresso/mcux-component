@@ -842,14 +842,14 @@ typedef enum _ecdh_key_size_t
  */
 typedef struct _ele_ecdh_t
 {
-    ecdh_algorithm_t operation; /*!< Algorithm identifier (always kECDH = 0x09020000) */
-    ecdh_key_size_t key_size_bits; /*!< Key size in bits: 256 (P-256), 384 (P-384), or 521 (P-521) */
     const uint8_t *private_key;       /*!< Pointer to private key buffer */
     uint16_t private_key_size;  /*!< Size of private key in bytes */
     const uint8_t *public_key;        /*!< Pointer to public key buffer (non-compressed form {x, y}) */
     uint16_t public_key_size;   /*!< Size of public key in bytes */
     uint8_t *shared_secret;     /*!< Pointer to output shared secret buffer */
     uint16_t shared_secret_size; /*!< Size of shared secret buffer in bytes */
+    ecdh_algorithm_t operation; /*!< Algorithm identifier (always kECDH = 0x09020000) */
+    ecdh_key_size_t key_size_bits; /*!< Key size in bits: 256 (P-256), 384 (P-384), or 521 (P-521) */
 } ele_ecdh_t;
 
 /*!
