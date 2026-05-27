@@ -499,6 +499,14 @@ The configuration is used for debug console only. Please note, it is not sued fo
 @if dox_section_semihosting
 @defgroup Semihosting Semihosting
 @ingroup debugconsole
+
+@warning **Deprecated.** This per-IDE manual procedure is superseded by the
+`utility.semihost` component (`mcuxsdk/components/semihost/`), which exposes
+the same capability through a single Kconfig flip
+(`CONFIG_MCUX_COMPONENT_utility.debug_console_semihost=y`) and works uniformly
+across armgcc / IAR / MDK / MCUX-IDE without per-toolchain project edits.
+See `components/semihost/doxygen/semihost.dox`.
+
 @details Semihosting is a mechanism for ARM targets to communicate input/output requests from application code to a host computer running a debugger.
 This mechanism can be used, for example, to enable functions in the C library, such as printf() and scanf(), to use the screen and keyboard of the host
 rather than having a screen and keyboard on the target system.

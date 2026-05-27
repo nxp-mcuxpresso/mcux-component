@@ -1,0 +1,130 @@
+/*!
+@defgroup semihost Utility semihost - ARM semihosting
+
+ARM semihosting (`BKPT 0xAB`) lets a target use the debugger host's console and
+filesystem with no on-target UART. The component has four independent units:
+
+| Kconfig unit | Provides |
+|--------------|----------|
+| `utility.semihost` | Base host call + direct file API (`SEMIHOST_Open/Read/Seek/Flen/Close`), libc-free |
+| `utility.semihost_console` | libc `_write`/`__write`/`fputc` retarget: C `printf` goes to the host |
+| `utility.semihost_file` | libc file retarget: `fopen`/`fwrite`/`fread` hit host files |
+| `utility.debug_console_semihost` | debug-console backend: the SDK `PRINTF` goes to the host |
+
+Cortex-M (T32) only. On M3/M4/M7 and M33/M55/M85 the component reads
+DHCSR.C_DEBUGEN and returns -1 when no debugger is attached; on M0/M0+/M23 DHCSR
+is not software-readable, so `BKPT` without a debugger hard-faults - do not ship
+semihosting enabled on those cores.
+
+# Console via libc printf
+
+@code
+CONFIG_MCUX_COMPONENT_utility.semihost_console=y
+@endcode
+
+Call standard `printf`. Flush before exiting (the buffer is line-buffered):
+
+@code
+SEMIHOST_ConsoleFlush();
+SEMIHOST_Exit(0);
+@endcode
+
+This coexists with `utility.debug_console`: the SDK `PRINTF` stays on UART while
+C `printf` goes to semihosting. To route existing `PRINTF` sites to semihosting
+without code changes, build with `-DSDK_DEBUGCONSOLE=0` and leave
+`SDK_DEBUGCONSOLE_UART` undefined - but prefer the debug-console backend below,
+which keeps `PRINTF` a function macro and avoids the toolchain `printf`
+`-Wformat` checking that `SDK_DEBUGCONSOLE=0` turns on across the whole SDK.
+
+# Console via the debug-console backend
+
+Moves a board's `PRINTF` from UART to semihosting: turn off the board's default
+console, then enable this backend.
+
+@code
+CONFIG_MCUX_PRJSEG_module.board.console=n        /* disable the board's default console (or console_lite) */
+CONFIG_MCUX_COMPONENT_utility.debug_console_semihost=y
+@endcode
+
+`PRINTF` becomes `DbgConsole_Printf` (a function, not the toolchain `printf`),
+so no UART is linked and no `-Wformat` is triggered. Mutually exclusive with
+`debug_console` / `_lite` / `_rtt`.
+
+# Viewing the output
+
+Semihosting I/O is rendered by the debugger, so where it shows up depends on the
+tool, not on this component.
+
+Command line (`west debug` → GDB against the probe's gdbserver): enable
+semihosting in the session, then pick the output sink.
+
+@code
+monitor semihosting enable
+monitor semihosting IOClient 1   /* 1 = telnet, 2 = GDB console, 3 = both */
+continue
+@endcode
+
+- J-Link: `IOClient 1` sends output to the J-Link telnet port (2333).
+- LinkServer: output goes to its semihosting telnet port (default 3334, set by
+  west's `--semihost-port`); connect a telnet client to read it.
+
+IDE project (`west build -t guiproject`):
+
+| Project | Where the output appears |
+|---------|--------------------------|
+| IAR EWARM | View > Terminal I/O |
+| MCUXpresso IDE | Console view |
+| Keil MDK | command-line GDB only (uVision GUI does not service the trap) |
+
+Keil MDK (MicroLib included) works from the command line: flash under J-Link,
+then `monitor semihosting enable` in GDB. The uVision GUI does not service the
+semihosting trap - it stops at the `BKPT` and creates no host file - so use
+command-line GDB there.
+
+# File I/O
+
+Two ways to reach host files:
+
+- **libc retarget** - enable `utility.semihost_file`, then use standard
+  `fopen`/`fwrite`/`fread`/`fseek`/`fclose`. IAR needs the Full DLib config
+  (`--dlib_config DLib_Config_Full.h`); the default Normal config omits `FILE`.
+- **direct API** - call `SEMIHOST_Open`/`Read`/`Seek`/`Flen`/`Close` from the
+  base unit. Libc-free and toolchain-independent, no `--dlib_config` needed.
+
+@code
+int h = SEMIHOST_Open("out.txt", kSemihost_OpenW);
+SEMIHOST_Write(h, buf, n);
+SEMIHOST_Close(h);
+@endcode
+
+Notes:
+- Host files are relative to the debugger's working directory; there is no
+  target filesystem.
+- `SEMIHOST_Seek` (and `SYS_SEEK`) is absolute from the start; `SEEK_CUR` is
+  unsupported on the GCC/IAR libc retarget (no `SYS_TELL`, no tracked position).
+- Keep host filenames to 23 characters or fewer: some host debuggers mishandle
+  `SYS_OPEN` for longer names (GDB 14.2 appends bytes, GDB 13.2 fails the open).
+
+# Toolchain support
+
+| Toolchain | Console hook | File hooks |
+|-----------|--------------|------------|
+| armgcc / MCUXpresso (newlib) | `_write` (strong) | `_open`/`_read`/... |
+| IAR EWARM (DLib) | `__write` (weak) | `__open`/`__read`/... |
+| ARM Compiler / Keil MDK | `fputc` | `_sys_open`/`_sys_read`/... (non-MicroLib only, not CI-verified) |
+
+The console `fputc` and the direct file API issue the semihosting trap
+themselves, so they run on Keil MDK, MicroLib included - verified on frdmmcxw23
+(armgcc / IAR / MDK). Only the `semihost_file` libc `fopen` retarget needs a
+file-system layer MicroLib lacks; use the direct API there.
+
+# Caveats
+
+- Do not call from an ISR: `BKPT` halts the core synchronously.
+- The console redirect uses one file-scope buffer and is not reentrant.
+
+# Reference
+
+- ARM Semihosting for AArch32 and AArch64 (Arm DUI 0471).
+- `examples/component_examples/semihost` - sample app (console + host file I/O).
+*/

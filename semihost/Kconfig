@@ -1,0 +1,49 @@
+# Copyright 2026 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_utility.semihost
+    bool "semihost"
+    depends on CPU_CORTEX_M
+    help
+      ARM semihosting host-call layer (BKPT 0xAB) plus a libc-free direct file
+      API (SEMIHOST_Open/Read/Seek/Flen/Close; writes reuse SEMIHOST_Write),
+      the toolchain-independent alternative to semihost_file. Cortex-M only.
+
+config MCUX_COMPONENT_utility.semihost_console
+    bool "semihost_console"
+    depends on CPU_CORTEX_M
+    select MCUX_COMPONENT_utility.semihost
+    help
+      Retargets the C library's low-level write (_write / __write / fputc) so
+      standard printf/puts reach the debugger over semihosting. Coexists with
+      debug_console: the SDK PRINTF stays on UART, C printf goes to semihosting.
+      To route existing PRINTF sites instead, build -DSDK_DEBUGCONSOLE=0 and
+      leave SDK_DEBUGCONSOLE_UART undefined (or prefer debug_console_semihost).
+
+config MCUX_COMPONENT_utility.semihost_file
+    bool "semihost_file"
+    depends on CPU_CORTEX_M
+    select MCUX_COMPONENT_utility.semihost_console
+    help
+      Retargets the C library's low-level file I/O (newlib _open/_read/...;
+      IAR DLib __open/__read/...; ARM Compiler _sys_open/_sys_read/...) so
+      standard fopen/fwrite/fread/fseek/fclose hit host files over semihosting.
+      IAR needs --dlib_config DLib_Config_Full.h (Normal DLib omits FILE). Not
+      available under MDK MicroLib (no file-system layer; compiles empty). The
+      ARM Compiler branch is not CI-verified. For a libc-free alternative, use
+      the direct SEMIHOST_* API in the base unit.
+
+config MCUX_COMPONENT_utility.debug_console_semihost
+    bool "debug_console_semihost"
+    depends on CPU_CORTEX_M
+    depends on !MCUX_COMPONENT_utility.debug_console && !MCUX_COMPONENT_utility.debug_console_lite && !MCUX_COMPONENT_utility.debug_console_rtt
+    select MCUX_COMPONENT_utility.semihost
+    select MCUX_COMPONENT_utility.str
+    help
+      Debug-console backend routing the SDK PRINTF to semihosting instead of a
+      UART, replacing debug_console at the board level (unlike semihost_console,
+      which only adds a _write override alongside the UART console). Ships its
+      own fsl_debug_console.h; PRINTF maps to DbgConsole_Printf (a function, not
+      the toolchain printf, so no -Wformat), with the 4-arg DbgConsole_Init so
+      board files build unchanged. Mutually exclusive with the other
+      debug_console variants.
