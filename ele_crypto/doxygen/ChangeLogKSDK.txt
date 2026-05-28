@@ -2,7 +2,10 @@
 @page driver_log Driver Change Log
 
 @section ele_crypto The EdgeLock Enclave Crypto SW
-  The current ELE Crypto  version is 2.10.0.
+  The current ELE Crypto  version is 2.11.0.
+ 
+  - 2.11.0 Add ELE_GetFwVersionAndCommitSHA1 to expose commit SHA from GET FW VERSION response
+           Add ELE_Ecdh for ECDH key agreement (P-256, P-384, P-521)
 
   - 2.10.0 Add support for updated Fast MAC
            Add RNG reseed option to ELE_RngGetRandom()

@@ -3351,17 +3351,18 @@ status_t ELE_Ping(S3MU_Type *mu)
 }
 
 /*!
- * brief Get ELE FW Version
+ * brief Get ELE FW Version and Commit SHA1
  *
  * This function is used to retrieve the Sentinel FW version.
  *
  * param mu MU peripheral base address
  * param EleFwVersion Pointer where ElE firmware version will be stored
+ * param EleFwCommitSHA1 Pointer where ElE firmware commit SHA1 will be stored
  *
  * return Status kStatus_Success if success, kStatus_Fail if fail
  * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
  */
-status_t ELE_GetFwVersion(S3MU_Type *mu, uint32_t *EleFwVersion)
+status_t ELE_GetFwVersionAndCommitSHA1(S3MU_Type *mu, uint32_t *EleFwVersion, uint32_t *EleFwCommitSHA1)
 {
     status_t status                    = kStatus_Fail;
     uint32_t tmsg[GET_FW_VERSION_SIZE] = {0u};
@@ -3386,14 +3387,39 @@ status_t ELE_GetFwVersion(S3MU_Type *mu, uint32_t *EleFwVersion)
     /* Check that response corresponds to the sent command */
     if (rmsg[0] == GET_FW_VERSION_RESPONSE_HDR && rmsg[1] == RESPONSE_SUCCESS)
     {
-        /* read FW version */
-        *EleFwVersion = rmsg[2];
+        /* read FW version and commit SHA*/
+        if (EleFwVersion != NULL)
+        {
+            *EleFwVersion = rmsg[2];
+        }
+
+        if (EleFwCommitSHA1 != NULL)
+        {
+            *EleFwCommitSHA1 = rmsg[3];
+        }
+
         return kStatus_Success;
     }
     else
     {
         return kStatus_Fail;
     }
+}
+
+/*!
+ * brief Get ELE FW Version
+ *
+ * This function is used to retrieve the Sentinel FW version.
+ *
+ * param mu MU peripheral base address
+ * param EleFwVersion Pointer where ElE firmware version will be stored
+ *
+ * return Status kStatus_Success if success, kStatus_Fail if fail
+ * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
+ */
+status_t ELE_GetFwVersion(S3MU_Type *mu, uint32_t *EleFwVersion)
+{
+    return ELE_GetFwVersionAndCommitSHA1(mu, EleFwVersion, NULL);
 }
 
 /*!

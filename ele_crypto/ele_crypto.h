@@ -19,9 +19,13 @@
  *******************************************************************************/
 /*! @name Version */
 /*! @{ */
-/*! @brief Defines ELE Crypto version 2.10.0.
+/*! @brief Defines ELE Crypto version 2.11.0.
  *
  * Change log:
+ *
+ * - Version 2.11.0
+ *   - Add ELE_GetFwVersionAndCommitSHA1 to expose commit SHA from GET FW VERSION response
+ *   - Add ELE_Ecdh for ECDH key agreement (P-256, P-384, P-521)
  *
  * - Version 2.10.0
  *   - Add support for updated Fast MAC
@@ -84,7 +88,7 @@
  * - Version 2.0.0
  *   - initial version
  */
-#define FSL_ELE_CRYPTO_VERSION (MAKE_VERSION(2, 10, 0))
+#define FSL_ELE_CRYPTO_VERSION (MAKE_VERSION(2, 11, 0))
 /*! @} */
 
 enum
@@ -1815,6 +1819,20 @@ status_t ELE_GenericRsaKeygen(S3MU_Type *mu, ele_generic_rsa_t *conf);
  * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
  */
 status_t ELE_Ping(S3MU_Type *mu);
+
+/*!
+ * @brief Get ELE FW Version and Commit SHA1
+ *
+ * This function is used to retrieve the Sentinel FW version and commit SHA1.
+ *
+ * @param mu MU peripheral base address
+ * @param EleFwVersion Pointer where ElE firmware version will be stored
+ * @param EleFwCommitSHA1 Pointer where ElE firmware commit SHA1 will be stored
+ *
+ * @return Status kStatus_Success if success, kStatus_Fail if fail
+ * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
+ */
+status_t ELE_GetFwVersionAndCommitSHA1(S3MU_Type *mu, uint32_t *EleFwVersion, uint32_t *EleFwCommitSHA1);
 
 /*!
  * @brief Get ELE FW Version
