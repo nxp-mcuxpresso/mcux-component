@@ -74,6 +74,12 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.slim)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.frdm_m2_adapter_v1)
+    mcux_add_macro(
+        "-DCONFIG_FRDM_M2_ADAPTER_V1=1"
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.RW61X)
 # Fix "Depended component component.wifi_bt_module.RW61X is not loaded"
 endif()
