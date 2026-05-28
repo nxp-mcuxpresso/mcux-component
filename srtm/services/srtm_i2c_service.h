@@ -38,6 +38,7 @@ typedef enum
     /* I2C Service Request Command definition */
     SRTM_I2C_CMD_READ = 0U,
     SRTM_I2C_CMD_WRITE,
+    SRTM_I2C_CMD_WRITE_READ, /* Combined write-then-read (repeated START) */
 } srtm_i2c_cmd_t;
 
 /**
@@ -129,6 +130,15 @@ struct _srtm_i2c_adapter
                            uint8_t *buf,
                            uint16_t len,
                            uint16_t flags);
+    srtm_status_t (*write_read)(srtm_i2c_adapter_t adapter,
+                                uint32_t base_addr,
+                                srtm_i2c_type_t type,
+                                uint16_t slaveAddr,
+                                uint8_t *txBuf,
+                                uint16_t txLen,
+                                uint8_t *rxBuf,
+                                uint16_t rxLen,
+                                uint16_t flags);
     srtm_status_t (*switchchannel)(srtm_i2c_adapter_t adapter,
                                    uint32_t base_addr,
                                    srtm_i2c_type_t type,
