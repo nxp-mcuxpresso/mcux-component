@@ -15,6 +15,11 @@
 /*
  * Change log:
  *
+ *   1.2.0
+ *     - Removed weak PCAL6524_EnterCritical / PCAL6524_ExitCritical
+ *     - Add per-handle lock callback function pointer wrapped around
+ *       read-modify-write sequences; user code installs the hook by
+ *       assigning handle.lock after PCAL6524_Init (see header for examples)
  *   1.1.0
  *     - Add pin state read APIs (non-destructive and interrupt-clearing variants)
  *     - Add edge-triggered interrupt configuration and callback-based handler
@@ -199,6 +204,57 @@ typedef status_t (*pcal6524_i2c_send_func_t)(void *base,
                                              uint8_t txBuffSize,
                                              uint32_t flags);
 
+/*!
+ * @brief PCAL6524 lock callback.
+ *
+ * Installed by the user via the @c lock field on @ref pcal6524_handle_t. The
+ * driver wraps every internal read-modify-write sequence with two calls to
+ * this function: one with @c lock=true before the I2C work and one with
+ * @c lock=false after. @ref PCAL6524_Init clears the field to NULL and the
+ * driver skips the call when the field is NULL, so bare-metal users with no
+ * concurrency concerns can ignore this entirely.
+ *
+ * Return @ref kStatus_Success to let the driver proceed; any other status
+ * (e.g. an RTOS mutex acquisition timeout) is propagated by the driver up
+ * to the caller, which then aborts without doing the I2C work. The driver
+ * never calls the unlock side after a failed lock, so a single failure
+ * cannot leave the lock unbalanced.
+ *
+ * To serialize driver state across RTOS tasks, or to block ISR re-entry,
+ * assign the hook after @c PCAL6524_Init. Multiple handles (multiple chips
+ * on different I2C buses, multiple test fixtures) each carry their own hook
+ * with no linker-level coupling — this is what makes unit tests able to
+ * install per-test stubs without conflicting with a board-level definition.
+ *
+ * The driver invokes the hook in a non-nested fashion on a given handle,
+ * and runs user callbacks from @ref PCAL6524_InterruptHandler with the
+ * critical section released so callbacks may call other driver APIs.
+ *
+ * Example: serialize across RTOS tasks with an OSA mutex
+ * @code
+   static status_t board_pcal6524_lock(bool lock)
+   {
+       return lock ? OSA_MutexLock(g_expanderMutex, osaWaitForever_c)
+                   : OSA_MutexUnlock(g_expanderMutex);
+   }
+
+   PCAL6524_Init(&handle, &config);
+   handle.lock = board_pcal6524_lock;
+   @endcode
+ *
+ * Example: block ISR re-entry by masking the MCU GPIO IRQ wired to the
+ * expander INT pin (mixed task / ISR access)
+ * @code
+   static status_t board_pcal6524_lock(bool lock)
+   {
+       if (lock) { DisableIRQ(BOARD_EXPANDER_INT_IRQ); }
+       else      { EnableIRQ(BOARD_EXPANDER_INT_IRQ);  }
+       return kStatus_Success;
+   }
+   @endcode
+ */
+typedef status_t (*pcal6524_lock_func_t)(bool lock);
+
 /*! @brief PCAL6524 configure structure.*/
 typedef struct _pcal6524_config
 {
@@ -215,6 +271,7 @@ typedef struct _pcal6524_handle
     uint8_t i2cAddr;                             /*!< I2C address. */
     pcal6524_i2c_send_func_t I2C_SendFunc;       /*!< Function to send I2C data. */
     pcal6524_i2c_receive_func_t I2C_ReceiveFunc; /*!< Function to receive I2C data. */
+    pcal6524_lock_func_t lock;                   /*!< Lock callback, NULL to skip. See @ref pcal6524_lock_func_t. */
 #if PCAL6524_CALLBACK_PER_PIN
     pcal6524_pin_callback_t pinCallbacks[PCAL6524_PIN_COUNT]; /*!< Per-pin callbacks, NULL to skip. */
     void *pinUserData[PCAL6524_PIN_COUNT];                    /*!< Per-pin user context. */
@@ -579,56 +636,6 @@ status_t PCAL6524_ClearInterruptPins(pcal6524_handle_t *handle, uint32_t pins);
  */
 status_t PCAL6524_InterruptHandler(pcal6524_handle_t *handle);
 
-/*! @} */
-
-/*!
- * @name Critical-section hooks
- *
- * The driver wraps every internal read-modify-write sequence with these
- * functions. Both have weak no-op default implementations in fsl_pcal6524.c.
- * To serialize driver state across multiple RTOS tasks, or to protect against
- * ISR re-entry, override either or both by providing a strong definition with
- * the same signature in user code (linker resolves strong over weak).
- *
- * The driver invokes them in a non-nested fashion on a given handle, and runs
- * user callbacks from @ref PCAL6524_InterruptHandler with the critical
- * section released so callbacks may call other driver APIs.
- *
- * Example: serialize across RTOS tasks with an OSA mutex
- * @code
-   void PCAL6524_EnterCritical(pcal6524_handle_t *handle)
-   {
-       (void)handle;
-       (void)OSA_MutexLock(g_expanderMutex, osaWaitForever_c);
-   }
-   void PCAL6524_ExitCritical(pcal6524_handle_t *handle)
-   {
-       (void)handle;
-       (void)OSA_MutexUnlock(g_expanderMutex);
-   }
-   @endcode
- *
- * Example: also block ISR re-entry by masking the MCU GPIO IRQ that is wired
- * to the expander INT pin (mixed task / ISR access)
- * @code
-   void PCAL6524_EnterCritical(pcal6524_handle_t *handle)
-   {
-       (void)handle;
-       DisableIRQ(BOARD_EXPANDER_INT_IRQ);
-       (void)OSA_MutexLock(g_expanderMutex, osaWaitForever_c);
-   }
-   void PCAL6524_ExitCritical(pcal6524_handle_t *handle)
-   {
-       (void)handle;
-       (void)OSA_MutexUnlock(g_expanderMutex);
-       EnableIRQ(BOARD_EXPANDER_INT_IRQ);
-   }
-   @endcode
- *
- * @{
- */
-void PCAL6524_EnterCritical(pcal6524_handle_t *handle);
-void PCAL6524_ExitCritical(pcal6524_handle_t *handle);
 /*! @} */
 
 #if defined(__cplusplus)

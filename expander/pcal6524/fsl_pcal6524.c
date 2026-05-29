@@ -17,15 +17,9 @@ typedef enum _pcal6524_reg_ops
     kPCAL6524_ToggleRegBits,
 } pcal6524_reg_ops_t;
 
-/* Weak no-op default; user code may provide a strong override. See header. */
-__attribute__((weak)) void PCAL6524_EnterCritical(pcal6524_handle_t *handle)
+static inline status_t PCAL6524_Lock(pcal6524_handle_t *handle, bool lock)
 {
-    (void)handle;
-}
-
-__attribute__((weak)) void PCAL6524_ExitCritical(pcal6524_handle_t *handle)
-{
-    (void)handle;
+    return (NULL != handle->lock) ? handle->lock(lock) : kStatus_Success;
 }
 
 /*******************************************************************************
@@ -66,7 +60,11 @@ static status_t PCAL6524_ModifyPortRegBits(pcal6524_handle_t *handle,
     uint32_t regValue = 0U;
     status_t status;
 
-    PCAL6524_EnterCritical(handle);
+    status = PCAL6524_Lock(handle, true);
+    if (kStatus_Success != status)
+    {
+        return status;
+    }
 
     status = PCAL6524_ReadPort(handle, startReg, &regValue);
 
@@ -92,7 +90,7 @@ static status_t PCAL6524_ModifyPortRegBits(pcal6524_handle_t *handle,
         status = PCAL6524_WritePort(handle, startReg, regValue);
     }
 
-    PCAL6524_ExitCritical(handle);
+    (void)PCAL6524_Lock(handle, false);
     return status;
 }
 
@@ -111,6 +109,7 @@ void PCAL6524_Init(pcal6524_handle_t *handle, const pcal6524_config_t *config)
     handle->i2cAddr         = config->i2cAddr;
     handle->I2C_SendFunc    = config->I2C_SendFunc;
     handle->I2C_ReceiveFunc = config->I2C_ReceiveFunc;
+    handle->lock            = NULL;
 
 #if PCAL6524_CALLBACK_PER_PIN
     for (uint8_t i = 0U; i < PCAL6524_PIN_COUNT; i++)
@@ -280,7 +279,11 @@ status_t PCAL6524_SetOutputPortConfig(pcal6524_handle_t *handle, uint8_t portMas
     uint8_t regValue;
     status_t status;
 
-    PCAL6524_EnterCritical(handle);
+    status = PCAL6524_Lock(handle, true);
+    if (kStatus_Success != status)
+    {
+        return status;
+    }
 
     status = PCAL6524_ReadReg(handle, PCAL6524_OUTPUT_PORT_CONFIG, &regValue);
 
@@ -297,7 +300,7 @@ status_t PCAL6524_SetOutputPortConfig(pcal6524_handle_t *handle, uint8_t portMas
         status = PCAL6524_WriteReg(handle, PCAL6524_OUTPUT_PORT_CONFIG, regValue);
     }
 
-    PCAL6524_ExitCritical(handle);
+    (void)PCAL6524_Lock(handle, false);
     return status;
 }
 
@@ -326,7 +329,11 @@ status_t PCAL6524_SetOutputDriveStrength(pcal6524_handle_t *handle,
     reg   = PCAL6524_OUT_DRIVE_PORT0A + (pin / 4U);
     shift = (pin % 4U) * 2U;
 
-    PCAL6524_EnterCritical(handle);
+    status = PCAL6524_Lock(handle, true);
+    if (kStatus_Success != status)
+    {
+        return status;
+    }
 
     status = PCAL6524_ReadReg(handle, reg, &regValue);
 
@@ -337,7 +344,7 @@ status_t PCAL6524_SetOutputDriveStrength(pcal6524_handle_t *handle,
         status = PCAL6524_WriteReg(handle, reg, regValue);
     }
 
-    PCAL6524_ExitCritical(handle);
+    (void)PCAL6524_Lock(handle, false);
     return status;
 }
 
@@ -489,7 +496,11 @@ status_t PCAL6524_SetInterruptEdge(pcal6524_handle_t *handle, uint8_t pin, pcal6
     reg   = PCAL6524_INT_EDGE_PORT0A + (pin / 4U);
     shift = (pin % 4U) * 2U;
 
-    PCAL6524_EnterCritical(handle);
+    status = PCAL6524_Lock(handle, true);
+    if (kStatus_Success != status)
+    {
+        return status;
+    }
 
     status = PCAL6524_ReadReg(handle, reg, &regValue);
 
@@ -500,7 +511,7 @@ status_t PCAL6524_SetInterruptEdge(pcal6524_handle_t *handle, uint8_t pin, pcal6
         status = PCAL6524_WriteReg(handle, reg, regValue);
     }
 
-    PCAL6524_ExitCritical(handle);
+    (void)PCAL6524_Lock(handle, false);
     return status;
 }
 
@@ -549,26 +560,30 @@ status_t PCAL6524_InterruptHandler(pcal6524_handle_t *handle)
          * this handler owns those events. If another task (or a re-entry
          * from within a callback) calls us concurrently, only one of them
          * sees and clears each event. */
-        PCAL6524_EnterCritical(handle);
+        status = PCAL6524_Lock(handle, true);
+        if (kStatus_Success != status)
+        {
+            return status;
+        }
 
         status = PCAL6524_ReadPort(handle, PCAL6524_INT_STATUS_PORT0, &intStatus);
         if (kStatus_Success != status)
         {
-            PCAL6524_ExitCritical(handle);
+            (void)PCAL6524_Lock(handle, false);
             return status;
         }
 
         /* No (more) interrupts pending, we're done. */
         if (0U == (intStatus & 0x00FFFFFFU))
         {
-            PCAL6524_ExitCritical(handle);
+            (void)PCAL6524_Lock(handle, false);
             return kStatus_Success;
         }
 
         status = PCAL6524_ReadPort(handle, PCAL6524_INPUT_STATUS_PORT0, &pinStates);
         if (kStatus_Success != status)
         {
-            PCAL6524_ExitCritical(handle);
+            (void)PCAL6524_Lock(handle, false);
             return status;
         }
 
@@ -578,11 +593,11 @@ status_t PCAL6524_InterruptHandler(pcal6524_handle_t *handle)
         status = PCAL6524_WritePort(handle, PCAL6524_INT_CLEAR_PORT0, intStatus);
         if (kStatus_Success != status)
         {
-            PCAL6524_ExitCritical(handle);
+            (void)PCAL6524_Lock(handle, false);
             return status;
         }
 
-        PCAL6524_ExitCritical(handle);
+        (void)PCAL6524_Lock(handle, false);
 
         /* Dispatch callback(s) with the lock released so a callback is free
          * to call other driver APIs (SetPins, etc.) without deadlocking. An
