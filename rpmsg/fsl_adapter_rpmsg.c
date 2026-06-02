@@ -568,3 +568,9 @@ hal_rpmsg_status_t HAL_RpmsgExitLowpower(hal_rpmsg_handle_t handle)
 {
     return kStatus_HAL_RpmsgError;
 }
+
+uint32_t HAL_RpmsgAllBufferConsumed(void)
+{
+    return rpmsg_lite_are_all_buffers_consumed(s_rpmsgContext);
+}
+
