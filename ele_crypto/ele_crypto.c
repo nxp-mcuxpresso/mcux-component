@@ -1256,7 +1256,8 @@ status_t ELE_CreateKeystore(S3MU_Type *mu, uint32_t sessionID, ele_keystore_t *c
      *   +----------------+----------+------------------------+
      */
     uint32_t flags = ((uint32_t)conf->min_mac_len << MIN_MAC_LEN_SHIFT) |
-                     ((uint32_t)conf->min_mac_check << MIN_MAC_FLAG_SHIFT) | (1UL << KEYSTORE_CREATE_SHIFT) |
+                     /* INT31-C: Boolean to uint32_t conversion is safe (0 or 1) */
+                     ((uint32_t)(conf->min_mac_check ? 1U : 0U) << MIN_MAC_FLAG_SHIFT) | (1UL << KEYSTORE_CREATE_SHIFT) |
                      (conf->max_updates);
 
     tmsg[0] = OPEN_KEY_STORE; // OPEN_KEY_STORE Command Header
@@ -1324,7 +1325,8 @@ status_t ELE_OpenKeystore(S3MU_Type *mu,
      *   +----------------+----------+------------------------+
      */
     uint32_t flags = (uint32_t)((uint32_t)conf->min_mac_len << MIN_MAC_LEN_SHIFT) |
-                     (uint32_t)((uint32_t)conf->min_mac_check << MIN_MAC_FLAG_SHIFT) | (0UL << KEYSTORE_CREATE_SHIFT) |
+                     /* INT31-C: Boolean to uint32_t conversion is safe (0 or 1) */
+                     (uint32_t)((uint32_t)(conf->min_mac_check ? 1U : 0U) << MIN_MAC_FLAG_SHIFT) | (0UL << KEYSTORE_CREATE_SHIFT) |
                      (conf->max_updates);
 
     tmsg[0] = OPEN_KEY_STORE; // OPEN_KEY_STORE Command Header
@@ -2173,7 +2175,8 @@ status_t ELE_Sign(S3MU_Type *mu, uint32_t signHandleID, ele_sign_t *conf, uint32
     tmsg[3] = ADD_OFFSET((uint32_t)conf->msg);       // Address where the message digest to be signed can be found.
     tmsg[4] = ADD_OFFSET((uint32_t)conf->signature); // Address where the signature will be written
     tmsg[5] = conf->msg_size;                        // Size of message
-    tmsg[6] = (uint32_t)conf->input_flag << SHIFT_16 | conf->sig_size; // Flag | size of signature + 8 bit for Ry
+    /* INT31-C: Boolean to uint32_t conversion is safe (0 or 1) */
+    tmsg[6] = (uint32_t)(conf->input_flag ? 1U : 0U) << SHIFT_16 | conf->sig_size; // Flag | size of signature + 8 bit for Ry
     tmsg[7] = (uint32_t)conf->scheme;
     tmsg[8] = (uint32_t)conf->salt_size;
     tmsg[9] = S3MU_ComputeMsgCrc(tmsg, SIGN_SIZE - 1u);
@@ -2340,7 +2343,9 @@ status_t ELE_Verify(S3MU_Type *mu, uint32_t verifyHandleID, ele_verify_t *conf, 
     tmsg[5]  = conf->msg_size;                        // Size of message
     tmsg[6]  = (uint32_t)conf->key_size << SHIFT_16 | conf->sig_size; // Public key size | Signature size
     tmsg[7]  = (uint32_t)conf->keypair_type << SHIFT_16 | conf->key_security_size;
-    tmsg[8]  = (uint32_t)conf->internal << VERIFY_FLAG_INTERNAL_SHIFT | (uint32_t)conf->input_flag; // Flags
+    /* INT31-C: Boolean to uint32_t conversions are safe (0 or 1) */
+    tmsg[8]  = (uint32_t)(conf->internal ? 1U : 0U) << VERIFY_FLAG_INTERNAL_SHIFT |
+               (uint32_t)(conf->input_flag ? 1U : 0U); // Flags
     tmsg[9]  = (uint32_t)conf->scheme;                                                              // Signatrure Scheme
     tmsg[10] = (uint32_t)conf->salt_size;
     tmsg[11] = S3MU_ComputeMsgCrc(tmsg, VERIFY_SIZE - 1u);
@@ -3107,6 +3112,11 @@ status_t ELE_GenericRsa(S3MU_Type *mu, ele_generic_rsa_t *conf)
         return kStatus_InvalidArgument;
     }
 
+    /* INT31-C: Validate size fields before narrowing conversions */
+    assert(conf->pub_exponent_size <= 0xFFFFU);
+    assert(conf->priv_exponent_size <= 0xFFFFU);
+    assert(conf->modulus_size <= 0xFFFFU);
+
     /* Set inputs accoring to requested operation */
     if (conf->mode == kEncryption || conf->mode == kDecryption)
     {
@@ -3123,7 +3133,7 @@ status_t ELE_GenericRsa(S3MU_Type *mu, ele_generic_rsa_t *conf)
 
         if (conf->mode == kEncryption)
         {
-            pubOrPrivExp      = (uint32_t)conf->pub_exponent;
+            pubOrPrivExp = (uint32_t)conf->pub_exponent;
             pubOrPrivExp_size = (uint16_t)conf->pub_exponent_size;
         }
         else if (conf->mode == kDecryption)
@@ -3145,7 +3155,7 @@ status_t ELE_GenericRsa(S3MU_Type *mu, ele_generic_rsa_t *conf)
 
         if (conf->mode == kVerification)
         {
-            pubOrPrivExp      = (uint32_t)conf->pub_exponent;
+            pubOrPrivExp = (uint32_t)conf->pub_exponent;
             pubOrPrivExp_size = (uint16_t)conf->pub_exponent_size;
         }
         else if (conf->mode == kSignGen)
@@ -3690,7 +3700,8 @@ status_t ELE_WriteFuse(
      *   | bit 31| Bit 30-29 |  Bit 29-16   |    Bit 15-0     |
      *   +----------------------------------------------------+
      */
-    uint32_t FuseWord = (uint32_t)((uint32_t)lock << LOCK_SHIFT) | (BitLength << BIT_LENGTH_SHIFT) | (BitPosition);
+    /* INT31-C: Boolean to uint32_t conversion is safe (0 or 1) */
+    uint32_t FuseWord = (uint32_t)((uint32_t)(lock ? 1U : 0U) << LOCK_SHIFT) | (BitLength << BIT_LENGTH_SHIFT) | (BitPosition);
 
     /****************** Write fuse ELE message ***********************/
     tmsg[0] = WRITE_FUSE; // Write fuse Command Header
