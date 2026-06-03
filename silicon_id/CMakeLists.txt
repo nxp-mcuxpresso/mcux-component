@@ -53,7 +53,7 @@ if (CONFIG_MCUX_COMPONENT_component.silicon_id_imxrt1180)
     )
 endif()
 
-if (CONFIG_MCUX_COMPONENT_component.silicon_id_rt2660)
+if (CONFIG_MCUX_COMPONENT_component.silicon_id_imxrt2660)
     mcux_add_include(
         INCLUDES
             ./socs
@@ -61,7 +61,7 @@ if (CONFIG_MCUX_COMPONENT_component.silicon_id_rt2660)
 
     mcux_add_source(
         SOURCES
-            ./socs/rt2660/fsl_silicon_id_soc.c
+            ./socs/imxrt2660/fsl_silicon_id_soc.c
             ./socs/fsl_silicon_id_soc.h
     )
 endif()

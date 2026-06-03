@@ -10,7 +10,7 @@ config MCUX_COMPONENT_component.silicon_id
     select MCUX_COMPONENT_component.silicon_id_imxrt10xx if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT10XX
     select MCUX_COMPONENT_component.silicon_id_imxrt1170 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT1170
     select MCUX_COMPONENT_component.silicon_id_imxrt1180 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT1180
-    select MCUX_COMPONENT_component.silicon_id_rt2660 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT2660
+    select MCUX_COMPONENT_component.silicon_id_imxrt2660 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT2660
     select MCUX_COMPONENT_component.silicon_id_imx8 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_IMX8
     select MCUX_COMPONENT_component.silicon_id_imx93 if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_IMX93
     select MCUX_COMPONENT_component.silicon_id_scfw if MCUX_DEPENDENCY_COMPONENT_SILICON_ID_SCFW
@@ -34,7 +34,7 @@ config MCUX_COMPONENT_component.silicon_id_imxrt1180
     bool
     depends on MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT1180
 
-config MCUX_COMPONENT_component.silicon_id_rt2660
+config MCUX_COMPONENT_component.silicon_id_imxrt2660
     bool
     depends on MCUX_DEPENDENCY_COMPONENT_SILICON_ID_RT2660
 
