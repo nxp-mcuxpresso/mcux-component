@@ -1,5 +1,22 @@
-# Copyright 2024 NXP
+# Copyright 2024, 2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
+
+if (CONFIG_MCUX_COMPONENT_component.flash_nand_xspi)
+    mcux_add_source(
+        BASE_PATH ${SdkRootDirPath}/components/flash/nand
+        SOURCES
+            fsl_nand_flash.h
+            xspi/fsl_xspi_nand_flash.c
+            xspi/fsl_xspi_nand_flash.h
+    )
+
+    mcux_add_include(
+        BASE_PATH ${SdkRootDirPath}/components/flash/nand
+        INCLUDES
+            .
+            ./xspi
+    )
+endif()
 
 if (CONFIG_MCUX_COMPONENT_component.flash_nand_flexspi)
     mcux_add_source(
@@ -125,9 +142,9 @@ if (${device} STREQUAL LPC54S018M)
     mcux_set_variable(drv_folder lpc54s018m)
 endif()
 
-if ((${board} STREQUAL lpcxpresso54018) OR (${board} STREQUAL lpc54018iotmodule) OR 
+if ((${board} STREQUAL lpcxpresso54018) OR (${board} STREQUAL lpc54018iotmodule) OR
     (${board} STREQUAL lpc54s018iotmodule) OR (${board} STREQUAL lpcxpresso54608) OR
-    (${board} STREQUAL lpcxpresso54618) OR (${board} STREQUAL lpcxpresso54628) OR 
+    (${board} STREQUAL lpcxpresso54618) OR (${board} STREQUAL lpcxpresso54628) OR
     (${board} STREQUAL lpcxpresso54s018))
     mcux_set_variable(drv_folder lpc54xxx)
 endif()
