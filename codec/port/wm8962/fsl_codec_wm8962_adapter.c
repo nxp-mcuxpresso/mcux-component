@@ -30,7 +30,7 @@
 
 /*! @brief wm8962 map protocol */
 #define HAL_WM8962_MAP_PROTOCOL(protocol)                                 \
-    ((protocol) == kCODEC_BusTDM            ? (kWM8962_BusTDM | kWM8962_BusPCMA) : \
+    ((protocol) == kCODEC_BusTDM            ? kWM8962_BusTDM :            \
      (protocol) == kCODEC_BusI2S            ? kWM8962_BusI2S :            \
      (protocol) == kCODEC_BusLeftJustified  ? kWM8962_BusLeftJustified :  \
      (protocol) == kCODEC_BusRightJustified ? kWM8962_BusRightJustified : \
