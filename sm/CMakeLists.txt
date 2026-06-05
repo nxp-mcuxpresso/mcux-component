@@ -123,3 +123,13 @@ if (CONFIG_MCUX_COMPONENT_component.sm.imx95_ca55)
         INCLUDES porting/platform/imx95/ca55
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.sm.imx952_ca55)
+    mcux_add_source(
+        SOURCES porting/platform/imx952/ca55/sm_platform.h
+                porting/platform/imx952/ca55/sm_platform.c
+    )
+    mcux_add_include(
+        INCLUDES porting/platform/imx952/ca55
+    )
+endif()
