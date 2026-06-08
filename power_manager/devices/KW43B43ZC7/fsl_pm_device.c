@@ -24,7 +24,6 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
 static void PM_SetFro192MOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
 static void PM_SetFro6MOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
 static void PM_SetWakePowerDomainOperateMode(uint8_t operateMode, pm_resource_recode_t *pResourceRecode);
-static void PM_ApplyRadioLowPowerMode(uint8_t stateIndex);
 
 static void PM_EnableBasicResources(pm_resc_mask_t *pSoftRescMask, pm_resc_group_t *pSysRescGroup);
 
@@ -242,8 +241,6 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
     }
     PM_EnableBasicResources(pSoftRescMask, pSysRescGroup);
     CMC_SetPowerModeProtection(CMC0, (uint32_t)kCMC_AllowAllLowPowerModes);
-
-    PM_ApplyRadioLowPowerMode(stateIndex);
 
     if ((stateIndex == PM_LP_STATE_SLEEP) || (stateIndex == PM_LP_STATE_DEEP_SLEEP))
     {
@@ -482,40 +479,6 @@ static void PM_SetWakePowerDomainOperateMode(uint8_t operateMode, pm_resource_re
     }
 
     pResourceRecode->currentOperateMode = operateMode;
-}
-
-/*
- * Program the radio 2.4 GHz low-power mode that matches the host power state.
- * KW43 drives the RF sub-system entry via RFMC.RF2P4GHZ_CTRL rather than through
- * the notification callback path used on KW47.
- */
-static void PM_ApplyRadioLowPowerMode(uint8_t stateIndex)
-{
-    uint32_t rfCtrl;
-    uint32_t lpMode;
-
-    switch (stateIndex)
-    {
-        case PM_LP_STATE_SLEEP:
-            lpMode = 0x1U;
-            break;
-        case PM_LP_STATE_DEEP_SLEEP:
-            lpMode = 0x3U;
-            break;
-        case PM_LP_STATE_POWER_DOWN:
-            lpMode = 0x7U;
-            break;
-        case PM_LP_STATE_DEEP_POWER_DOWN:
-            RF_CMC1->RAM_PWR = 0x000004FFU;
-            lpMode = 0xFU;
-            break;
-        default:
-            return;
-    }
-
-    rfCtrl = RFMC->RF2P4GHZ_CTRL & ~RFMC_RF2P4GHZ_CTRL_LP_MODE_MASK;
-    RFMC->RF2P4GHZ_CTRL = rfCtrl | RFMC_RF2P4GHZ_CTRL_LP_MODE(lpMode);
-    RFMC->RF2P4GHZ_CTRL |= RFMC_RF2P4GHZ_CTRL_LP_ENTER_MASK;
 }
 
 #if (defined(FSL_PM_SUPPORT_WAKEUP_SOURCE_MANAGER) && FSL_PM_SUPPORT_WAKEUP_SOURCE_MANAGER)
