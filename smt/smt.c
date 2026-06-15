@@ -1,7 +1,7 @@
 /*
 ** ###################################################################
 **
-** Copyright 2023-2025 NXP
+** Copyright 2023-2026 NXP
 **
 ** Redistribution and use in source and binary forms, with or without modification,
 ** are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@
 #else
 #include "mb_loopback.h"
 #endif
-#include "crc.h"
+#include "sm_crc.h"
 
 /* Local defines */
 
@@ -60,7 +60,7 @@ typedef struct
     bool valid;          /*! Channel configured and valid */
     uint8_t mbInst;      /*!< Mailbox instance */
     uint8_t mbDoorbell;  /*!< Mailbox doorbell */
-    uint32_t sma;        /*!< Shared memory address */
+    uintptr_t sma;       /*!< Shared memory address */
 } smt_chn_config_t;
 
 typedef struct
@@ -188,8 +188,13 @@ int32_t SMT_Tx(uint32_t smtChannel, uint32_t len, bool callee,
     uint8_t db = s_smtConfig[smtChannel].mbDoorbell;
     smt_buf_t *buf = (smt_buf_t*) SMT_SmaGet(smtChannel);
 
+    /* Check buffer found */
+    if (buf == NULL)
+    {
+        status = SMT_ERR_COMMS_ERROR;
+    }
     /* Check length */
-    if (len > (SMT_BUFFER_SIZE - SMT_BUFFER_HEADER))
+    else if (len > (SMT_BUFFER_SIZE - SMT_BUFFER_HEADER))
     {
         status = SMT_ERR_PROTOCOL_ERROR;
     }
@@ -237,11 +242,20 @@ int32_t SMT_Tx(uint32_t smtChannel, uint32_t len, bool callee,
         switch (impStatus)
         {
             case SMT_CRC_XOR:
+                /*
+                 * Intentional: CRC includes header
+                 */
+                /* coverity[misra_c_2012_rule_18_1_violation] */
+                /* coverity[callee_ptr_arith] */
                 buf->impCrc = CRC_Xor((const uint32_t*) &buf->header,
                     len / 4U);
                 break;
             case SMT_CRC_CRC32:
                 buf->impCrc = CRC_Crc32((const uint8_t*) &buf->header,
+                    len);
+                break;
+            case SMT_CRC_J1850:
+                buf->impCrc = CRC_J1850((const uint8_t*) &buf->header,
                     len);
                 break;
             default:
@@ -319,6 +333,8 @@ int32_t SMT_Rx(uint32_t smtChannel, uint32_t *len, bool callee)
         switch (impStatus)
         {
             case SMT_CRC_XOR:
+                /* Pointer coversion required from comm buffer */
+                /* coverity[misra_c_2012_rule_11_5_violation] */
                 if (buf->impCrc != CRC_Xor((const uint32_t*) msgRx,
                     *len / 4U))
                 {
@@ -326,7 +342,17 @@ int32_t SMT_Rx(uint32_t smtChannel, uint32_t *len, bool callee)
                 }
                 break;
             case SMT_CRC_CRC32:
+                /* Pointer coversion required from comm buffer */
+                /* coverity[misra_c_2012_rule_11_5_violation] */
                 if (buf->impCrc != CRC_Crc32((const uint8_t*) msgRx, *len))
+                {
+                    status = SMT_ERR_CRC_ERROR;
+                }
+                break;
+            case SMT_CRC_J1850:
+                /* Pointer coversion required from comm buffer */
+                /* coverity[misra_c_2012_rule_11_5_violation] */
+                if (buf->impCrc != CRC_J1850((const uint8_t*) msgRx, *len))
                 {
                     status = SMT_ERR_CRC_ERROR;
                 }
@@ -357,21 +383,23 @@ static smt_buf_t *SMT_SmaGet(uint32_t smtChannel)
         uint8_t db = s_smtConfig[smtChannel].mbDoorbell;
 
 #ifndef SMT_LOOPBACK
-        uint32_t sma = s_smtConfig[smtChannel].sma;
+        uintptr_t sma = s_smtConfig[smtChannel].sma;
 
         /* Allow use of internal MU SRAM */
         if (sma == 0U)
         {
-            sma = ((uint32_t)(uintptr_t) s_muBases[inst]) + 0x1000U;
+            sma = ((uintptr_t) s_muBases[inst]) + 0x1000U;
         }
 
         /* Apply channel spacing */
-        sma += ((uint32_t) db) * SMT_BUFFER_SIZE;
+        sma += ((uintptr_t) db) * SMT_BUFFER_SIZE;
 
         /* Set return */
-        rtn = (smt_buf_t*)(uintptr_t) sma;
+        rtn = (smt_buf_t*) sma;
 #else
         /* Set return */
+        /* Pointer coversion from OEI buffer */
+        /* coverity[misra_c_2012_rule_11_3_violation] */
         rtn = (smt_buf_t*) MB_LOOPBACK_SmaGet(inst, db);
 #endif
     }
