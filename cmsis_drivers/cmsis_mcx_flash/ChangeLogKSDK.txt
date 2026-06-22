@@ -1,0 +1,9 @@
+/*!
+@page driver_log Driver Change Log
+
+@section flash cmsis FLASH CMSIS
+  The current FLASH CMSIS driver version is 1.0
+  - 1.0
+    - Initial version.
+
+*/
