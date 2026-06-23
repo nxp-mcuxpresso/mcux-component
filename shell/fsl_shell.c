@@ -392,6 +392,10 @@ static void SHELL_MoveCursorToBeginningLine(shell_context_handle_t *shellContext
 /* There must be at last one char */
 static void SHELL_HandleBackspaceKey(shell_context_handle_t *shellContextHandle)
 {
+    if ((shellContextHandle->c_pos == 0U) || (shellContextHandle->l_pos == 0U))
+    {
+        return;
+    }
     shellContextHandle->l_pos--;
     shellContextHandle->c_pos--;
 
@@ -585,6 +589,7 @@ void SHELL_Task(shell_handle_t shellHandle)
                         /* Print new line. */
                         (void)SHELL_WRITEX(shellContextHandle, "\r\n", 2U);
                         /* If command line is not NULL, will start process it. */
+                        shellContextHandle->line[SHELL_BUFFER_SIZE - 1U] = '\0';
                         if (0U != strlen(shellContextHandle->line))
                         {
                             SHELL_ProcessCommand(shellContextHandle, shellContextHandle->line);
@@ -853,6 +858,15 @@ static void SHELL_AutoComplete(shell_context_handle_t *shellContextHandle)
     if (namePtr != NULL)
     {
         (void)memcpy(shellContextHandle->line, namePtr, (uint32_t)minLen);
+
+        if ((uint32_t)minLen < (uint32_t)SHELL_BUFFER_SIZE)
+        {
+            shellContextHandle->line[minLen] = '\0';
+        }
+        else
+        {
+            shellContextHandle->line[SHELL_BUFFER_SIZE - 1U] = '\0';
+        }
     }
     SHELL_PrintPrompt(shellContextHandle);
     (void)SHELL_WRITEX(shellContextHandle, shellContextHandle->line, strlen(shellContextHandle->line));
