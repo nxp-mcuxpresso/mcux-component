@@ -20,8 +20,12 @@
 static uint32_t *nvm_storage_export_req(S3MU_Type *mu, uint32_t *out, size_t *size);
 static status_t nvm_storage_get_req(S3MU_Type *mu, ele_data_storage_t *conf);
 static status_t construct_dek_key_blob_input(generate_key_blob_input_t *conf, uint32_t *payload);
+#if defined(FSL_FEATURE_SOC_OTFAD_COUNT) && (FSL_FEATURE_SOC_OTFAD_COUNT > 0)
 static status_t construct_otfad_key_blob_input(generate_key_blob_input_t *conf, uint32_t *payload);
+#endif
+#if defined(FSL_FEATURE_SOC_IEE_COUNT) && (FSL_FEATURE_SOC_IEE_COUNT > 0)
 static status_t construct_iee_key_blob_input(generate_key_blob_input_t *conf, uint32_t *payload);
+#endif
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -4288,6 +4292,7 @@ static status_t construct_dek_key_blob_input(generate_key_blob_input_t *conf, ui
     return kStatus_Success;
 }
 
+#if defined(FSL_FEATURE_SOC_OTFAD_COUNT) && (FSL_FEATURE_SOC_OTFAD_COUNT > 0)
 static status_t construct_otfad_key_blob_input(generate_key_blob_input_t *conf, uint32_t *payload)
 {
     if ((conf->otfad.start_addr > conf->otfad.end_addr) || (conf->key == NULL) || (conf->ctr == NULL))
@@ -4313,7 +4318,9 @@ static status_t construct_otfad_key_blob_input(generate_key_blob_input_t *conf, 
 
     return kStatus_Success;
 }
+#endif /* FSL_FEATURE_SOC_OTFAD_COUNT */
 
+#if defined(FSL_FEATURE_SOC_IEE_COUNT) && (FSL_FEATURE_SOC_IEE_COUNT > 0)
 static status_t construct_iee_key_blob_input(generate_key_blob_input_t *conf, uint32_t *payload)
 {
     /* Set bypass, key size, mode, page offset */
@@ -4372,6 +4379,7 @@ static status_t construct_iee_key_blob_input(generate_key_blob_input_t *conf, ui
 
     return kStatus_Success;
 }
+#endif /* FSL_FEATURE_SOC_IEE_COUNT */
 
 static const uint32_t key_blob_header_template[] = {
     0x81000000u, /* Tag, Length, Version */
@@ -4423,12 +4431,16 @@ status_t ELE_GenerateKeyBlob(
         case kBlob_Type_DEK:
             status = construct_dek_key_blob_input(Conf, &payload_internal[2]);
             break;
+#if defined(FSL_FEATURE_SOC_OTFAD_COUNT) && (FSL_FEATURE_SOC_OTFAD_COUNT > 0)
         case kBlob_Type_OTFAD:
             status = construct_otfad_key_blob_input(Conf, &payload_internal[2]);
             break;
+#endif
+#if defined(FSL_FEATURE_SOC_IEE_COUNT) && (FSL_FEATURE_SOC_IEE_COUNT > 0)
         case kBlob_Type_IEE:
             status = construct_iee_key_blob_input(Conf, &payload_internal[2]);
             break;
+#endif
         default:
             status = kStatus_Fail;
             break;
