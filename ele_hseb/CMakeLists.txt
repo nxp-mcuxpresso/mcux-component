@@ -1,5 +1,5 @@
 # Copyright 2025 NXP
-# SPDX-License-Identifier: BSD-3-Clause
+# License: LA_OPT_Online Code Hosting NXP_Software_License - v1.4 May 2025
 
 if (CONFIG_MCUX_COMPONENT_component.ele_hseb_mu_driver)
     mcux_add_source(
