@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 NXP
+ * Copyright 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -26,8 +26,8 @@
 #define MFLASH_BASE_ADDRESS (FlexSPI1_AMBA_BASE)
 #endif
 
-/* Flash size expressed in bytes: 16 MB */
-#define MFLASH_BSIZE 0x1000000UL /* mimxrt1170evk board has 16 MB only !*/
+/* Flash size expressed in bytes: frdmimxrt1152 has 64 MB */
+#define MFLASH_BSIZE 0x4000000UL
 
 #define MFLASH_REMAP_OFFSET() (MFLASH_FLEXSPI->HADDROFFSET & FLEXSPI_HADDROFFSET_ADDROFFSET_MASK)
 #define MFLASH_REMAP_START()  (MFLASH_FLEXSPI->HADDRSTART & FLEXSPI_HADDRSTART_ADDRSTART_MASK)
