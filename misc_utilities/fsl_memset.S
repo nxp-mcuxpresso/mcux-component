@@ -196,11 +196,11 @@ ret:
 
     .thumb_func
     .align 2
-    .global __aeabi_memset
+    .weak __aeabi_memset
     .type   __aeabi_memset, %function
-    .global __aeabi_memset4
+    .weak __aeabi_memset4
     .thumb_set __aeabi_memset4, __aeabi_memset
-    .global __aeabi_memset8
+    .weak __aeabi_memset8
     .thumb_set __aeabi_memset8, __aeabi_memset
 __aeabi_memset:
     /* swap r1 (n) and r2 (c) to match memset(dest, c, n) */
@@ -211,11 +211,11 @@ __aeabi_memset:
 
     .thumb_func
     .align 2
-    .global __aeabi_memclr
+    .weak __aeabi_memclr
     .type   __aeabi_memclr, %function
-    .global __aeabi_memclr4
+    .weak __aeabi_memclr4
     .thumb_set __aeabi_memclr4, __aeabi_memclr
-    .global __aeabi_memclr8
+    .weak __aeabi_memclr8
     .thumb_set __aeabi_memclr8, __aeabi_memclr
 __aeabi_memclr:
     /* memset(dest, 0, n): move n from r1 to r2, set c = 0 */

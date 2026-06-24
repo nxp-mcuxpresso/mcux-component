@@ -276,11 +276,11 @@ size_lt_4:                             /* size less than 4. */
 ret:
     pop    {r0, r4, r5, r6, r7, pc}
 
-    .global __aeabi_memcpy
+    .weak __aeabi_memcpy
     .thumb_set __aeabi_memcpy, memcpy
-    .global __aeabi_memcpy4
+    .weak __aeabi_memcpy4
     .thumb_set __aeabi_memcpy4, memcpy
-    .global __aeabi_memcpy8
+    .weak __aeabi_memcpy8
     .thumb_set __aeabi_memcpy8, memcpy
 
 #endif /* MSDK_MISC_OVERRIDE_MEMCPY */
