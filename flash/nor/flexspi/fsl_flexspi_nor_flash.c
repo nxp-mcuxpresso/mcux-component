@@ -3195,8 +3195,8 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
     assert(config != NULL);
 
     status_t status = kStatus_InvalidArgument;
-    uint32_t temp;
     uint32_t i;
+    uint32_t attempt;
     sfdp_header_t sfdp_header;
     jedec_info_table_t tbl;
     serial_nor_transfer_mode_t transferModeBackup;
@@ -3273,12 +3273,19 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
                 tbl.basic_flash_param_tbl.mode_4_4_info.mode_4_4_4_disable_seq       = 0x08U;
                 tbl.basic_flash_param_tbl.mode_config_info.soft_reset_rescue_support = 0x10U;
 
-                /* From SDR mode to DDR mode. */
-                config->CurrentCommandMode = kSerialNorCommandMode_4s_4s_4s;
-                config->transferMode       = kSerialNorTransferMode_SDR;
-
-                do
+                for (attempt = 0U; attempt < 2U; attempt++)
                 {
+                    if (attempt == 0U)
+                    {
+                        config->CurrentCommandMode = kSerialNorCommandMode_4s_4s_4s;
+                        config->transferMode       = kSerialNorTransferMode_SDR;
+                    }
+                    else
+                    {
+                        config->CurrentCommandMode = kSerialNorCommandMode_4d_4d_4d;
+                        config->transferMode       = kSerialNorTransferMode_DDR;
+                    }
+
                     /*
                      * Revert back to standard SPI mode
                      *
@@ -3307,18 +3314,11 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
                         status = kStatus_FLEXSPINOR_Unsupported_SFDP_Version;
                     }
 
-                    /* The difference between the SDR mode and DDR mode is 1.*/
-                    temp                       = (uint32_t)config->CurrentCommandMode + 0x01U;
-                    config->CurrentCommandMode = (serial_nor_command_mode_t)temp;
-                    temp                       = (uint32_t)config->transferMode + 0x01U;
-                    assert(temp <= (uint32_t)kSerialNorTransferMode_DDR); /* Assuming enum has MAX value */
-                    config->transferMode       = (serial_nor_transfer_mode_t)temp;
-
-                    if ((uint32_t)config->transferMode == 0x02U)
+                    if (status == kStatus_Success)
                     {
                         break;
                     }
-                } while (status != kStatus_Success);
+                }
             }
             /* Exit from octal command mode into standard SPI command mode */
             else if ((i == (uint8_t)kSerialNorCommandMode_8s_8s_8s) || (i == (uint8_t)kSerialNorCommandMode_8d_8d_8d))
@@ -3333,12 +3333,19 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
                  */
                 tbl.basic_flash_param_tbl.mode_8_8_info.mode_8s_8s_8s_disable_seq = 0x08U;
 
-                /* From SDR mode to DDR mode. */
-                config->CurrentCommandMode = kSerialNorCommandMode_8s_8s_8s;
-                config->transferMode       = kSerialNorTransferMode_SDR;
-
-                do
+                for (attempt = 0U; attempt < 2U; attempt++)
                 {
+                    if (attempt == 0U)
+                    {
+                        config->CurrentCommandMode = kSerialNorCommandMode_8s_8s_8s;
+                        config->transferMode       = kSerialNorTransferMode_SDR;
+                    }
+                    else
+                    {
+                        config->CurrentCommandMode = kSerialNorCommandMode_8d_8d_8d;
+                        config->transferMode       = kSerialNorTransferMode_DDR;
+                    }
+
                     /*
                      * Revert back to standard SPI mode
                      *
@@ -3371,20 +3378,11 @@ static status_t FLEXSPI_NOR_ProbeCommandMode(nor_handle_t *handle, flexspi_mem_c
                         status = kStatus_FLEXSPINOR_Unsupported_SFDP_Version;
                     }
 
-                    /* The difference between the SDR mode and DDR mode is 1.*/
-                    temp                       = (uint32_t)config->CurrentCommandMode + 0x01U;
-                    /* INT31-C: Validate enum value before casting */
-                    assert(temp <= (uint32_t)kSerialNorCommandMode_max); /* Assuming enum has MAX value */
-                    config->CurrentCommandMode = (serial_nor_command_mode_t)temp;
-                    temp                       = (uint32_t)config->transferMode + 0x01U;
-                    assert(temp <= (uint32_t)kSerialNorTransferMode_DDR); /* Assuming enum has MAX value */
-                    config->transferMode       = (serial_nor_transfer_mode_t)temp;
-
-                    if ((uint32_t)config->transferMode == 0x02U)
+                    if (status == kStatus_Success)
                     {
                         break;
                     }
-                } while (status != kStatus_Success);
+                }
             }
             else
             {
