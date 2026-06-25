@@ -72,7 +72,7 @@ static int32_t CMSIS_GPIO_Setup(gpio_cmsis_handle_t *handle, ARM_GPIO_Pin_t pin,
 {
     gpio_pin_config_t pinConfig = {
         kGPIO_DigitalInput,
-        0,
+        0U,
     };
 
     if(handle->cb_event == NULL)
@@ -186,12 +186,12 @@ static int32_t CMSIS_GPIO_SetEventTrigger(gpio_cmsis_handle_t *handle, ARM_GPIO_
 
 static void CMSIS_GPIO_SetOutput(gpio_cmsis_handle_t *handle, ARM_GPIO_Pin_t pin, uint32_t val)
 {
-    GPIO_PinWrite(handle->config->gpio_base, pin, val);
+    GPIO_PinWrite(handle->config->gpio_base, pin, (uint8_t)(val != 0U ? 1U : 0U));
 }
 
 static uint32_t CMSIS_GPIO_GetInput(gpio_cmsis_handle_t *handle, ARM_GPIO_Pin_t pin)
 {
-    return (GPIO_PinRead(handle->config->gpio_base, pin) != 0U);
+    return (uint32_t)(GPIO_PinRead(handle->config->gpio_base, pin) != 0U);
 }
 
 void CMSIS_GPIO_EventIRQ(gpio_cmsis_handle_t *handle)
@@ -209,9 +209,10 @@ void CMSIS_GPIO_EventIRQ(gpio_cmsis_handle_t *handle)
 
     while(pins >= 1U)
     {
-        if((pins & (1U << pin)) != 0U)
+        if((pins & ((uint32_t)1U << pin)) != 0U)
         {
-            event = (gpio_interrupt_config_t)((handle->config->gpio_base->ICR[pin] & GPIO_ICR_IRQC_MASK) >> GPIO_ICR_IRQC_SHIFT);
+            uint32_t irqc = (handle->config->gpio_base->ICR[pin] & GPIO_ICR_IRQC_MASK) >> GPIO_ICR_IRQC_SHIFT;
+            event         = (gpio_interrupt_config_t)irqc;
             break;
         }
         pin++;
@@ -220,29 +221,30 @@ void CMSIS_GPIO_EventIRQ(gpio_cmsis_handle_t *handle)
     switch (event)
     {
         case kGPIO_InterruptRisingEdge:
-            cb_event = ARM_GPIO_TRIGGER_RISING_EDGE;
+            cb_event = (uint32_t)ARM_GPIO_TRIGGER_RISING_EDGE;
             break;
         case kGPIO_InterruptFallingEdge:
-            cb_event = ARM_GPIO_TRIGGER_FALLING_EDGE;
+            cb_event = (uint32_t)ARM_GPIO_TRIGGER_FALLING_EDGE;
             break;
         case kGPIO_InterruptEitherEdge:
-            cb_event = ARM_GPIO_TRIGGER_EITHER_EDGE;
+            cb_event = (uint32_t)ARM_GPIO_TRIGGER_EITHER_EDGE;
             break;
         default:
             assert(false);
             break;
     }
 
-    GPIO_GpioClearInterruptFlags(handle->config->gpio_base, (1U << pin));
+    GPIO_GpioClearInterruptFlags(handle->config->gpio_base, ((uint32_t)1U << pin));
 #else
     port_interrupt_t event = kPORT_InterruptOrDMADisabled;
     pins = GPIO_PortGetInterruptFlags(handle->config->gpio_base);
 
     while(pins >= 1U)
     {
-        if((pins & (1U << pin)) != 0U)
+        if((pins & ((uint32_t)1U << pin)) != 0U)
         {
-            event = (port_interrupt_t)((handle->config->port_base->PCR[pin] & PORT_PCR_IRQC_MASK) >> PORT_PCR_IRQC_SHIFT);
+            uint32_t irqc = (handle->config->port_base->PCR[pin] & PORT_PCR_IRQC_MASK) >> PORT_PCR_IRQC_SHIFT;
+            event         = (port_interrupt_t)irqc;
             break;
         }
         pin++;
@@ -251,20 +253,20 @@ void CMSIS_GPIO_EventIRQ(gpio_cmsis_handle_t *handle)
     switch (event)
     {
         case kPORT_InterruptRisingEdge:
-            cb_event = ARM_GPIO_TRIGGER_RISING_EDGE;
+            cb_event = (uint32_t)ARM_GPIO_TRIGGER_RISING_EDGE;
             break;
         case kPORT_InterruptFallingEdge:
-            cb_event = ARM_GPIO_TRIGGER_FALLING_EDGE;
+            cb_event = (uint32_t)ARM_GPIO_TRIGGER_FALLING_EDGE;
             break;
         case kPORT_InterruptEitherEdge:
-            cb_event = ARM_GPIO_TRIGGER_EITHER_EDGE;
+            cb_event = (uint32_t)ARM_GPIO_TRIGGER_EITHER_EDGE;
             break;
         default:
             assert(false);
             break;
     }
 
-    GPIO_PortClearInterruptFlags(handle->config->gpio_base, (1U << pin));
+    GPIO_PortClearInterruptFlags(handle->config->gpio_base, ((uint32_t)1U << pin));
 #endif
     handle->cb_event(pin, cb_event);
 }
@@ -305,7 +307,7 @@ static int32_t GPIO_PORT0_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORT0_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIO0_IRQ
-    EnableIRQ(RTE_GPIO0_IRQ);
+    (void)EnableIRQ(RTE_GPIO0_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_port0_handle, pin, trigger);
 }
@@ -373,7 +375,7 @@ static int32_t GPIO_PORT1_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORT1_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIO1_IRQ
-    EnableIRQ(RTE_GPIO1_IRQ);
+    (void)EnableIRQ(RTE_GPIO1_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_port1_handle, pin, trigger);
 }
@@ -443,7 +445,7 @@ static int32_t GPIO_PORT2_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORT2_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIO2_IRQ
-    EnableIRQ(RTE_GPIO2_IRQ);
+    (void)EnableIRQ(RTE_GPIO2_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_port2_handle, pin, trigger);
 }
@@ -513,7 +515,7 @@ static int32_t GPIO_PORT3_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORT3_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIO3_IRQ
-    EnableIRQ(RTE_GPIO3_IRQ);
+    (void)EnableIRQ(RTE_GPIO3_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_port3_handle, pin, trigger);
 }
@@ -583,7 +585,7 @@ static int32_t GPIO_PORT4_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORT4_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIO4_IRQ
-    EnableIRQ(RTE_GPIO4_IRQ);
+    (void)EnableIRQ(RTE_GPIO4_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_port4_handle, pin, trigger);
 }
@@ -620,7 +622,7 @@ ARM_DRIVER_GPIO Driver_GPIO_PORT4 = {
 
 #if defined(GPIO5) && defined(RTE_GPIO_PORT5) && RTE_GPIO_PORT5
 
-const gpio_cmsis_config_t s_gpio_port5_cmsis_config = {
+static const gpio_cmsis_config_t s_gpio_port5_cmsis_config = {
     .gpio_base = GPIO5,
     .port_base = PORT5,
 };
@@ -652,7 +654,7 @@ static int32_t GPIO_PORT5_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORT5_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIO5_IRQ
-    EnableIRQ(RTE_GPIO5_IRQ);
+    (void)EnableIRQ(RTE_GPIO5_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_port5_handle, pin, trigger);
 }
@@ -689,7 +691,7 @@ ARM_DRIVER_GPIO Driver_GPIO_PORT5 = {
 
 #if defined(GPIOA) && defined(RTE_GPIO_PORTA) && RTE_GPIO_PORTA
 
-const gpio_cmsis_config_t s_gpio_portA_cmsis_config = {
+static const gpio_cmsis_config_t s_gpio_portA_cmsis_config = {
     .gpio_base = GPIOA,
     .port_base = PORTA,
 };
@@ -721,7 +723,7 @@ static int32_t GPIO_PORTA_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORTA_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIOA_IRQ
-    EnableIRQ(RTE_GPIOA_IRQ);
+    (void)EnableIRQ(RTE_GPIOA_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_portA_handle, pin, trigger);
 }
@@ -758,7 +760,7 @@ ARM_DRIVER_GPIO Driver_GPIO_PORTA = {
 
 #if defined(GPIOB) && defined(RTE_GPIO_PORTB) && RTE_GPIO_PORTB
 
-const gpio_cmsis_config_t s_gpio_portB_cmsis_config = {
+static const gpio_cmsis_config_t s_gpio_portB_cmsis_config = {
     .gpio_base = GPIOB,
     .port_base = PORTB,
 };
@@ -790,7 +792,7 @@ static int32_t GPIO_PORTB_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORTB_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIOB_IRQ
-    EnableIRQ(RTE_GPIOB_IRQ);
+    (void)EnableIRQ(RTE_GPIOB_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_portB_handle, pin, trigger);
 }
@@ -827,7 +829,7 @@ ARM_DRIVER_GPIO Driver_GPIO_PORTB = {
 
 #if defined(GPIOC) && defined(RTE_GPIO_PORTC) && RTE_GPIO_PORTC
 
-const gpio_cmsis_config_t s_gpio_portC_cmsis_config = {
+static const gpio_cmsis_config_t s_gpio_portC_cmsis_config = {
     .gpio_base = GPIOC,
     .port_base = PORTC,
 };
@@ -859,7 +861,7 @@ static int32_t GPIO_PORTC_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORTC_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIOC_IRQ
-    EnableIRQ(RTE_GPIOC_IRQ);
+    (void)EnableIRQ(RTE_GPIOC_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_portC_handle, pin, trigger);
 }
@@ -896,7 +898,7 @@ ARM_DRIVER_GPIO Driver_GPIO_PORTC = {
 
 #if defined(GPIOD) && defined(RTE_GPIO_PORTD) && RTE_GPIO_PORTD
 
-const gpio_cmsis_config_t s_gpio_portD_cmsis_config = {
+static const gpio_cmsis_config_t s_gpio_portD_cmsis_config = {
     .gpio_base = GPIOD,
     .port_base = PORTD,
 };
@@ -928,7 +930,7 @@ static int32_t GPIO_PORTD_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORTD_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIOD_IRQ
-    EnableIRQ(RTE_GPIOD_IRQ);
+    (void)EnableIRQ(RTE_GPIOD_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_portD_handle, pin, trigger);
 }
@@ -965,7 +967,7 @@ ARM_DRIVER_GPIO Driver_GPIO_PORTD = {
 
 #if defined(GPIOE) && defined(RTE_GPIO_PORTE) && RTE_GPIO_PORTE
 
-const gpio_cmsis_config_t s_gpio_portE_cmsis_config = {
+static const gpio_cmsis_config_t s_gpio_portE_cmsis_config = {
     .gpio_base = GPIOE,
     .port_base = PORTE,
 };
@@ -997,7 +999,7 @@ static int32_t GPIO_PORTE_SetPullResistor(ARM_GPIO_Pin_t pin, ARM_GPIO_PULL_RESI
 static int32_t GPIO_PORTE_SetEventTrigger(ARM_GPIO_Pin_t pin, ARM_GPIO_EVENT_TRIGGER trigger)
 {
 #ifdef RTE_GPIOE_IRQ
-    EnableIRQ(RTE_GPIOE_IRQ);
+    (void)EnableIRQ(RTE_GPIOE_IRQ);
 #endif
     return CMSIS_GPIO_SetEventTrigger(&s_gpio_portE_handle, pin, trigger);
 }
