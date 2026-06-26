@@ -107,12 +107,20 @@ static volatile bool s_debugConsoleReadWaitSemaphore;
 
 #endif /* DEBUG_CONSOLE_SYNCHRONIZATION_MODE == DEBUG_CONSOLE_SYNCHRONIZATION_FREERTOS */
 
+#if defined(__ARM_ARCH_8A) && defined(SDK_OS_FREE_RTOS)
+extern uint64_t ullPortInterruptNesting;
+static inline bool SystemGetIRQNestingLevel(void)
+{
+    return !!(ullPortInterruptNesting);
+}
+#endif
+
 /*! @brief get current runing environment is ISR or not */
-#ifdef __CA7_REV
+#if defined(__CA7_REV) || defined(__ARM_ARCH_8A)
 #define IS_RUNNING_IN_ISR() SystemGetIRQNestingLevel()
 #else
 #define IS_RUNNING_IN_ISR() __get_IPSR()
-#endif /* __CA7_REV */
+#endif /* defined(__CA7_REV) || defined(__ARM_ARCH_8A) */
 
 /* semaphore definition */
 #if (DEBUG_CONSOLE_SYNCHRONIZATION_MODE == DEBUG_CONSOLE_SYNCHRONIZATION_FREERTOS)
