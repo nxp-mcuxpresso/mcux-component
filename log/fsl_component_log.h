@@ -104,7 +104,7 @@ typedef enum _log_status
  * string shall be used instead.
  */
 #if defined(__FILE_NAME__)
-#define LOG_FILE_NAME  __FILE_NAME__
+#define LOG_FILE_NAME __FILE_NAME__
 #else
 #define LOG_FILE_NAME LOG_FILE_NAME_SET(LOG_FILE_NAME_RECURSIVE, LOG_FILE_NAME_INTERCEPT, __FILE__, 3) : __FILE__
 #endif
@@ -281,7 +281,8 @@ typedef struct log_backend
  * @param name The name string of the log module.
  * @param level The debug level of the log module.
  */
-#define LOG_MODULE_DEFINE(name, level) static const log_module_t s_LogModuleLogger __attribute__((unused)) = {#name, level};
+#define LOG_MODULE_DEFINE(name, level) \
+    static const log_module_t s_LogModuleLogger __attribute__((unused)) = {#name, level};
 
 /*!
  * @brief Writes the fatal level log formatted output to the backend.
