@@ -45,14 +45,14 @@ config MCUX_PRJSEG_utility.debug_console_transfer_non_blocking
 config MCUX_COMPONENT_utility.debug_console_template_config
     bool "debug_console template configuration header file"
     default n
-    depends on MCUX_COMPONENT_utility.debug_console
+    depends on MCUX_COMPONENT_utility.debug_console || MCUX_COMPONENT_utility.ram_console
     help
         Not generate fsl_debug_console_conf.h, users need use default template fsl_debug_console_conf.h.
 
 config MCUX_PRJSEG_utility.debug_console.generated_config
     bool "Generate debug_console configuration header"
     default y
-    depends on MCUX_COMPONENT_utility.debug_console
+    depends on MCUX_COMPONENT_utility.debug_console || MCUX_COMPONENT_utility.ram_console
     help
         Generate the fsl_debug_console_conf.h, otherwise users need to provide their
         own fsl_debug_console_conf.h.
