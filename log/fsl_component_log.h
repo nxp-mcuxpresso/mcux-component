@@ -84,18 +84,30 @@ typedef enum _log_status
         f(f1, s, n + 24) : f(f1, s, n + 32) : f(f1, s, n + 40) : f(f1, s, n + 48) : f(f1, s, n + 56)
 /*!
  * @brief Source file name definition
- * @details There is a macro \__BASE_FILE\__ could be used to get the current source file name in GCC. While
- * the macro is unsupported by IAR in default, the \__BASE_FILE\__ is same as \__FILE\__ in IAR.
- * To support the macro \__BASE_FILE\__, the extra option --no_path_in_file_macros should be added
- * for IAR. But on Keil, only the source file name cannot be got through the macro \__BASE_FILE\__.
  *
- * So, log component adds a macro LOG_FILE_NAME to get the current source file name during the
- * compilation phase, when config LOG_ENABLE_FILE_WITH_PATH is disabled.
- * There is a limitation, the length of file name should be not less than 2,
- * and the supported MAX length of file name is 66 bytes. Otherwise the original string of \__FILE\__
- * will be linked.
+ * @details The macro `__FILE_NAME__` can be used in GCC to obtain the current source file name.
+ * However, this macro is not supported by the IAR. To achieve similar behavior in IAR, the macro
+ * `__FILE__` should be used together with the extra option `--no_path_in_file_macros`.
+ * In MDK, the latest Arm Compiler 6 (armclang) supports the `__FILE_NAME__` macro, whereas
+ * Arm Compiler 5 (armcc) does not support this macro.
+ *
+ * Therefore, the log component provides the macro LOG_FILE_NAME_SET to obtain the current source
+ * file name at compile time when LOG_ENABLE_FILE_WITH_PATH is disabled and  `__FILE_NAME__`
+ * is not supported.
+ *
+ * @note Constraints:
+ * - The file name length shall be greater than or equal to 2 characters.
+ * - The maximum supported file name length is 66 bytes.
+ *
+ * @note Fallback behavior:
+ * If the above constraints are not satisfied, the original `__FILE__`
+ * string shall be used instead.
  */
+#if defined(__FILE_NAME__)
+#define LOG_FILE_NAME  __FILE_NAME__
+#else
 #define LOG_FILE_NAME LOG_FILE_NAME_SET(LOG_FILE_NAME_RECURSIVE, LOG_FILE_NAME_INTERCEPT, __FILE__, 3) : __FILE__
+#endif
 #endif
 
 #if (LOG_ENABLE_ASYNC_MODE > 0)
