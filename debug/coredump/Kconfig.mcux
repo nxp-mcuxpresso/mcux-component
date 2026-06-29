@@ -9,15 +9,31 @@ config MCUX_COMPONENT_component.debug_coredump
 	select MCUX_COMPONENT_component.zephyr_headers.debug_coredump
 	select MCUX_COMPONENT_component.gen_hal.osa if (DEBUG_COREDUMP_MEMORY_DUMP_THREADS || DEBUG_COREDUMP_MEMORY_DUMP_MIN)
 
+# Only make the flash_partition backend component available when its matching
+# upstream backend choice is selected. The depends on guards against manually
+# enabling the component without DEBUG_COREDUMP_BACKEND_FLASH_PARTITION, which
+# would compile a backend that the dispatcher never binds (misconfiguration).
 config MCUX_COMPONENT_component.debug_coredump_backend.flash_partition
 	bool
-    default y if DEBUG_COREDUMP_BACKEND_FLASH_PARTITION
+	depends on DEBUG_COREDUMP_BACKEND_FLASH_PARTITION
+	default y
 
+# DEBUG_COREDUMP_BACKEND_OTHER (upstream Kconfig) only declares that an
+# out-of-tree backend provides coredump_backend_other; it does not pick which
+# one. Do NOT auto-select mflash here: a project that wants the mflash backend
+# must explicitly select MCUX_COMPONENT_component.debug_coredump_backend.mflash
+# (e.g. via prj.conf). This leaves room for other out-of-tree BACKEND_OTHER
+# implementations (defined in the consuming project) without a symbol clash.
 config MCUX_COMPONENT_component.debug_coredump_backend.mflash
-	bool
-	default y if DEBUG_COREDUMP_BACKEND_OTHER
+	bool "Use mflash as debug coredump backend"
+	depends on DEBUG_COREDUMP_BACKEND_OTHER
 	help
-	  Select mflash as debug coredump backend.
+	  Select mflash as debug coredump backend. This symbol has a prompt
+	  so a consuming project can opt into the mflash implementation of
+	  coredump_backend_other explicitly from prj.conf. It is not selected
+	  automatically, leaving room for other out-of-tree BACKEND_OTHER
+	  implementations (defined in the consuming project) without a symbol
+	  clash.
 
 if MCUX_COMPONENT_component.debug_coredump_backend.mflash
 
