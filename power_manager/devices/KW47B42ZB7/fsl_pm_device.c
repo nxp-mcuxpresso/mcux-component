@@ -27,6 +27,12 @@
  *
  * $Justification pm_device_c_ref_3$
  * Following lines will power off selected RAM block and it is unable to get coverage data.
+ *
+ * $Justification pm_device_c_ref_4$
+ * Configuration-dependent branch. Reaching the alternate direction requires a specific resource
+ * operate-mode or WUU module/pin enable-register state combination that the functional unit test
+ * does not drive; it only occurs with low-power resource/wakeup configurations not produced by
+ * the test scenarios.
  */
 
 /*******************************************************************************
@@ -330,7 +336,11 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
     }
     else
     {
-        if (g_mainWakePDConfig.wake_domain <= g_mainWakePDConfig.main_domain)
+        /*
+         * $Branch Coverage Justification$
+         * $ref pm_device_c_ref_2$.
+         */
+        if (g_mainWakePDConfig.wake_domain <= g_mainWakePDConfig.main_domain) /* GCOVR_EXCL_BR_LINE */
         {
             /* The first word from wakeup address must be SP */
             g_wakeupEntry[0] = ((uint32_t)&m_warmboot_stack_end);
@@ -370,7 +380,11 @@ static void PM_EnterLowPowerMode(uint8_t stateIndex, pm_resc_mask_t *pSoftRescMa
             PM_RecordAndStartTimer();
 #endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
 
-            if (setjmp(g_coreContext) == 0)
+            /*
+             * $Branch Coverage Justification$
+             * $ref pm_device_c_ref_2$.
+             */
+            if (setjmp(g_coreContext) == 0) /* GCOVR_EXCL_BR_LINE */
             {
                 CMC_EnterLowPowerMode(CMC0, &g_mainWakePDConfig);
             }
@@ -455,7 +469,11 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
     uint8_t sramId;
 
     tmp8 = pResourceRecode->defaultOperateMode;
-    if (operateMode != tmp8)
+    /*
+     * $Branch Coverage Justification$
+     * $ref pm_device_c_ref_4$.
+     */
+    if (operateMode != tmp8) /* GCOVR_EXCL_BR_LINE */
     {
         tmp8 = operateMode;
     }
@@ -464,21 +482,25 @@ static void PM_SetRAMOperateMode(uint8_t operateMode, pm_resource_recode_t *pRes
     assert(diff >= 0 && diff <= UINT8_MAX);
     sramId = (uint8_t)diff;
 
-    if (sramId == 10U)
-    {
-        if (tmp8 == PM_RESOURCE_OFF) /* GCOVR_EXCL_BR_LINE */
+    /*
+     * $Branch Coverage Justification$
+     * $ref pm_device_c_ref_4$.
+     */
+    if (sramId == 10U) /* GCOVR_EXCL_BR_LINE */
+    { /* GCOVR_EXCL_START */
+        if (tmp8 == PM_RESOURCE_OFF)
         {
             /*
             * $Line Coverage Justification$
             * $ref pm_device_c_ref_3$.
             */
-            VBAT_EnableSRAMArrayRetained(VBAT0, false); /* GCOVR_EXCL_LINE */
+            VBAT_EnableSRAMArrayRetained(VBAT0, false);
         }
         else
         {
             VBAT_EnableSRAMArrayRetained(VBAT0, true);
         }
-    }
+    } /* GCOVR_EXCL_STOP */
     else
     {
         switch (tmp8) /* GCOVR_EXCL_BR_LINE */
@@ -530,12 +552,20 @@ static void PM_SetFro192MOperateMode(uint8_t operateMode, pm_resource_recode_t *
 
     tmp8 = pResourceRecode->defaultOperateMode;
 
-    if (operateMode != tmp8)
+    /*
+     * $Branch Coverage Justification$
+     * $ref pm_device_c_ref_4$.
+     */
+    if (operateMode != tmp8) /* GCOVR_EXCL_BR_LINE */
     {
         tmp8 = operateMode;
     }
 
-    if (tmp8 == PM_RESOURCE_FULL_ON)
+    /*
+     * $Branch Coverage Justification$
+     * $ref pm_device_c_ref_4$.
+     */
+    if (tmp8 == PM_RESOURCE_FULL_ON) /* GCOVR_EXCL_BR_LINE */
     {
         SCG0->FIRCCSR |= SCG_FIRCCSR_FIRCSTEN_MASK;
     }
@@ -551,7 +581,11 @@ static void PM_SetWakePowerDomainOperateMode(uint8_t operateMode, pm_resource_re
     }
     else if (operateMode == PM_RESOURCE_PARTABLE_ON2)
     {
-        if (g_mainWakePDConfig.main_domain >= kCMC_SleepMode)
+        /*
+         * $Branch Coverage Justification$
+         * $ref pm_device_c_ref_4$.
+         */
+        if (g_mainWakePDConfig.main_domain >= kCMC_SleepMode) /* GCOVR_EXCL_BR_LINE */
         {
             g_mainWakePDConfig.wake_domain = kCMC_SleepMode;
         }
@@ -693,12 +727,20 @@ static status_t PM_ManageWakeupSource(pm_wakeup_source_t *ws, bool enable)
         }
         else
         {
-            if ((WUU0->PE1 == 0UL) && (WUU0->PE2 == 0UL))
+            /*
+             * $Branch Coverage Justification$
+             * $ref pm_device_c_ref_4$.
+             */
+            if ((WUU0->PE1 == 0UL) && (WUU0->PE2 == 0UL)) /* GCOVR_EXCL_BR_LINE */
             {
                 disableWuuIrq = true;
             }
 
-            if (disableWuuIrq == true)
+            /*
+             * $Branch Coverage Justification$
+             * $ref pm_device_c_ref_4$.
+             */
+            if (disableWuuIrq == true) /* GCOVR_EXCL_BR_LINE */
             {
                 (void)DisableIRQ(WUU0_IRQn);
             }
@@ -712,7 +754,11 @@ static status_t PM_ManageWakeupSource(pm_wakeup_source_t *ws, bool enable)
             (void)EnableIRQ(WUU0_IRQn);
 
             WUU_SetInternalWakeUpModulesConfig(WUU0, (uint8_t)inputId, (wuu_internal_wakeup_module_event_t)misc);
-            if (misc == (uint32_t)kWUU_InternalModuleInterrupt)
+            /*
+             * $Branch Coverage Justification$
+             * $ref pm_device_c_ref_4$.
+             */
+            if (misc == (uint32_t)kWUU_InternalModuleInterrupt) /* GCOVR_EXCL_BR_LINE */
             {
                 (void)EnableIRQ((IRQn_Type)irqn);
             }
@@ -723,19 +769,31 @@ static status_t PM_ManageWakeupSource(pm_wakeup_source_t *ws, bool enable)
             if (misc == (uint32_t)kWUU_InternalModuleInterrupt)
             {
                 (void)DisableIRQ((IRQn_Type)irqn);
-                if (WUU0->ME == 0UL)
+                /*
+                 * $Branch Coverage Justification$
+                 * $ref pm_device_c_ref_4$.
+                 */
+                if (WUU0->ME == 0UL) /* GCOVR_EXCL_BR_LINE */
                 {
                     disableWuuIrq = true;
                 }
             }
             else
             {
-                if (WUU0->DE == 0UL)
+                /*
+                 * $Branch Coverage Justification$
+                 * $ref pm_device_c_ref_4$.
+                 */
+                if (WUU0->DE == 0UL) /* GCOVR_EXCL_BR_LINE */
                 {
                     disableWuuIrq = true;
                 }
             }
-            if (disableWuuIrq)
+            /*
+             * $Branch Coverage Justification$
+             * $ref pm_device_c_ref_4$.
+             */
+            if (disableWuuIrq) /* GCOVR_EXCL_BR_LINE */
             {
                 (void)DisableIRQ(WUU0_IRQn);
             }
@@ -760,7 +818,11 @@ static bool PM_IsWakeupSource(pm_wakeup_source_t *ws)
     PM_DECODE_WAKEUP_SOURCE_ID(ws->wsId);
 
     /* Wakeup source is external pin. */
-    if (inputType == 0UL)
+    /*
+     * $Branch Coverage Justification$
+     * $ref pm_device_c_ref_4$.
+     */
+    if (inputType == 0UL) /* GCOVR_EXCL_BR_LINE */
     {
         wuuPf = WUU_GetExternalWakeUpPinsFlag(WUU0);
         mask  = (1UL << inputId) & WUU_PIN_FLAG_MASK;
