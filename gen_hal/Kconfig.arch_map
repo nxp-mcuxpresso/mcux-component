@@ -1,4 +1,4 @@
-# Copyright 2025 NXP
+# Copyright 2025-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 config ARM
@@ -73,7 +73,7 @@ config CPU_CORTEX_M4
 
 config CPU_CORTEX_M23
 	bool
-    default y if MCUX_HW_CORE_ID_CM23    
+    default y if MCUX_HW_CORE_ID_CM23
 	select CPU_CORTEX_M
 	select ARMV8_M_BASELINE
 	select ARMV8_M_SE if CPU_HAS_TEE
@@ -82,7 +82,7 @@ config CPU_CORTEX_M23
 
 config CPU_CORTEX_M33
 	bool
-    default y if MCUX_HW_CORE_ID_CM33
+    default y if MCUX_HW_CORE_ID_CM33 || MCUX_HW_CORE_CM33
 	select CPU_CORTEX_M
 	select ARMV8_M_MAINLINE
 	select ARMV8_M_SE if CPU_HAS_TEE
@@ -133,7 +133,7 @@ config CPU_CORTEX_M_HAS_SYSTICK
 config DCACHE_LINE_SIZE
 	int
 	default 32
-	help 
+	help
 	  Size in bytes of a CPU d-cache line.
 
 config ICACHE_LINE_SIZE
