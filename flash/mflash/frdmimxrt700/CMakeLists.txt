@@ -7,6 +7,7 @@ if (CONFIG_MCUX_COMPONENT_component.mflash_offchip)
         INCLUDES
             .
             ./frdmimxrt700
+        BOARDS frdmimxrt700
     )
     mcux_add_source(
         BASE_PATH ${SdkRootDirPath}/components/flash/mflash
@@ -16,6 +17,7 @@ if (CONFIG_MCUX_COMPONENT_component.mflash_offchip)
             mflash_file.h
             ./frdmimxrt700/mflash_drv.c
             ./frdmimxrt700/mflash_drv.h
+        BOARDS frdmimxrt700
     )
 
     mcux_add_macro(
