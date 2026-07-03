@@ -135,7 +135,7 @@ status_t DC_FB_DCIF_Deinit(const dc_fb_t *dc)
         {
             DCIF_DisableInterrupts(dcHandle->dcif, dcHandle->domain, (uint32_t)kDCIF_InterruptVsync);
             DCIF_EnableOutput(dcHandle->dcif, false);
-            DCIF_Deinit(dcHandle->dcif);//todo
+            DCIF_Deinit(dcHandle->dcif);
         }
     }
 
@@ -214,7 +214,7 @@ status_t DC_FB_DCIF_SetLayerConfig(const dc_fb_t *dc, uint8_t layer, dc_fb_info_
     layerConfig.globalAlpha      = 0xFFU;
     layerConfig.alphaBlendMode   = kDCIF_AlphaBlendEmbedded;
 
-    DCIF_SetLayerStride(dcif, 0, fbInfo->strideBytes);
+    DCIF_SetLayerStride(dcif, layer, fbInfo->strideBytes);
 
     DCIF_SetLayerConfig(dcif, layer, &layerConfig);
 
@@ -280,7 +280,8 @@ void DC_FB_DCIF_IRQHandler(const dc_fb_t *dc)
     void *oldActiveBuffer;
 
     intStatus = DCIF_GetInterruptStatus(dcHandle->dcif, dcHandle->domain);
-    DCIF_ClearInterruptStatus(dcHandle->dcif, dcHandle->domain, intStatus);
+
+    DCIF_ClearInterruptStatus(dcHandle->dcif, dcHandle->domain, intStatus & (uint32_t)kDCIF_InterruptVsync);
 
     if (0U == (intStatus & (uint32_t)kDCIF_InterruptVsync))
     {
