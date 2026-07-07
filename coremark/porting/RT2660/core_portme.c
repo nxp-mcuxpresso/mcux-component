@@ -61,7 +61,7 @@ volatile ee_s32 seed5_volatile = 0;
 #define MYTIMEDIFF(fin, ini)       ((fin) - (ini))
 #define TIMER_RES_DIVIDER          1
 #define SAMPLE_TIME_IMPLEMENTATION 1
-#define EE_TICKS_PER_SEC           12000000
+#define EE_TICKS_PER_SEC           CLOCK_GetRootClockFreq(kCLOCK_Root_CMPT_systick_clk0)
 
 #if defined(COREMARK_USING_SYSTICK) && COREMARK_USING_SYSTICK
 volatile CORE_TICKS overflow = 0;
