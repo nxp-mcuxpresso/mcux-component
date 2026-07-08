@@ -221,6 +221,7 @@ menu "wifi_bt_module"
 
                 config MCUX_COMPONENT_component.wifi_bt_module.board_murata_1xk_m2
                     bool "NXP IW416-MURATA-1XK-M2"
+                    select MCUX_COMPONENT_component.wifi_bt_module.frdm_m2_adapter_v1 if MCUX_HW_BOARD_frdmmcxn947
                     help
                         Murata Type 1XK is a small and high performance module based on
                         NXP IW416 combo chipset which supports Wi-Fi® 802.11a/b/g/n +
@@ -317,7 +318,7 @@ menu "wifi_bt_module"
 
                 config MCUX_COMPONENT_component.wifi_bt_module.board_murata_2ll_m2
                     bool "NXP IW610-MURATA-2LL-M2"
-                    select MCUX_COMPONENT_component.wifi_bt_module.frdm_m2_adapter_v1 if MCUX_HW_DEVICE_MCXN947
+                    select MCUX_COMPONENT_component.wifi_bt_module.frdm_m2_adapter_v1 if MCUX_HW_BOARD_frdmmcxn947
                     help
                         Murata Type 2LL is a small and very high performance module based on NXP IW610G
                         combo chipset which supports Wi-Fi™ 802.11a/b/g/n/ac/ax HE20 + Bluetooth®. 5.4
