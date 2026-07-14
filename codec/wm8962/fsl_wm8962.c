@@ -426,6 +426,19 @@ status_t WM8962_Init(wm8962_handle_t *handle, const wm8962_config_t *config)
     WM8962_CHECK_RET(WM8962_SetDataRoute(handle, &config->route), ret);
     /* set data protocol */
     WM8962_CHECK_RET(WM8962_SetProtocol(handle, config->bus), ret);
+    /* Apply the optional interface config; NULL keeps WM8962 power-on defaults. */
+    if (config->format.interfaceConfig != NULL)
+    {
+        const wm8962_interface_config_t *ifCfg = config->format.interfaceConfig;
+
+        WM8962_CHECK_RET(WM8962_SetSampleEdge(handle, ifCfg->sampleEdge), ret);
+        WM8962_CHECK_RET(WM8962_SetFrameSyncPolarity(handle, ifCfg->frameSyncPolarity), ret);
+        WM8962_CHECK_RET(WM8962_SetADCChannelSwap(handle, ifCfg->adcSwapChannel), ret);
+        WM8962_CHECK_RET(WM8962_SetDACChannelSwap(handle, ifCfg->dacSwapChannel), ret);
+        WM8962_CHECK_RET(WM8962_SetADCMonoMix(handle, ifCfg->adcMonoMix), ret);
+        WM8962_CHECK_RET(WM8962_SetADCDataInvert(handle, ifCfg->adcLeftDataInvert, ifCfg->adcRightDataInvert), ret);
+        WM8962_CHECK_RET(WM8962_SetDACDataInvert(handle, ifCfg->dacLeftDataInvert, ifCfg->dacRightDataInvert), ret);
+    }
     /*
      * ADC volume, 0dB
      */
@@ -501,6 +514,74 @@ status_t WM8962_SetProtocol(wm8962_handle_t *handle, wm8962_protocol_t protocol)
     }
 
     return ret;
+}
+
+status_t WM8962_SetSampleEdge(wm8962_handle_t *handle, wm8962_sample_edge_t edge)
+{
+    /* Any non-zero edge selects falling-edge (BCLK inverted); 0 selects rising-edge default. */
+    uint16_t val = (edge != kWM8962_SampleOnRisingEdge) ? WM8962_IFACE0_BCLK_INV_MASK : 0U;
+
+    return WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_BCLK_INV_MASK, val);
+}
+
+status_t WM8962_SetADCChannelSwap(wm8962_handle_t *handle, bool enable)
+{
+    uint16_t val = enable ? WM8962_IFACE0_ADC_LRSWAP_MASK : 0U;
+
+    return WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_ADC_LRSWAP_MASK, val);
+}
+
+status_t WM8962_SetADCMonoMix(wm8962_handle_t *handle, bool enable)
+{
+    uint16_t mask;
+    uint16_t val;
+
+    if (enable)
+    {
+        /* ADC_MONOMIX only takes effect when THREED_ENA is cleared (datasheet Table 29). */
+        mask = WM8962_THREED1_ADC_MONOMIX_MASK | WM8962_THREED1_THREED_ENA_MASK;
+        val  = WM8962_THREED1_ADC_MONOMIX_MASK;
+    }
+    else
+    {
+        /* Clear only ADC_MONOMIX; leave THREED_ENA (3D Surround) as configured. */
+        mask = WM8962_THREED1_ADC_MONOMIX_MASK;
+        val  = 0U;
+    }
+
+    return WM8962_ModifyReg(handle, WM8962_THREED1, mask, val);
+}
+
+status_t WM8962_SetFrameSyncPolarity(wm8962_handle_t *handle, wm8962_frame_sync_polarity_t polarity)
+{
+    uint16_t val = (polarity != kWM8962_FrameSyncNormal) ? WM8962_IFACE0_LRCLK_INV_MASK : 0U;
+
+    return WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_LRCLK_INV_MASK, val);
+}
+
+status_t WM8962_SetDACChannelSwap(wm8962_handle_t *handle, bool enable)
+{
+    uint16_t val = enable ? WM8962_IFACE0_DAC_LRSWAP_MASK : 0U;
+
+    return WM8962_ModifyReg(handle, WM8962_IFACE0, WM8962_IFACE0_DAC_LRSWAP_MASK, val);
+}
+
+status_t WM8962_SetADCDataInvert(wm8962_handle_t *handle, bool leftInvert, bool rightInvert)
+{
+    uint16_t mask = WM8962_DACCTL1_ADCL_DAT_INV_MASK | WM8962_DACCTL1_ADCR_DAT_INV_MASK;
+    uint16_t val  = (uint16_t)((leftInvert ? WM8962_DACCTL1_ADCL_DAT_INV_MASK : 0U) |
+                               (rightInvert ? WM8962_DACCTL1_ADCR_DAT_INV_MASK : 0U));
+
+    return WM8962_ModifyReg(handle, WM8962_DACCTL1, mask, val);
+}
+
+status_t WM8962_SetDACDataInvert(wm8962_handle_t *handle, bool leftInvert, bool rightInvert)
+{
+    uint16_t mask = WM8962_DACCTL2_DACL_DAT_INV_MASK | WM8962_DACCTL2_DACR_DAT_INV_MASK;
+    uint16_t val  = (uint16_t)((leftInvert ? WM8962_DACCTL2_DACL_DAT_INV_MASK : 0U) |
+                               (rightInvert ? WM8962_DACCTL2_DACR_DAT_INV_MASK : 0U));
+
+    return WM8962_ModifyReg(handle, WM8962_DACCTL2, mask, val);
 }
 
 status_t WM8962_SetModulePower(wm8962_handle_t *handle, wm8962_module_t module, bool isEnabled)

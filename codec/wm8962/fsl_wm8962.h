@@ -21,8 +21,8 @@
  ******************************************************************************/
 /*! @name Driver version */
 /*! @{ */
-/*! @brief WM8962 driver version 2.3.0. */
-#define FSL_WM8962_DRIVER_VERSION (MAKE_VERSION(2, 3, 0))
+/*! @brief WM8962 driver version 2.4.0. */
+#define FSL_WM8962_DRIVER_VERSION (MAKE_VERSION(2, 4, 0))
 /*! @} */
 
 /*! @brief wm8962 handle size */
@@ -110,6 +110,7 @@
 #define WM8962_FLL_CTRL_7   0xA1U
 #define WM8962_FLL_CTRL_8   0xA2U
 #define WM8962_INT_STATUS_2 0x231U
+#define WM8962_THREED1      0x10CU
 /*! @brief Cache register number */
 #define WM8962_CACHEREGNUM 56U
 
@@ -141,6 +142,27 @@
 #define WM8962_IFACE0_WL_24BITS 0x02U
 #define WM8962_IFACE0_WL_32BITS 0x03U
 #define WM8962_IFACE0_WL(x)     (((x) << WM8962_IFACE0_WL_SHIFT) & WM8962_IFACE0_WL_MASK)
+
+/*! @brief WM8962_IFACE0 (R7) interface bits. Note: legacy WM8962_IFACE1_* macros below are
+ * mislabeled (these bits are in R7, not R9) and unused. */
+#define WM8962_IFACE0_BCLK_INV_MASK    0x80U  /*!< bit 7: BCLK invert (sample edge) */
+#define WM8962_IFACE0_BCLK_INV_SHIFT   0x07U
+#define WM8962_IFACE0_ADC_LRSWAP_MASK  0x100U /*!< bit 8: swap ADC L/R */
+#define WM8962_IFACE0_ADC_LRSWAP_SHIFT 0x08U
+#define WM8962_IFACE0_DAC_LRSWAP_MASK  0x20U  /*!< bit 5: swap DAC L/R */
+#define WM8962_IFACE0_DAC_LRSWAP_SHIFT 0x05U
+#define WM8962_IFACE0_LRCLK_INV_MASK   0x10U  /*!< bit 4: LRCLK polarity / DSP mode A(0)/B(1) */
+#define WM8962_IFACE0_LRCLK_INV_SHIFT  0x04U
+
+/*! @brief WM8962 ADC/DAC data-invert bits (R5 / R6) */
+#define WM8962_DACCTL1_ADCL_DAT_INV_MASK 0x20U /*!< R5 bit 5: left ADC invert */
+#define WM8962_DACCTL1_ADCR_DAT_INV_MASK 0x40U /*!< R5 bit 6: right ADC invert */
+#define WM8962_DACCTL2_DACL_DAT_INV_MASK 0x20U /*!< R6 bit 5: left DAC invert */
+#define WM8962_DACCTL2_DACR_DAT_INV_MASK 0x40U /*!< R6 bit 6: right DAC invert */
+
+/*! @brief WM8962_THREED1 (R268/0x10C): ADC_MONOMIX (L+R mono, -6dB) needs THREED_ENA=0 */
+#define WM8962_THREED1_ADC_MONOMIX_MASK  0x40U /*!< bit 6: ADC mono mix */
+#define WM8962_THREED1_THREED_ENA_MASK   0x01U /*!< bit 0: 3D enable (must be 0 for mono mix) */
 
 /*! @brief WM8962_IFACE1 LRP bit */
 #define WM8962_IFACE1_LRP_MASK         0x10U
@@ -310,6 +332,35 @@ typedef enum _wm8962_protocol
     kWM8962_BusTDM            = 0x8U, /*!< TDM mode flag */
 } wm8962_protocol_t;
 
+/*! @brief The BCLK sample edge of the audio interface. */
+typedef enum _wm8962_sample_edge
+{
+    kWM8962_SampleOnRisingEdge  = 0U, /*!< BCLK not inverted; sample on rising edge (default) */
+    kWM8962_SampleOnFallingEdge = 1U, /*!< BCLK inverted; sample on falling edge (e.g. BT_PCM) */
+} wm8962_sample_edge_t;
+
+/*! @brief The frame sync (LRCLK) polarity of the audio interface. */
+typedef enum _wm8962_frame_sync_polarity
+{
+    kWM8962_FrameSyncNormal   = 0U, /*!< Normal LRCLK polarity (I2S/RJ/LJ) or DSP mode A (default) */
+    kWM8962_FrameSyncInverted = 1U, /*!< Inverted LRCLK polarity (I2S/RJ/LJ) or DSP mode B */
+} wm8962_frame_sync_polarity_t;
+
+/*! @brief WM8962 optional interface config. Referenced by @ref wm8962_audio_format_t via an
+ * optional pointer; NULL (default) keeps WM8962 power-on defaults. Applied in WM8962_Init. */
+typedef struct _wm8962_interface_config
+{
+    wm8962_sample_edge_t sampleEdge;                /*!< BCLK sample edge */
+    wm8962_frame_sync_polarity_t frameSyncPolarity; /*!< LRCLK polarity / DSP mode A/B */
+    bool adcSwapChannel;                            /*!< swap ADC L/R */
+    bool dacSwapChannel;                            /*!< swap DAC L/R */
+    bool adcMonoMix;                                /*!< ADC mono mix (L+R, -6 dB) */
+    bool adcLeftDataInvert;                         /*!< invert left ADC data */
+    bool adcRightDataInvert;                        /*!< invert right ADC data */
+    bool dacLeftDataInvert;                         /*!< invert left DAC data */
+    bool dacRightDataInvert;                        /*!< invert right DAC data */
+} wm8962_interface_config_t;
+
 /*! @brief wm8962 input source */
 typedef enum _wm8962_input_pga_source
 {
@@ -375,6 +426,7 @@ typedef struct _wm8962_audio_format
     uint32_t mclk_HZ;    /*!< master clock frequency */
     uint32_t sampleRate; /*!< sample rate */
     uint32_t bitWidth;   /*!< bit width */
+    const wm8962_interface_config_t *interfaceConfig; /*!< optional; NULL keeps WM8962 defaults */
 } wm8962_audio_format_t;
 
 /*! @brief wm8962 master system clock configuration */
@@ -496,6 +548,65 @@ status_t WM8962_SetDataRoute(wm8962_handle_t *handle, const wm8962_route_config_
  * @param protocol Audio data transfer protocol.
  */
 status_t WM8962_SetProtocol(wm8962_handle_t *handle, wm8962_protocol_t protocol);
+
+/*!
+ * @brief Set the BCLK sample edge (BCLK_INV, R7 b7).
+ * @param handle WM8962 handle.
+ * @param edge Sample edge, see @ref wm8962_sample_edge_t.
+ * @return kStatus_Success, or the propagated I2C error status.
+ */
+status_t WM8962_SetSampleEdge(wm8962_handle_t *handle, wm8962_sample_edge_t edge);
+
+/*!
+ * @brief Swap ADC left/right channels on the interface (ADC_LRSWAP, R7 b8).
+ * @param handle WM8962 handle.
+ * @param enable true to swap, false for normal.
+ * @return kStatus_Success, or the propagated I2C error status.
+ */
+status_t WM8962_SetADCChannelSwap(wm8962_handle_t *handle, bool enable);
+
+/*!
+ * @brief Enable ADC mono mix (ADC_MONOMIX, R268 b6): L+R on both channels, -6 dB. Clears
+ * THREED_ENA on enable (required for mono mix to take effect).
+ * @param handle WM8962 handle.
+ * @param enable true to enable, false to disable.
+ * @return kStatus_Success, or the propagated I2C error status.
+ */
+status_t WM8962_SetADCMonoMix(wm8962_handle_t *handle, bool enable);
+
+/*!
+ * @brief Set frame sync (LRCLK) polarity (LRCLK_INV, R7 b4); in DSP/PCM mode selects mode A/B.
+ * @param handle WM8962 handle.
+ * @param polarity See @ref wm8962_frame_sync_polarity_t.
+ * @return kStatus_Success, or the propagated I2C error status.
+ */
+status_t WM8962_SetFrameSyncPolarity(wm8962_handle_t *handle, wm8962_frame_sync_polarity_t polarity);
+
+/*!
+ * @brief Swap DAC left/right channels on the interface (DAC_LRSWAP, R7 b5).
+ * @param handle WM8962 handle.
+ * @param enable true to swap, false for normal.
+ * @return kStatus_Success, or the propagated I2C error status.
+ */
+status_t WM8962_SetDACChannelSwap(wm8962_handle_t *handle, bool enable);
+
+/*!
+ * @brief Set ADC data polarity per channel (ADCL/R_DAT_INV, R5 b5/b6).
+ * @param handle WM8962 handle.
+ * @param leftInvert invert left ADC data.
+ * @param rightInvert invert right ADC data.
+ * @return kStatus_Success, or the propagated I2C error status.
+ */
+status_t WM8962_SetADCDataInvert(wm8962_handle_t *handle, bool leftInvert, bool rightInvert);
+
+/*!
+ * @brief Set DAC data polarity per channel (DACL/R_DAT_INV, R6 b5/b6).
+ * @param handle WM8962 handle.
+ * @param leftInvert invert left DAC data.
+ * @param rightInvert invert right DAC data.
+ * @return kStatus_Success, or the propagated I2C error status.
+ */
+status_t WM8962_SetDACDataInvert(wm8962_handle_t *handle, bool leftInvert, bool rightInvert);
 
 /*!
  * @brief Set the volume of different modules in WM8962.
