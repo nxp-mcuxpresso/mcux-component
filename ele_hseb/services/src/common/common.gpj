@@ -1,5 +1,0 @@
-#!gbuild
-[Subproject]
-hse_config.c
-hse_global_variables.c
-
