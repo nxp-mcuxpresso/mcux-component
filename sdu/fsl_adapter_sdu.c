@@ -194,7 +194,11 @@ typedef struct _sdu_ctrl
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-#define SDU_TASK_PRIORITY (PRIORITY_RTOS_TO_OSA((configMAX_PRIORITIES-3)))
+#ifndef CONFIG_SDU_OFFSET_PRIORITY
+#define CONFIG_SDU_OFFSET_PRIORITY 0
+#endif
+
+#define SDU_TASK_PRIORITY (PRIORITY_RTOS_TO_OSA(((configMAX_PRIORITIES - CONFIG_SDU_OFFSET_PRIORITY)-3)))
 static void SDU_RecvTask(void *param);
 static OSA_TASK_DEFINE(SDU_RecvTask, SDU_TASK_PRIORITY, 1, SDU_TRANSFER_TASK_STACK_SIZE, false);
 
