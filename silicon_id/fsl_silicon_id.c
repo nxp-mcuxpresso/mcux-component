@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023, 2025 NXP
+ * Copyright 2022-2023, 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -74,7 +74,11 @@ status_t SILICONID_ConvertToMacAddr(uint8_t (*macAddr)[6])
     macAddr[0][1] = 0x27;
     macAddr[0][2] = 0x8d;
 
-    /* Set with silicon id. */
+    /*
+     * Only the lowest 3 silicon-ID bytes feed the MAC, and they are not guaranteed to differ
+     * between devices. The resulting MAC is therefore not a reliable source of a unique ethernet
+     * address.
+     */
     macAddr[0][3] = siliconId[0];
     macAddr[0][4] = siliconId[1];
     macAddr[0][5] = siliconId[2];
