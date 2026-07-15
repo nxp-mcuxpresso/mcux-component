@@ -296,6 +296,18 @@ menu "wifi_bt_module"
                         Detailed information about Type 2EL module you can find on
                         https://www.murata.com/en-us/products/connectivitymodule/wi-fi-bluetooth/overview/lineup/type2el
 
+                config MCUX_COMPONENT_component.wifi_bt_module.board_ubx_maya_w276
+                    bool "NXP UBX-MAYA-W276"
+                    help
+                        The MAYA-W2 series host-based modules are designed, built, and testedto
+                        to meet the high reliability and quality requirements of a wide range of
+                        industrial applications, such as smart manufacturing, tracking and
+                        telematics, building automation, professional appliances, healthcare, and
+                        EV charging infrastructures.
+
+                        Detailed information about MAYA-W2 module you can find on
+                        https://www.u-blox.com/en/product/maya-w2-series
+
                 config MCUX_COMPONENT_component.wifi_bt_module.board_aw300_rd_usd
                     bool "NXP IW612-AW300-RD-USD"
                     help
