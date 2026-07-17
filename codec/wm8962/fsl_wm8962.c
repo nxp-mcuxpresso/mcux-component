@@ -685,8 +685,14 @@ status_t WM8962_SetDataRoute(wm8962_handle_t *handle, const wm8962_route_config_
 
     if (route->leftHeadphonePGASource == kWM8962_OutputPGASourceMixer)
     {
-        WM8962_CHECK_RET(
-            WM8962_WriteReg(handle, WM8962_LEFT_HEADPHONE_MIXER, (uint16_t)route->leftHeadphoneMixerSource), ret);
+        /* Enable left HP mixer, route source(s) in + select mixer->HPOUTL PGA, then unmute. */
+        WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_MIXER_ENABLES, WM8962_MIXER_ENABLES_HPMIXL_ENA_MASK,
+                                          WM8962_MIXER_ENABLES_HPMIXL_ENA_MASK),
+                         ret);
+        WM8962_CHECK_RET(WM8962_WriteReg(handle, WM8962_LEFT_HEADPHONE_MIXER,
+                                         (uint16_t)route->leftHeadphoneMixerSource | WM8962_HPMIX_TO_HPOUT_PGA_MASK),
+                         ret);
+        WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_LEFT_HEADPHONE_MIXER_VOLUME, WM8962_HPMIX_MUTE_MASK, 0U), ret);
     }
     else
     {
@@ -695,8 +701,14 @@ status_t WM8962_SetDataRoute(wm8962_handle_t *handle, const wm8962_route_config_
 
     if (route->rightHeadphonePGASource == kWM8962_OutputPGASourceMixer)
     {
-        WM8962_CHECK_RET(
-            WM8962_WriteReg(handle, WM8962_RIGHT_HEADPHONE_MIXER, (uint16_t)route->rightHeadphoneMixerSource), ret);
+        /* Enable right HP mixer, route source(s) in + select mixer->HPOUTR PGA, then unmute. */
+        WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_MIXER_ENABLES, WM8962_MIXER_ENABLES_HPMIXR_ENA_MASK,
+                                          WM8962_MIXER_ENABLES_HPMIXR_ENA_MASK),
+                         ret);
+        WM8962_CHECK_RET(WM8962_WriteReg(handle, WM8962_RIGHT_HEADPHONE_MIXER,
+                                         (uint16_t)route->rightHeadphoneMixerSource | WM8962_HPMIX_TO_HPOUT_PGA_MASK),
+                         ret);
+        WM8962_CHECK_RET(WM8962_ModifyReg(handle, WM8962_RIGHT_HEADPHONE_MIXER_VOLUME, WM8962_HPMIX_MUTE_MASK, 0U), ret);
     }
     else
     {

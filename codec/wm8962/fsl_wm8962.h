@@ -93,6 +93,7 @@
 #define WM8962_ANALOG_HP_0   0x45U
 #define WM8962_CHARGE_PUMP_1 0x48U
 
+#define WM8962_MIXER_ENABLES                0x63U
 #define WM8962_LEFT_HEADPHONE_MIXER         0x64U
 #define WM8962_RIGHT_HEADPHONE_MIXER        0x65U
 #define WM8962_LEFT_HEADPHONE_MIXER_VOLUME  0x66U
@@ -163,6 +164,13 @@
 /*! @brief WM8962_THREED1 (R268/0x10C): ADC_MONOMIX (L+R mono, -6dB) needs THREED_ENA=0 */
 #define WM8962_THREED1_ADC_MONOMIX_MASK  0x40U /*!< bit 6: ADC mono mix */
 #define WM8962_THREED1_THREED_ENA_MASK   0x01U /*!< bit 0: 3D enable (must be 0 for mono mix) */
+
+/*! @brief Headphone-mixer output-path bits. Selecting the mixer output PGA source needs: mixer
+ * enable (R99), mixer->PGA select (R100/R101 b7), and unmute (R102/R103 b8, muted by default). */
+#define WM8962_MIXER_ENABLES_HPMIXL_ENA_MASK 0x08U  /*!< R99 b3: left HP mixer enable */
+#define WM8962_MIXER_ENABLES_HPMIXR_ENA_MASK 0x04U  /*!< R99 b2: right HP mixer enable */
+#define WM8962_HPMIX_TO_HPOUT_PGA_MASK       0x80U  /*!< R100/R101 b7: 1 = mixer out to HPOUT PGA */
+#define WM8962_HPMIX_MUTE_MASK               0x100U /*!< R102/R103 b8: 1 = HP mixer muted */
 
 /*! @brief WM8962_IFACE1 LRP bit */
 #define WM8962_IFACE1_LRP_MASK         0x10U
