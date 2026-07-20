@@ -211,6 +211,12 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_ubx_maya_w276)
     )
 endif()
 
+if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_quectel_fgs060n)
+     mcux_add_macro(
+         "-DWIFI_IW612_BOARD_QUECTEL_FGS060N"
+    )
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.board_aw300_rd_usd)
      mcux_add_macro(
         "-DBT_NW61X_BOARD_NXP_RD_USD"
