@@ -365,7 +365,17 @@
 
 @if dox_section_wm8962
 @section wm8962 WM8962
-  The current wm8962 driver version is 2.3.0.
+  The current wm8962 driver version is 2.4.0.
+
+  - 2.4.0
+    - Improvements
+      - Added optional interface configuration (wm8962_interface_config_t) referenced by wm8962_audio_format_t and applied in WM8962_Init.
+      - Added APIs WM8962_SetSampleEdge and WM8962_SetFrameSyncPolarity to select the BCLK sample edge and LRCLK polarity (DSP mode A/B).
+      - Added APIs WM8962_SetADCChannelSwap and WM8962_SetDACChannelSwap to swap the ADC/DAC left and right channels.
+      - Added API WM8962_SetADCMonoMix for ADC mono mix (L+R on both channels, -6 dB).
+      - Added APIs WM8962_SetADCDataInvert and WM8962_SetDACDataInvert to invert per-channel ADC/DAC data polarity.
+    - Bug Fixes
+      - Fixed the headphone mixer output path by enabling the mixer, selecting the mixer-to-HPOUT PGA source, and unmuting the mixer output.
 
   - 2.3.0
     - Improvements
