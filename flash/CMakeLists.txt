@@ -157,7 +157,7 @@ if (${device} STREQUAL LPC55S36)
     mcux_set_variable(drv_folder lpc55s3x)
 endif()
 
-if ((${device} STREQUAL MCXN947) OR (${device} STREQUAL MCXN547) OR (${device} STREQUAL MCXN236))
+if ((${device} STREQUAL MCXN947) OR (${device} STREQUAL MCXN947T) OR (${device} STREQUAL MCXN547) OR (${device} STREQUAL MCXN236))
     mcux_set_variable(drv_folder mcxnx4x)
 endif()
 
