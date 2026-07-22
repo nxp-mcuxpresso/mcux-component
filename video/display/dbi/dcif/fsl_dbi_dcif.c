@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 NXP
+ * Copyright 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -128,10 +128,24 @@ status_t DBI_DCIF_WriteCommandData(dbi_iface_t *dbiIface, uint32_t command, cons
 
     if (len_byte != 0U)
     {
-        DCIF_DbiWriteParam(dcif, pData, len_byte);
-        while ((dcif->DBI_CTRL & DCIF_DBI_CTRL_DBI_CMD_TRIG_MASK) != 0U)
+        /* Determine the DBI bus width from the configured output pattern (same
+         * classification as DCIF_DbiSetConfig): even patterns <= 10 (except 8)
+         * are 8-bit interfaces, everything else is treated as >= 16-bit. */
+        uint32_t pattern = (dcif->DBI_CTRL & DCIF_DBI_CTRL_DBI_DATA_PATTERN_MASK) >>
+                           DCIF_DBI_CTRL_DBI_DATA_PATTERN_SHIFT;
+        bool width8bit = (pattern <= 10U) && ((pattern % 2U) == 0U) && (pattern != 8U);
+
+        if (width8bit)
         {
-            /* Wait for the command to be completed. */
+            DCIF_DbiWriteParam(dcif, pData, len_byte);
+        }
+        else
+        {
+            for (uint32_t i = 0U; i < len_byte; i++)
+            {
+                uint16_t word = (uint16_t)pData[i];
+                DCIF_DbiWriteParam(dcif, (const uint8_t *)&word, 2U);
+            }
         }
     }
 
@@ -177,7 +191,7 @@ status_t DBI_DCIF_SetPixelFormat(dbi_iface_t *dbiIface, video_pixel_format_t for
         .background     = 0U,
         .panic.enable   = false,
         .globalAlpha    = 0xFFU,
-        .alphaBlendMode = kDCIF_AlphaBlendEmbedded,
+        .alphaBlendMode = kDCIF_AlphaBlendOverride,
     };
 
     /* Enable DCIF. todo*/
@@ -233,16 +247,15 @@ static void DBI_DCIF_WriteMemoryInternal(
     DCIF_SetLayerStride(dcif, 0U, stride);
     DCIF_SetLayerAddr(dcif, 0U, (uint32_t)data);
 
+    /* The DCIF layer registers are double-buffered. Latch them into the active
+     * set before triggering the pixel send. */
+    DCIF_TriggerLayerShadowLoad(dcif, 0U);
+
     /* Disable interrupts. */
     DCIF_DisableInterrupts(dcif, prvData->domain, kDCIF_InterruptDbiCommandDone);
 
     /* Send command, write memory start or continue. */
     DCIF_DbiWriteCommand(dcif, cmd);
-
-    while ((dcif->DBI_CTRL & DCIF_DBI_CTRL_DBI_CMD_TRIG_MASK) != 0U)
-    {
-        /* Wait for the command to be completed. */
-    }
 
     /* Start memory transfer. */
     DCIF_DbiWritePixel(dcif);
