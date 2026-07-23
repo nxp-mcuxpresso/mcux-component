@@ -50,4 +50,11 @@ config MCUX_COMPONENT_driver.pf5020
     help
       Say yes here to select pf5020 driver.
 
+config MCUX_COMPONENT_driver.pf9453
+    bool "pf9453"
+    select MCUX_COMPONENT_driver.common
+    select MCUX_DEPENDENCY_COMPONENT_component.use_i2c_dependency_options
+    help
+      Say yes here to select pf9453 driver.
+
 endmenu
