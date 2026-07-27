@@ -195,7 +195,8 @@ void PCA9422_InitCharger(pca9422_handle_t *handle, const pca9422_charger_config_
     vinCntl[0] = (uint8_t)PCA9422_VIN_CNTL_0_VIN_PD_EN;
     vinCntl[1] = (uint8_t)((uint8_t)config->aiclV | PCa9422_VIN_CNTL_1_AICL_EN);
     vinCntl[2] = (uint8_t)(config->icl);
-    vinCntl[3] = (uint8_t)(PCA9422_VSYS_REG(config->vsysReg) << MASK2SHIFT(PCA9422_VIN_CNTL_3_VSYS_REG));
+    vinCntl[3] =
+        (uint8_t)(((uint32_t)PCA9422_VSYS_REG(config->vsysReg) << MASK2SHIFT(PCA9422_VIN_CNTL_3_VSYS_REG)) & 0xFFU);
     result     = PCA9422_WriteRegs(handle, PCA9422_VIN_CNTL_0, vinCntl, sizeof(vinCntl));
     if (!result)
     {
@@ -669,8 +670,9 @@ bool PCA9422_SetVBATRegulation(pca9422_handle_t *handle, uint16_t vFloat)
     }
     /* Convert vSys to reg value */
     regVal = (uint8_t)PCA9422_VSYS_REG(vSys);
-    result = PCA9422_ModifyRegReadback(handle, PCA9422_VIN_CNTL_3, PCA9422_VIN_CNTL_3_VSYS_REG,
-                                       regVal << MASK2SHIFT(PCA9422_VIN_CNTL_3_VSYS_REG));
+    result = PCA9422_ModifyRegReadback(
+        handle, PCA9422_VIN_CNTL_3, PCA9422_VIN_CNTL_3_VSYS_REG,
+        (uint8_t)(((uint32_t)regVal << MASK2SHIFT(PCA9422_VIN_CNTL_3_VSYS_REG)) & 0xFFU));
     if (result == false)
     {
         goto error;
@@ -1336,15 +1338,19 @@ void PCA9422_InitRegulator(pca9422_handle_t *handle, const pca9422_regulator_con
     assert(result);
     /* BUCK123_DVS_CFG1 */
     regVal =
-        (uint8_t)((config->buck[0].dvsUpStep << 7U) | (config->buck[0].dvsDnStep << 6U) |
-                  (config->buck[1].dvsUpStep << 5U) | (config->buck[1].dvsDnStep << 4U) | (uint8_t)(config->smartMode));
+        (uint8_t)((((uint32_t)config->buck[0].dvsUpStep << 7U) | ((uint32_t)config->buck[0].dvsDnStep << 6U) |
+                   ((uint32_t)config->buck[1].dvsUpStep << 5U) | ((uint32_t)config->buck[1].dvsDnStep << 4U) |
+                   (uint32_t)config->smartMode) &
+                  0xFFU);
     regAddr = PCA9422_BUCK123_DVS_CFG1;
     result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
     assert(result);
     /* BUCK123_DVS_CFG2 */
     regVal =
-        (uint8_t)((config->buck[0].dvsCtrl << 6U) | (config->buck[1].dvsCtrl << 4U) | (config->buck[2].dvsCtrl << 2U) |
-                  (config->buck[2].dvsUpStep << 1U) | (config->buck[2].dvsDnStep << 0U));
+        (uint8_t)((((uint32_t)config->buck[0].dvsCtrl << 6U) | ((uint32_t)config->buck[1].dvsCtrl << 4U) |
+                   ((uint32_t)config->buck[2].dvsCtrl << 2U) | ((uint32_t)config->buck[2].dvsUpStep << 1U) |
+                   ((uint32_t)config->buck[2].dvsDnStep << 0U)) &
+                  0xFFU);
     regAddr = PCA9422_BUCK123_DVS_CFG2;
     result  = PCA9422_WriteRegs(handle, regAddr, &regVal, 1U);
     assert(result);
@@ -1690,7 +1696,8 @@ void PCA9422_SetLDO1EnMode(pca9422_handle_t *handle, bool enmode)
 {
     bool result;
 
-    result = PCA9422_ModifyReg(handle, PCA9422_LDO1_CFG2, PCA9422_LDO1_CFG2_L1_ENMODE, (uint8_t)enmode);
+    result = PCA9422_ModifyReg(handle, PCA9422_LDO1_CFG2, PCA9422_LDO1_CFG2_L1_ENMODE,
+                               (enmode ? (uint8_t)1U : (uint8_t)0U));
     if (result == false)
     {
         LOG_INFO("Error I2C data write[0x4A]\r\n");
@@ -2682,15 +2689,15 @@ void PCA9422_SetBuckDVSControl(pca9422_handle_t *handle, pca9422_regulator_t reg
     {
         case kPCA9422_RegulatorSwitch1:
             regMask = PCA9422_BUCK123_DVS_CFG2_B1_DVS_CTRL;
-            regVal  = (uint8_t)((dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B1_DVS_CTRL)) & 0xFFU);
+            regVal  = (uint8_t)(((uint32_t)dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B1_DVS_CTRL)) & 0xFFU);
             break;
         case kPCA9422_RegulatorSwitch2:
             regMask = PCA9422_BUCK123_DVS_CFG2_B2_DVS_CTRL;
-            regVal  = (uint8_t)((dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B2_DVS_CTRL)) & 0xFFU);
+            regVal  = (uint8_t)(((uint32_t)dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B2_DVS_CTRL)) & 0xFFU);
             break;
         case kPCA9422_RegulatorSwitch3:
             regMask = PCA9422_BUCK123_DVS_CFG2_B3_DVS_CTRL;
-            regVal  = (uint8_t)((dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B3_DVS_CTRL)) & 0xFFU);
+            regVal  = (uint8_t)(((uint32_t)dvsCtrl << MASK2SHIFT(PCA9422_BUCK123_DVS_CFG2_B3_DVS_CTRL)) & 0xFFU);
             break;
         default:
             LOG_INFO("Error Invalid regulator\r\n");
