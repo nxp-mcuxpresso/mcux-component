@@ -269,7 +269,7 @@ if ((${device} STREQUAL MCXE247))
     mcux_set_variable(drv_folder mcxe2x)
 endif()
 
-if ((${board} STREQUAL frdmmcxe31b))
+if ((${board} STREQUAL frdmmcxe31b) OR (${board} STREQUAL frdmmcxe32b))
     mcux_set_variable(drv_folder mcxe3x)
 endif()
 
