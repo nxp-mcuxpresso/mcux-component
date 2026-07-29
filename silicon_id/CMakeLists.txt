@@ -143,3 +143,16 @@ if (CONFIG_MCUX_COMPONENT_component.silicon_id_mcxe31x)
             ./socs/fsl_silicon_id_soc.h
     )
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.silicon_id_mcxe32x)
+    mcux_add_include(
+        INCLUDES
+            ./socs
+    )
+
+    mcux_add_source(
+        SOURCES
+            ./socs/mcxe32x/fsl_silicon_id_soc.c
+            ./socs/fsl_silicon_id_soc.h
+    )
+endif()
