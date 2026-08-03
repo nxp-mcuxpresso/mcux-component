@@ -95,7 +95,20 @@ enum
 {
     kStatus_ELE_BufferTooSmall =
         MAKE_STATUS(kStatusGroup_ELE, 0x1u), /*!< ELE status for buffer sizes that are too small. */
+    kStatus_ELE_NotSupported =
+        MAKE_STATUS(kStatusGroup_ELE, 0x2u), /*!< ELE status for unsupported features. */
 };
+
+/*******************************************************************************
+ * Memory translation Definitions
+ ******************************************************************************/
+/* Macros and computing data offset */
+#if defined(FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET) && (__CORTEX_M == 7U)
+#include "fsl_memory.h"
+#define ADD_OFFSET(addr) MEMORY_ConvertMemoryMapAddress(addr, kMEMORY_Local2DMA)
+#else  /* !FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
+#define ADD_OFFSET(addr) (addr)
+#endif /* FSL_FEATURE_MEMORY_HAS_ADDRESS_OFFSET */
 
 /*******************************************************************************
  * CACHE Handling Definitions
@@ -621,18 +634,32 @@ typedef enum _rng_reseed_flag_t
 /*! @brief AES generic cipher algo  */
 typedef enum _generic_cipher_algo_t
 {
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+    kAES_ECB = 0x04404400u,
+    kAES_CBC = 0x04404000u,
+    kAES_CTR = 0x04C01000u,
+    kAES_OFB = 0x04C01100u,
+    kAES_CFB = 0x04C01200u    
+#else
     kAES_ECB = 0x02u,
     kAES_CBC = 0x03u,
     kAES_CTR = 0x04u,
     kAES_OFB = 0x43u,
     kAES_CFB = 0x44u
+#endif
 } generic_cipher_algo_t;
 
 /*! @brief AES generic AEAD algo  */
 typedef enum _generic_aead_algo_t
 {
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+    kAES_GCM = 0x05500200u,
+    kAES_CCM = 0x05500100u,
+    kCHACHA20_POLY1305 = 0x05100500
+#else
     kAES_GCM = 0x05u,
     kAES_CCM = 0x06u
+#endif
 } generic_aead_algo_t;
 
 /*! @brief ECDSA generic algo  */
@@ -771,7 +798,12 @@ typedef struct _ele_generic_rsa_t
     generic_rsa_flags_t flags;  /*!< Flags for the requested operation */
 } ele_generic_rsa_t;
 
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+#define ELE_HASH_CTX_SIZE 1696u /* Maximum HASH ctx size is 1696 Bytes */
+#else
 #define ELE_HASH_CTX_SIZE 216u /* Maximum HASH ctx size is 216 Bytes (112 Bytes for SHA2-224/256) */
+#endif
+
 /*! @brief ELE HASH Context structure */
 typedef struct _ele_hash_ctx_t
 {
@@ -810,10 +842,10 @@ typedef enum _cipher_iv_generation_t
 typedef struct _ele_hsm_cipher_t
 {
     uint32_t keyID;      /*!< keyID Key ID obtained by calling ELE_GenerateKey() */
-    uint32_t input;      /*!< input pointer where input data can be found */
-    size_t input_size;   /*!< input_size size of input data in bytes */
-    uint32_t output;     /*!< output pointer where output data must be stored */
-    size_t *output_size; /*!< output_size size of output data in bytes, not used if NULL */
+    uint32_t input;      /*!< input pointer where input data can be found. For decrypt tag must be appended */
+    size_t input_size;   /*!< input_size size of input data in bytes (for decrypt including tag size) */
+    uint32_t output;     /*!< output pointer where output data must be stored. For encrypt tag is appended */
+    size_t *output_size; /*!< output_size size of output data in bytes (for encrypt including tag), not used if NULL. */
     uint32_t iv;         /*!< iv pointer where IV data can be found if applicable, otherwise 0 */
     size_t iv_size; /*!< iv_size size of iv data in bytes, CBC IV is fixed to 16 bytes, CTR IV size is fixed to 8 bytes,
                        must be 0 for algorithm not using IV */
@@ -1167,6 +1199,23 @@ status_t ELE_Hash(S3MU_Type *mu,
                   hash_algo_t alg);
 
 /*!
+ * @brief ELE HASH Get Context Size
+ *
+ * This function queries the EdgeLock Enclave firmware for the context size (in
+ * bytes) required by a multipart HASH operation of the given algorithm, using the
+ * HASH command GET CTX SIZE flag. The returned value can be used to size/validate
+ * the ele_hash_ctx_t buffer passed to ELE_Hash_Init().
+ *
+ * @param mu MU peripheral base address
+ * @param alg define used hash algorithm, see hash_algo_t
+ * @param ctxSize [out] context size in bytes reported by the firmware
+ *
+ * @return Status kStatus_Success if success, kStatus_Fail if fail
+ * Possible errors: kStatus_InvalidArgument
+ */
+status_t ELE_Hash_GetCtxSize(S3MU_Type *mu, hash_algo_t alg, uint16_t *ctxSize);
+
+/*!
  * @brief ELE HASH
  *
  * This function initialize ELE context for streaming HASH oprations.
@@ -1179,6 +1228,7 @@ status_t ELE_Hash(S3MU_Type *mu,
  * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
  */
 status_t ELE_Hash_Init(S3MU_Type *mu, ele_hash_ctx_t *ctx, hash_algo_t alg);
+
 
 /*!
  * @brief ELE HASH
@@ -2249,6 +2299,55 @@ status_t ELE_GetEvent(S3MU_Type *mu, ele_events_t *events);
  *                  kStatus_ELE_BufferTooSmall
  */
 status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size);
+
+/*******************************************************************************
+ * ELE S100-only API (i.MX RT2660)
+ ******************************************************************************/
+
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+
+/*!
+ * @brief ELE Key Derivation (HKDF) - S100 only
+ *
+ * Derives a key using HKDF (RFC 5869).  The input keying material (IKM) and
+ * output keying material (OKM) can be either opaque keys held in the ELE key
+ * store or plaintext buffers in host memory.
+ *
+ * @param mu           MU peripheral base address.
+ * @param keyHandleID  Key management service handle (from ELE_OpenKeyService).
+ * @param algorithm    HKDF algorithm variant.  Use one of:
+ *                       HKDF_SHA256_EXTRACT_EXPAND (0x08000109) - full HKDF
+ *                       HKDF_SHA256_EXTRACT_ONLY   (0x08000409)
+ *                       HKDF_SHA256_EXPAND_ONLY    (0x08000509)
+ * @param plaintext    If true, ikm_key_id is an IKM buffer address and
+ *                     okm_key_id is an OKM buffer address in host memory.
+ *                     If false, both identify keys in the ELE key store.
+ * @param ikm_key_id   IKM opaque key ID or host buffer address (plaintext).
+ * @param okm_key_id   OKM opaque key ID or host buffer address (plaintext).
+ * @param salt         Optional salt (NULL yields a zero-filled salt per RFC 5869).
+ * @param salt_size    Salt length in bytes.
+ * @param info         Optional context/label string.
+ * @param info_size    Info length in bytes.
+ * @param ikm_size     IKM length in bytes (used only in plaintext mode).
+ * @param okm_size     Desired OKM length in bytes.
+ *
+ * @return kStatus_Success if success, kStatus_Fail if fail.
+ * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
+ */
+status_t ELE_KeyDerivation(S3MU_Type *mu,
+                           uint32_t keyHandleID,
+                           uint32_t algorithm,
+                           bool plaintext,
+                           uint32_t ikm_key_id,
+                           uint32_t okm_key_id,
+                           const uint8_t *salt,
+                           uint32_t salt_size,
+                           const uint8_t *info,
+                           uint32_t info_size,
+                           uint32_t ikm_size,
+                           uint32_t okm_size);
+
+#endif /* FSL_FEATURE_ELE_IS_S100 */
 
 #if defined(__cplusplus)
 }

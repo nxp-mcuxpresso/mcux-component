@@ -96,14 +96,25 @@
 #define START_RNG_SIZE         (0x1u)
 #define START_RNG_RESPONSE_HDR (0xe1a30206u)
 
-#define HASH_HDR             (0x17CC0A07u)
-#define HASH_SIZE            (0xau)
-#define HASH_RESPONSE_HDR    (0xe1cc0407u)
+#define HASH_HDR                (0x17CC0A07u)
+#define HASH_SIZE               (0xau)
+#define HASH_RESPONSE_HDR       (0xe1cc0407u)
+#define HASH_FLAG_GET_CTX_SIZE  (0x80u)   /* Flags bit 7: GET CTX SIZE (multipart) */
+#define HASH_CTX_SIZE_RESP_MASK (0xffffu) /* Context size is low 16 bits of response word 3 */
+
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+#define HASH_CTX_SIZE_SHA224 (1696u)
+#define HASH_CTX_SIZE_SHA256 (1696u)
+#define HASH_CTX_SIZE_SHA384 (1696u)
+#define HASH_CTX_SIZE_SHA512 (1696u)
+#define HASH_CTX_SIZE_SM3256 (1696u)
+#else
 #define HASH_CTX_SIZE_SHA224 (112u)
-#define HASH_CTX_SIZE_SHA256 (112u)
+#define HASH_CTX_SIZE_SHA256 (216u)
 #define HASH_CTX_SIZE_SHA384 (216u)
 #define HASH_CTX_SIZE_SHA512 (216u)
 #define HASH_CTX_SIZE_SM3256 (216u)
+#endif
 
 #define HMAC_GENERIC_HDR          (0x17CE0907u)
 #define HMAC_GENERIC_SIZE         (0x9u)

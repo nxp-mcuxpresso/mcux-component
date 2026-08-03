@@ -8,6 +8,28 @@ menu "ELE Crypto"
       select MCUX_COMPONENT_driver.s3mu
 
       if MCUX_COMPONENT_component.ele_crypto
+        # ELE firmware variant: S400 (RT1180) or S100 (RT2660)
+        choice MCUX_DEPENDENCY_COMPONENT_component.ele_crypto.variant
+          prompt "ELE firmware variant"
+          default MCUX_COMPONENT_component.ele_crypto_s400 if MCUX_HW_IP_DriverType_EDGELOCK
+          default MCUX_COMPONENT_component.ele_crypto_s100 if MCUX_HW_IP_DriverType_S3MU
+
+          config MCUX_COMPONENT_component.ele_crypto_s400
+              bool "ELE S400 (RT1180, ELE400/ELE401)"
+              depends on MCUX_HW_IP_DriverType_EDGELOCK
+              help
+                Use the S400 ELE firmware backend (ele_crypto.c).  This is the
+                variant present on i.MX RT1180 with the ELE400 or ELE401 IP.
+
+          config MCUX_COMPONENT_component.ele_crypto_s100
+              bool "ELE S100 (RT2660)"
+              depends on MCUX_HW_IP_DriverType_S3MU
+              help
+                Use the S100 ELE firmware backend (ele_crypto_s100.c).  This is
+                the variant present on i.MX RT2660.
+
+        endchoice
+
         choice MCUX_DEPENDENCY_COMPONENT_component.ele_crypto.cache_driver
           prompt "ele_crypto cache dependency"
           default MCUX_DEPENDENCY_COMPONENT_component.ele_crypto_CM7_CACHE
@@ -33,6 +55,10 @@ menu "ELE Crypto"
 
   config MCUX_COMPONENT_component.ele_nvm_manager
       bool "ele_nvm_manager"
-      select MCUX_COMPONENT_component.ele_crypto
+      default y if MCUX_COMPONENT_component.ele_crypto
+      depends on MCUX_COMPONENT_component.ele_crypto
+      help
+        NVM manager task for ELE key store persistence.  Required for both
+        S400 and S100 variants when persistent keys (SYNC flag) are used.
 
 endmenu
