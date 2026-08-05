@@ -14,7 +14,10 @@ if ((${device} STREQUAL KW45B41Z83) OR (${device} STREQUAL MCXW716C)
     mcux_set_variable(pm_device_foldername KW45B41Z83)
 endif()
 
-if ((${device} STREQUAL KW43B43ZC7) OR (${device} STREQUAL MCXW70AC))
+if ((${device} STREQUAL KW43B43ZC7) OR (${device} STREQUAL KW43B43ZC6) OR (${device} STREQUAL KW43B43ZC3)
+    OR (${device} STREQUAL KW43B43ZC2) OR (${device} STREQUAL KW43L43Z97) OR (${device} STREQUAL KW43L43Z96)
+    OR (${device} STREQUAL KW43L43Z93) OR (${device} STREQUAL KW43L43Z92) OR (${device} STREQUAL MCXW70AC)
+    OR (${device} STREQUAL MCXW70AA) OR (${device} STREQUAL MCXW70AD))
     mcux_set_variable(pm_device_foldername KW43B43ZC7)
 endif()
 
