@@ -268,7 +268,7 @@ RAMFUNC static status_t xspi_nor_enter_4byte_addr(XSPI_Type *base)
  * 16-bit Device ID 0xA020 -> a 3-byte stream {0xEF, 0xA0, 0x20}.
  */
 #define MFLASH_W25H512_JEDEC_MANUF_ID 0xEFU
-#define MFLASH_W25H512_JEDEC_DEV_HI   0xA0U
+#define MFLASH_W25H512_JEDEC_DEV_HI   0x60U // The board actually use a W25Q512
 #define MFLASH_W25H512_JEDEC_DEV_LO   0x20U
 
 RAMFUNC static status_t xspi_nor_read_jedec_id(XSPI_Type *base, uint32_t *jedec_id_out)
