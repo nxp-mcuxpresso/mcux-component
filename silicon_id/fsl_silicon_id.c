@@ -20,7 +20,7 @@ status_t SILICONID_GetID(uint8_t *siliconId, uint32_t *idLen)
 {
     assert((siliconId != NULL) && (idLen != NULL) && (*idLen != 0U));
 
-    status_t result = kStatus_Fail;
+    status_t result;
 
 #if defined(SIM)
     assert(sizeof(sim_uid_t) <= SILICONID_MAX_LENGTH);
