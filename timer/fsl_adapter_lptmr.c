@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2021,2024-2025 NXP
+ * Copyright 2018-2021,2024-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -64,6 +64,18 @@ static void HAL_TimerInterruptHandle(uint8_t instance)
     }
 }
 
+#define HAL_TIMER_INTERRUPT_HANDLE(base)                                                         \
+    {                                                                                            \
+        for (uint8_t instance = 0; instance < ARRAY_SIZE(s_LptmrBase); instance++)               \
+        {                                                                                        \
+            if (MSDK_REG_NONSECURE_ADDR(s_LptmrBase[instance]) == MSDK_REG_NONSECURE_ADDR(base)) \
+            {                                                                                    \
+                HAL_TimerInterruptHandle(instance);                                              \
+                break;                                                                           \
+            }                                                                                    \
+        }                                                                                        \
+    }
+
 void PWT_LPTMR0_IRQHandler(void);
 void PWT_LPTMR0_IRQHandler(void)
 {
@@ -104,6 +116,34 @@ void LPTMR0_LPTMR1_IRQHandler(void)
 #endif
     SDK_ISR_EXIT_BARRIER;
 }
+
+#if defined(VBAT__LPTMR)
+void VBAT_LPTMR_IRQHandler(void);
+void VBAT_LPTMR_IRQHandler(void)
+{
+    HAL_TIMER_INTERRUPT_HANDLE(VBAT__LPTMR);
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* VBAT__LPTMR */
+
+#if defined(WAKE__LPTMR_0)
+void WAKE_LPTMR0_IRQHandler(void);
+void WAKE_LPTMR0_IRQHandler(void)
+{
+    HAL_TIMER_INTERRUPT_HANDLE(WAKE__LPTMR_0);
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* WAKE__LPTMR_0 */
+
+#if defined(WAKE__LPTMR_1)
+void WAKE_LPTMR1_IRQHandler(void);
+void WAKE_LPTMR1_IRQHandler(void)
+{
+    HAL_TIMER_INTERRUPT_HANDLE(WAKE__LPTMR_1);
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* WAKE__LPTMR_1 */
+
 /************************************************************************************
 *************************************************************************************
 * Public functions
@@ -283,5 +323,5 @@ hal_timer_time_t HAL_TimerGetCurrentTicks(hal_timer_handle_t halTimerHandle)
 void HAL_TimerUpdateMatchValueInTicks(hal_timer_handle_t halTimerHandle, hal_timer_time_t matchValue)
 {
     /* NOT IMPLEMENTED */
-    assert(false); 
+    assert(false);
 }

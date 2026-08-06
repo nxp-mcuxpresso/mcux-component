@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019,2025 NXP
+ * Copyright 2018-2019,2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -167,6 +167,54 @@ void TPM8_IRQHandler(void)
 }
 #endif
 
+#if defined(HSP__TPM_0)
+void HSP_QTPM0_CH0_IRQHandler(void);
+void HSP_QTPM0_CH0_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(HSP__TPM_0));
+    SDK_ISR_EXIT_BARRIER;
+}
+void HSP_QTPM0_CH1_IRQHandler(void);
+void HSP_QTPM0_CH1_IRQHandler(void)
+{
+    HSP_QTPM0_CH0_IRQHandler();
+}
+void HSP_QTPM0_CH2_IRQHandler(void);
+void HSP_QTPM0_CH2_IRQHandler(void)
+{
+    HSP_QTPM0_CH0_IRQHandler();
+}
+void HSP_QTPM0_CH3_IRQHandler(void);
+void HSP_QTPM0_CH3_IRQHandler(void)
+{
+    HSP_QTPM0_CH0_IRQHandler();
+}
+#endif /* HSP__TPM_0 */
+
+#if defined(WAKE__TPM_0)
+void WAKE_QTPM0_CH0_IRQHandler(void);
+void WAKE_QTPM0_CH0_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(WAKE__TPM_0));
+    SDK_ISR_EXIT_BARRIER;
+}
+void WAKE_QTPM0_CH1_IRQHandler(void);
+void WAKE_QTPM0_CH1_IRQHandler(void)
+{
+    WAKE_QTPM0_CH0_IRQHandler();
+}
+void WAKE_QTPM0_CH2_IRQHandler(void);
+void WAKE_QTPM0_CH2_IRQHandler(void)
+{
+    WAKE_QTPM0_CH0_IRQHandler();
+}
+void WAKE_QTPM0_CH3_IRQHandler(void);
+void WAKE_QTPM0_CH3_IRQHandler(void)
+{
+    WAKE_QTPM0_CH0_IRQHandler();
+}
+#endif /* WAKE__TPM_0 */
+
 /************************************************************************************
 *************************************************************************************
 * Public functions
@@ -182,7 +230,7 @@ hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_co
     assert(halTimerHandle != NULL);
     assert(halTimerConfig->instance < (sizeof(s_TPMBase) / sizeof(TPM_Type *)));
 
-    halTimerState->timeout = halTimerConfig->timeout;
+    halTimerState->timeout  = halTimerConfig->timeout;
     halTimerState->instance = halTimerConfig->instance;
     assert(s_TPMBase[halTimerState->instance] != NULL);
 
@@ -272,5 +320,5 @@ hal_timer_time_t HAL_TimerGetCurrentTicks(hal_timer_handle_t halTimerHandle)
 void HAL_TimerUpdateMatchValueInTicks(hal_timer_handle_t halTimerHandle, hal_timer_time_t matchValue)
 {
     /* NOT IMPLEMENTED */
-    assert(false); 
+    assert(false);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019, 2023 NXP
+ * Copyright 2018-2019, 2023, 2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -47,6 +47,19 @@ static void HAL_TimerInterruptHandle(uint8_t instance)
         halTimerState->callback(halTimerState->callbackParam);
     }
 }
+
+#define HAL_TIMER_LPIT_INTERRUPT_HANDLE(base)                                                   \
+    {                                                                                           \
+        for (uint8_t instance = 0; instance < ARRAY_SIZE(s_LpitBase); instance++)               \
+        {                                                                                       \
+            if (MSDK_REG_NONSECURE_ADDR(s_LpitBase[instance]) == MSDK_REG_NONSECURE_ADDR(base)) \
+            {                                                                                   \
+                HAL_TimerInterruptHandle(instance);                                             \
+                break;                                                                          \
+            }                                                                                   \
+        }                                                                                       \
+    }
+
 #if defined(LPIT0)
 void LPIT0_IRQHandler(void);
 void LPIT0_IRQHandler(void)
@@ -63,6 +76,24 @@ void LPIT1_IRQHandler(void)
     SDK_ISR_EXIT_BARRIER;
 }
 #endif
+
+#if defined(HSP__LPIT_0)
+void HSP_LPIT0_IRQHandler(void);
+void HSP_LPIT0_IRQHandler(void)
+{
+    HAL_TIMER_LPIT_INTERRUPT_HANDLE(HSP__LPIT_0);
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* HSP__LPIT_0 */
+
+#if defined(HSP__LPIT_1)
+void HSP_LPIT1_IRQHandler(void);
+void HSP_LPIT1_IRQHandler(void)
+{
+    HAL_TIMER_LPIT_INTERRUPT_HANDLE(HSP__LPIT_1);
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* HSP__LPIT_1 */
 /************************************************************************************
 *************************************************************************************
 * Public functions
@@ -194,5 +225,5 @@ hal_timer_time_t HAL_TimerGetCurrentTicks(hal_timer_handle_t halTimerHandle)
 void HAL_TimerUpdateMatchValueInTicks(hal_timer_handle_t halTimerHandle, hal_timer_time_t matchValue)
 {
     /* NOT IMPLEMENTED */
-    assert(false); 
+    assert(false);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, 2025 NXP
+ * Copyright 2021, 2025-2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -178,6 +178,33 @@ void SAI4_RX_IRQHandler(void)
 }
 #endif
 
+/* IRQHandler for AUDIO__SAI_0 */
+#if defined(AUDIO__SAI_0)
+void AUDIO_SAI0_IRQHandler(void);
+void AUDIO_SAI0_IRQHandler(void)
+{
+    HAL_AudioFifoErrorIsr(AUDIO__SAI_0);
+}
+#endif /* AUDIO__SAI_0 */
+
+/* IRQHandler for AUDIO__SAI_1 */
+#if defined(AUDIO__SAI_1)
+void AUDIO_SAI1_IRQHandler(void);
+void AUDIO_SAI1_IRQHandler(void)
+{
+    HAL_AudioFifoErrorIsr(AUDIO__SAI_1);
+}
+#endif /* AUDIO__SAI_1 */
+
+/* IRQHandler for AUDIO__SAI_2 */
+#if defined(AUDIO__SAI_2)
+void AUDIO_SAI2_IRQHandler(void);
+void AUDIO_SAI2_IRQHandler(void)
+{
+    HAL_AudioFifoErrorIsr(AUDIO__SAI_2);
+}
+#endif /* AUDIO__SAI_2 */
+
 static hal_audio_status_t HAL_AudioGetStatus(status_t status)
 {
     hal_audio_status_t returnStatus;
@@ -290,14 +317,14 @@ static uint8_t HAL_AudioSetSaiConfig(const hal_audio_config_t *config, sai_trans
     {
         saiConfig->frameSync.frameSyncWidth = config->bitWidth >> 1U;
         saiConfig->serialData.dataWordNum   = 1U;
-        channelNum                         = 1;
+        channelNum                          = 1;
     }
     else if (channelNum < (uint8_t)kHAL_AudioStereo)
     {
         saiConfig->frameSync.frameSyncWidth  = config->bitWidth;
         saiConfig->serialData.dataWordNum    = 2U;
         saiConfig->serialData.dataMaskedWord = 0x1UL << channelNum;
-        channelNum                          = 2;
+        channelNum                           = 2;
     }
     else
     {
@@ -406,17 +433,17 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     hal_audio_dma_config_t *dmaConfig;
     hal_audio_ip_config_t *featureConfig;
 #if (defined(FSL_FEATURE_SOC_EDMA_COUNT) && (FSL_FEATURE_SOC_EDMA_COUNT > 0U) && \
-	(defined(FSL_EDMA_SOC_IP_DMA3) && (FSL_EDMA_SOC_IP_DMA3 > 0) || \
-	defined(FSL_EDMA_SOC_IP_DMA4) && (FSL_EDMA_SOC_IP_DMA4 > 0)))
+     (defined(FSL_EDMA_SOC_IP_DMA3) && (FSL_EDMA_SOC_IP_DMA3 > 0) ||             \
+      defined(FSL_EDMA_SOC_IP_DMA4) && (FSL_EDMA_SOC_IP_DMA4 > 0)))
     EDMA_Type *dmaBases[] = EDMA_BASE_PTRS;
 #else
-    DMA_Type *dmaBases[] = DMA_BASE_PTRS;
+    DMA_Type *dmaBases[]                                     = DMA_BASE_PTRS;
 #endif /* FSL_FEATURE_SOC_EDMA_COUNT */
     IRQn_Type txIrqNumber[] = I2S_TX_IRQS;
     IRQn_Type rxIrqNumber[] = I2S_RX_IRQS;
 #if (defined(FSL_FEATURE_SOC_EDMA_COUNT) && (FSL_FEATURE_SOC_EDMA_COUNT > 0U))
 #if (defined(FSL_EDMA_SOC_IP_DMA3) && (FSL_EDMA_SOC_IP_DMA3 > 0) || \
-      defined(FSL_EDMA_SOC_IP_DMA4) && (FSL_EDMA_SOC_IP_DMA4 > 0))
+     defined(FSL_EDMA_SOC_IP_DMA4) && (FSL_EDMA_SOC_IP_DMA4 > 0))
     IRQn_Type dmaIrqNumber[][FSL_FEATURE_EDMA_MODULE_CHANNEL] = EDMA_CHN_IRQS;
 #else
     IRQn_Type dmaIrqNumber[][FSL_FEATURE_EDMA_MODULE_CHANNEL] = DMA_CHN_IRQS;
@@ -522,10 +549,10 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     EDMA_CreateHandle(&audioHandle->dmaHandle, dmaBases[dmaConfig->instance], dmaConfig->channel);
 
 #if (defined(FSL_FEATURE_EDMA_HAS_CHANNEL_MUX) && (FSL_FEATURE_EDMA_HAS_CHANNEL_MUX > 0U))
-        assert(dmaConfig->dmaChannelMuxConfig);
-        EDMA_SetChannelMux(dmaBases[dmaConfig->instance], dmaConfig->channel,
-                          ((hal_audio_dma_channel_mux_config_t *)dmaConfig->dmaChannelMuxConfig)
-                                   ->dmaChannelMuxConfig.dmaRequestSource);
+    assert(dmaConfig->dmaChannelMuxConfig);
+    EDMA_SetChannelMux(
+        dmaBases[dmaConfig->instance], dmaConfig->channel,
+        ((hal_audio_dma_channel_mux_config_t *)dmaConfig->dmaChannelMuxConfig)->dmaChannelMuxConfig.dmaRequestSource);
 #endif /* FSL_FEATURE_EDMA_HAS_CHANNEL_MUX */
 
     if ((uint8_t)kHAL_AudioDmaChannelPriorityDefault != (uint8_t)dmaConfig->priority)
@@ -603,8 +630,8 @@ static hal_audio_status_t HAL_AudioCommonDeinit(hal_audio_handle_t handle, bool 
     hal_audio_state_t *audioHandle;
 
 #if (defined(FSL_FEATURE_SOC_EDMA_COUNT) && (FSL_FEATURE_SOC_EDMA_COUNT > 0U) && \
-	(defined(FSL_EDMA_SOC_IP_DMA3) && (FSL_EDMA_SOC_IP_DMA3 > 0) || \
-	defined(FSL_EDMA_SOC_IP_DMA4) && (FSL_EDMA_SOC_IP_DMA4 > 0)))
+     (defined(FSL_EDMA_SOC_IP_DMA3) && (FSL_EDMA_SOC_IP_DMA3 > 0) ||             \
+      defined(FSL_EDMA_SOC_IP_DMA4) && (FSL_EDMA_SOC_IP_DMA4 > 0)))
 #if (defined(HAL_AUDIO_DMA_INIT_ENABLE) && (HAL_AUDIO_DMA_INIT_ENABLE > 0U)) || \
     (defined(FSL_FEATURE_EDMA_HAS_CHANNEL_MUX) && (FSL_FEATURE_EDMA_HAS_CHANNEL_MUX > 0U))
     EDMA_Type *dmaBases[] = EDMA_BASE_PTRS;
