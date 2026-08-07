@@ -24,8 +24,10 @@
 #define NAND_CMD_LUT_SEQ_IDX_PROGLOAD_RANDOM 7U
 #define NAND_CMD_LUT_SEQ_IDX_PROGEXECUTE     8U
 
+#define NAND_XSPI_LUT_WORD_INDEX(seq, word) ((uint32_t)(seq) * NAND_XSPI_LUT_WORDS_PER_SEQ + (uint32_t)(word))
+
 /* Total LUT words to upload = full lookupTable element count. */
-#define NAND_XSPI_LUT_ENTRY_COUNT(lut) ((uint8_t)(sizeof(lut) / sizeof((lut)[0][0])))
+#define NAND_XSPI_LUT_ENTRY_COUNT(lut) ((uint8_t)(sizeof(lut) / sizeof((lut)[0])))
 
 /* Standard SPI NAND command opcodes. */
 #define NAND_CMD_READ_DATA        0x6BU /* Fast Read Quad Output (Read Cache) */
@@ -228,10 +230,10 @@ static status_t xspi_nand_read_sr3(XSPI_Type *base, xspi_mem_nand_handle_t *hand
 
 static status_t xspi_nand_wait_bus_busy(XSPI_Type *base, xspi_mem_nand_handle_t *handle)
 {
-    bool isBusy       = true;
     uint32_t waitedUs = 0U;
     uint8_t reg       = 0U;
     status_t status;
+    bool isBusy;
 
     do
     {
@@ -292,45 +294,45 @@ static void xspi_nand_build_lut_std(XSPI_Type *base, xspi_mem_nand_config_t *mem
 {
     (void)memset(memConfig->lookupTable, 0, sizeof(memConfig->lookupTable));
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_READCACHE][0] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_READCACHE, 0U)] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_READ_DATA, kXSPI_Command_CADDR_SDR, kXSPI_1PAD, 0x10U);
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_READCACHE][1] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_READCACHE, 1U)] =
         XSPI_LUT_SEQ(kXSPI_Command_DUMMY_SDR, kXSPI_1PAD, 0x08U, kXSPI_Command_READ_SDR, kXSPI_4PAD, 0x80U);
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_READSTATUS][0] = XSPI_LUT_SEQ(
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_READSTATUS, 0U)] = XSPI_LUT_SEQ(
         kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_GET_FEATURE, kXSPI_Command_SDR, kXSPI_1PAD, NAND_STATUS_REG3);
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_READSTATUS][1] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_READSTATUS, 1U)] =
         XSPI_LUT_SEQ(kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x01U, kXSPI_Command_STOP, kXSPI_1PAD, 0x00U);
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_WRITEENABLE][0] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_WRITEENABLE, 0U)] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_WRITE_ENABLE, kXSPI_Command_STOP, kXSPI_1PAD, 0x00U);
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_ERASEBLOCK][0] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_ERASEBLOCK, 0U)] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_BLOCK_ERASE, kXSPI_Command_DUMMY_SDR, kXSPI_1PAD, 0x08U);
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_ERASEBLOCK][1] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_ERASEBLOCK, 1U)] =
         XSPI_LUT_SEQ(kXSPI_Command_RADDR_SDR, kXSPI_1PAD, 0x10U, kXSPI_Command_STOP, kXSPI_1PAD, 0x00U);
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_PROGLOAD][0] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_PROGLOAD, 0U)] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_PROG_LOAD, kXSPI_Command_CADDR_SDR, kXSPI_1PAD, 0x10U);
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_PROGLOAD][1] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_PROGLOAD, 1U)] =
         XSPI_LUT_SEQ(kXSPI_Command_WRITE_SDR, kXSPI_4PAD, 0x40U, kXSPI_Command_STOP, kXSPI_1PAD, 0x00U);
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_PROGLOAD_RANDOM][0] = XSPI_LUT_SEQ(
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_PROGLOAD_RANDOM, 0U)] = XSPI_LUT_SEQ(
         kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_PROG_LOAD_RANDOM, kXSPI_Command_CADDR_SDR, kXSPI_1PAD, 0x10U);
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_PROGLOAD_RANDOM][1] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_PROGLOAD_RANDOM, 1U)] =
         XSPI_LUT_SEQ(kXSPI_Command_WRITE_SDR, kXSPI_4PAD, 0x40U, kXSPI_Command_STOP, kXSPI_1PAD, 0x00U);
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_READPAGE][0] = XSPI_LUT_SEQ(
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_READPAGE, 0U)] = XSPI_LUT_SEQ(
         kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_PAGE_DATA_READ, kXSPI_Command_DUMMY_SDR, kXSPI_1PAD, 0x08U);
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_READPAGE][1] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_READPAGE, 1U)] =
         XSPI_LUT_SEQ(kXSPI_Command_RADDR_SDR, kXSPI_1PAD, 0x10U, kXSPI_Command_STOP, kXSPI_1PAD, 0x00U);
 
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_PROGEXECUTE][0] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_PROGEXECUTE, 0U)] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, NAND_CMD_PROG_EXECUTE, kXSPI_Command_DUMMY_SDR, kXSPI_1PAD, 0x08U);
-    memConfig->lookupTable[NAND_CMD_LUT_SEQ_IDX_PROGEXECUTE][1] =
+    memConfig->lookupTable[NAND_XSPI_LUT_WORD_INDEX(NAND_CMD_LUT_SEQ_IDX_PROGEXECUTE, 1U)] =
         XSPI_LUT_SEQ(kXSPI_Command_RADDR_SDR, kXSPI_1PAD, 0x10U, kXSPI_Command_STOP, kXSPI_1PAD, 0x00U);
 
-    XSPI_UpdateLUT(base, 0U, &memConfig->lookupTable[0][0], NAND_XSPI_LUT_ENTRY_COUNT(memConfig->lookupTable));
+    XSPI_UpdateLUT(base, 0U, memConfig->lookupTable, NAND_XSPI_LUT_ENTRY_COUNT(memConfig->lookupTable));
 }
 
 static const xspi_nand_device_info_t *xspi_nand_find_device(uint8_t mfr, uint16_t deviceId)
@@ -379,6 +381,7 @@ static status_t xspi_nand_read_onfi_params(XSPI_Type *base, xspi_mem_nand_handle
     status_t status;
 
     /* Load the parameter page into the device data buffer. */
+    assert(handle->ambaBase <= (UINT32_MAX - NAND_XSPI_ROW_ADDR(handle, NAND_ONFI_PARAM_PAGE_ADDR)));
     xfer.deviceAddress   = handle->ambaBase + NAND_XSPI_ROW_ADDR(handle, NAND_ONFI_PARAM_PAGE_ADDR);
     xfer.targetGroup     = handle->targetGroup;
     xfer.cmdType         = kXSPI_Command;
@@ -410,21 +413,11 @@ static status_t xspi_nand_read_onfi_params(XSPI_Type *base, xspi_mem_nand_handle
     return xspi_nand_parse_onfi_params(buf, p) ? kStatus_Success : kStatus_Fail;
 }
 
-static inline uint32_t xspi_nand_total_pages(const nand_handle_t *handle)
-{
-    return handle->pagesInBlock * handle->blocksInPlane * handle->planesInDevice;
-}
-
-static inline uint32_t xspi_nand_page_bytes(const nand_handle_t *handle)
-{
-    return handle->bytesInPageDataArea + handle->bytesInPageSpareArea;
-}
-
 /* Read the JEDEC ID and match it against the supported-device table. */
 static status_t xspi_nand_identify(nand_handle_t *handle, const xspi_nand_device_info_t **device)
 {
-    uint8_t mfr     = 0U;
-    uint16_t devId  = 0U;
+    uint8_t mfr    = 0U;
+    uint16_t devId = 0U;
     status_t status;
 
     status = Nand_Flash_ReadJedecId(handle, &mfr, &devId);
@@ -444,7 +437,7 @@ static status_t xspi_nand_read_layout(XSPI_Type *base,
                                       const xspi_nand_device_info_t *device)
 {
     xspi_nand_onfi_params_t onfi = {0};
-    uint8_t reg = 0U;
+    uint8_t reg                  = 0U;
     status_t status;
     status_t restore;
 
@@ -482,11 +475,18 @@ static status_t xspi_nand_read_layout(XSPI_Type *base,
         return kStatus_OutOfRange;
     }
 
+    assert(onfi.pagesPerBlock <= (UINT32_MAX / onfi.blocksPerLun));
+    uint32_t pagesInPlane = onfi.pagesPerBlock * onfi.blocksPerLun;
+    assert(pagesInPlane <= (UINT32_MAX / onfi.luns));
+    assert(onfi.dataBytesPerPage <= (UINT32_MAX - onfi.spareBytesPerPage));
+
     handle->bytesInPageDataArea  = onfi.dataBytesPerPage;
     handle->bytesInPageSpareArea = onfi.spareBytesPerPage;
+    handle->pageBytes            = onfi.dataBytesPerPage + onfi.spareBytesPerPage;
     handle->pagesInBlock         = onfi.pagesPerBlock;
     handle->blocksInPlane        = onfi.blocksPerLun;
     handle->planesInDevice       = onfi.luns;
+    handle->totalPages           = pagesInPlane * onfi.luns;
 
     return kStatus_Success;
 }
@@ -535,7 +535,7 @@ static status_t xspi_nand_bring_up(XSPI_Type *base,
 
     /* The configured SFAD window must cover the whole device; otherwise high blocks fall outside
      * SFAR and their row commands are silently dropped. */
-    if (((uint64_t)xspi_nand_total_pages(handle) << memHandle->colShift) >
+    if (((uint64_t)handle->totalPages << memHandle->colShift) >
         ((uint64_t)memConfig->deviceConfig.deviceSize[0] * 1024U))
     {
         return kStatus_InvalidArgument;
@@ -610,7 +610,7 @@ status_t Nand_Flash_Read_Page(nand_handle_t *handle, uint32_t pageIndex, uint8_t
     assert(handle->driverBaseAddr != NULL);
     assert(buffer != NULL);
 
-    if ((pageIndex >= xspi_nand_total_pages(handle)) || (length > xspi_nand_page_bytes(handle)))
+    if ((pageIndex >= handle->totalPages) || (length > handle->pageBytes))
     {
         return kStatus_OutOfRange;
     }
@@ -692,8 +692,8 @@ status_t Nand_Flash_Read_Page_Partial(
     assert(handle->driverBaseAddr != NULL);
     assert(buffer != NULL);
 
-    if ((pageIndex >= xspi_nand_total_pages(handle)) || (offset_bytes > (UINT32_MAX - length)) ||
-        ((offset_bytes + length) > xspi_nand_page_bytes(handle)))
+    if ((pageIndex >= handle->totalPages) || (offset_bytes > (UINT32_MAX - length)) ||
+        ((offset_bytes + length) > handle->pageBytes))
     {
         return kStatus_OutOfRange;
     }
@@ -767,7 +767,7 @@ status_t Nand_Flash_Page_Program(nand_handle_t *handle, uint32_t pageIndex, cons
     assert(handle->driverBaseAddr != NULL);
     assert(src != NULL);
 
-    if ((pageIndex >= xspi_nand_total_pages(handle)) || (length > xspi_nand_page_bytes(handle)))
+    if ((pageIndex >= handle->totalPages) || (length > handle->pageBytes))
     {
         return kStatus_OutOfRange;
     }
@@ -805,6 +805,7 @@ status_t Nand_Flash_Page_Program(nand_handle_t *handle, uint32_t pageIndex, cons
 
         if (unaligned)
         {
+            assert(chunk <= sizeof(memHandle->chunkBuf));
             (void)memcpy(chunkBuf, src + offset, chunk);
         }
         xfer.deviceAddress = memHandle->ambaBase + offset;

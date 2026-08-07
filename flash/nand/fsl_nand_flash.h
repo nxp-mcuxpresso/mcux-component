@@ -34,9 +34,11 @@ typedef struct _nand_handle
     uint8_t vendorType;            /*!< vendor type */
     uint32_t bytesInPageDataArea;  /*!< Bytes in page data area .*/
     uint32_t bytesInPageSpareArea; /*!< Bytes in page spare area .*/
+    uint32_t pageBytes;            /*!< Total bytes in one page including spare area. */
     uint32_t pagesInBlock;         /*!< Pages in each block. */
     uint32_t blocksInPlane;        /*!< blocks in each plane. */
     uint32_t planesInDevice;       /*!< planes in each device .*/
+    uint32_t totalPages;           /*!< Total pages in the device. */
     /*------------Specific parameters used for specific nand flash controller ----------*/
     void *deviceSpecific; /*!< Device specific control parameter */
 } nand_handle_t;

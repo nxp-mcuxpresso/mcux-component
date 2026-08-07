@@ -22,13 +22,15 @@
 #define NAND_XSPI_LUT_SLOT_COUNT 9U
 /*! @brief LUT words per sequence. */
 #define NAND_XSPI_LUT_WORDS_PER_SEQ 5U
+/*! @brief Total LUT word count. */
+#define NAND_XSPI_LUT_WORD_COUNT (NAND_XSPI_LUT_SLOT_COUNT * NAND_XSPI_LUT_WORDS_PER_SEQ)
 
 /*!@brief XSPI NAND memory config. */
 typedef struct _xspi_mem_nand_config
 {
     xspi_device_config_t deviceConfig;                                           /*!< XSPI device configuration. */
     xspi_target_group_t targetGroup;                                             /*!< Target group. */
-    uint32_t lookupTable[NAND_XSPI_LUT_SLOT_COUNT][NAND_XSPI_LUT_WORDS_PER_SEQ]; /*!< LUT Table */
+    uint32_t lookupTable[NAND_XSPI_LUT_WORD_COUNT];                              /*!< LUT Table */
     uint32_t ambaBase;                                                           /*!< XSPI AHB base */
 } xspi_mem_nand_config_t;
 
