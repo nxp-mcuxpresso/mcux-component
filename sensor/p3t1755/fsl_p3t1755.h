@@ -1,5 +1,5 @@
 /*
- * Copyright 2022, 2025 NXP
+ * Copyright 2022, 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -15,8 +15,10 @@
 #define P3T1755_TEMPERATURE_LOW_REG  (0x02U)
 #define P3T1755_TEMPERATURE_HIGH_REG (0x03U)
 
-#define P3T1755_CONFIG_REG_SD_MODE_POS 0
-#define P3T1755_CONFIG_REG_OS_MODE_POS 7
+#define P3T1755_CONFIG_REG_SD_MODE_POS  0
+#define P3T1755_CONFIG_REG_OS_MODE_POS  7
+#define P3T1755_CONFIG_REG_SD_MODE_MASK ((uint8_t)(1U << P3T1755_CONFIG_REG_SD_MODE_POS))
+#define P3T1755_CONFIG_REG_OS_MODE_MASK ((uint8_t)(1U << P3T1755_CONFIG_REG_OS_MODE_POS))
 
 /*! @brief Define sensor access function. */
 typedef status_t (*sensor_write_transfer_func_t)(uint8_t deviceAddress,
@@ -27,7 +29,6 @@ typedef status_t (*sensor_read_transfer_func_t)(uint8_t deviceAddress,
                                                 uint32_t regAddress,
                                                 uint8_t *regData,
                                                 size_t dataSize);
-
 
 typedef struct _p3t1755_handle
 {
