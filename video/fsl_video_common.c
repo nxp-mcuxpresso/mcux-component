@@ -19,7 +19,8 @@ bool VIDEO_IsYUV(video_pixel_format_t format)
 {
     if ((kVIDEO_PixelFormatYUYV == format) || (kVIDEO_PixelFormatYVYU == format) ||
         (kVIDEO_PixelFormatUYVY == format) || (kVIDEO_PixelFormatVYUY == format) ||
-        (kVIDEO_PixelFormatXYVU == format) || (kVIDEO_PixelFormatXYUV == format))
+        (kVIDEO_PixelFormatXYVU == format) || (kVIDEO_PixelFormatXYUV == format) ||
+        (kVIDEO_PixelFormatNV12 == format))
     {
         return true;
     }

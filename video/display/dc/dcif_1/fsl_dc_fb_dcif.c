@@ -51,6 +51,7 @@ static const dc_fb_dcif_pixel_foramt_map_t s_dcifPixelFormatMap[] = {
     {kVIDEO_PixelFormatYVYU,     kDCIF_LayerPixelFormatYVYU},
     {kVIDEO_PixelFormatXRGB8888, kDCIF_LayerPixelFormatARGB8888},
     {kVIDEO_PixelFormatXBGR8888, kDCIF_LayerPixelFormatABGR8888},
+    {kVIDEO_PixelFormatNV12,     kDCIF_LayerPixelFormatNV12},
 };
 
 /*******************************************************************************
@@ -203,6 +204,17 @@ status_t DC_FB_DCIF_SetLayerConfig(const dc_fb_t *dc, uint8_t layer, dc_fb_info_
         return status;
     }
 
+    dcHandle->layers[layer].fbInfo = *fbInfo;
+
+    if (VIDEO_IsYUV(fbInfo->pixelFormat))
+    {
+        DCIF_SetCscMode(dcif, 0U, kDCIF_CscYCbCr2RGB);
+    }
+    else if (layer < DCIF_CSC_COUNT)
+    {
+        DCIF_SetCscMode(dcif, layer, kDCIF_CscDisable);
+    }
+
     layerConfig.enable           = false;
     layerConfig.format           = pixelFormat;
     layerConfig.topLeftX         = fbInfo->startX;
@@ -241,8 +253,15 @@ status_t DC_FB_DCIF_SetFrameBuffer(const dc_fb_t *dc, uint8_t layer, void *frame
 {
     assert(layer < DC_FB_DCIF_MAX_LAYER);
     dc_fb_dcif_handle_t *dcHandle = dc->prvData;
+    dc_fb_info_t *fbInfo          = &dcHandle->layers[layer].fbInfo;
+    uint32_t frameBufferAddr      = (uint32_t)(uint8_t *)frameBuffer;
 
-    DCIF_SetLayerAddr(dcHandle->dcif, layer, (uint32_t)(uint8_t *)frameBuffer);
+    DCIF_SetLayerAddr(dcHandle->dcif, layer, frameBufferAddr);
+    if (kVIDEO_PixelFormatNV12 == fbInfo->pixelFormat)
+    {
+        DCIF_SetLayerUVAddr(dcHandle->dcif, layer,
+                            frameBufferAddr + ((uint32_t)fbInfo->strideBytes * (uint32_t)fbInfo->height));
+    }
     dcHandle->layers[layer].inactiveBuffer = frameBuffer;
 
     if (dcHandle->layers[layer].enabled)

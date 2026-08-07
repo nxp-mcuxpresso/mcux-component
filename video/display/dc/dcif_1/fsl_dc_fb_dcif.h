@@ -38,6 +38,7 @@ typedef struct _dc_fb_dcif_layer
     volatile bool shadowLoadPending; /*!< Shadow load pending. */
     void *activeBuffer;              /*!< The frame buffer which is shown. */
     void *inactiveBuffer;            /*!< The frame buffer which will be shown. */
+    dc_fb_info_t fbInfo;             /*!< Current frame buffer configuration. */
     dc_fb_callback_t callback;       /*!< Callback for buffer switch off. */
     void *cbParam;                   /*!< Callback parameter. */
 } dc_fb_dcif_layer_t;

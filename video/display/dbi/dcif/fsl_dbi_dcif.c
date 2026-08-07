@@ -50,6 +50,7 @@ static const dbi_dcif_pixel_foramt_map_t s_dcifPixelFormatMap[] = {
     {kVIDEO_PixelFormatYVYU,     kDCIF_LayerPixelFormatYVYU},
     {kVIDEO_PixelFormatXRGB8888, kDCIF_LayerPixelFormatARGB8888},
     {kVIDEO_PixelFormatXBGR8888, kDCIF_LayerPixelFormatABGR8888},
+    {kVIDEO_PixelFormatNV12,     kDCIF_LayerPixelFormatNV12},
 };
 
 /*******************************************************************************
@@ -194,6 +195,17 @@ status_t DBI_DCIF_SetPixelFormat(dbi_iface_t *dbiIface, video_pixel_format_t for
         .alphaBlendMode = kDCIF_AlphaBlendOverride,
     };
 
+    prvData->isYuv420_2p = (format == kVIDEO_PixelFormatNV12);
+
+    if (VIDEO_IsYUV(format))
+    {
+        DCIF_SetCscMode(dcif, 0U, kDCIF_CscYCbCr2RGB);
+    }
+    else
+    {
+        DCIF_SetCscMode(dcif, 0U, kDCIF_CscDisable);
+    }
+
     /* Enable DCIF. todo*/
     DCIF_EnableOutput(dcif, true);
 
@@ -201,7 +213,14 @@ status_t DBI_DCIF_SetPixelFormat(dbi_iface_t *dbiIface, video_pixel_format_t for
     DCIF_SetLayerConfig(dcif, 0U, &layerConfig);
 
     /* Set byte per pixel for stride calculation later. */
-    prvData->bytePerPixel = VIDEO_GetPixelSizeBits(format) / 8U;
+    if (prvData->isYuv420_2p)
+    {
+        prvData->bytePerPixel = 1U;
+    }
+    else
+    {
+        prvData->bytePerPixel = VIDEO_GetPixelSizeBits(format) / 8U;
+    }
 
     return status;
 }
@@ -230,6 +249,11 @@ static void DBI_DCIF_WriteMemoryInternal(
     uint8_t cmd                  = (uint8_t)command;
     dbi_dcif_prv_data_t *prvData = (dbi_dcif_prv_data_t *)dbiIface->prvData;
     DCIF_Type *dcif              = prvData->dcif;
+    dcif_output_config_t outputConfig = {
+        .interface = kDCIF_OutputDbi,
+        .width     = prvData->width,
+        .height    = prvData->height,
+    };
 
     if (isInterleave)
     {
@@ -240,12 +264,20 @@ static void DBI_DCIF_WriteMemoryInternal(
         stride = (uint32_t)prvData->width * (uint32_t)prvData->bytePerPixel;
     }
 
+    /* Update panel output config to the real update area. */
+    DCIF_SetOutputConfig(prvData->dcif, &outputConfig);
+
     /* Configure buffer position, address and area. */
     DCIF_SetLayerPosition(dcif, 0U, 0U, 0U, prvData->width, prvData->height);
 
     /* Set layer buffer address, stride, and enable the layer. */
     DCIF_SetLayerStride(dcif, 0U, stride);
     DCIF_SetLayerAddr(dcif, 0U, (uint32_t)data);
+
+    if (prvData->isYuv420_2p)
+    {
+        DCIF_SetLayerUVAddr(dcif, 0U, (uint32_t)data + (stride * (uint32_t)prvData->height));
+    }
 
     /* The DCIF layer registers are double-buffered. Latch them into the active
      * set before triggering the pixel send. */

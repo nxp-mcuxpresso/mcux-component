@@ -37,6 +37,7 @@ typedef struct _dbi_dcif_prv_data
     uint16_t height;      /*!< Left height of the area to send. */
     uint16_t width;       /*!< Width of the area to send. */
     uint8_t bytePerPixel; /*!< Used to calculate stride when not using 2-D memory write. */
+    bool isYuv420_2p;     /*!< True for YUV420 2-plane (NV12/NV21): program UV plane and use hardware CSC. */
 } dbi_dcif_prv_data_t;
 
 /*******************************************************************************
