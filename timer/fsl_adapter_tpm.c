@@ -168,52 +168,76 @@ void TPM8_IRQHandler(void)
 #endif
 
 #if defined(HSP__TPM_0)
-void HSP_QTPM0_CH0_IRQHandler(void);
-void HSP_QTPM0_CH0_IRQHandler(void)
+void HSP_QTPM0_IRQHandler(void);
+void HSP_QTPM0_IRQHandler(void)
 {
     HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(HSP__TPM_0));
     SDK_ISR_EXIT_BARRIER;
 }
-void HSP_QTPM0_CH1_IRQHandler(void);
-void HSP_QTPM0_CH1_IRQHandler(void)
-{
-    HSP_QTPM0_CH0_IRQHandler();
-}
-void HSP_QTPM0_CH2_IRQHandler(void);
-void HSP_QTPM0_CH2_IRQHandler(void)
-{
-    HSP_QTPM0_CH0_IRQHandler();
-}
-void HSP_QTPM0_CH3_IRQHandler(void);
-void HSP_QTPM0_CH3_IRQHandler(void)
-{
-    HSP_QTPM0_CH0_IRQHandler();
-}
 #endif /* HSP__TPM_0 */
 
+#if defined(HSP__TPM_1)
+void HSP_QTPM1_IRQHandler(void);
+void HSP_QTPM1_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(HSP__TPM_1));
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* HSP__TPM_1 */
+
+#if defined(HSP__TPM_2)
+void HSP_QTPM2_IRQHandler(void);
+void HSP_QTPM2_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(HSP__TPM_2));
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* HSP__TPM_2 */
+
+#if defined(HSP__TPM_3)
+void HSP_QTPM3_IRQHandler(void);
+void HSP_QTPM3_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(HSP__TPM_3));
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* HSP__TPM_3 */
+
 #if defined(WAKE__TPM_0)
-void WAKE_QTPM0_CH0_IRQHandler(void);
-void WAKE_QTPM0_CH0_IRQHandler(void)
+void WAKE_QTPM0_IRQHandler(void);
+void WAKE_QTPM0_IRQHandler(void)
 {
     HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(WAKE__TPM_0));
     SDK_ISR_EXIT_BARRIER;
 }
-void WAKE_QTPM0_CH1_IRQHandler(void);
-void WAKE_QTPM0_CH1_IRQHandler(void)
-{
-    WAKE_QTPM0_CH0_IRQHandler();
-}
-void WAKE_QTPM0_CH2_IRQHandler(void);
-void WAKE_QTPM0_CH2_IRQHandler(void)
-{
-    WAKE_QTPM0_CH0_IRQHandler();
-}
-void WAKE_QTPM0_CH3_IRQHandler(void);
-void WAKE_QTPM0_CH3_IRQHandler(void)
-{
-    WAKE_QTPM0_CH0_IRQHandler();
-}
 #endif /* WAKE__TPM_0 */
+
+#if defined(WAKE__TPM_1)
+void WAKE_QTPM1_IRQHandler(void);
+void WAKE_QTPM1_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(WAKE__TPM_1));
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* WAKE__TPM_1 */
+
+#if defined(WAKE__TPM_2)
+void WAKE_QTPM2_IRQHandler(void);
+void WAKE_QTPM2_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(WAKE__TPM_2));
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* WAKE__TPM_2 */
+
+#if defined(WAKE__TPM_3)
+void WAKE_QTPM3_IRQHandler(void);
+void WAKE_QTPM3_IRQHandler(void)
+{
+    HAL_TimerInterruptHandle((uint8_t)TPM_GetInstance(WAKE__TPM_3));
+    SDK_ISR_EXIT_BARRIER;
+}
+#endif /* WAKE__TPM_3 */
 
 /************************************************************************************
 *************************************************************************************
