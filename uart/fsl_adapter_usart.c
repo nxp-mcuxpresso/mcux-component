@@ -767,7 +767,8 @@ static void TimeoutTimer_Callbcak(void *param)
     hal_uart_dma_list_t *uartDmaHandleList;
     hal_uart_dma_state_t *uartDmaHandle;
     hal_dma_callback_msg_t msg;
-    uint32_t newReceived = 0U;
+    uint32_t newReceived;
+    status_t status;
 
     uartDmaHandleList = &s_dmaHandleList;
     uartDmaHandle     = uartDmaHandleList->dma_list;
@@ -777,8 +778,14 @@ static void TimeoutTimer_Callbcak(void *param)
         if ((NULL != uartDmaHandle->dma_rx.buffer) && (false == uartDmaHandle->dma_rx.receiveAll))
         {
             /* HAL_UartDMAGetReceiveCount(uartDmaHandle, &msg.dataSize); */
-            USART_TransferGetReceiveCountDMA(s_UsartAdapterBase[uartDmaHandle->instance], &uartDmaHandle->dmaHandle,
-                                             &msg.dataSize);
+            status = USART_TransferGetReceiveCountDMA(s_UsartAdapterBase[uartDmaHandle->instance],
+                                                      &uartDmaHandle->dmaHandle, &msg.dataSize);
+            if (status != kStatus_Success)
+            {
+                uartDmaHandle = uartDmaHandle->next;
+                continue;
+            }
+
             newReceived                       = msg.dataSize - uartDmaHandle->dma_rx.bufferSofar;
             uartDmaHandle->dma_rx.bufferSofar = msg.dataSize;
 
@@ -788,6 +795,22 @@ static void TimeoutTimer_Callbcak(void *param)
                 uartDmaHandle->dma_rx.timeout++;
                 if (uartDmaHandle->dma_rx.timeout >= HAL_UART_DMA_IDLELINE_TIMEOUT)
                 {
+                    DMA_DisableChannel(uartDmaHandle->rxDmaHandle.base, uartDmaHandle->rxDmaHandle.channel);
+                    while ((DMA_COMMON_CONST_REG_GET(uartDmaHandle->rxDmaHandle.base,
+                                                     uartDmaHandle->rxDmaHandle.channel, BUSY) &
+                            (1UL << DMA_CHANNEL_INDEX(uartDmaHandle->rxDmaHandle.base,
+                                                      uartDmaHandle->rxDmaHandle.channel))) != 0UL)
+                    {
+                    }
+
+                    status = USART_TransferGetReceiveCountDMA(s_UsartAdapterBase[uartDmaHandle->instance],
+                                                              &uartDmaHandle->dmaHandle, &msg.dataSize);
+                    if (status != kStatus_Success)
+                    {
+                        uartDmaHandle = uartDmaHandle->next;
+                        continue;
+                    }
+
                     /* HAL_UartDMAAbortReceive(uartDmaHandle); */
                     USART_TransferAbortReceiveDMA(s_UsartAdapterBase[uartDmaHandle->instance],
                                                   &uartDmaHandle->dmaHandle);
@@ -833,6 +856,9 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
 
     DMA_CreateHandle(&uartDmaHandle->txDmaHandle, dmaBases[dmaConfig->dma_instance], dmaConfig->tx_channel);
     DMA_CreateHandle(&uartDmaHandle->rxDmaHandle, dmaBases[dmaConfig->dma_instance], dmaConfig->rx_channel);
+
+    IRQn_Type dmaIRQNumbers[] = DMA_IRQS;
+    NVIC_SetPriority(dmaIRQNumbers[dmaConfig->dma_instance], HAL_UART_ISR_PRIORITY);
 
     /* Timeout timer init. */
     if (0U == s_dmaHandleList.activeCount)
@@ -986,6 +1012,7 @@ hal_uart_dma_status_t HAL_UartDMATransferReceive(hal_uart_handle_t handle,
     {
         uartDmaHandle->dma_rx.buffer       = data;
         uartDmaHandle->dma_rx.bufferLength = length;
+        uartDmaHandle->dma_rx.bufferSofar  = 0U;
         uartDmaHandle->dma_rx.timeout      = 0U;
         uartDmaHandle->dma_rx.receiveAll   = receiveAll;
     }
