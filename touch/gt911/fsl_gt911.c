@@ -250,6 +250,11 @@ static status_t GT911_ReadRawTouchData(gt911_handle_t *handle, uint8_t *touchPoi
         {
             status = handle->I2C_ReceiveFunc(handle->i2cAddr, GT911_REG_FIRST_POINT, GT911_REG_ADDR_SIZE,
                                              (void *)handle->pointReg, (*touchPointNum) * sizeof(gt911_point_reg_t));
+            if (kStatus_Success != status)
+            {
+                *touchPointNum = 0;
+                return status;
+            }
         }
 
         /* Must set the status register to 0 after read. */

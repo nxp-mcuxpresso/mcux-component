@@ -473,6 +473,10 @@ status_t SSD1963_EnableTearEffect(ssd1963_handle_t *handle, bool enable)
     if (enable)
     {
         status = handle->xferOps->writeCommand(handle->xferOpsData, SSD1963_SET_TEAR_ON);
+        if (kStatus_Success != status)
+        {
+            return status;
+        }
         status = handle->xferOps->writeData(handle->xferOpsData, &regVal, SSD1963_DATA_WITDH_BYTE);
     }
     else
