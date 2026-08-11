@@ -121,16 +121,19 @@ static status_t I3C_BusMasterGetMaxReadLength(i3c_device_t *master, i3c_device_i
     }
 
     result = I3C_BusMasterSendCCC(master, &getMRLCmd);
+    if (result != kStatus_Success)
+    {
+        free(pData);
+        return result;
+    }
 
     if ((info->bcr & I3C_BUS_DEV_BCR_IBI_PAYLOAD_MASK) != 0U)
     {
         info->maxIBILength = pData[2];
     }
 
-    /* INT31-C: Unify operand types before narrowing conversion */
     uint32_t tempReadLen = ((uint32_t)pData[0] << 8U) | (uint32_t)pData[1];
-    assert(tempReadLen <= 0xFFFFU);
-    info->maxReadLength = (uint16_t)tempReadLen;
+    info->maxReadLength  = (uint16_t)(tempReadLen & 0xFFFFU);
 
     free(pData);
 
@@ -150,6 +153,10 @@ static status_t I3C_BusMasterGetMaxWriteLength(i3c_device_t *master, i3c_device_
     getMWLCmd.dataSize = 2U;
 
     result = I3C_BusMasterSendCCC(master, &getMWLCmd);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
 
     info->maxWriteLength = writelen;
 
@@ -169,6 +176,10 @@ static status_t I3C_BusMasterGetHDRCapability(i3c_device_t *master, i3c_device_i
     getHDRCapCmd.dataSize = 1U;
 
     result = I3C_BusMasterSendCCC(master, &getHDRCapCmd);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
 
     info->hdrMode = hdrMode;
 
@@ -188,6 +199,10 @@ static status_t I3C_BusMasterGetPID(i3c_device_t *master, i3c_device_information
     getPidCmd.dataSize = 6U;
 
     result = I3C_BusMasterSendCCC(master, &getPidCmd);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
 
     info->vendorID   = (((uint16_t)pid[0] << 8U | (uint16_t)pid[1]) & 0xFFFEU) >> 1U;
     info->partNumber = ((uint32_t)pid[2] << 24U | (uint32_t)pid[3] << 16U | (uint32_t)pid[4] << 8U | (uint32_t)pid[5]);
@@ -208,6 +223,10 @@ static status_t I3C_BusMasterGetBCR(i3c_device_t *master, i3c_device_information
     getBCRCmd.dataSize = 1U;
 
     result = I3C_BusMasterSendCCC(master, &getBCRCmd);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
 
     info->bcr = bcr;
 
@@ -227,6 +246,10 @@ static status_t I3C_BusMasterGetDCR(i3c_device_t *master, i3c_device_information
     getDCRCmd.dataSize = 1U;
 
     result = I3C_BusMasterSendCCC(master, &getDCRCmd);
+    if (result != kStatus_Success)
+    {
+        return result;
+    }
 
     info->dcr = dcr;
 
@@ -368,7 +391,7 @@ void I3C_BusAddI2CDev(i3c_bus_t *bus, i2c_device_t *dev)
  */
 uint8_t I3C_BusGetValidAddrSlot(i3c_bus_t *bus, uint8_t startAddr)
 {
-    uint8_t validAddr = 0xFF;
+    uint8_t validAddr;
 
     for (validAddr = startAddr; validAddr < I3C_BUS_MAX_ADDR; validAddr++)
     {
@@ -442,6 +465,10 @@ status_t I3C_BusMasterCreate(i3c_device_t *masterDev,
                              i3c_device_control_info_t *masterControlInfo)
 {
     status_t result = kStatus_Success;
+
+    assert(masterControlInfo != NULL);
+    assert(masterControlInfo->funcs != NULL);
+    assert(masterControlInfo->funcs->Init != NULL);
 
     (void)memset(masterDev, 0, sizeof(*masterDev));
 
@@ -529,6 +556,8 @@ status_t I3C_BusMasterCreate(i3c_device_t *masterDev,
 status_t I3C_BusMasterSendCCC(i3c_device_t *masterDev, i3c_ccc_cmd_t *command)
 {
     i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
+    assert(masterControlInfo != NULL);
+    assert(masterControlInfo->funcs != NULL);
 
     if (masterDev != masterDev->bus->currentMaster)
     {
@@ -620,6 +649,10 @@ status_t I3C_BusMasterDoDAA(i3c_device_t *masterDev)
     i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
     i3c_bus_t *i3cBus                            = masterDev->bus;
     status_t result                              = kStatus_Success;
+
+    assert(masterControlInfo != NULL);
+    assert(masterControlInfo->funcs != NULL);
+    assert(masterControlInfo->funcs->ProceedDAA != NULL);
 
     if (masterDev != i3cBus->currentMaster)
     {
@@ -720,7 +753,7 @@ status_t I3C_BusMasterSendSlavesList(i3c_device_t *masterDev)
     for (listItem = i2cDevList->head; listItem != NULL; listItem = listItem->next)
     {
         /* INT30-C: Prevent unsigned integer overflow */
-        assert(devCount < UINT8_MAX);
+        assert(devCount < (uint8_t)UINT8_MAX);
         devCount++;
         if (devCount > I3C_BUS_MAX_DEVS)
         {
@@ -738,7 +771,7 @@ status_t I3C_BusMasterSendSlavesList(i3c_device_t *masterDev)
         else
         {
             /* INT30-C: Prevent unsigned integer overflow */
-            assert(devCount < UINT8_MAX);
+            assert(devCount < (uint8_t)UINT8_MAX);
             devCount++;
             if (devCount > I3C_BUS_MAX_DEVS)
             {
@@ -901,15 +934,19 @@ status_t I3C_BusMasterGetDeviceInfo(i3c_device_t *masterDev, uint8_t slaveAddr, 
 
 status_t I3C_BusMasterRegisterDevIBI(i3c_device_t *masterDev, i3c_device_t *i3cDev, i3c_device_ibi_info_t *devIbiInfo)
 {
-    i3c_bus_t *i3cBus = masterDev->bus;
+    i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
+    i3c_bus_t *i3cBus                            = masterDev->bus;
+
+    assert(masterControlInfo != NULL);
+    assert(masterControlInfo->funcs != NULL);
+    assert(masterControlInfo->funcs->RegisterIBI != NULL);
 
     if (masterDev != i3cBus->currentMaster)
     {
         return kStatus_I3CBus_NotCurrentMaster;
     }
 
-    i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
-    i3cDev->ibiInfo                              = devIbiInfo;
+    i3cDev->ibiInfo = devIbiInfo;
 
     if (I3C_BusGetAddrSlotStatus(i3cBus, i3cDev->info.dynamicAddr) == (uint8_t)kI3C_Bus_AddrSlot_I3CDev)
     {
@@ -982,15 +1019,18 @@ status_t I3C_BusMasterHandleIBI(i3c_device_t *masterDev, uint8_t ibiAddress, voi
  */
 status_t I3C_BusMasterDoTransferToI2CDev(i3c_device_t *masterDev, i2c_device_t *i2cDev, i3c_bus_transfer_t *xfer)
 {
-    i3c_bus_t *i3cBus = masterDev->bus;
+    i3c_bus_t *i3cBus                            = masterDev->bus;
+    status_t result                              = kStatus_Success;
+    i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
+
+    assert(masterControlInfo != NULL);
+    assert(masterControlInfo->funcs != NULL);
+    assert(masterControlInfo->funcs->DoI2CTransfer != NULL);
 
     if (masterDev != i3cBus->currentMaster)
     {
         return kStatus_I3CBus_NotCurrentMaster;
     }
-
-    status_t result                              = kStatus_Success;
-    i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
 
     if (I3C_BusGetAddrSlotStatus(i3cBus, i2cDev->staticAddr) == (uint8_t)kI3C_Bus_AddrSlot_I2CDev)
     {
@@ -1015,15 +1055,18 @@ status_t I3C_BusMasterDoTransferToI2CDev(i3c_device_t *masterDev, i2c_device_t *
  */
 status_t I3C_BusMasterDoTransferToI3CDev(i3c_device_t *masterDev, i3c_device_t *i3cDev, i3c_bus_transfer_t *xfer)
 {
-    i3c_bus_t *i3cBus = masterDev->bus;
+    i3c_bus_t *i3cBus                            = masterDev->bus;
+    status_t result                              = kStatus_Success;
+    i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
+
+    assert(masterControlInfo != NULL);
+    assert(masterControlInfo->funcs != NULL);
+    assert(masterControlInfo->funcs->DoI3CTransfer != NULL);
 
     if (masterDev != i3cBus->currentMaster)
     {
         return kStatus_I3CBus_NotCurrentMaster;
     }
-
-    status_t result                              = kStatus_Success;
-    i3c_device_control_info_t *masterControlInfo = masterDev->devControlInfo;
 
     if (I3C_BusGetAddrSlotStatus(i3cBus, i3cDev->info.dynamicAddr) == (uint8_t)kI3C_Bus_AddrSlot_I3CDev)
     {

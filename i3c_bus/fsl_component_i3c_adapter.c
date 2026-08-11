@@ -84,9 +84,12 @@ static const i3c_master_transfer_callback_t masterCallback = {.slave2Master     
 
 static void i3c_secondarymaster_callback(I3C_Type *base, i3c_slave_transfer_t *xfer, void *userData)
 {
-    i3c_device_t *dev                           = (i3c_device_t *)userData;
-    i3c_device_control_info_t *devControlInfo   = dev->devControlInfo;
+    i3c_device_t *dev = (i3c_device_t *)userData;
+    assert(dev != NULL);
+    i3c_device_control_info_t *devControlInfo = dev->devControlInfo;
+    assert(devControlInfo != NULL);
     i3c_master_adapter_private_t *masterPrivate = (i3c_master_adapter_private_t *)devControlInfo->privateData;
+    assert(masterPrivate != NULL);
     switch ((uint32_t)xfer->event)
     {
         case (uint32_t)kI3C_SlaveReceivedCCCEvent:
@@ -105,6 +108,7 @@ static void i3c_secondarymaster_callback(I3C_Type *base, i3c_slave_transfer_t *x
         case (uint32_t)kI3C_SlaveCompletionEvent:
             if (xfer->rxData != NULL)
             {
+                assert(masterPrivate->devList != NULL);
                 uint8_t *pDevList       = (uint8_t *)masterPrivate->devList;
                 masterPrivate->devCount = pDevList[0];
                 masterPrivate->devList  = (i3c_ccc_dev_t *)(void *)&pDevList[1];
@@ -127,6 +131,7 @@ static void i3c_master_ibi_callback(I3C_Type *base,
                                     i3c_ibi_type_t ibiType,
                                     i3c_ibi_state_t ibiState)
 {
+    assert(handle != NULL);
     g_transferPolling    = true;
     i3c_device_t *master = (i3c_device_t *)handle->userData;
     switch (ibiType)
@@ -142,6 +147,7 @@ static void i3c_master_ibi_callback(I3C_Type *base,
                 void *ibiData = malloc(handle->ibiPayloadSize);
                 if (ibiData != NULL)
                 {
+                    assert(handle->ibiBuff != NULL);
                     (void)memcpy(ibiData, (void *)handle->ibiBuff, handle->ibiPayloadSize);
                     (void)I3C_BusMasterHandleIBI(master, handle->ibiAddress, ibiData, handle->ibiPayloadSize);
                     free(ibiData);
@@ -214,10 +220,13 @@ static status_t I3C_MasterAdapterInit(i3c_device_t *master)
 {
     assert(master != NULL);
 
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
-    i3c_bus_t *bus                                = master->bus;
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
+    assert(masterResource != NULL);
+
+    i3c_bus_t *bus = master->bus;
+    I3C_Type *base = masterResource->base;
     i3c_master_adapter_private_t *masterPrivate;
     i3c_config_t masterConfig;
     uint8_t *pool;
@@ -312,14 +321,17 @@ static status_t I3C_MasterAdapterInit(i3c_device_t *master)
 static status_t I3C_MasterAdapterProcessDAA(i3c_device_t *master)
 {
     assert(master != NULL);
-    status_t result                               = kStatus_Success;
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
-    uint8_t rxBuffer[8]                           = {0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU};
-    i3c_bus_t *i3cBus                             = master->bus;
-    bool mctrlDone                                = false;
-    uint8_t rxSize                                = 0;
+    assert(masterResource != NULL);
+
+    status_t result     = kStatus_Success;
+    I3C_Type *base      = masterResource->base;
+    uint8_t rxBuffer[8] = {0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU};
+    i3c_bus_t *i3cBus   = master->bus;
+    bool mctrlDone      = false;
+    uint8_t rxSize      = 0;
     uint32_t errStatus;
     uint32_t status;
     size_t rxCount;
@@ -383,11 +395,15 @@ static status_t I3C_MasterAdapterProcessDAA(i3c_device_t *master)
                 I3C_MasterEmitRequest(base, kI3C_RequestProcessDAA);
 
                 i3c_device_t *newI3CDev = malloc(sizeof(i3c_device_t));
+                if (newI3CDev == NULL)
+                {
+                    return kStatus_I3CBus_MasterOpsFailure;
+                }
                 (void)memset(newI3CDev, 0, sizeof(i3c_device_t));
                 newI3CDev->info.dynamicAddr = validAddr;
                 newI3CDev->info.vendorID    = (((uint16_t)rxBuffer[0] << 8U | (uint16_t)rxBuffer[1]) & 0xFFFEU) >> 1U;
                 newI3CDev->info.partNumber  = ((uint32_t)rxBuffer[2] << 24U | (uint32_t)rxBuffer[3] << 16U |
-                                              (uint32_t)rxBuffer[4] << 8U | (uint32_t)rxBuffer[5]);
+                                               (uint32_t)rxBuffer[4] << 8U | (uint32_t)rxBuffer[5]);
                 newI3CDev->info.bcr         = rxBuffer[6];
                 newI3CDev->info.dcr         = rxBuffer[7];
                 I3C_BusAddI3CDev(i3cBus, newI3CDev);
@@ -476,11 +492,14 @@ static status_t I3CMasterAdapterTransfer(I3C_Type *base,
 static status_t I3C_MasterAdapterTransmitCCC(i3c_device_t *master, i3c_ccc_cmd_t *cmd)
 {
     assert(master != NULL);
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
-    i3c_master_transfer_mode_t transMode          = masterResource->transMode;
-    status_t result                               = kStatus_Success;
+    assert(masterResource != NULL);
+
+    I3C_Type *base                       = masterResource->base;
+    i3c_master_transfer_mode_t transMode = masterResource->transMode;
+    status_t result                      = kStatus_Success;
 
     i3c_master_transfer_t xfer;
     (void)memset(&xfer, 0, sizeof(xfer));
@@ -537,11 +556,13 @@ static status_t I3C_MasterAdapterDoI3CTransfer(i3c_device_t *device, i3c_bus_tra
     i3c_bus_t *bus       = device->bus;
     i3c_device_t *master = (i3c_device_t *)bus->currentMaster;
     assert(master != NULL);
-
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
-    i3c_master_transfer_mode_t transMode          = masterResource->transMode;
+    assert(masterResource != NULL);
+
+    I3C_Type *base                       = masterResource->base;
+    i3c_master_transfer_mode_t transMode = masterResource->transMode;
 
     i3c_master_transfer_t masterXfer;
     (void)memset(&masterXfer, 0, sizeof(masterXfer));
@@ -564,11 +585,13 @@ static status_t I3C_MasterAdapterDoI2CTransfer(i2c_device_t *device, i3c_bus_tra
     i3c_bus_t *bus       = device->bus;
     i3c_device_t *master = (i3c_device_t *)bus->currentMaster;
     assert(master != NULL);
-
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
-    i3c_master_transfer_mode_t transMode          = masterResource->transMode;
+    assert(masterResource != NULL);
+
+    I3C_Type *base                       = masterResource->base;
+    i3c_master_transfer_mode_t transMode = masterResource->transMode;
 
     i3c_master_transfer_t masterXfer;
     (void)memset(&masterXfer, 0, sizeof(masterXfer));
@@ -587,11 +610,16 @@ static status_t I3C_MasterAdapterDoI2CTransfer(i2c_device_t *device, i3c_bus_tra
 
 static void I3C_MasterAdapterTakeOverMasterShip(i3c_device_t *master)
 {
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
+    assert(master != NULL);
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
-    i3c_bus_t *i3cBus                             = master->bus;
-    i3c_master_adapter_private_t *masterPrivate   = (i3c_master_adapter_private_t *)masterControlInfo->privateData;
+    assert(masterResource != NULL);
+    i3c_master_adapter_private_t *masterPrivate = (i3c_master_adapter_private_t *)masterControlInfo->privateData;
+    assert(masterPrivate != NULL);
+
+    I3C_Type *base    = masterResource->base;
+    i3c_bus_t *i3cBus = master->bus;
 
     uint8_t devCount       = masterPrivate->devCount;
     i3c_ccc_dev_t *devList = masterPrivate->devList;
@@ -655,11 +683,15 @@ static void I3C_MasterAdapterTakeOverMasterShip(i3c_device_t *master)
 
 static status_t I3C_MasterAdapterHandOffMasterShip(i3c_device_t *master, uint8_t slaveAddr)
 {
-    status_t result                               = kStatus_Success;
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
+    assert(master != NULL);
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
-    i3c_bus_t *bus                                = master->bus;
+    assert(masterResource != NULL);
+
+    status_t result = kStatus_Success;
+    I3C_Type *base  = masterResource->base;
+    i3c_bus_t *bus  = master->bus;
 
     /* Disable MR and hotjoin events */
     result =
@@ -685,7 +717,8 @@ static status_t I3C_MasterAdapterHandOffMasterShip(i3c_device_t *master, uint8_t
     getAccMstCmd.data     = &accData;
     getAccMstCmd.dataSize = 1;
 
-    result = I3C_MasterAdapterTransmitCCC(master, &getAccMstCmd);
+    /* Result is intentionally not consumed here, mastership hand off proceeds regardless. */
+    (void)I3C_MasterAdapterTransmitCCC(master, &getAccMstCmd);
 
     /* Change current master to secondary master */
     bus->currentMaster             = NULL;
@@ -698,6 +731,10 @@ static status_t I3C_MasterAdapterHandOffMasterShip(i3c_device_t *master, uint8_t
 
     /* Create slave handle. */
     i3c_slave_handle_t *g_i3c_s_handle = malloc(sizeof(*g_i3c_s_handle));
+    if (g_i3c_s_handle == NULL)
+    {
+        return kStatus_I3CBus_MasterOpsFailure;
+    }
     I3C_SlaveTransferCreateHandle(base, g_i3c_s_handle, i3c_secondarymaster_callback, master);
 
     /* Start slave non-blocking transfer. */
@@ -710,9 +747,13 @@ static status_t I3C_MasterAdapterHandOffMasterShip(i3c_device_t *master, uint8_t
 
 static void I3C_MasterAdapterRegisterIBI(i3c_device_t *master, uint8_t ibiAddress)
 {
-    i3c_device_control_info_t *masterControlInfo  = master->devControlInfo;
+    assert(master != NULL);
+    i3c_device_control_info_t *masterControlInfo = master->devControlInfo;
+    assert(masterControlInfo != NULL);
     i3c_master_adapter_resource_t *masterResource = (i3c_master_adapter_resource_t *)masterControlInfo->resource;
-    I3C_Type *base                                = masterResource->base;
+    assert(masterResource != NULL);
+
+    I3C_Type *base = masterResource->base;
 
     i3c_register_ibi_addr_t ibiRule;
     I3C_MasterGetIBIRules(base, &ibiRule);
@@ -737,11 +778,13 @@ static status_t I3C_SlaveAdapterInit(i3c_device_t *dev)
 {
     assert(dev != NULL);
 
-    i3c_device_control_info_t *devControlInfo  = dev->devControlInfo;
-    i3c_device_information_t *devInfo          = &dev->info;
+    i3c_device_control_info_t *devControlInfo = dev->devControlInfo;
+    assert(devControlInfo != NULL);
     i3c_device_adapter_resource_t *devResource = (i3c_device_adapter_resource_t *)devControlInfo->resource;
+    assert(devResource != NULL);
 
-    I3C_Type *base = devResource->base;
+    i3c_device_information_t *devInfo = &dev->info;
+    I3C_Type *base                    = devResource->base;
 
     i3c_slave_config_t slaveConfig;
     I3C_SlaveGetDefaultConfig(&slaveConfig);
@@ -756,6 +799,10 @@ static status_t I3C_SlaveAdapterInit(i3c_device_t *dev)
 
     /* Create slave handle. */
     i3c_slave_handle_t *g_i3c_s_handle = malloc(sizeof(*g_i3c_s_handle));
+    if (g_i3c_s_handle == NULL)
+    {
+        return kStatus_I3CBus_MasterOpsFailure;
+    }
     I3C_SlaveTransferCreateHandle(base, g_i3c_s_handle, devResource->callback, dev);
 
     /* Start slave non-blocking transfer. */
@@ -769,8 +816,10 @@ static void I3C_SlaveAdapterRequestHotJoin(i3c_device_t *dev)
 {
     assert(dev != NULL);
 
-    i3c_device_control_info_t *devControlInfo  = dev->devControlInfo;
+    i3c_device_control_info_t *devControlInfo = dev->devControlInfo;
+    assert(devControlInfo != NULL);
     i3c_device_adapter_resource_t *devResource = (i3c_device_adapter_resource_t *)devControlInfo->resource;
+    assert(devResource != NULL);
 
     I3C_Type *base = devResource->base;
 
@@ -781,8 +830,10 @@ static void I3C_SlaveAdapterRequestMastership(i3c_device_t *dev)
 {
     assert(dev != NULL);
 
-    i3c_device_control_info_t *devControlInfo  = dev->devControlInfo;
+    i3c_device_control_info_t *devControlInfo = dev->devControlInfo;
+    assert(devControlInfo != NULL);
     i3c_device_adapter_resource_t *devResource = (i3c_device_adapter_resource_t *)devControlInfo->resource;
+    assert(devResource != NULL);
 
     I3C_Type *base = devResource->base;
 
@@ -793,8 +844,10 @@ static void I3C_SlaveAdapterRequestIBI(i3c_device_t *dev, void *data, size_t dat
 {
     assert(dev != NULL);
 
-    i3c_device_control_info_t *devControlInfo  = dev->devControlInfo;
+    i3c_device_control_info_t *devControlInfo = dev->devControlInfo;
+    assert(devControlInfo != NULL);
     i3c_device_adapter_resource_t *devResource = (i3c_device_adapter_resource_t *)devControlInfo->resource;
+    assert(devResource != NULL);
 
     I3C_Type *base = devResource->base;
 
