@@ -91,7 +91,7 @@ static void SFDP_InterpretSFDPParamHeaders(sfdp_param_header_t *ptrSfdpParamHead
             {
                 g_sfdpFuncTables.rpmcTable.supported    = 1U;
                 g_sfdpFuncTables.rpmcTable.indexOfArray = i;
-                g_sfdpFuncTables.fourByteAddrInstTable.paramTableRevision =
+                g_sfdpFuncTables.rpmcTable.paramTableRevision =
                     SFDP_GetParamRevision(&(ptrSfdpParamHeaders[i]));
                 (void)spiReadTable(ptrCurParamHeader->ptp, (uint32_t *)((uint32_t)(&(handle->rpmcTable))),
                                    (4UL * ptrCurParamHeader->len));
@@ -795,8 +795,10 @@ sfdp_protocol_type_t SFDP_GetFlashProtocolType(sfdp_handle_t *handle,
                 {
                     protocolTypeSelected = kSFDP_Protocol_1s8s8s;
                 }
-
-                protocolTypeSelected = kSFDP_Protocol_8s8s8s;
+                else
+                {
+                    protocolTypeSelected = kSFDP_Protocol_8s8s8s;
+                }
             }
             else if ((cmdPolicy == kSFDP_CmdPolicy_SdrOutput) || (cmdPolicy == kSFDP_CmdPolicy_LowestThroughput))
             {
