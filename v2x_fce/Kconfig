@@ -1,0 +1,32 @@
+# Copyright 2026 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+menu "V2X FCE"
+
+config MCUX_COMPONENT_component.v2x_fce
+    bool "v2x_fce"
+    select MCUX_COMPONENT_driver.mu1
+    help
+      EdgeLock V2X / FCE (Fast Crypto Engine) firmware service driver. Sibling
+      of ele_crypto and v2x_crypto: drives the FCE service (an LTC-AES core
+      coupled with an AHB-DMA engine on the V2X enclave) over its dedicated
+      message unit using the generic MU hardware driver (fsl_mu) and enclave
+      message framing, but with the PRIME / FCE command opcodes and payloads (see the
+      EdgeLock Secure Enclave User Guide). Provides AES-GCM authenticated
+
+      encrypt/decrypt with plain AES/HMAC key loading.
+
+config V2X_FCE_DDR_SCRATCH_BASE
+    hex "V2X FCE DDR scratch buffer base address"
+    default 0x86000000
+    depends on MCUX_COMPONENT_component.v2x_fce
+    help
+      No prefix in generated macro
+      Physical base address of the plain DDR scratch region the FCE AHB-DMA
+      engine uses to stage the AES-GCM Status / TAG / Input / Output / AAD
+      buffers. The FCE addresses this region directly with the same physical
+      address the masters use, so it must point at a DDR range reserved for the
+      application (default 0x86000000, i.e. the 0x86000000-0x89FFFFFF window on
+      the i.MX943 EVK).
+
+endmenu
