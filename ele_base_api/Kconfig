@@ -7,4 +7,15 @@ menu "ELE Base API"
         bool "ele_base_api"
         select MCUX_COMPONENT_driver.s3mu
 
+    config ELE_HAS_V2X_FW_BRINGUP
+        bool "Enable ELE V2X firmware bring-up API"
+        default n
+        depends on MCUX_COMPONENT_component.ele_base_api
+        help
+          No prefix in generated macro
+          Compile in the EdgeLock enclave (ELE) V2X firmware bring-up API
+          (authenticate/start the V2X firmware core). Only SoCs that
+          integrate a V2X firmware core should select this option; it is
+          disabled by default.
+
 endmenu

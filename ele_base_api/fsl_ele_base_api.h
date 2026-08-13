@@ -19,6 +19,22 @@
  * Configurations
  ******************************************************************************/
 
+/*!
+ * @brief Enables the EdgeLock enclave (ELE) V2X firmware bring-up API.
+ *
+ * Not all SoCs integrate a V2X firmware core. The bring-up API is compiled in
+ * only when the ELE_HAS_V2X_FW_BRINGUP Kconfig option is selected (disabled by
+ * default; SoCs with a V2X firmware core select it in their device Kconfig). A
+ * board/app may override this by defining the macro before including this file.
+ */
+#if !defined(FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP)
+#if defined(ELE_HAS_V2X_FW_BRINGUP)
+#define FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP (1)
+#else
+#define FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP (0)
+#endif
+#endif
+
 
 /*******************************************************************************
  * Definitions
@@ -87,6 +103,21 @@
 /*@{*/
 /*! @brief Defines ELE Base API version 1.0.1.*/
 #define FSL_ELE_BASE_API_DRIVER_VERSION (MAKE_VERSION(1, 0, 1))
+
+#if FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP
+/*! @name V2X firmware bring-up (ELE) command wire format */
+/*@{*/
+#define ELE_V2X_FW_AUTH_CMD  (0xB1u) /*!< ELE_V2X_FW_AUTH command byte. */
+#define ELE_V2X_GET_STATE_CMD (0xB2u) /*!< ELE get-V2X-FW-state command byte. */
+#define ELE_V2X_MSG_VERSION  (0x06u) /*!< ELE message version for V2X bring-up. */
+#define ELE_V2X_FW_AUTH_SIZE (4u)    /*!< ELE_V2X_FW_AUTH request word count. */
+#define ELE_V2X_GET_STATE_SIZE (1u)  /*!< ELE get-state request word count. */
+#define ELE_V2X_FW_STATE_MASK (0xFFu) /*!< V2X FW state byte mask. */
+#define ELE_V2X_FW_STATE_NORM_RUNNING (0x13u) /*!< V2X FW running (normal). */
+#define ELE_V2X_FW_STATE_DBG_RUNNING  (0x15u) /*!< V2X FW running (debug). */
+/*@}*/
+#endif /* FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP */
+
 /*@}*/
 
 
@@ -250,6 +281,61 @@ status_t ELE_BaseAPI_VoltageChangeStart(S3MU_Type *mu);
  * Possible errors: kStatus_S3MU_InvalidArgument, kStatus_S3MU_AgumentOutOfRange
  */
 status_t ELE_BaseAPI_VoltageChangeFinish(S3MU_Type *mu);
+
+
+#if FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP
+/*!
+ * @brief Ask the EdgeLock enclave (ELE) to authenticate and release the V2X FW.
+ *
+ * Sends ELE_V2X_FW_AUTH (0xB1) over the ELE MU with the DDR address of the V2X
+ * firmware image. On i.MX943 the V2X firmware core is not auto-started; the
+ * enclave must authenticate/load it first, otherwise the V2X MU never answers.
+ *
+ * @param mu        ELE message unit base.
+ * @param v2xFwAddr DDR address of the V2X firmware image.
+ * @retval kStatus_Success        Authentication request accepted.
+ * @retval kStatus_InvalidArgument Argument invalid.
+ * @retval kStatus_Fail           Command failed.
+ */
+status_t ELE_BaseAPI_V2xFwAuthenticate(S3MU_Type *mu, uint32_t v2xFwAddr);
+
+/*!
+ * @brief Query the V2X firmware state through the ELE.
+ *
+ * Sends ELE_GET_STATE (0xB2) over the ELE MU and returns the V2X FW state byte.
+ *
+ * @param mu    ELE message unit base.
+ * @param state Output V2X firmware state (low byte of the ELE response).
+ * @retval kStatus_Success        State read.
+ * @retval kStatus_InvalidArgument Argument invalid.
+ * @retval kStatus_Fail           Command failed.
+ */
+status_t ELE_BaseAPI_GetV2xFwState(S3MU_Type *mu, uint32_t *state);
+
+/*!
+ * @brief Test whether a V2X firmware state value means the V2X FW is running.
+ *
+ * @param state State value from ELE_BaseAPI_GetV2xFwState().
+ * @return true if the state is a running state (0x13 or 0x15).
+ */
+bool ELE_BaseAPI_IsV2xFwRunning(uint32_t state);
+
+/*!
+ * @brief Bring the V2X firmware up through the ELE (authenticate + poll state).
+ *
+ * If the V2X FW is not already running, this authenticates it via
+ * ELE_BaseAPI_V2xFwAuthenticate() then polls ELE_BaseAPI_GetV2xFwState() until
+ * the state is running or the retry budget is exhausted.
+ *
+ * @param mu        ELE message unit base.
+ * @param v2xFwAddr DDR address of the V2X firmware image.
+ * @param retries   Maximum number of get-state polls.
+ * @retval kStatus_Success V2X firmware is running.
+ * @retval kStatus_Timeout V2X firmware did not reach a running state.
+ * @retval kStatus_Fail    A bring-up command failed.
+ */
+status_t ELE_BaseAPI_BringUpV2xFw(S3MU_Type *mu, uint32_t v2xFwAddr, uint32_t retries);
+#endif /* FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP */
 
 #if defined(__cplusplus)
 }

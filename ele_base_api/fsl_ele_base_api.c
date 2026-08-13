@@ -6,6 +6,19 @@
 
 #include "fsl_s3mu.h"
 #include "fsl_ele_base_api.h"
+#include "fsl_debug_console.h"
+
+/* Debug switch: set to 1 (e.g. -DELE_BASE_API_DEBUG=1) to enable the
+ * verbose ELE V2X transceive trace prints. Default is quiet. */
+#ifndef ELE_BASE_API_DEBUG
+#define ELE_BASE_API_DEBUG (0)
+#endif
+
+#if ELE_BASE_API_DEBUG
+#define ELE_DBG(...) PRINTF(__VA_ARGS__)
+#else
+#define ELE_DBG(...) ((void)0)
+#endif
 
 /*******************************************************************************
  * Prototypes
@@ -617,3 +630,138 @@ status_t ELE_BaseAPI_StartRng(S3MU_Type *mu)
         return kStatus_Fail;
     }
 }
+
+
+#if FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP
+/*!
+ * @brief Send an ELE V2X bring-up command and validate the response header.
+ */
+static status_t ele_v2x_transceive_baseapi(S3MU_Type *mu,
+                                           const uint32_t *tmsg,
+                                           uint32_t words,
+                                           uint32_t *rmsg,
+                                           uint8_t command)
+{
+    status_t status = S3MU_SendMessage(mu, (uint32_t *)(uintptr_t)tmsg, words);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+    status = ele_mu_get_response_baseapi(mu, rmsg);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+    /* Response header word0: tag (0xE1) in bits [31:24], command in [23:16]. */
+    if ((uint8_t)((rmsg[0] >> 24) & 0xFFu) != MSG_TAG_RESP)
+    {
+        return kStatus_Fail;
+    }
+    if ((uint8_t)((rmsg[0] >> 16) & 0xFFu) != command)
+    {
+        return kStatus_Fail;
+    }
+    return kStatus_Success;
+}
+
+status_t ELE_BaseAPI_V2xFwAuthenticate(S3MU_Type *mu, uint32_t v2xFwAddr)
+{
+    uint32_t tmsg[ELE_V2X_FW_AUTH_SIZE];
+    uint32_t rmsg[S3MU_RR_COUNT] = {0u};
+    status_t status;
+
+    if (mu == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    tmsg[0] = ((uint32_t)MSG_TAG_CMD << 24) | ((uint32_t)ELE_V2X_FW_AUTH_CMD << 16) |
+              ((uint32_t)ELE_V2X_FW_AUTH_SIZE << 8) | (uint32_t)ELE_V2X_MSG_VERSION;
+    tmsg[1] = v2xFwAddr;
+    tmsg[2] = 0u;
+    tmsg[3] = v2xFwAddr;
+
+    status = ele_v2x_transceive_baseapi(mu, tmsg, ELE_V2X_FW_AUTH_SIZE, rmsg, ELE_V2X_FW_AUTH_CMD);
+    ELE_DBG("[dbg-ele] AUTH xcv status=0x%x r0=0x%08x r1=0x%08x r2=0x%08x r3=0x%08x\r\n",
+           (unsigned int)status, (unsigned int)rmsg[0], (unsigned int)rmsg[1],
+           (unsigned int)rmsg[2], (unsigned int)rmsg[3]);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+    if ((uint8_t)(rmsg[1] & 0xFFu) != RESPONSE_SUCCESS)
+    {
+        return kStatus_Fail;
+    }
+    return kStatus_Success;
+}
+
+status_t ELE_BaseAPI_GetV2xFwState(S3MU_Type *mu, uint32_t *state)
+{
+    uint32_t tmsg[ELE_V2X_GET_STATE_SIZE];
+    uint32_t rmsg[S3MU_RR_COUNT] = {0u};
+    status_t status;
+
+    if ((mu == NULL) || (state == NULL))
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    tmsg[0] = ((uint32_t)MSG_TAG_CMD << 24) | ((uint32_t)ELE_V2X_GET_STATE_CMD << 16) |
+              ((uint32_t)ELE_V2X_GET_STATE_SIZE << 8) | (uint32_t)ELE_V2X_MSG_VERSION;
+
+    status = ele_v2x_transceive_baseapi(mu, tmsg, ELE_V2X_GET_STATE_SIZE, rmsg, ELE_V2X_GET_STATE_CMD);
+    ELE_DBG("[dbg-ele] STATE xcv status=0x%x r0=0x%08x r1=0x%08x r2=0x%08x r3=0x%08x\r\n",
+           (unsigned int)status, (unsigned int)rmsg[0], (unsigned int)rmsg[1],
+           (unsigned int)rmsg[2], (unsigned int)rmsg[3]);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+    *state = rmsg[2] & ELE_V2X_FW_STATE_MASK;
+    return kStatus_Success;
+}
+
+bool ELE_BaseAPI_IsV2xFwRunning(uint32_t state)
+{
+    return (state == ELE_V2X_FW_STATE_NORM_RUNNING) || (state == ELE_V2X_FW_STATE_DBG_RUNNING);
+}
+
+status_t ELE_BaseAPI_BringUpV2xFw(S3MU_Type *mu, uint32_t v2xFwAddr, uint32_t retries)
+{
+    uint32_t state = 0u;
+    status_t status;
+    uint32_t i;
+
+    if (mu == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    status = ELE_BaseAPI_GetV2xFwState(mu, &state);
+    if ((status == kStatus_Success) && ELE_BaseAPI_IsV2xFwRunning(state))
+    {
+        return kStatus_Success;
+    }
+
+    status = ELE_BaseAPI_V2xFwAuthenticate(mu, v2xFwAddr);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    for (i = 0u; i < retries; i++)
+    {
+        status = ELE_BaseAPI_GetV2xFwState(mu, &state);
+        if (status != kStatus_Success)
+        {
+            return status;
+        }
+        if (ELE_BaseAPI_IsV2xFwRunning(state))
+        {
+            return kStatus_Success;
+        }
+    }
+    return kStatus_Timeout;
+}
+#endif /* FSL_FEATURE_ELE_HAS_V2X_FW_BRINGUP */

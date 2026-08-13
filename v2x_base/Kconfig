@@ -1,0 +1,29 @@
+# Copyright 2026 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+menu "V2X Base"
+
+config MCUX_COMPONENT_component.v2x_base
+    bool "v2x_base"
+    select MCUX_COMPONENT_driver.mu1
+    help
+      EdgeLock V2X base (debug) service driver. Ported from the Linux
+      drivers/firmware/imx/v2x_base_msg.c, it implements the four V2X base
+      operations (start_rng, pwr_state, get_fw_version, debug_dump) over the
+      message unit (via the generic fsl_mu driver) using the same enclave message framing as ele_crypto
+      and v2x_crypto, with the V2X debug command tag (0x17) and version (0x02).
+
+
+config V2X_FW_IMG_DDR_ADDR
+    hex "V2X firmware image DDR address"
+    default 0x8b000000
+    depends on MCUX_COMPONENT_component.v2x_base
+    help
+      No prefix in generated macro
+      Physical DDR address of the V2X firmware image that the EdgeLock
+      enclave (ELE) authenticates and releases during V2X bring-up
+      (ELE_BaseAPI_V2xFwAuthenticate). The image must have been loaded to
+      this address before the V2X debug / FCE message units will answer
+      (default 0x8b000000 on the i.MX943 EVK).
+
+endmenu
