@@ -527,6 +527,15 @@ static status_t xspi_nand_bring_up(XSPI_Type *base,
         return status;
     }
 
+    if (memConfig->deviceInitHook != NULL)
+    {
+        status = memConfig->deviceInitHook(handle);
+        if (status != kStatus_Success)
+        {
+            return status;
+        }
+    }
+
     status = xspi_nand_read_layout(base, memHandle, handle, deviceInfo);
     if (status != kStatus_Success)
     {

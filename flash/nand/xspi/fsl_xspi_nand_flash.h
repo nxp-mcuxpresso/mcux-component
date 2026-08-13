@@ -28,10 +28,11 @@
 /*!@brief XSPI NAND memory config. */
 typedef struct _xspi_mem_nand_config
 {
-    xspi_device_config_t deviceConfig;                                           /*!< XSPI device configuration. */
-    xspi_target_group_t targetGroup;                                             /*!< Target group. */
-    uint32_t lookupTable[NAND_XSPI_LUT_WORD_COUNT];                              /*!< LUT Table */
-    uint32_t ambaBase;                                                           /*!< XSPI AHB base */
+    xspi_device_config_t deviceConfig;                 /*!< XSPI device configuration. */
+    xspi_target_group_t targetGroup;                   /*!< Target group. */
+    uint32_t lookupTable[NAND_XSPI_LUT_WORD_COUNT];    /*!< LUT Table */
+    uint32_t ambaBase;                                 /*!< XSPI AHB base */
+    status_t (*deviceInitHook)(nand_handle_t *handle); /*!< Optional device initialization hook. */
 } xspi_mem_nand_config_t;
 
 /*! @} */
