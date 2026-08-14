@@ -216,7 +216,7 @@
      (defined(RTE_USART17) && RTE_USART17 && (defined(LPUART17) || defined(LPUART_17))) || \
      (defined(RTE_USART18) && RTE_USART18 && (defined(LPUART18) || defined(LPUART_18))) || \
      (defined(RTE_USART19) && RTE_USART19 && (defined(LPUART19) || defined(LPUART_19))) || \
-     (defined(RTE_USART20) && RTE_USART10 && (defined(LPUART20) || defined(LPUART_20))))
+     (defined(RTE_USART20) && RTE_USART20 && (defined(LPUART20) || defined(LPUART_20))))
 
 #define ARM_LPUART_DRV_VERSION ARM_DRIVER_VERSION_MAJOR_MINOR((2), (8))
 
