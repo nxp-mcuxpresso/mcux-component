@@ -377,6 +377,9 @@ static void HAL_UartDMARxIdlelineInterruptHandle(uint8_t instance)
         /* HAL_UartDMAGetReceiveCount(uartDmaHandle, &msg.dataSize); */
         /* HAL_UartDMAAbortReceive(uartDmaHandle); */
 
+        dmaMsg.status   = kStatus_HAL_UartDmaIdleline;
+        dmaMsg.dataSize = 0;
+
 #if (defined(FSL_FEATURE_SOC_EDMA_COUNT) && (FSL_FEATURE_SOC_EDMA_COUNT > 0U))
         EDMA_StopTransfer(uartDmaHandle->edmaHandle.rxEdmaHandle);
         (void)LPUART_TransferGetReceiveCountEDMA(s_LpuartAdapterBase[uartDmaHandle->instance],
@@ -384,7 +387,6 @@ static void HAL_UartDMARxIdlelineInterruptHandle(uint8_t instance)
         LPUART_TransferAbortReceiveEDMA(s_LpuartAdapterBase[uartDmaHandle->instance], &uartDmaHandle->edmaHandle);
 #elif (defined(FSL_FEATURE_SOC_DMA_COUNT) && (FSL_FEATURE_SOC_DMA_COUNT > 0U))
 #endif /* FSL_FEATURE_SOC_EDMA_COUNT */
-        dmaMsg.status                = kStatus_HAL_UartDmaIdleline;
         dmaMsg.data                  = uartDmaHandle->dma_rx.buffer;
         uartDmaHandle->dma_rx.buffer = NULL;
 
@@ -2011,7 +2013,7 @@ static void LPUART_DMACallbacks(LPUART_Type *base, lpuart_edma_handle_t *handle,
         }
         else
         {
-            /* MISRA */
+            (void)memset(&dmaMsg, 0, sizeof(dmaMsg));
         }
 
         uartDmaHandle->dma_callback(uartDmaHandle, &dmaMsg, uartDmaHandle->dma_callback_param);
