@@ -32,17 +32,12 @@ typedef struct _ft5406_touch_data
 
 status_t FT5406_Init(ft5406_handle_t *handle, I2C_Type *base)
 {
-    i2c_master_transfer_t *xfer = &(handle->xfer);
-    status_t status;
-    uint8_t mode;
-
     assert(handle);
     assert(base);
 
-    if (!handle || !base)
-    {
-        return kStatus_InvalidArgument;
-    }
+    i2c_master_transfer_t *xfer = &(handle->xfer);
+    status_t status;
+    uint8_t mode;
 
     handle->base = base;
 
@@ -78,11 +73,6 @@ status_t FT5406_Denit(ft5406_handle_t *handle)
 {
     assert(handle);
 
-    if (!handle)
-    {
-        return kStatus_InvalidArgument;
-    }
-
     handle->base = NULL;
     return kStatus_Success;
 }
@@ -90,11 +80,6 @@ status_t FT5406_Denit(ft5406_handle_t *handle)
 status_t FT5406_ReadTouchData(ft5406_handle_t *handle)
 {
     assert(handle);
-
-    if (!handle)
-    {
-        return kStatus_InvalidArgument;
-    }
 
     return I2C_MasterTransferBlocking(handle->base, &handle->xfer);
 }
