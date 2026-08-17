@@ -380,7 +380,7 @@ __ECC_FCT_PLACEMENT static int flash_bus_fault_ecc_non_correctable_err_on_data_f
  */
 __ECC_FCT_PLACEMENT int FLASH_ActivateEccFaultDetection(FMU_Type *base, uint32_t *sav_cfg)
 {
-    int st = -1;
+    int st;
     uint32_t fcncf_val;
 #if defined SMSCM
     *sav_cfg = SMSCM->OCMDR0;
@@ -403,7 +403,7 @@ __ECC_FCT_PLACEMENT int FLASH_ActivateEccFaultDetection(FMU_Type *base, uint32_t
 
 __ECC_FCT_PLACEMENT int FLASH_DeactivateEccFaultDetection(FMU_Type *base, uint32_t restore_cfg)
 {
-    int st = -1;
+    int st;
 #if defined SMSCM
     uint32_t fcncf_val;
     st = flash_bus_fault_ecc_non_correctable_err_on_data_fetch(true);
@@ -415,6 +415,7 @@ __ECC_FCT_PLACEMENT int FLASH_DeactivateEccFaultDetection(FMU_Type *base, uint32
     __ISB();
     __DSB();
 #else
+    st = -1;
 #endif
 
     return st;
