@@ -1638,7 +1638,6 @@ int StrFormatScanf(const char *line_ptr, char *format, va_list args_ptr)
             {
                 n_decode += ScanIgnoreWhiteSpace(&p);
                 s    = p;
-                val  = 0;
                 base = StrFormatScanGetBase(base, s);
 
                 added = StrFormatScanCheckSymbol(p, &neg);
