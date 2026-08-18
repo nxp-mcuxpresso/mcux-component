@@ -411,7 +411,7 @@ static hal_rpmsg_status_t HAL_RpmsgRemoteInit(hal_rpmsg_handle_t handle, hal_rpm
 
 hal_rpmsg_status_t HAL_RpmsgMcmgrInit(void)
 {
-    hal_rpmsg_status_t state = kStatus_HAL_RpmsgError;
+    hal_rpmsg_status_t state;
 
 #if (defined(HAL_RPMSG_SELECT_ROLE) && (HAL_RPMSG_SELECT_ROLE == 0U))
     state = HAL_RpmsgMcmgrMasterInit();
