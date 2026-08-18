@@ -426,7 +426,10 @@ static void HAL_UartDMAIdlelineInterruptHandle(uint8_t instance, uint32_t status
                 dmaMsg.data                       = uartDmaHandle->dma_tx.buffer;
                 dmaMsg.dataSize                   = uartDmaHandle->dma_tx.bufferLength;
                 uartDmaHandle->dma_tx.buffer      = NULL;
-                uartDmaHandle->dma_callback(uartDmaHandle, &dmaMsg, uartDmaHandle->dma_callback_param);
+                if (NULL != uartDmaHandle->dma_callback)
+                {
+                    uartDmaHandle->dma_callback(uartDmaHandle, &dmaMsg, uartDmaHandle->dma_callback_param);
+                }
             }
         }
         /* DMA receive Idleline interrupt. */
