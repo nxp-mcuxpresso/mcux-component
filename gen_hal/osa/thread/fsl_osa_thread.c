@@ -131,6 +131,8 @@ static void OSA_TranslateTCBToZephyrThread(struct k_thread *zephyrThread, freeRt
 {
     free_rtos_TCB *freeRTosTcb = freeRTosTaskInfo->taskTcb;
     TaskStatus_t curTaskStatus;
+
+    assert(freeRTosTcb != NULL);
 #if defined(CONFIG_THREAD_STACK_INFO)
     zephyrThread->stack_info.start = (uint32_t)freeRTosTcb->pxStack;
     zephyrThread->stack_info.size  = freeRTosTaskInfo->stackSize;
@@ -273,11 +275,11 @@ void OSA_PopulateKernelInstance(void *ptrThreads, uint32_t taskCount)
         OSA_TranslateTCBToZephyrThread(current, &(g_freeRTOS_tcbs[i]));
 
         current = next;
-        next    = next->next_thread;
         if (++taskId == taskCount)
         {
             break;
         }
+        next = next->next_thread;
     }
 
 #else
