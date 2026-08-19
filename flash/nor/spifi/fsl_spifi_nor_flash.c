@@ -950,7 +950,7 @@ status_t Nor_Flash_Erase(nor_handle_t *handle, uint32_t address, uint32_t size_B
 
 status_t Nor_Flash_Page_Program(nor_handle_t *handle, uint32_t address, uint8_t *buffer)
 {
-    if (!buffer)
+    if ((!handle) || (!handle->deviceSpecific) || (!buffer))
     {
         return kStatus_InvalidArgument;
     }
@@ -1118,7 +1118,7 @@ status_t Nor_Flash_Erase_Chip(nor_handle_t *handle)
 status_t Nor_Flash_Read(nor_handle_t *handle, uint32_t address, uint8_t *buffer, uint32_t length)
 {
     /* Parameter check. */
-    if ((!handle) || (!buffer))
+    if ((!handle) || (!handle->deviceSpecific) || (!buffer))
     {
         return kStatus_InvalidArgument;
     }
@@ -1156,11 +1156,15 @@ status_t Nor_Flash_Read(nor_handle_t *handle, uint32_t address, uint8_t *buffer,
  * @brief  Get the busy status of the NOR Flash.
  *
  * @param handle    The NOR Flash handler.
- * @retval Always return kStatus_Success
+ * @retval kStatus_InvalidArgument Invalid handle.
+ * @retval kStatus_Success Get busy status successfully.
  */
 status_t Nor_Flash_Is_Busy(nor_handle_t *handle, bool *isBusy)
 {
-    assert(handle);
+    if ((!handle) || (!handle->deviceSpecific))
+    {
+        return kStatus_InvalidArgument;
+    }
 
     spifi_mem_nor_handle_t *memSpifiHandler = (spifi_mem_nor_handle_t *)(handle->deviceSpecific);
 
@@ -1171,6 +1175,11 @@ status_t Nor_Flash_Is_Busy(nor_handle_t *handle, bool *isBusy)
 
 status_t Nor_Flash_Enter_Lowpower(nor_handle_t *handle)
 {
+    if ((!handle) || (!handle->deviceSpecific))
+    {
+        return kStatus_InvalidArgument;
+    }
+
     spifi_mem_nor_handle_t *memSpifiHandler = (spifi_mem_nor_handle_t *)(handle->deviceSpecific);
     SPIFI_Type *base                        = (SPIFI_Type *)handle->driverBaseAddr;
 
@@ -1186,6 +1195,11 @@ status_t Nor_Flash_Enter_Lowpower(nor_handle_t *handle)
 
 status_t Nor_Flash_Exit_Lowpower(nor_handle_t *handle)
 {
+    if ((!handle) || (!handle->deviceSpecific))
+    {
+        return kStatus_InvalidArgument;
+    }
+
     spifi_config_t memConfig;
     spifi_mem_nor_handle_t *memSpifiHandler = (spifi_mem_nor_handle_t *)(handle->deviceSpecific);
     SPIFI_Type *base                        = (SPIFI_Type *)handle->driverBaseAddr;
