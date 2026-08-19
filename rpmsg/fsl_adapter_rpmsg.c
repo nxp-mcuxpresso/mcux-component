@@ -111,8 +111,33 @@ extern uint32_t rpmsg_sh_mem_end[];
 #define APP_RPMSG_READY_EVENT_DATA    (1U)
 #define APP_RPMSG_EP_READY_EVENT_DATA (2U)
 
+/* Total busy-wait budget (loop iterations, not milliseconds) for the
+ * master-side wait for READY and the remote-side wait for COREUP.
+ *
+ * No hardware timer is used here on purpose: this is shared middleware and a
+ * timer/counter peripheral is not the same across every board, so the
+ * timeout is expressed as a flat iteration count that is spent entirely in
+ * the single busy-wait below (COREUP pings are sent periodically from
+ * inside that same loop -- there is no nested "outer retries x inner wait"
+ * multiplication anymore, so this value is the actual worst-case spin count,
+ * not an unreachable upper bound).
+ *
+ * To size this for a board where the peer can be slow/non-responsive
+ * (e.g. KW47 NBU): toggle a GPIO immediately before returning
+ * kStatus_HAL_RpmsgTimeout, measure the elapsed time on a scope/logic
+ * analyzer for a few candidate values, then pick a value with margin (e.g.
+ * 2x-4x the worst observed peer response time) -- there is no need to know
+ * cycles-per-iteration up front, just bisect until reliable. */
 #ifndef RPMSG_REMOTE_READY_RETRY_COUNT
 #define RPMSG_REMOTE_READY_RETRY_COUNT 10000000U
+#endif
+
+/* How often (in busy-wait iterations) to re-send the COREUP ping while
+ * waiting for READY. Independent of the total budget above so pings keep
+ * happening at roughly the same cadence regardless of how the total
+ * timeout is tuned. */
+#ifndef RPMSG_REMOTE_READY_PING_PERIOD
+#define RPMSG_REMOTE_READY_PING_PERIOD 100000U
 #endif
 
 /* Delay (ms) inserted after rpmsg_lite_master_init() returns and before
@@ -234,7 +259,8 @@ static void RPMsgPeerReadyEventHandler(mcmgr_core_t coreNum, uint16_t eventData,
 #if (defined(HAL_RPMSG_SELECT_ROLE) && (HAL_RPMSG_SELECT_ROLE == 0U))
 static hal_rpmsg_status_t HAL_RpmsgMcmgrMasterInit(void)
 {
-    volatile uint32_t timeout = RPMSG_REMOTE_READY_RETRY_COUNT;
+    volatile uint32_t timeout    = RPMSG_REMOTE_READY_RETRY_COUNT;
+    uint32_t          sincePing = 0U;
 
     if (0 > s_rpmsgEptCount)
     {
@@ -252,24 +278,24 @@ static hal_rpmsg_status_t HAL_RpmsgMcmgrMasterInit(void)
             }
         }
 
-        /* Wait for secondary to call rpmsg_lite_remote_init() and fire READY.
-         * Send periodic COREUP pings so that on fast cores (CM7 @ 600 MHz) the
-         * effective wait window is seconds rather than ~50 ms.
+        /* Wait for secondary to call rpmsg_lite_remote_init() and fire READY,
+         * re-sending COREUP every RPMSG_REMOTE_READY_PING_PERIOD iterations.
+         * Single flat counter -> the whole wait spends at most
+         * RPMSG_REMOTE_READY_RETRY_COUNT iterations, no outer*inner blow-up.
          * On kw43 the prebuilt NBU ignores the COREUP pings and fires READY on
          * its own; the ping is therefore harmless on all platforms. */
         s_mcmgrEventCtx.ready_seen = 0U;
+        (void)MCMGR_TriggerEvent(kMCMGR_Core1, kMCMGR_RemoteApplicationEvent, APP_RPMSG_COREUP_EVENT_DATA);
         while (0U == s_mcmgrEventCtx.ready_seen)
         {
-            volatile uint32_t ping_wait;
             if (--timeout == 0u)
             {
                 return kStatus_HAL_RpmsgTimeout;
             }
-            (void)MCMGR_TriggerEvent(kMCMGR_Core1, kMCMGR_RemoteApplicationEvent, APP_RPMSG_COREUP_EVENT_DATA);
-            /* Wait up to ~100 000 iterations for READY before re-pinging. */
-            ping_wait = 100000U;
-            while ((0U == s_mcmgrEventCtx.ready_seen) && (--ping_wait != 0u))
+            if (++sincePing >= RPMSG_REMOTE_READY_PING_PERIOD)
             {
+                sincePing = 0U;
+                (void)MCMGR_TriggerEvent(kMCMGR_Core1, kMCMGR_RemoteApplicationEvent, APP_RPMSG_COREUP_EVENT_DATA);
             }
         }
 
