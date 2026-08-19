@@ -381,9 +381,19 @@ void fault_capture(uint32_t msp, uint32_t psp, uint32_t exc_return, _callee_save
     curThread                      = OSA_GetCurrentThread();
     uint8_t taskCount              = OSA_GetThreadNum();
     struct k_thread *ptrThreadList = malloc(sizeof(struct k_thread) * taskCount);
-    OSA_PopulateKernelInstance((void *)ptrThreadList, taskCount);
-    coredump(reason, &esf_copy, curThread);
-    free((void *)ptrThreadList);
+    if (ptrThreadList != NULL)
+    {
+        OSA_PopulateKernelInstance((void *)ptrThreadList, taskCount);
+        coredump(reason, &esf_copy, curThread);
+        free((void *)ptrThreadList);
+    }
+    else
+    {
+        /* MISRA C-2012 Rule 20.12: false is a macro; use integer literal to avoid
+         * stringification of a macro parameter inside assert(). */
+        assert(0 == 1U);
+        coredump(reason, &esf_copy, curThread);
+    }
 #else
     coredump(reason, &esf_copy, NULL);
 #endif

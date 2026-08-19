@@ -393,6 +393,7 @@ static int coredump_mflash_backend_cmd(enum coredump_cmd_id cmd_id, void *arg)
         }
         case COREDUMP_CMD_ERASE_STORED_DUMP:
         {
+            ret = 0;
             for (uint32_t i = 0U; i < MFLASH_COREDUMP_REGION_SECTOR_NUM; i++)
             {
                 if (mflash_drv_sector_erase(CONFIG_MFLASH_COREDUMP_REGION_START_ADDR + i * MFLASH_SECTOR_SIZE) !=
@@ -402,7 +403,6 @@ static int coredump_mflash_backend_cmd(enum coredump_cmd_id cmd_id, void *arg)
                     break;
                 }
             }
-            ret = 0;
             break;
         }
         case COREDUMP_CMD_COPY_STORED_DUMP:
@@ -423,11 +423,11 @@ static int coredump_mflash_backend_cmd(enum coredump_cmd_id cmd_id, void *arg)
         }
         case COREDUMP_CMD_INVALIDATE_STORED_DUMP:
         {
+            ret = 0;
             if (mflash_drv_sector_erase(CONFIG_MFLASH_COREDUMP_REGION_START_ADDR) != kStatus_Success)
             {
                 ret = -EINVAL;
             }
-            ret = 0;
             break;
         }
         default:
