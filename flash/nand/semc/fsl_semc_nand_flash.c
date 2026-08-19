@@ -426,6 +426,8 @@ static status_t semc_nand_get_onfi_timing_configure(nand_handle_t *handle, nand_
 
 static status_t semc_nand_wait_status_ready(nand_handle_t *handle, uint32_t readyCheckIntervalInUs, bool readOpen)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status                    = kStatus_Success;
     bool isDeviceReady                 = false;
     semc_mem_nand_handle_t *semcHandle = (semc_mem_nand_handle_t *)handle->deviceSpecific;
@@ -483,6 +485,8 @@ static status_t semc_nand_wait_status_ready(nand_handle_t *handle, uint32_t read
 
 static status_t semc_nand_issue_reset(nand_handle_t *handle)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status;
     semc_mem_nand_handle_t *semcHandle = (semc_mem_nand_handle_t *)handle->deviceSpecific;
 
@@ -512,6 +516,8 @@ static status_t semc_nand_issue_reset(nand_handle_t *handle)
 
 static status_t semc_nand_set_device_ecc(nand_handle_t *handle)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status;
     semc_mem_nand_handle_t *semcHandle = (semc_mem_nand_handle_t *)handle->deviceSpecific;
 
@@ -570,6 +576,8 @@ static status_t semc_nand_set_device_ecc(nand_handle_t *handle)
 
 static status_t semc_nand_issue_read_mode(nand_handle_t *handle)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status                    = kStatus_Success;
     semc_mem_nand_handle_t *semcHandle = (semc_mem_nand_handle_t *)handle->deviceSpecific;
 
@@ -702,6 +710,8 @@ static status_t semc_nand_issue_read_parameter(nand_handle_t *handle, nand_onfi_
 
 static status_t semc_nand_issue_read_status(nand_handle_t *handle, uint8_t *stat)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status      = kStatus_Success;
     uint32_t readoutData = 0x00U;
     uint16_t commandCode;
@@ -749,6 +759,8 @@ static status_t semc_nand_issue_read_status(nand_handle_t *handle, uint8_t *stat
 
 static status_t semc_nand_issue_read_page(nand_handle_t *handle, uint32_t ipgCmdAddr)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status                    = kStatus_Success;
     semc_mem_nand_handle_t *semcHandle = (semc_mem_nand_handle_t *)handle->deviceSpecific;
 
@@ -831,6 +843,8 @@ static status_t semc_nand_is_device_ecc_check_passed(nand_handle_t *handle, bool
 status_t Nand_Flash_Read_Page_Partial(
     nand_handle_t *handle, uint32_t pageIndex, uint32_t offset_bytes, uint8_t *buffer, uint32_t length)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status     = kStatus_Success;
     uint32_t pageSize   = handle->bytesInPageDataArea + handle->bytesInPageSpareArea;
     /* INT30-C: Prevent multiplication overflow */
@@ -899,6 +913,7 @@ status_t Nand_Flash_Init(nand_config_t *config, nand_handle_t *handle)
 {
     assert(config != NULL);
     assert(handle != NULL);
+    assert(config->memControlConfig != NULL);
 
     semc_nand_timing_config_t semcNandTimingConfig;
     semc_mem_nand_config_t *semcConfig = (semc_mem_nand_config_t *)config->memControlConfig;
@@ -1001,6 +1016,8 @@ status_t Nand_Flash_Init(nand_config_t *config, nand_handle_t *handle)
 
 status_t Nand_Flash_Read_Page(nand_handle_t *handle, uint32_t pageIndex, uint8_t *buffer, uint32_t length)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status = kStatus_Success;
     uint32_t ipgCmdAddr;
     bool eccCheckPassed                = false;
@@ -1063,6 +1080,8 @@ status_t Nand_Flash_Read_Page(nand_handle_t *handle, uint32_t pageIndex, uint8_t
 
 status_t Nand_Flash_Page_Program(nand_handle_t *handle, uint32_t pageIndex, const uint8_t *src, uint32_t length)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status  = kStatus_Success;
     /* INT30-C: Prevent multiplication overflow */
     assert(handle->pagesInBlock == 0U || handle->blocksInPlane <= UINT32_MAX / handle->pagesInBlock);
@@ -1150,6 +1169,8 @@ status_t Nand_Flash_Page_Program(nand_handle_t *handle, uint32_t pageIndex, cons
 
 status_t Nand_Flash_Erase_Block(nand_handle_t *handle, uint32_t blockIndex)
 {
+    assert(handle->deviceSpecific != NULL);
+
     status_t status = kStatus_Success;
     uint32_t ipgCmdAddr;
     bool eccCheckPassed                = false;
