@@ -107,6 +107,18 @@ typedef struct _cmsis_lpspi_edma_driver_state
 } cmsis_lpspi_edma_driver_state_t;
 #endif
 
+typedef struct {
+    uint8_t  instance;
+    uint32_t pcsToSck;
+    uint32_t sckToPcs;
+    uint32_t betweenTransfer;
+} lpspi_delay_config_t;
+
+typedef struct {
+    uint8_t instance;
+    uint32_t pcs;
+} lpspi_pcs_config_t;
+
 /* Driver Version */
 static const ARM_DRIVER_VERSION s_lpspiDriverVersion = {ARM_SPI_API_VERSION, ARM_LPSPI_DRV_VERSION};
 
@@ -116,6 +128,225 @@ static const ARM_SPI_CAPABILITIES s_lpspiDriverCapabilities = {
     0, /* TI Synchronous Serial Interface */
     0, /* Microwire Interface  */
     0  /* Signal Mode Fault event: \ref ARM_SPI_EVENT_MODE_FAULT */
+};
+
+static const lpspi_delay_config_t s_lpspiDelayConfig[] = {
+#if (defined(RTE_SPI0_PCS_TO_SCK_DELAY) && defined(RTE_SPI0_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI0_BETWEEN_TRANSFER_DELAY))
+    { 0U, RTE_SPI0_PCS_TO_SCK_DELAY, RTE_SPI0_SCK_TO_PSC_DELAY, RTE_SPI0_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI0 transfer delay time configure */
+#if (defined(RTE_SPI1_PCS_TO_SCK_DELAY) && defined(RTE_SPI1_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI1_BETWEEN_TRANSFER_DELAY))
+    { 1U, RTE_SPI1_PCS_TO_SCK_DELAY, RTE_SPI1_SCK_TO_PSC_DELAY, RTE_SPI1_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI1 transfer delay time configure */
+#if (defined(RTE_SPI2_PCS_TO_SCK_DELAY) && defined(RTE_SPI2_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI2_BETWEEN_TRANSFER_DELAY))
+    { 2U, RTE_SPI2_PCS_TO_SCK_DELAY, RTE_SPI2_SCK_TO_PSC_DELAY, RTE_SPI2_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI2 transfer delay time configure */
+#if (defined(RTE_SPI3_PCS_TO_SCK_DELAY) && defined(RTE_SPI3_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI3_BETWEEN_TRANSFER_DELAY))
+    { 3U, RTE_SPI3_PCS_TO_SCK_DELAY, RTE_SPI3_SCK_TO_PSC_DELAY, RTE_SPI3_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI3 transfer delay time configure */
+#if (defined(RTE_SPI4_PCS_TO_SCK_DELAY) && defined(RTE_SPI4_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI4_BETWEEN_TRANSFER_DELAY))
+    { 4U, RTE_SPI4_PCS_TO_SCK_DELAY, RTE_SPI4_SCK_TO_PSC_DELAY, RTE_SPI4_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI4 transfer delay time configure */
+#if (defined(RTE_SPI5_PCS_TO_SCK_DELAY) && defined(RTE_SPI5_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI5_BETWEEN_TRANSFER_DELAY))
+    { 5U, RTE_SPI5_PCS_TO_SCK_DELAY, RTE_SPI5_SCK_TO_PSC_DELAY, RTE_SPI5_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI5 transfer delay time configure */
+#if (defined(RTE_SPI6_PCS_TO_SCK_DELAY) && defined(RTE_SPI6_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI6_BETWEEN_TRANSFER_DELAY))
+    { 6U, RTE_SPI6_PCS_TO_SCK_DELAY, RTE_SPI6_SCK_TO_PSC_DELAY, RTE_SPI6_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI6 transfer delay time configure */
+#if (defined(RTE_SPI7_PCS_TO_SCK_DELAY) && defined(RTE_SPI7_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI7_BETWEEN_TRANSFER_DELAY))
+    { 7U, RTE_SPI7_PCS_TO_SCK_DELAY, RTE_SPI7_SCK_TO_PSC_DELAY, RTE_SPI7_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI7 transfer delay time configure */
+#if (defined(RTE_SPI8_PCS_TO_SCK_DELAY) && defined(RTE_SPI8_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI8_BETWEEN_TRANSFER_DELAY))
+    { 8U, RTE_SPI8_PCS_TO_SCK_DELAY, RTE_SPI8_SCK_TO_PSC_DELAY, RTE_SPI8_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI8 transfer delay time configure */
+#if (defined(RTE_SPI9_PCS_TO_SCK_DELAY) && defined(RTE_SPI9_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI9_BETWEEN_TRANSFER_DELAY))
+    { 9U, RTE_SPI9_PCS_TO_SCK_DELAY, RTE_SPI9_SCK_TO_PSC_DELAY, RTE_SPI9_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI9 transfer delay time configure */
+#if (defined(RTE_SPI10_PCS_TO_SCK_DELAY) && defined(RTE_SPI10_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI10_BETWEEN_TRANSFER_DELAY))
+    { 10U, RTE_SPI10_PCS_TO_SCK_DELAY, RTE_SPI10_SCK_TO_PSC_DELAY, RTE_SPI10_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI10 transfer delay time configure */
+#if (defined(RTE_SPI11_PCS_TO_SCK_DELAY) && defined(RTE_SPI11_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI11_BETWEEN_TRANSFER_DELAY))
+    { 11U, RTE_SPI11_PCS_TO_SCK_DELAY, RTE_SPI11_SCK_TO_PSC_DELAY, RTE_SPI11_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI11 transfer delay time configure */
+#if (defined(RTE_SPI12_PCS_TO_SCK_DELAY) && defined(RTE_SPI12_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI12_BETWEEN_TRANSFER_DELAY))
+    { 12U, RTE_SPI12_PCS_TO_SCK_DELAY, RTE_SPI12_SCK_TO_PSC_DELAY, RTE_SPI12_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI12 transfer delay time configure */
+#if (defined(RTE_SPI13_PCS_TO_SCK_DELAY) && defined(RTE_SPI13_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI13_BETWEEN_TRANSFER_DELAY))
+    { 13U, RTE_SPI13_PCS_TO_SCK_DELAY, RTE_SPI13_SCK_TO_PSC_DELAY, RTE_SPI13_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI13 transfer delay time configure */
+#if (defined(RTE_SPI14_PCS_TO_SCK_DELAY) && defined(RTE_SPI14_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI14_BETWEEN_TRANSFER_DELAY))
+    { 14U, RTE_SPI14_PCS_TO_SCK_DELAY, RTE_SPI14_SCK_TO_PSC_DELAY, RTE_SPI14_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI14 transfer delay time configure */
+#if (defined(RTE_SPI15_PCS_TO_SCK_DELAY) && defined(RTE_SPI15_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI15_BETWEEN_TRANSFER_DELAY))
+    { 15U, RTE_SPI15_PCS_TO_SCK_DELAY, RTE_SPI15_SCK_TO_PSC_DELAY, RTE_SPI15_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI15 transfer delay time configure */
+#if (defined(RTE_SPI16_PCS_TO_SCK_DELAY) && defined(RTE_SPI16_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI16_BETWEEN_TRANSFER_DELAY))
+    { 16U, RTE_SPI16_PCS_TO_SCK_DELAY, RTE_SPI16_SCK_TO_PSC_DELAY, RTE_SPI16_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI16 transfer delay time configure */
+#if (defined(RTE_SPI17_PCS_TO_SCK_DELAY) && defined(RTE_SPI17_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI17_BETWEEN_TRANSFER_DELAY))
+    { 17U, RTE_SPI17_PCS_TO_SCK_DELAY, RTE_SPI17_SCK_TO_PSC_DELAY, RTE_SPI17_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI17 transfer delay time configure */
+#if (defined(RTE_SPI18_PCS_TO_SCK_DELAY) && defined(RTE_SPI18_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI18_BETWEEN_TRANSFER_DELAY))
+    { 18U, RTE_SPI18_PCS_TO_SCK_DELAY, RTE_SPI18_SCK_TO_PSC_DELAY, RTE_SPI18_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI18 transfer delay time configure */
+#if (defined(RTE_SPI19_PCS_TO_SCK_DELAY) && defined(RTE_SPI19_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI19_BETWEEN_TRANSFER_DELAY))
+    { 19U, RTE_SPI19_PCS_TO_SCK_DELAY, RTE_SPI19_SCK_TO_PSC_DELAY, RTE_SPI19_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI19 transfer delay time configure */
+#if (defined(RTE_SPI20_PCS_TO_SCK_DELAY) && defined(RTE_SPI20_SCK_TO_PSC_DELAY) && \
+     defined(RTE_SPI20_BETWEEN_TRANSFER_DELAY))
+    { 20U, RTE_SPI20_PCS_TO_SCK_DELAY, RTE_SPI20_SCK_TO_PSC_DELAY, RTE_SPI20_BETWEEN_TRANSFER_DELAY },
+#endif /* RTE LPSPI20 transfer delay time configure */
+};
+
+static const lpspi_pcs_config_t s_lpspiMasterPcs[] = {
+#if defined(RTE_SPI0_MASTER_PCS_PIN_SEL)
+    { 0U, (uint32_t)RTE_SPI0_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI1_MASTER_PCS_PIN_SEL)
+    { 1U, (uint32_t)RTE_SPI1_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI2_MASTER_PCS_PIN_SEL)
+    { 2U, (uint32_t)RTE_SPI2_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI3_MASTER_PCS_PIN_SEL)
+    { 3U, (uint32_t)RTE_SPI3_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI4_MASTER_PCS_PIN_SEL)
+    { 4U, (uint32_t)RTE_SPI4_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI5_MASTER_PCS_PIN_SEL)
+    { 5U, (uint32_t)RTE_SPI5_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI6_MASTER_PCS_PIN_SEL)
+    { 6U, (uint32_t)RTE_SPI6_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI7_MASTER_PCS_PIN_SEL)
+    { 7U, (uint32_t)RTE_SPI7_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI8_MASTER_PCS_PIN_SEL)
+    { 8U, (uint32_t)RTE_SPI8_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI9_MASTER_PCS_PIN_SEL)
+    { 9U, (uint32_t)RTE_SPI9_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI10_MASTER_PCS_PIN_SEL)
+    { 10U, (uint32_t)RTE_SPI10_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI11_MASTER_PCS_PIN_SEL)
+    { 11U, (uint32_t)RTE_SPI11_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI12_MASTER_PCS_PIN_SEL)
+    { 12U, (uint32_t)RTE_SPI12_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI13_MASTER_PCS_PIN_SEL)
+    { 13U, (uint32_t)RTE_SPI13_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI14_MASTER_PCS_PIN_SEL)
+    { 14U, (uint32_t)RTE_SPI14_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI15_MASTER_PCS_PIN_SEL)
+    { 15U, (uint32_t)RTE_SPI15_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI16_MASTER_PCS_PIN_SEL)
+    { 16U, (uint32_t)RTE_SPI16_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI17_MASTER_PCS_PIN_SEL)
+    { 17U, (uint32_t)RTE_SPI17_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI18_MASTER_PCS_PIN_SEL)
+    { 18U, (uint32_t)RTE_SPI18_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI19_MASTER_PCS_PIN_SEL)
+    { 19U, (uint32_t)RTE_SPI19_MASTER_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI20_MASTER_PCS_PIN_SEL)
+    { 20U, (uint32_t)RTE_SPI20_MASTER_PCS_PIN_SEL },
+#endif
+};
+
+static const lpspi_pcs_config_t s_lpspiSlavePcs[] = {
+#if defined(RTE_SPI0_SLAVE_PCS_PIN_SEL)
+    { 0U, (uint32_t)RTE_SPI0_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI1_SLAVE_PCS_PIN_SEL)
+    { 1U, (uint32_t)RTE_SPI1_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI2_SLAVE_PCS_PIN_SEL)
+    { 2U, (uint32_t)RTE_SPI2_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI3_SLAVE_PCS_PIN_SEL)
+    { 3U, (uint32_t)RTE_SPI3_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI4_SLAVE_PCS_PIN_SEL)
+    { 4U, (uint32_t)RTE_SPI4_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI5_SLAVE_PCS_PIN_SEL)
+    { 5U, (uint32_t)RTE_SPI5_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI6_SLAVE_PCS_PIN_SEL)
+    { 6U, (uint32_t)RTE_SPI6_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI7_SLAVE_PCS_PIN_SEL)
+    { 7U, (uint32_t)RTE_SPI7_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI8_SLAVE_PCS_PIN_SEL)
+    { 8U, (uint32_t)RTE_SPI8_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI9_SLAVE_PCS_PIN_SEL)
+    { 9U, (uint32_t)RTE_SPI9_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI10_SLAVE_PCS_PIN_SEL)
+    { 10U, (uint32_t)RTE_SPI10_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI11_SLAVE_PCS_PIN_SEL)
+    { 11U, (uint32_t)RTE_SPI11_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI12_SLAVE_PCS_PIN_SEL)
+    { 12U, (uint32_t)RTE_SPI12_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI13_SLAVE_PCS_PIN_SEL)
+    { 13U, (uint32_t)RTE_SPI13_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI14_SLAVE_PCS_PIN_SEL)
+    { 14U, (uint32_t)RTE_SPI14_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI15_SLAVE_PCS_PIN_SEL)
+    { 15U, (uint32_t)RTE_SPI15_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI16_SLAVE_PCS_PIN_SEL)
+    { 16U, (uint32_t)RTE_SPI16_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI17_SLAVE_PCS_PIN_SEL)
+    { 17U, (uint32_t)RTE_SPI17_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI18_SLAVE_PCS_PIN_SEL)
+    { 18U, (uint32_t)RTE_SPI18_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI19_SLAVE_PCS_PIN_SEL)
+    { 19U, (uint32_t)RTE_SPI19_SLAVE_PCS_PIN_SEL },
+#endif
+#if defined(RTE_SPI20_SLAVE_PCS_PIN_SEL)
+    { 20U, (uint32_t)RTE_SPI20_SLAVE_PCS_PIN_SEL },
+#endif
 };
 
 /*
@@ -143,199 +374,16 @@ static int32_t LPSPI_CommonControl(uint32_t control,
         slaveConfig.pinCfg = kLPSPI_SdiInSdiOut;
     }
 
-#if (defined(RTE_SPI0_PCS_TO_SCK_DELAY) && defined(RTE_SPI0_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI0_BETWEEN_TRANSFER_DELAY))
-    if (0U == resource->instance)
+    for (uint32_t i = 0U; i < ARRAY_SIZE(s_lpspiDelayConfig); i++)
     {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI0_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI0_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI0_BETWEEN_TRANSFER_DELAY;
+        if ((uint32_t)s_lpspiDelayConfig[i].instance == resource->instance)
+        {
+            masterConfig.pcsToSckDelayInNanoSec        = s_lpspiDelayConfig[i].pcsToSck;
+            masterConfig.lastSckToPcsDelayInNanoSec    = s_lpspiDelayConfig[i].sckToPcs;
+            masterConfig.betweenTransferDelayInNanoSec = s_lpspiDelayConfig[i].betweenTransfer;
+            break;
+        }
     }
-#endif /*RTE LPSPI0 transfer delay time configure */
-
-#if (defined(RTE_SPI1_PCS_TO_SCK_DELAY) && defined(RTE_SPI1_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI1_BETWEEN_TRANSFER_DELAY))
-    if (1U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI1_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI1_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI1_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /*RTE LPSPI1 transfer delay time configure */
-
-#if (defined(RTE_SPI2_PCS_TO_SCK_DELAY) && defined(RTE_SPI2_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI2_BETWEEN_TRANSFER_DELAY))
-    if (2U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI2_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI2_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI2_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /*RTE LPSPI2 transfer delay time configure */
-#if (defined(RTE_SPI3_PCS_TO_SCK_DELAY) && defined(RTE_SPI3_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI3_BETWEEN_TRANSFER_DELAY))
-    if (3U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI3_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI3_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI3_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /*RTE LPSPI3 transfer delay time configure */
-
-#if (defined(RTE_SPI4_PCS_TO_SCK_DELAY) && defined(RTE_SPI4_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI4_BETWEEN_TRANSFER_DELAY))
-    if (4U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI4_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI4_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI4_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /*RTE LPSPI4 transfer delay time configure */
-
-#if (defined(RTE_SPI5_PCS_TO_SCK_DELAY) && defined(RTE_SPI5_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI5_BETWEEN_TRANSFER_DELAY))
-    if (5U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI5_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI5_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI5_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /*RTE LPSPI5 transfer delay time configure */
-#if (defined(RTE_SPI6_PCS_TO_SCK_DELAY) && defined(RTE_SPI6_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI6_BETWEEN_TRANSFER_DELAY))
-    if (6U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI6_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI6_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI6_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI6 transfer delay time configure */
-#if (defined(RTE_SPI7_PCS_TO_SCK_DELAY) && defined(RTE_SPI7_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI7_BETWEEN_TRANSFER_DELAY))
-    if (7U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI7_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI7_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI7_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI7 transfer delay time configure */
-#if (defined(RTE_SPI8_PCS_TO_SCK_DELAY) && defined(RTE_SPI8_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI8_BETWEEN_TRANSFER_DELAY))
-    if (8U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI8_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI8_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI8_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI8 transfer delay time configure */
-#if (defined(RTE_SPI9_PCS_TO_SCK_DELAY) && defined(RTE_SPI9_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI9_BETWEEN_TRANSFER_DELAY))
-    if (9U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI9_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI9_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI9_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI9 transfer delay time configure */
-#if (defined(RTE_SPI10_PCS_TO_SCK_DELAY) && defined(RTE_SPI10_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI10_BETWEEN_TRANSFER_DELAY))
-    if (10U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI10_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI10_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI10_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI10 transfer delay time configure */
-#if (defined(RTE_SPI11_PCS_TO_SCK_DELAY) && defined(RTE_SPI11_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI11_BETWEEN_TRANSFER_DELAY))
-    if (11U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI11_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI11_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI11_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI11 transfer delay time configure */
-#if (defined(RTE_SPI12_PCS_TO_SCK_DELAY) && defined(RTE_SPI12_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI12_BETWEEN_TRANSFER_DELAY))
-    if (12U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI12_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI12_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI12_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI12 transfer delay time configure */
-#if (defined(RTE_SPI13_PCS_TO_SCK_DELAY) && defined(RTE_SPI13_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI13_BETWEEN_TRANSFER_DELAY))
-    if (13U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI13_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI13_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI13_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI13 transfer delay time configure */
-#if (defined(RTE_SPI14_PCS_TO_SCK_DELAY) && defined(RTE_SPI14_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI14_BETWEEN_TRANSFER_DELAY))
-    if (14U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI14_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI14_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI14_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI14 transfer delay time configure */
-#if (defined(RTE_SPI15_PCS_TO_SCK_DELAY) && defined(RTE_SPI15_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI15_BETWEEN_TRANSFER_DELAY))
-    if (15U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI15_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI15_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI15_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI15 transfer delay time configure */
-#if (defined(RTE_SPI16_PCS_TO_SCK_DELAY) && defined(RTE_SPI16_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI16_BETWEEN_TRANSFER_DELAY))
-    if (16U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI16_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI16_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI16_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI16 transfer delay time configure */
-#if (defined(RTE_SPI17_PCS_TO_SCK_DELAY) && defined(RTE_SPI17_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI17_BETWEEN_TRANSFER_DELAY))
-    if (17U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI17_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI17_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI17_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI17 transfer delay time configure */
-#if (defined(RTE_SPI18_PCS_TO_SCK_DELAY) && defined(RTE_SPI18_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI18_BETWEEN_TRANSFER_DELAY))
-    if (18U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI18_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI18_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI18_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI18 transfer delay time configure */
-#if (defined(RTE_SPI19_PCS_TO_SCK_DELAY) && defined(RTE_SPI19_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI19_BETWEEN_TRANSFER_DELAY))
-    if (19U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI19_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI19_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI19_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI19 transfer delay time configure */
-#if (defined(RTE_SPI20_PCS_TO_SCK_DELAY) && defined(RTE_SPI20_SCK_TO_PSC_DELAY) && \
-     defined(RTE_SPI20_BETWEEN_TRANSFER_DELAY))
-    if (20U == resource->instance)
-    {
-        masterConfig.pcsToSckDelayInNanoSec        = (uint32_t)RTE_SPI20_PCS_TO_SCK_DELAY;
-        masterConfig.lastSckToPcsDelayInNanoSec    = (uint32_t)RTE_SPI20_SCK_TO_PSC_DELAY;
-        masterConfig.betweenTransferDelayInNanoSec = (uint32_t)RTE_SPI20_BETWEEN_TRANSFER_DELAY;
-    }
-#endif /* RTE LPSPI20 transfer delay time configure */
 
     switch (control & (uint32_t)ARM_SPI_FRAME_FORMAT_Msk)
     {
@@ -500,264 +548,29 @@ static void LPSPI_SetTransferConfigFlags(bool isMaster, uint32_t instance, lpspi
     {
         /* Set default config flag */
         xfer->configFlags = (uint32_t)kLPSPI_MasterPcs0 | (uint32_t)kLPSPI_MasterPcsContinuous;
-#if (defined(RTE_SPI0_MASTER_PCS_PIN_SEL))
-        if (0U == instance)
+
+        for (uint32_t i = 0U; i < ARRAY_SIZE(s_lpspiMasterPcs); i++)
         {
-            xfer->configFlags = (uint32_t)RTE_SPI0_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
+            if ((uint32_t)s_lpspiMasterPcs[i].instance == instance)
+            {
+                xfer->configFlags = s_lpspiMasterPcs[i].pcs | (uint32_t)kLPSPI_MasterPcsContinuous;
+                break;
+            }
         }
-#endif /* LPSPI0 PCS pin configuration */
-#if (defined(RTE_SPI1_MASTER_PCS_PIN_SEL))
-        if (1U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI1_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI1 PCS pin configuration */
-#if (defined(RTE_SPI2_MASTER_PCS_PIN_SEL))
-        if (2U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI2_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI2 PCS pin configuration */
-#if (defined(RTE_SPI3_MASTER_PCS_PIN_SEL))
-        if (3U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI3_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI3 PCS pin configuration */
-#if (defined(RTE_SPI4_MASTER_PCS_PIN_SEL))
-        if (4U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI4_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI4 PCS pin configuration */
-#if (defined(RTE_SPI5_MASTER_PCS_PIN_SEL))
-        if (5U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI5_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI5 PCS pin configuration */
-#if (defined(RTE_SPI6_MASTER_PCS_PIN_SEL))
-        if (6U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI6_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI6 PCS pin configuration */
-#if (defined(RTE_SPI7_MASTER_PCS_PIN_SEL))
-        if (7U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI7_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI7 PCS pin configuration */
-#if (defined(RTE_SPI8_MASTER_PCS_PIN_SEL))
-        if (8U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI8_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI8 PCS pin configuration */
-#if (defined(RTE_SPI9_MASTER_PCS_PIN_SEL))
-        if (9U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI9_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI9 PCS pin configuration */
-#if (defined(RTE_SPI10_MASTER_PCS_PIN_SEL))
-        if (10U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI10_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI10 PCS pin configuration */
-#if (defined(RTE_SPI11_MASTER_PCS_PIN_SEL))
-        if (11U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI11_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI11 PCS pin configuration */
-#if (defined(RTE_SPI12_MASTER_PCS_PIN_SEL))
-        if (12U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI12_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI12 PCS pin configuration */
-#if (defined(RTE_SPI13_MASTER_PCS_PIN_SEL))
-        if (13U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI13_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI13 PCS pin configuration */
-#if (defined(RTE_SPI14_MASTER_PCS_PIN_SEL))
-        if (14U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI14_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI14 PCS pin configuration */
-#if (defined(RTE_SPI15_MASTER_PCS_PIN_SEL))
-        if (15U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI15_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI15 PCS pin configuration */
-#if (defined(RTE_SPI16_MASTER_PCS_PIN_SEL))
-        if (16U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI16_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI16 PCS pin configuration */
-#if (defined(RTE_SPI17_MASTER_PCS_PIN_SEL))
-        if (17U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI17_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI17 PCS pin configuration */
-#if (defined(RTE_SPI18_MASTER_PCS_PIN_SEL))
-        if (18U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI18_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI18 PCS pin configuration */
-#if (defined(RTE_SPI19_MASTER_PCS_PIN_SEL))
-        if (19U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI19_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI19 PCS pin configuration */
-#if (defined(RTE_SPI20_MASTER_PCS_PIN_SEL))
-        if (20U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI20_MASTER_PCS_PIN_SEL | (uint32_t)kLPSPI_MasterPcsContinuous;
-        }
-#endif /* LPSPI20 PCS pin configuration */
     }
     else
     {
         /* Set default config flag */
         xfer->configFlags = (uint32_t)kLPSPI_SlavePcs0;
-#if (defined(RTE_SPI0_SLAVE_PCS_PIN_SEL))
-        if (0U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI0_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI0 PCS pin configuration */
-#if (defined(RTE_SPI1_SLAVE_PCS_PIN_SEL))
-        if (1U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI1_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI1 PCS pin configuration */
-#if (defined(RTE_SPI2_SLAVE_PCS_PIN_SEL))
-        if (2U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI2_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI2 PCS pin configuration */
-#if (defined(RTE_SPI3_SLAVE_PCS_PIN_SEL))
-        if (3U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI3_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI3 PCS pin configuration */
-#if (defined(RTE_SPI4_SLAVE_PCS_PIN_SEL))
-        if (4U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI4_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI4 PCS pin configuration */
-#if (defined(RTE_SPI5_SLAVE_PCS_PIN_SEL))
-        if (5U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI5_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI5 PCS pin configuration */
 
-#if (defined(RTE_SPI6_SLAVE_PCS_PIN_SEL))
-        if (6U == instance)
+        for (uint32_t i = 0U; i < ARRAY_SIZE(s_lpspiSlavePcs); i++)
         {
-            xfer->configFlags = (uint32_t)RTE_SPI6_SLAVE_PCS_PIN_SEL;
+            if ((uint32_t)s_lpspiSlavePcs[i].instance == instance)
+            {
+                xfer->configFlags = s_lpspiSlavePcs[i].pcs;
+                break;
+            }
         }
-#endif /* LPSPI6 PCS pin configuration */
-#if (defined(RTE_SPI7_SLAVE_PCS_PIN_SEL))
-        if (7U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI7_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI7 PCS pin configuration */
-#if (defined(RTE_SPI8_SLAVE_PCS_PIN_SEL))
-        if (8U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI8_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI8 PCS pin configuration */
-#if (defined(RTE_SPI9_SLAVE_PCS_PIN_SEL))
-        if (9U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI9_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI9 PCS pin configuration */
-#if (defined(RTE_SPI10_SLAVE_PCS_PIN_SEL))
-        if (10U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI10_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI10 PCS pin configuration */
-#if (defined(RTE_SPI11_SLAVE_PCS_PIN_SEL))
-        if (11U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI11_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI11 PCS pin configuration */
-#if (defined(RTE_SPI12_SLAVE_PCS_PIN_SEL))
-        if (12U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI12_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI12 PCS pin configuration */
-#if (defined(RTE_SPI13_SLAVE_PCS_PIN_SEL))
-        if (13U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI13_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI13 PCS pin configuration */
-#if (defined(RTE_SPI14_SLAVE_PCS_PIN_SEL))
-        if (14U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI14_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI14 PCS pin configuration */
-#if (defined(RTE_SPI15_SLAVE_PCS_PIN_SEL))
-        if (15U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI15_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI15 PCS pin configuration */
-#if (defined(RTE_SPI16_SLAVE_PCS_PIN_SEL))
-        if (16U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI16_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI16 PCS pin configuration */
-#if (defined(RTE_SPI17_SLAVE_PCS_PIN_SEL))
-        if (17U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI17_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI17 PCS pin configuration */
-#if (defined(RTE_SPI18_SLAVE_PCS_PIN_SEL))
-        if (18U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI18_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI18 PCS pin configuration */
-#if (defined(RTE_SPI19_SLAVE_PCS_PIN_SEL))
-        if (19U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI19_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI19 PCS pin configuration */
-#if (defined(RTE_SPI20_SLAVE_PCS_PIN_SEL))
-        if (20U == instance)
-        {
-            xfer->configFlags = (uint32_t)RTE_SPI20_SLAVE_PCS_PIN_SEL;
-        }
-#endif /* LPSPI20 PCS pin configuration */
     }
 }
 
