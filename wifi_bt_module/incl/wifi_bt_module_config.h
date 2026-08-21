@@ -296,11 +296,7 @@
 
 /* Firecrest module from Quectel mounted on RT board */
 #elif defined(WIFI_IW612_BOARD_QUECTEL_FGS060N)
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2EL_CA_RU_Tx_power.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2EL_EU_RU_Tx_power.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2EL_JP_RU_Tx_power.h"
-// #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2EL_US_RU_Tx_power.h"
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_2EL_WW.h"
+#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_quectel_FGS060N.h"
 #define SD9177
 #define SDMMCHOST_OPERATION_VOLTAGE_1V8
 #define SD_TIMING_MAX kSD_TimingDDR50Mode
@@ -312,7 +308,7 @@
 
 /* u-blox EVK-MAYA-W161/-W166 */
 #elif defined(WIFI_IW416_BOARD_UBX_MAYA_W1_USD)
-#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_WW.h"
+#define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_maya_W1.h"
 #define SD8978
 #define SDMMCHOST_OPERATION_VOLTAGE_1V8
 #define WIFI_BT_USE_USD_INTERFACE
