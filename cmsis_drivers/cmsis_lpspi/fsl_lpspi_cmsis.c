@@ -374,7 +374,7 @@ static int32_t LPSPI_CommonControl(uint32_t control,
         slaveConfig.pinCfg = kLPSPI_SdiInSdiOut;
     }
 
-    for (uint32_t i = 0U; i < ARRAY_SIZE(s_lpspiDelayConfig); i++)
+    for (int32_t i = 0; i < (int32_t)ARRAY_SIZE(s_lpspiDelayConfig); i++)
     {
         if ((uint32_t)s_lpspiDelayConfig[i].instance == resource->instance)
         {
@@ -549,7 +549,7 @@ static void LPSPI_SetTransferConfigFlags(bool isMaster, uint32_t instance, lpspi
         /* Set default config flag */
         xfer->configFlags = (uint32_t)kLPSPI_MasterPcs0 | (uint32_t)kLPSPI_MasterPcsContinuous;
 
-        for (uint32_t i = 0U; i < ARRAY_SIZE(s_lpspiMasterPcs); i++)
+        for (int32_t i = 0; i < (int32_t)ARRAY_SIZE(s_lpspiMasterPcs); i++)
         {
             if ((uint32_t)s_lpspiMasterPcs[i].instance == instance)
             {
@@ -563,7 +563,7 @@ static void LPSPI_SetTransferConfigFlags(bool isMaster, uint32_t instance, lpspi
         /* Set default config flag */
         xfer->configFlags = (uint32_t)kLPSPI_SlavePcs0;
 
-        for (uint32_t i = 0U; i < ARRAY_SIZE(s_lpspiSlavePcs); i++)
+        for (int32_t i = 0; i < (int32_t)ARRAY_SIZE(s_lpspiSlavePcs); i++)
         {
             if ((uint32_t)s_lpspiSlavePcs[i].instance == instance)
             {
