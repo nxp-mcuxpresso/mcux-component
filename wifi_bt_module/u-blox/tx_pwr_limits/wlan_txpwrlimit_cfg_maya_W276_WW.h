@@ -2,6 +2,9 @@
  *
  *  @brief  This file provides WLAN World Wide Safe Mode Tx Power Limits.
  *
+ *  NOTE: The compress Tx power values in this file are taken from
+ *  https://github.com/u-blox/u-blox-sho-host-based/tree/main/MAYA-W2/txpower_config/W266_W276_int_ant
+ *
  *  Copyright 2026 NXP
  *
  *  Permission is hereby granted, free of charge, to any person obtaining

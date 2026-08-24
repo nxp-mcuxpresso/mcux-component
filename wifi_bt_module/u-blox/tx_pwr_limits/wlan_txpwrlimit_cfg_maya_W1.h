@@ -2,6 +2,9 @@
  *
  *  @brief  This file provides Maya W1 Tx Power Limits.
  *
+ *  NOTE: The compress Tx power values in this file are taken from
+ *  https://github.com/u-blox/u-blox-sho-host-based/tree/main/MAYA-W1/txpower_config
+ *
  *  Copyright 2026 NXP
  *
  *  Permission is hereby granted, free of charge, to any person obtaining

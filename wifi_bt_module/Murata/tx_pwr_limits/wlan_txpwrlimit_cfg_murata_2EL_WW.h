@@ -2,6 +2,9 @@
  *
  *  @brief  This file provides Murata 2EL WLAN World Wide Safe Mode Tx Power Limits.
  *
+ *  NOTE: The compress Tx power values in this file are taken from
+ *  https://github.com/murata-wireless/nxp-linux-calibration/tree/master/murata/files/2EL
+ *
  *  Copyright 2008-2021 NXP
  *
  *  Permission is hereby granted, free of charge, to any person obtaining

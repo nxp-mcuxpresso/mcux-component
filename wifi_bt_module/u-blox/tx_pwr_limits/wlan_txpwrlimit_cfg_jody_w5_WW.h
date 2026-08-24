@@ -2,6 +2,9 @@
  *
  *  @brief  This file provides WLAN World Wide Safe Mode Tx Power Limits.
  *
+ *  NOTE: The compress Tx power values in this file are taken from
+ *  https://github.com/u-blox/u-blox-sho-host-based/tree/main/JODY-W5/txpower_config/W562-01A
+ *
  *  Copyright 2008-2021 NXP
  *
  *  Permission is hereby granted, free of charge, to any person obtaining

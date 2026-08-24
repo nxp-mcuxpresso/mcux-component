@@ -2,6 +2,9 @@
  *
  *  @brief  This file provides Murata 1XK WLAN World Wide Safe Mode Tx Power Limit APIs.
  *
+ *  NOTE: The compress Tx power values in this file are taken from
+ *  https://github.com/murata-wireless/nxp-linux-calibration/tree/master/murata/files/1XK
+ *
  *  Copyright 2022 Murata Manufacturing Co., Ltd.
  *
  *  Redistribution and use in source and binary forms, with or without
