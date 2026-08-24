@@ -55,13 +55,15 @@ static int semihost_console_buffered_write(int handle, const char *buffer, int s
         int saw_newline = 0;
         for (unsigned i = 0; i < chunk; ++i)
         {
-            char c                              = p[i];
+            char c = p[i];
+            /* coverity[cert_int30_c_violation:FALSE] bounded by room, cannot wrap */
             s_console_buffer[s_console_idx + i] = c;
             if (c == '\n')
             {
                 saw_newline = 1;
             }
         }
+        /* coverity[cert_int30_c_violation:FALSE] bounded by room, cannot wrap */
         s_console_idx += chunk;
         p += chunk;
         remaining -= (int)chunk;

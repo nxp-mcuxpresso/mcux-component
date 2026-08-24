@@ -87,7 +87,7 @@ int SEMIHOST_HostCall(int op, void *p1, void *p2)
 
 int SEMIHOST_Write(int handle, const char *buffer, int size)
 {
-    if (size < 0)
+    if ((handle < 0) || (size < 0))
     {
         return 0;
     }
@@ -114,6 +114,7 @@ int SEMIHOST_Exit(int code)
     /* Extended SYS_EXIT form (ARM v2): pass {reason, exit_status} via R1. */
     uint32_t block[2];
     block[0] = SEMIHOST_EXIT_REASON_APPLICATION_EXIT;
+    /* coverity[cert_int31_c_violation] -- code is intentionally signed (exit() contract) */
     block[1] = (uint32_t)code;
 
     (void)SEMIHOST_HostCall((int)kSemihost_SysExit, block, NULL);
@@ -128,6 +129,11 @@ int SEMIHOST_Exit(int code)
 
 int SEMIHOST_Open(const char *path, int mode)
 {
+    if (mode < 0)
+    {
+        return -1;
+    }
+
     uint32_t block[3];
     block[0] = (uint32_t)path;
     block[1] = (uint32_t)mode;
@@ -139,7 +145,7 @@ int SEMIHOST_Open(const char *path, int mode)
 
 int SEMIHOST_Read(int handle, char *buffer, int size)
 {
-    if (size < 0)
+    if ((handle < 0) || (size < 0))
     {
         return -1;
     }
@@ -163,6 +169,11 @@ int SEMIHOST_Read(int handle, char *buffer, int size)
 
 int SEMIHOST_Seek(int handle, int pos)
 {
+    if ((handle < 0) || (pos < 0))
+    {
+        return -1;
+    }
+
     uint32_t block[2];
     block[0] = (uint32_t)handle;
     block[1] = (uint32_t)pos;
@@ -176,6 +187,11 @@ int SEMIHOST_Seek(int handle, int pos)
 
 int SEMIHOST_Flen(int handle)
 {
+    if (handle < 0)
+    {
+        return -1;
+    }
+
     uint32_t block[1];
     block[0] = (uint32_t)handle;
 
@@ -185,6 +201,11 @@ int SEMIHOST_Flen(int handle)
 
 int SEMIHOST_Close(int handle)
 {
+    if (handle < 0)
+    {
+        return -1;
+    }
+
     uint32_t block[1];
     block[0] = (uint32_t)handle;
 
