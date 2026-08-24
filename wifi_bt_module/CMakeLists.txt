@@ -17,6 +17,7 @@ if (CONFIG_MCUX_COMPONENT_component.wifi_bt_module.tx_pwr_limits)
     mcux_add_include(
         INCLUDES AzureWave/tx_pwr_limits
                  Murata/tx_pwr_limits u-blox/tx_pwr_limits
+                 Quectel/tx_pwr_limits
     )
 endif()
 
