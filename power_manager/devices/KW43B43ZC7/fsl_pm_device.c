@@ -314,9 +314,6 @@ static void PM_CleanExitLowPowerMode(void)
     }
     if (SPC_CheckPowerDomainLowPowerRequest(SPC0, kSPC_PowerDomain2))
     {
-        /* Release the radio 2.4 GHz LP request so the domain can re-enter at the next cycle. */
-        RFMC->RF2P4GHZ_CTRL &= ~RFMC_RF2P4GHZ_CTRL_LP_ENTER_MASK;
-        RFMC->RF2P4GHZ_CTRL &= ~RFMC_RF2P4GHZ_CTRL_LP_MODE_MASK;
         SPC_ClearPowerDomainLowPowerRequestFlag(SPC0, kSPC_PowerDomain2);
     }
     if (SPC_CheckPowerDomainLowPowerRequest(SPC0, kSPC_PowerDomain3))
