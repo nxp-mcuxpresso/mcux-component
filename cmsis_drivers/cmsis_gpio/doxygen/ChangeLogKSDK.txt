@@ -2,7 +2,12 @@
 @page driver_log Driver Change Log
 
 @section gpio cmsis  GPIO CMSIS
-  The current GPIO CMSIS driver version is 1.0
+  The current GPIO CMSIS driver version is 1.0.1
+  - 1.0.1
+    - Bug Fixed
+      - Added NULL check on the user callback pointer before invoking it in
+        CMSIS_GPIO_EventIRQ to avoid dereferencing a potentially NULL function
+        pointer when no callback was registered.
   - 1.0
     - Initial version.
 

@@ -268,7 +268,10 @@ void CMSIS_GPIO_EventIRQ(gpio_cmsis_handle_t *handle)
 
     GPIO_PortClearInterruptFlags(handle->config->gpio_base, ((uint32_t)1U << pin));
 #endif
-    handle->cb_event(pin, cb_event);
+    if (handle->cb_event != NULL)
+    {
+        handle->cb_event(pin, cb_event);
+    }
 }
 #endif //(RTE_GPIO_PORT0 && defined(GPIO0)) || (RTE_GPIO_PORT1 && defined(GPIO1))
 
