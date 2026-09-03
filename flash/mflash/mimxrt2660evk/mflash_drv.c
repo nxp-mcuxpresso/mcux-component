@@ -60,9 +60,11 @@
 /* QE bit value to write into SR2 */
 #define FLASH_ENABLE_QE_VAL  0x02U
 
-/* Errata ERR052528: minimum read data size is 8 bytes for RDSR via IP.
-   Workaround applied: all READ_SDR data sizes below are at least 4 words (8 bytes) via DMA
-   padding — for RDSR we request 4 bytes and mask the first byte. */
+/* Errata ERR052528: the XSPI IP requires a minimum read data size of 8 bytes.
+   Requesting fewer bytes than the IP clocks in leaves RX residue, so XSPI never
+   reports idle and the next command's arbitration grant (ARB_WIN) never asserts,
+   hanging XSPI_StartIpAccess(). All IP reads below (RDSR, JEDEC ID) use 8 bytes. */
+
 
 /*******************************************************************************
  * Variables
@@ -73,6 +75,71 @@ static xspi_device_ddr_config_t s_flashSdrConfig = {
     .enableDdr                 = false,   /* SDR quad mode */
     .enableByteSwapInOctalMode = false,
 };
+
+/*
+ * SFP MDAD: allow any master ID on both target groups (TG0 = flash, TG1 =
+ * port B/mirror), both secure and non-secure attributes.  Only a CSSI
+ * initiator (ID 001010b) may write MGC/MRC/MTO and SFP_ARB_TIMEOUT; for MDAD
+ * and FRAD the access check uses the domain ID, so the CM85 core can configure
+ * these here.
+ *
+ * These MUST be non-NULL on RT2660. Unlike RT700 -- where the CPU has direct
+ * access to the SFP global control registers and can leave the SFP disabled --
+ * on RT2660 some of those global control registers can only be modified by ELE,
+ * and the SFP block comes up with FRAD/MDAD access checks ENABLED by default.
+ * So a valid MDAD (and FRAD) configuration must be supplied here; with MDAD/FRAD
+ * left unconfigured the SFP arbiter never grants an IP command/write access, so
+ * XSPI_StartIpAccess() spins forever on ERRSTAT.ARB_WIN (observed: hang on the
+ * first Write Enable during quad-mode enable).
+ */
+
+static xspi_sfp_mdad_config_t s_mflashMdadConfig = {
+    .tgMdad[0] =
+        {
+            .assignIsValid        = true,
+            .enableDescriptorLock = false,
+            .maskType             = 0U, /* ANDed mask: any master ID matches when mask=0. */
+            .mask                 = 0U,
+            .masterIdReference    = 0U,
+            .secureAttribute      = kXSPI_AttributeMasterNonsecureSecureBoth,
+        },
+    .tgMdad[1] =
+        {
+            .assignIsValid        = true,
+            .enableDescriptorLock = false,
+            .maskType             = 0U,
+            .mask                 = 0U,
+            .masterIdReference    = 0U,
+            .secureAttribute      = kXSPI_AttributeMasterNonsecureSecureBoth,
+        },
+};
+
+/*
+ * SFP FRAD: one region covering the XSPI0 AHB flash window. Both TGs get full
+ * read/write access (MD0ACP/MD1ACP = 0x7: secure/privileged/user writes
+ * allowed). Remaining FRAD entries stay invalid (zero-initialized).
+ *
+ * startAddress/endAddress are filled in at runtime in mflash_drv_init_internal()
+ * from MFLASH_BASE_ADDRESS: XSPI0_AMBA_BASE is security-dependent (0x60000000
+ * non-secure, 0x70000000 secure), and the FRAD region MUST cover the exact
+ * address the IP transfers use. If the region is hardcoded to 0x60000000 but
+ * the transfers run at 0x70000000 (secure boot), the SFP arbiter reports
+ * ERRSTAT.FRADMTCH ("address not in any valid FRAD region") and never grants
+ * the IP request, so XSPI_StartIpAccess() spins forever (observed: hang on the
+ * first Write Enable, SR idle, ERRSTAT=FRADMTCH, ARB_WIN clear).
+ */
+static xspi_sfp_frad_config_t s_mflashFradConfig = {
+    .fradConfig[0] =
+        {
+            .tg0MasterAccess     = 0x7U, /* MDnACP: secure/privileged/user writes allowed. */
+            .tg1MasterAccess     = 0x7U,
+            .assignIsValid       = true,
+            .descriptorLock      = kXSPI_DescriptorLockDisabled,
+            .exclusiveAccessLock = kXSPI_ExclusiveAccessLockDisabled,
+        },
+    /* Remaining FRAD entries stay invalid (zero-initialized). */
+};
+
 
 static xspi_device_config_t s_deviceConfig = {
     /* Set at runtime in mflash_drv_init_internal() via
@@ -129,10 +196,11 @@ RAMVARIABLE(const uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
     [5 * NOR_CMD_LUT_SEQ_IDX_READ + 2] =
         XSPI_LUT_SEQ(kXSPI_Command_STOP, kXSPI_1PAD, 0x00, 0, 0, 0),
 
-    /* [1] Read Status Register-1 (0x05) — ERR052528: request >=4 bytes */
+    /* [1] Read Status Register-1 (0x05) — ERR052528: min IP read is 8 bytes */
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_STATUS + 0] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, 0x05,
-                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x04),
+                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x08),
+
 
     /* [2] Write Enable (0x06) */
     [5 * NOR_CMD_LUT_SEQ_IDX_WRITE_ENABLE + 0] =
@@ -152,10 +220,11 @@ RAMVARIABLE(const uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
         XSPI_LUT_SEQ(kXSPI_Command_WRITE_SDR, kXSPI_4PAD, 0x04,
                      kXSPI_Command_STOP, kXSPI_1PAD, 0x00),
 
-    /* [5] Read JEDEC ID (0x9F) */
+    /* [5] Read JEDEC ID (0x9F) — ERR052528: min IP read is 8 bytes */
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_ID + 0] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, 0x9F,
-                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x04),
+                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x08),
+
 
     /* [6] Write Status Register-2 to enable QE (0x31, data = 0x02 -> SR2.S9 = 1)
      *     W25H512NW datasheet rev A, Section 7.1.9 + 8.2.5: QE bit is at SR2
@@ -196,15 +265,19 @@ RAMFUNC static status_t xspi_nor_write_enable(XSPI_Type *base, uint32_t addr)
 
 RAMFUNC static status_t xspi_nor_wait_busy(XSPI_Type *base)
 {
-    uint32_t readValue;
+    uint32_t readValue[2] = {0U};
     status_t status;
     xspi_transfer_t xfer = {
         .deviceAddress   = MFLASH_BASE_ADDRESS,
         .cmdType         = kXSPI_Read,
         .seqIndex        = NOR_CMD_LUT_SEQ_IDX_READ_STATUS,
         .targetGroup     = kXSPI_TargetGroup0,
-        .data            = &readValue,
-        .dataSize        = 4U,   /* ERR052528 workaround: min 4 bytes */
+        .data            = readValue,
+        .dataSize        = 8U,   /* ERR052528: min IP read is 8 bytes. Draining
+                                  * fewer bytes than the IP clocks in leaves RX
+                                  * residue, so XSPI never reports idle and the
+                                  * next command's arbitration grant (ARB_WIN)
+                                  * never asserts -> XSPI_StartIpAccess() hangs. */
         .lockArbitration = false,
     };
     do
@@ -214,9 +287,10 @@ RAMFUNC static status_t xspi_nor_wait_busy(XSPI_Type *base)
         {
             return status;
         }
-    } while ((readValue & (1U << FLASH_BUSY_STATUS_OFFSET)) != 0U);
+    } while ((readValue[0] & (1U << FLASH_BUSY_STATUS_OFFSET)) != 0U);
 
     return kStatus_Success;
+
 }
 
 RAMFUNC static status_t xspi_nor_enable_quad_mode(XSPI_Type *base)
@@ -273,20 +347,20 @@ RAMFUNC static status_t xspi_nor_enter_4byte_addr(XSPI_Type *base)
 
 RAMFUNC static status_t xspi_nor_read_jedec_id(XSPI_Type *base, uint32_t *jedec_id_out)
 {
-    uint32_t id = 0U;
+    uint32_t id[2] = {0U};
     xspi_transfer_t xfer = {
         .deviceAddress   = MFLASH_BASE_ADDRESS,
         .cmdType         = kXSPI_Read,
         .seqIndex        = NOR_CMD_LUT_SEQ_IDX_READ_ID,
         .targetGroup     = kXSPI_TargetGroup0,
-        .data            = &id,
-        .dataSize        = 4U,
+        .data            = id,
+        .dataSize        = 8U,   /* ERR052528: min IP read is 8 bytes */
         .lockArbitration = false,
     };
     status_t status = XSPI_TransferBlocking(base, &xfer);
     if (status == kStatus_Success && jedec_id_out != NULL)
     {
-        *jedec_id_out = id;
+        *jedec_id_out = id[0];
     }
     return status;
 }
@@ -422,9 +496,30 @@ RAMFUNC static int32_t mflash_drv_init_internal(XSPI_Type *base)
     config.ptrAhbAccessConfig->enableAHBBufferWriteFlush = true;
     config.ptrAhbAccessConfig->enableAHBPrefetch         = true;
 
-    config.ptrIpAccessConfig->ptrSfpFradConfig               = NULL;
-    config.ptrIpAccessConfig->ptrSfpMdadConfig               = NULL;
-    config.ptrIpAccessConfig->ipAccessTimeoutValue           = 0xFFFFFFFFUL;
+    /* Fill in the FRAD region from the live MFLASH_BASE_ADDRESS. XSPI0_AMBA_BASE
+     * is security-dependent (0x60000000 non-secure, 0x70000000 secure); the
+     * region MUST cover the exact address the IP transfers use, or the SFP
+     * arbiter reports ERRSTAT.FRADMTCH and never grants the request (observed:
+     * hang on the first Write Enable, SR idle, ERRSTAT=FRADMTCH, ARB_WIN clear).
+     * The driver masks start/end with 0xFFFF0000 (64-KB alignment). */
+    s_mflashFradConfig.fradConfig[0].startAddress = MFLASH_BASE_ADDRESS;
+    s_mflashFradConfig.fradConfig[0].endAddress   =
+        MFLASH_BASE_ADDRESS + MFLASH_FLASH_SIZE - 0x10000UL;
+
+    /* MDAD/FRAD MUST be non-NULL: with them unconfigured the SFP arbiter never
+     * grants an IP command/write access, so XSPI_StartIpAccess() spins forever
+     * on ERRSTAT.ARB_WIN. See the config blocks above. */
+    config.ptrIpAccessConfig->ptrSfpFradConfig               = &s_mflashFradConfig;
+
+    config.ptrIpAccessConfig->ptrSfpMdadConfig               = &s_mflashMdadConfig;
+
+    /* Finite IP-access timeout (MTO). With the reset default (0xFFFFFFFF) a
+     * stuck IP transaction never completes and the blocking read/write helpers
+     * spin on it forever. A finite count makes the controller raise
+     * ERRSTAT.TO_ERR so XSPI_TransferBlocking() returns kStatus_Timeout and the
+     * error can propagate. ~10.5M IPS cycles (tens of ms) is far beyond any
+     * real IP command here (status/ID reads, one-page program). */
+    config.ptrIpAccessConfig->ipAccessTimeoutValue           = 0x00A00000UL;
     config.ptrIpAccessConfig->sfpArbitrationLockTimeoutValue = 0xFFFFFFUL;
 
     XSPI_Init(base, &config);
