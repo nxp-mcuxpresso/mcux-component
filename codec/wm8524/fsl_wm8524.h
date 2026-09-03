@@ -20,8 +20,8 @@
  ******************************************************************************/
 /*! @name Driver version */
 /*! @{ */
-/*! @brief WM8524 driver version 2.1.1. */
-#define FSL_WM8524_DRIVER_VERSION (MAKE_VERSION(2, 1, 1))
+/*! @brief WM8524 driver version 2.1.2. */
+#define FSL_WM8524_DRIVER_VERSION (MAKE_VERSION(2, 1, 2))
 /*! @} */
 
 /*!< mute control io function pointer */

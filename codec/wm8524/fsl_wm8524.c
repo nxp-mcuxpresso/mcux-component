@@ -43,7 +43,10 @@ status_t WM8524_Init(wm8524_handle_t *handle, wm8524_config_t *config)
     }
 
     /* Unmute codec */
-    wm8524Config->setMute(kWM8524_Unmute);
+    if (wm8524Config->setMute != NULL)
+    {
+        wm8524Config->setMute(kWM8524_Unmute);
+    }
 
     return kStatus_Success;
 }
@@ -61,7 +64,7 @@ void WM8524_ConfigFormat(wm8524_handle_t *handle, wm8524_protocol_t protocol)
 
     wm8524_config_t *wm8524Config = (wm8524_config_t *)handle->config;
 
-    if (protocol != kWM8524_ProtocolRightJustified)
+    if ((protocol != kWM8524_ProtocolRightJustified) && (wm8524Config->setProtocol != NULL))
     {
         wm8524Config->setProtocol((uint32_t)protocol);
     }
@@ -80,5 +83,8 @@ void WM8524_SetMute(wm8524_handle_t *handle, bool isMute)
 
     wm8524_config_t *wm8524Config = (wm8524_config_t *)handle->config;
 
-    wm8524Config->setMute(!isMute);
+    if (wm8524Config->setMute != NULL)
+    {
+        wm8524Config->setMute(!isMute);
+    }
 }

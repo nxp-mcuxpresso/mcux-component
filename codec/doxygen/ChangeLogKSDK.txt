@@ -2,7 +2,12 @@
 @page component_log Component Change Log
 
 @section codec CODEC
-  The current codec common driver version is 2.3.2.
+  The current codec common driver version is 2.3.3.
+  - 2.3.3
+    - Bug Fixes
+      - Fixed Coverity NULL_FIELD findings in the codec adapter by adding runtime
+        NULL checks on the codec handle configuration before dereferencing it.
+
   - 2.3.2
     - Bug Fixes
       - Fixed violations of MISRA C-2012 rule 10.1, 10.3, 10.4, 10.5, 10.6, 10.7, 10.8, 12.4.
@@ -141,7 +146,12 @@
 
 @if dox_section_wm8524
 @section wm8524 WM8524
-  The current wm8524 driver version is 2.1.1.
+  The current wm8524 driver version is 2.1.2.
+
+  - 2.1.2
+    - Bug Fixes
+      - Fixed Coverity NULL_FIELD findings by guarding the optional setMute/setProtocol
+        function pointer calls with runtime NULL checks.
 
   - 2.1.1
     - Bug Fixes
@@ -365,7 +375,13 @@
 
 @if dox_section_wm8962
 @section wm8962 WM8962
-  The current wm8962 driver version is 2.4.0.
+  The current wm8962 driver version is 2.4.1.
+
+  - 2.4.1
+    - Bug Fixes
+      - Fixed Coverity FORWARD_NULL, NULL_FIELD and CERT EXP34-C findings in
+        WM8962_Init by adding runtime NULL checks on the handle and config
+        arguments before dereferencing them.
 
   - 2.4.0
     - Improvements

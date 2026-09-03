@@ -253,14 +253,15 @@ static status_t WM8962_SetMasterClock(wm8962_handle_t *handle,
     status_t ret = kStatus_Success;
     bool isMaster = false;
 
-    if ((handle != NULL) && (handle->config != NULL))
+    assert(handle != NULL);
+    assert(handle->config != NULL);
+
+    isMaster = handle->config->masterSlave;
+    if ((((uint32_t)handle->config->bus & (uint32_t)kWM8962_BusTDM) != 0U))
     {
-        isMaster = handle->config->masterSlave;
-        if ((((uint32_t)handle->config->bus & (uint32_t)kWM8962_BusTDM) != 0U))
-        {
-            frameWordNum = 4U;
-        }
+        frameWordNum = 4U;
     }
+
 
     /* Validate input parameters first */
     if ((sampleRate == 0U) || (bitWidth == 0U))
@@ -365,6 +366,14 @@ static status_t WM8962_SetMasterClock(wm8962_handle_t *handle,
 status_t WM8962_Init(wm8962_handle_t *handle, const wm8962_config_t *config)
 {
     status_t ret = kStatus_Success;
+
+    assert(handle != NULL);
+    assert(config != NULL);
+
+    if ((handle == NULL) || (config == NULL))
+    {
+        return kStatus_InvalidArgument;
+    }
 
     handle->config = config;
     uint32_t mclk = config->format.mclk_HZ, sysClk = 0U;
@@ -1056,6 +1065,14 @@ status_t WM8962_WriteReg(wm8962_handle_t *handle, uint16_t reg, uint16_t val)
 {
     uint16_t buff = (uint16_t)(WM8962_SWAP_UINT16_BYTE_SEQUENCE(val) & 0xFFFFU);
 
+    assert(handle != NULL);
+    assert(handle->config != NULL);
+
+    if ((handle == NULL) || (handle->config == NULL))
+    {
+        return kStatus_InvalidArgument;
+    }
+
     return CODEC_I2C_Send(handle->i2cHandle, handle->config->slaveAddress, reg, 2U, (uint8_t *)(uintptr_t)&buff, 2U);
 }
 
@@ -1063,6 +1080,15 @@ status_t WM8962_ReadReg(wm8962_handle_t *handle, uint16_t reg, uint16_t *val)
 {
     status_t retval    = 0;
     uint16_t readValue = 0U;
+
+    assert(handle != NULL);
+    assert(handle->config != NULL);
+    assert(val != NULL);
+
+    if ((handle == NULL) || (handle->config == NULL) || (val == NULL))
+    {
+        return kStatus_InvalidArgument;
+    }
 
     retval = CODEC_I2C_Receive(handle->i2cHandle, handle->config->slaveAddress, reg, 2U, (uint8_t *)&readValue, 2U);
     if (retval == kStatus_Success)

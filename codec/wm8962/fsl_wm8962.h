@@ -21,8 +21,8 @@
  ******************************************************************************/
 /*! @name Driver version */
 /*! @{ */
-/*! @brief WM8962 driver version 2.4.0. */
-#define FSL_WM8962_DRIVER_VERSION (MAKE_VERSION(2, 4, 0))
+/*! @brief WM8962 driver version 2.4.1. */
+#define FSL_WM8962_DRIVER_VERSION (MAKE_VERSION(2, 4, 1))
 /*! @} */
 
 /*! @brief wm8962 handle size */

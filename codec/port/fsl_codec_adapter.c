@@ -140,7 +140,13 @@ status_t HAL_CODEC_Init(void *handle, void *config)
 status_t HAL_CODEC_Deinit(void *handle)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -242,7 +248,13 @@ status_t HAL_CODEC_Deinit(void *handle)
 status_t HAL_CODEC_SetFormat(void *handle, uint32_t mclk, uint32_t sampleRate, uint32_t bitWidth)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -343,7 +355,13 @@ status_t HAL_CODEC_SetFormat(void *handle, uint32_t mclk, uint32_t sampleRate, u
 status_t HAL_CODEC_SetVolume(void *handle, uint32_t playChannel, uint32_t volume)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -444,7 +462,13 @@ status_t HAL_CODEC_SetVolume(void *handle, uint32_t playChannel, uint32_t volume
 status_t HAL_CODEC_SetMute(void *handle, uint32_t playChannel, bool isMute)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -545,7 +569,13 @@ status_t HAL_CODEC_SetMute(void *handle, uint32_t playChannel, bool isMute)
 status_t HAL_CODEC_SetPower(void *handle, uint32_t module, bool powerOn)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -646,7 +676,13 @@ status_t HAL_CODEC_SetPower(void *handle, uint32_t module, bool powerOn)
 status_t HAL_CODEC_SetRecord(void *handle, uint32_t recordSource)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -750,7 +786,13 @@ status_t HAL_CODEC_SetRecord(void *handle, uint32_t recordSource)
 status_t HAL_CODEC_SetRecordChannel(void *handle, uint32_t leftRecordChannel, uint32_t rightRecordChannel)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -851,7 +893,13 @@ status_t HAL_CODEC_SetRecordChannel(void *handle, uint32_t leftRecordChannel, ui
 status_t HAL_CODEC_SetPlay(void *handle, uint32_t playSource)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
@@ -957,7 +1005,13 @@ status_t HAL_CODEC_SetPlay(void *handle, uint32_t playSource)
 status_t HAL_CODEC_ModuleControl(void *handle, uint32_t cmd, uint32_t data)
 {
     assert(handle != NULL);
+    assert(((codec_handle_t *)handle)->codecConfig != NULL);
     status_t retVal = kStatus_Success;
+
+    if (((codec_handle_t *)handle)->codecConfig == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
 
     switch (((codec_handle_t *)handle)->codecConfig->codecDevType)
     {
