@@ -49,9 +49,9 @@
 /* QE bit value to write into SR2 */
 #define FLASH_ENABLE_QE_VAL  0x02U
 
-/* Errata ERR052528: minimum read data size is 8 bytes for RDSR via IP.
-   Workaround applied: all READ_SDR data sizes below are at least 4 words (8 bytes) via DMA
-   padding — for RDSR we request 4 bytes and mask the first byte. */
+/* Errata ERR052528: LUT-declared read data size must be at least 8 bytes for any
+   read command including RDSR. The LUT operand below is fixed at 8 bytes; the actual
+   per-transfer dataSize used by xspi_nor_wait_busy() can remain smaller. */
 
 /*******************************************************************************
  * Variables
@@ -98,14 +98,14 @@ RAMVARIABLE(const uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
                      kXSPI_Command_RADDR_SDR, kXSPI_4PAD, 0x20),
     [5 * NOR_CMD_LUT_SEQ_IDX_READ + 1] =
         XSPI_LUT_SEQ(kXSPI_Command_DUMMY_SDR, kXSPI_4PAD, 0x06,
-                     kXSPI_Command_READ_SDR, kXSPI_4PAD, 0x04),
+                     kXSPI_Command_READ_SDR, kXSPI_4PAD, 0x08),
     [5 * NOR_CMD_LUT_SEQ_IDX_READ + 2] =
         XSPI_LUT_SEQ(kXSPI_Command_STOP, kXSPI_1PAD, 0x00, 0, 0, 0),
 
-    /* [1] Read Status Register-1 (0x05) — ERR052528: request >=4 bytes */
+    /* [1] Read Status Register-1 (0x05) — ERR052528: LUT-declared size must be >=8 bytes */
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_STATUS + 0] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, 0x05,
-                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x04),
+                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x08),
 
     /* [2] Write Enable (0x06) */
     [5 * NOR_CMD_LUT_SEQ_IDX_WRITE_ENABLE + 0] =
@@ -128,7 +128,7 @@ RAMVARIABLE(const uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
     /* [5] Read JEDEC ID (0x9F) */
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_ID + 0] =
         XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, 0x9F,
-                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x04),
+                     kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x08),
 
     /* [6] Write Status Register-2 to enable QE (0x31, data = 0x02) */
     [5 * NOR_CMD_LUT_SEQ_IDX_ENABLE_QE + 0] =
@@ -174,7 +174,7 @@ RAMFUNC static status_t xspi_nor_wait_busy(XSPI_Type *base)
         .seqIndex        = NOR_CMD_LUT_SEQ_IDX_READ_STATUS,
         .targetGroup     = kXSPI_TargetGroup0,
         .data            = &readValue,
-        .dataSize        = 4U,   /* ERR052528 workaround: min 4 bytes */
+        .dataSize        = 4U,
         .lockArbitration = false,
     };
     do

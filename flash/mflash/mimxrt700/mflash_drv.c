@@ -100,20 +100,20 @@ RAMVARIABLE (const uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
     [5 * NOR_CMD_LUT_SEQ_IDX_READ + 1] =
         XSPI_LUT_SEQ(kXSPI_Command_RADDR_DDR, kXSPI_8PAD, 0x20, kXSPI_Command_DUMMY_SDR, kXSPI_8PAD, 0x12),
     [5 * NOR_CMD_LUT_SEQ_IDX_READ + 2] =
-        XSPI_LUT_SEQ(kXSPI_Command_DUMMY_SDR, kXSPI_8PAD, 0x2, kXSPI_Command_READ_DDR, kXSPI_8PAD, 0x4),
+        XSPI_LUT_SEQ(kXSPI_Command_DUMMY_SDR, kXSPI_8PAD, 0x2, kXSPI_Command_READ_DDR, kXSPI_8PAD, 0x08),
     [5 * NOR_CMD_LUT_SEQ_IDX_READ + 3] = XSPI_LUT_SEQ(kXSPI_Command_STOP, kXSPI_8PAD, 0x0, 0, 0, 0),
 
-    /*Read status SPI*/
+    /* Read status SPI — ERR052528: LUT-declared size must be >=8 bytes */
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_STATUS] =
-        XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, 0x05, kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x04),
+        XSPI_LUT_SEQ(kXSPI_Command_SDR, kXSPI_1PAD, 0x05, kXSPI_Command_READ_SDR, kXSPI_1PAD, 0x08),
 
-    /* Read Status OPI */
+    /* Read Status OPI — ERR052528: LUT-declared size must be >=8 bytes */
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_STATUS_OPI] =
         XSPI_LUT_SEQ(kXSPI_Command_DDR, kXSPI_8PAD, 0x05, kXSPI_Command_DDR, kXSPI_8PAD, 0xFA),
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_STATUS_OPI + 1] =
         XSPI_LUT_SEQ(kXSPI_Command_RADDR_DDR, kXSPI_8PAD, 0x20, kXSPI_Command_DUMMY_SDR, kXSPI_8PAD, 0x12),
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_STATUS_OPI + 2] =
-        XSPI_LUT_SEQ(kXSPI_Command_DUMMY_SDR, kXSPI_8PAD, 0x2, kXSPI_Command_READ_DDR, kXSPI_8PAD, 0x4),
+        XSPI_LUT_SEQ(kXSPI_Command_DUMMY_SDR, kXSPI_8PAD, 0x2, kXSPI_Command_READ_DDR, kXSPI_8PAD, 0x08),
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_STATUS_OPI + 3] = XSPI_LUT_SEQ(kXSPI_Command_STOP, kXSPI_8PAD, 0x0, 0, 0, 0),
 
     /*Write enable*/
@@ -134,7 +134,7 @@ RAMVARIABLE (const uint32_t customLUT[CUSTOM_LUT_LENGTH]) = {
                                                              kXSPI_8PAD,
                                                              0x04), /*address is 0x00,0x00,0x00,0x00*/
     [5 * NOR_CMD_LUT_SEQ_IDX_READ_ID_OPI + 2] =
-        XSPI_LUT_SEQ(kXSPI_Command_READ_DDR, kXSPI_8PAD, 0x04, kXSPI_Command_STOP, kXSPI_1PAD, 0x0),
+        XSPI_LUT_SEQ(kXSPI_Command_READ_DDR, kXSPI_8PAD, 0x08, kXSPI_Command_STOP, kXSPI_1PAD, 0x0),
 
     /* Erase Sector */
     [5 * NOR_CMD_LUT_SEQ_IDX_ERASE_SECTOR] =
