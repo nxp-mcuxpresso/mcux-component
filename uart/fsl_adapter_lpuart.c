@@ -2024,7 +2024,7 @@ static void LPUART_DMACallbacks(LPUART_Type *base, lpuart_edma_handle_t *handle,
 }
 #endif
 #if (defined(HAL_UART_DMA_USE_SOFTWARE_IDLELINE_DETECTION) && (HAL_UART_DMA_USE_SOFTWARE_IDLELINE_DETECTION > 0U))
-static void TimeoutTimer_Callbcak(void *param)
+static void TimeoutTimer_Callback(void *param)
 {
     hal_lpuart_dma_list_t *uartDmaHandleList;
     hal_uart_dma_state_t *uartDmaHandle;
@@ -2200,7 +2200,7 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
         timerStatus = TM_Open((timer_handle_t)s_dmaHandleList.timerManagerHandle);
         assert(kStatus_TimerSuccess == timerStatus);
 
-        timerStatus = TM_InstallCallback((timer_handle_t)s_dmaHandleList.timerManagerHandle, TimeoutTimer_Callbcak,
+        timerStatus = TM_InstallCallback((timer_handle_t)s_dmaHandleList.timerManagerHandle, TimeoutTimer_Callback,
                                          &s_dmaHandleList);
         assert(kStatus_TimerSuccess == timerStatus);
 

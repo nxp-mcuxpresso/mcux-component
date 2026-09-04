@@ -762,7 +762,7 @@ static void USART_DMACallbacks(USART_Type *base, usart_dma_handle_t *handle, sta
     }
 }
 
-static void TimeoutTimer_Callbcak(void *param)
+static void TimeoutTimer_Callback(void *param)
 {
     hal_uart_dma_list_t *uartDmaHandleList;
     hal_uart_dma_state_t *uartDmaHandle;
@@ -872,7 +872,7 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
         assert(kStatus_TimerSuccess == timerStatus);
 
         timerStatus =
-            TM_InstallCallback((timer_handle_t)s_dmaHandleList.timerManagerHandle, TimeoutTimer_Callbcak, NULL);
+            TM_InstallCallback((timer_handle_t)s_dmaHandleList.timerManagerHandle, TimeoutTimer_Callback, NULL);
         assert(kStatus_TimerSuccess == timerStatus);
 
         (void)TM_Start((timer_handle_t)s_dmaHandleList.timerManagerHandle, (uint8_t)kTimerModeIntervalTimer, 1);
