@@ -67,6 +67,15 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
                                const v2x_fce_gcm_op_t *op,
                                uint8_t requestId);
 
+static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
+                                     uint8_t requestId,
+                                     uint8_t keySlot,
+                                     uint8_t shaAlgo,
+                                     const uint8_t *input,
+                                     uint32_t inputSize,
+                                     uint8_t *digest,
+                                     uint32_t digestSize);
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
@@ -331,7 +340,7 @@ status_t V2X_FCE_LoadAesPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, cons
     return V2X_FCE_Transceive(handle->mu, msg, V2X_FCE_LOAD_AES_KEY_SIZE, resp, V2X_FCE_CMD_LOAD_AES_PLAIN_KEY);
 }
 
-status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, const uint8_t *key, uint32_t keySize)
+status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, v2x_fce_sha_algo_t shaAlgo, const uint8_t *key, uint32_t keySize)
 {
     uint32_t msg[V2X_FCE_LOAD_HMAC_KEY_SIZE];
     uint32_t resp[V2X_FCE_MSG_MAX_WORDS];
@@ -345,8 +354,8 @@ status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, con
     {
         return kStatus_InvalidArgument;
     }
-    /* Key Word 0-32 => up to 33 words = 132 bytes of key material. */
-    if ((keySize == 0u) || (keySize > 132u))
+    /* Key Word 0-31 => up to 32 words = 128 bytes of key material. */
+    if ((keySize == 0u) || (keySize > 128u))
     {
         return kStatus_InvalidArgument;
     }
@@ -355,8 +364,8 @@ status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, con
      * Table 15:
      *   W0     Header
      *   W1     [RFU(31-16) | SHA algo(15-8) | Slot to update(7-0)]
-     *   W2-35  Key Word 0-32 (up to 132 bytes, little endian)
-     *   W36    CRC
+     *   W2-33  Key Word 0-31 (up to 128 bytes, little endian)
+     *   W34    CRC
      */
     for (i = 0u; i < V2X_FCE_LOAD_HMAC_KEY_SIZE; i++)
     {
@@ -364,15 +373,17 @@ status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, con
     }
 
     msg[0] = V2X_FCE_CMD_HEADER(V2X_FCE_CMD_LOAD_HMAC_PLAIN_KEY, V2X_FCE_LOAD_HMAC_KEY_SIZE);
-    /* SHA algo field left zero (default); slot in the low byte. */
-    msg[1] = ((uint32_t)keySlot & 0xFFu);
+    /* [RFU(31-16) | SHA algo(15-8) | Slot(7-0)]: the FCE binds the loaded
+     * HMAC key to this SHA algorithm, matching the reference
+     * prime_load_hmac_key (data[0] = (sha_algo << 8) | key_slot). */
+    msg[1] = (((uint32_t)shaAlgo & 0xFFu) << 8) | ((uint32_t)keySlot & 0xFFu);
 
     for (i = 0u; i < keySize; i++)
     {
         msg[2u + (i / 4u)] |= ((uint32_t)key[i]) << (8u * (i % 4u));
     }
 
-    /* W36 CRC: XOR of W0..W35 (firmware validates this field). */
+    /* W34 CRC: XOR of W0..W33 (firmware validates this field). */
     msg[V2X_FCE_LOAD_HMAC_KEY_SIZE - 1u] = V2X_FCE_CrcCompute(msg, V2X_FCE_LOAD_HMAC_KEY_SIZE);
 
     return V2X_FCE_Transceive(handle->mu, msg, V2X_FCE_LOAD_HMAC_KEY_SIZE, resp, V2X_FCE_CMD_LOAD_HMAC_PLAIN_KEY);
@@ -645,6 +656,207 @@ status_t V2X_FCE_AesGcmEncrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t 
 status_t V2X_FCE_AesGcmDecrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t *op)
 {
     return V2X_FCE_AesGcm(handle, op, V2X_FCE_REQ_AES_GCM_DECRYPT);
+}
+
+/*!
+ * @brief Shared HASH / HMAC authenticate request.
+ *
+ * Submits a 6-word FCE authenticate descriptor (PRIME_AUTH_SZ = 0x18 bytes)
+ * exactly the way the reference PRIME/FCE library does it (secure_enclave
+ * sab_prime_mac.c prime_mac_construct / prime_hash_construct):
+ *
+ *   W0 Header: [Tag 0x1b | Command=requestId | Size 0x6 | Ver 0x02]
+ *   W1 Status Address
+ *   W2 [KeySlot(31-16) | SHA algo(5-4) | Flags(1-0)] (HASH: KeySlot unused)
+ *   W3 Digest Address
+ *   W4 Payload Byte Length
+ *   W5 Input Address
+ *
+ * The descriptor is written into FCE MU slot A and triggered with a header-only
+ * PUSH_REQUEST; the host then polls GET_REQUEST_STATUS until the request is no
+ * longer ongoing and reads the completion status the FCE wrote to the DDR
+ * Status Address. Input is staged into the DDR scratch region and the digest is
+ * copied back out (generate). For HMAC verify the expected MAC is staged into
+ * the digest scratch and the FCE reports success/failure in the status word.
+ */
+static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
+                                     uint8_t requestId,
+                                     uint8_t keySlot,
+                                     uint8_t shaAlgo,
+                                     const uint8_t *input,
+                                     uint32_t inputSize,
+                                     uint8_t *digest,
+                                     uint32_t digestSize)
+{
+    volatile uint32_t *slot    = (volatile uint32_t *)V2X_FCE_SLOT_A_BASE(handle->mu);
+    volatile uint32_t *ddrStatus = (volatile uint32_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
+    uint8_t *ddrInput          = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
+    uint8_t *ddrDigest         = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
+    uint32_t desc[V2X_FCE_AUTH_DESC_WORDS];
+    uint32_t msg[V2X_FCE_GET_REQUEST_STATUS_SIZE];
+    uint32_t resp[V2X_FCE_MSG_MAX_WORDS];
+    status_t status;
+    uint32_t i;
+    uint32_t reqId;
+    uint32_t reqStatus = V2X_FCE_REQ_ONGOING;
+    bool     isHash    = (requestId == V2X_FCE_REQ_HASH);
+
+    if ((handle == NULL) || (handle->mu == NULL) || (input == NULL) || (digest == NULL))
+    {
+        return kStatus_InvalidArgument;
+    }
+    if (!isHash && (keySlot >= V2X_FCE_HMAC_KEY_SLOTS))
+    {
+        return kStatus_InvalidArgument;
+    }
+    /* DMA-referenced buffers must be 64-bit aligned. */
+    if (!V2X_FCE_ADDR_ALIGNED(input) || !V2X_FCE_ADDR_ALIGNED(digest))
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    /* Seed the DDR status word with success (0xd6): the FCE overwrites it only
+     * on error, matching the AES-GCM path. Stage the caller input into DDR. */
+    *ddrStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
+    if (inputSize != 0u)
+    {
+        (void)memcpy(ddrInput, input, inputSize);
+    }
+    /* For HMAC verify the expected MAC must already be present at the digest
+     * address the FCE reads back. */
+    if ((requestId == V2X_FCE_REQ_HMAC_VERIFY) && (digestSize != 0u))
+    {
+        (void)memcpy(ddrDigest, digest, digestSize);
+    }
+
+    for (i = 0u; i < V2X_FCE_AUTH_DESC_WORDS; i++)
+    {
+        desc[i] = 0u;
+    }
+
+    desc[0] = V2X_FCE_BUILD_HEADER((uint8_t)(V2X_FCE_MSG_TAG_CMD_BASE + 1u), requestId,
+                                   V2X_FCE_AUTH_DESC_WORDS, V2X_FCE_MSG_VERSION);
+    desc[1] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
+    desc[2] = (((uint32_t)shaAlgo & 0xFu) << 4) |
+              ((V2X_FCE_REQ_FLAG_SIGNAL | V2X_FCE_REQ_FLAG_AUTO_POP) & 0xFu);
+    if (!isHash)
+    {
+        desc[2] |= ((uint32_t)keySlot << V2X_FCE_KEY_SLOT_SHIFT);
+    }
+    desc[3] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
+    desc[4] = inputSize;
+    desc[5] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
+
+    for (i = 0u; i < V2X_FCE_AUTH_DESC_WORDS; i++)
+    {
+        slot[i] = desc[i];
+    }
+
+#if V2X_FCE_DEBUG
+    {
+        V2X_FCE_TRACE("[FCE] AUTH desc -> slot A @%08x:", (unsigned)V2X_FCE_SLOT_A_BASE(handle->mu));
+        for (i = 0u; i < V2X_FCE_AUTH_DESC_WORDS; i++)
+        {
+            V2X_FCE_TRACE(" %08x", (unsigned)desc[i]);
+        }
+        V2X_FCE_TRACE("\r\n");
+    }
+#endif
+
+    __DSB();
+
+    /* PUSH_REQUEST (0xB0 | slot A). */
+    msg[0] = V2X_FCE_CMD_HEADER((uint8_t)(V2X_FCE_CMD_PUSH_REQUEST | V2X_FCE_SLOT_A),
+                                V2X_FCE_PUSH_REQUEST_SIZE);
+    status = V2X_FCE_Transceive(handle->mu, msg, V2X_FCE_PUSH_REQUEST_SIZE, resp,
+                                (uint8_t)(V2X_FCE_CMD_PUSH_REQUEST | V2X_FCE_SLOT_A));
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    reqId = resp[2];
+    V2X_FCE_TRACE("[FCE] AUTH PUSH resp: w1=0x%08x w2(reqId)=0x%08x\r\n",
+                  (unsigned)resp[1], (unsigned)reqId);
+    if ((reqId & 0xFu) != 0u)
+    {
+        V2X_FCE_TRACE("[FCE] AUTH PUSH rejected: req_id=0x%08x\r\n", (unsigned)reqId);
+        return kStatus_Fail;
+    }
+
+    for (i = 0u; i < V2X_FCE_GCM_STATUS_RETRIES; i++)
+    {
+        msg[0] = V2X_FCE_CMD_HEADER(V2X_FCE_CMD_GET_REQUEST_STATUS, V2X_FCE_GET_REQUEST_STATUS_SIZE);
+        msg[1] = reqId;
+
+        status = V2X_FCE_Transceive(handle->mu, msg, V2X_FCE_GET_REQUEST_STATUS_SIZE, resp,
+                                    V2X_FCE_CMD_GET_REQUEST_STATUS);
+        if (status != kStatus_Success)
+        {
+            return status;
+        }
+
+        reqStatus = resp[2];
+        if (reqStatus != V2X_FCE_REQ_ONGOING)
+        {
+            break;
+        }
+    }
+
+    if (reqStatus == V2X_FCE_REQ_ONGOING)
+    {
+        V2X_FCE_TRACE("[FCE] AUTH timeout: request still ongoing\r\n");
+        return kStatus_Timeout;
+    }
+
+    __DSB();
+
+    if (V2X_FCE_RESP_STATUS(*ddrStatus) != V2X_FCE_STATUS_SUCCESS)
+    {
+        V2X_FCE_TRACE("[FCE] AUTH completion failed: ddrStatus=0x%08x\r\n", (unsigned)*ddrStatus);
+        return kStatus_Fail;
+    }
+
+    /* HMAC generate / HASH generate copy the produced digest back to caller. */
+    if ((requestId != V2X_FCE_REQ_HMAC_VERIFY) && (digestSize != 0u))
+    {
+        (void)memcpy(digest, ddrDigest, digestSize);
+    }
+
+    return kStatus_Success;
+}
+
+status_t V2X_FCE_HmacGenerate(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *op)
+{
+    if (op == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+    return V2X_FCE_Authenticate(handle, V2X_FCE_REQ_HMAC_GEN, op->keySlot,
+                                (uint8_t)op->shaAlgo, op->input, op->inputSize,
+                                op->digest, op->digestSize);
+}
+
+status_t V2X_FCE_HmacVerify(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *op)
+{
+    if (op == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+    return V2X_FCE_Authenticate(handle, V2X_FCE_REQ_HMAC_VERIFY, op->keySlot,
+                                (uint8_t)op->shaAlgo, op->input, op->inputSize,
+                                op->digest, op->digestSize);
+}
+
+status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t *op)
+{
+    if (op == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+    return V2X_FCE_Authenticate(handle, V2X_FCE_REQ_HASH, 0u,
+                                (uint8_t)op->shaAlgo, op->input, op->inputSize,
+                                op->digest, op->digestSize);
 }
 
 status_t V2X_FCE_GetInfo(v2x_fce_handle_t *handle, uint8_t *buffer, uint32_t size)

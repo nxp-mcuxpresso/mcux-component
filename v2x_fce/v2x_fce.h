@@ -42,8 +42,8 @@
  * Definitions
  ******************************************************************************/
 
-/*! @brief v2x_fce driver version 1.1.0. */
-#define FSL_V2X_FCE_DRIVER_VERSION (MAKE_VERSION(1, 1, 0))
+/*! @brief v2x_fce driver version 1.2.0. */
+#define FSL_V2X_FCE_DRIVER_VERSION (MAKE_VERSION(1, 2, 0))
 
 /*! @brief Number of AES plain-key slots exposed by the FCE (0..7). */
 #define V2X_FCE_AES_KEY_SLOTS  (8u)
@@ -81,6 +81,43 @@ typedef struct _v2x_fce_gcm_op
     uint8_t *tag;           /*!< Auth tag out (encrypt) or in (decrypt). */
     uint32_t tagSize;       /*!< Tag length in bytes (typically 16). */
 } v2x_fce_gcm_op_t;
+
+/*! @brief SHA algorithm selector for the FCE HASH / HMAC operations. */
+typedef enum _v2x_fce_sha_algo
+{
+    kV2X_FCE_Sha256 = 1u, /*!< SHA-256, 32-byte digest. */
+    kV2X_FCE_Sha384 = 2u, /*!< SHA-384, 48-byte digest. */
+    kV2X_FCE_Sha512 = 3u, /*!< SHA-512, 64-byte digest. */
+} v2x_fce_sha_algo_t;
+
+/*! @brief Parameters for a single HMAC generate/verify operation.
+ *
+ * Buffers referenced by the DMA engine should be 64-bit aligned. For HMAC
+ * generate, @c digest receives the computed MAC. For HMAC verify, @c digest
+ * carries the expected MAC to check; the call fails if it does not match.
+ */
+typedef struct _v2x_fce_hmac_op
+{
+    uint8_t keySlot;             /*!< HMAC key slot previously loaded (0..7). */
+    v2x_fce_sha_algo_t shaAlgo;  /*!< SHA algorithm to use. */
+    const uint8_t *input;        /*!< Message to authenticate. */
+    uint32_t inputSize;          /*!< Message length in bytes. */
+    uint8_t *digest;             /*!< MAC out (generate) or in (verify). */
+    uint32_t digestSize;         /*!< MAC length in bytes (algorithm digest size). */
+} v2x_fce_hmac_op_t;
+
+/*! @brief Parameters for a single HASH generate operation (keyless).
+ *
+ * Buffers referenced by the DMA engine should be 64-bit aligned.
+ */
+typedef struct _v2x_fce_hash_op
+{
+    v2x_fce_sha_algo_t shaAlgo;  /*!< SHA algorithm to use. */
+    const uint8_t *input;        /*!< Message to hash. */
+    uint32_t inputSize;          /*!< Message length in bytes. */
+    uint8_t *digest;             /*!< Digest out. */
+    uint32_t digestSize;         /*!< Digest length in bytes (algorithm digest size). */
+} v2x_fce_hash_op_t;
 
 /*******************************************************************************
  * API
@@ -134,11 +171,12 @@ status_t V2X_FCE_LoadAesPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, cons
  *
  * @param handle  Service handle.
  * @param keySlot Destination HMAC key slot (0..V2X_FCE_HMAC_KEY_SLOTS-1).
+ * @param shaAlgo SHA algorithm the key is bound to (must match the MAC op).
  * @param key     Plain key bytes.
  * @param keySize Key length in bytes.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, const uint8_t *key, uint32_t keySize);
+status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, v2x_fce_sha_algo_t shaAlgo, const uint8_t *key, uint32_t keySize);
 
 /*!
  * @brief AES-GCM authenticated encrypt (FCE_PUSH_REQUEST authenticate-encrypt).
@@ -172,6 +210,43 @@ status_t V2X_FCE_AesGcmDecrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t 
  * @param size   Size of buffer in bytes.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
+/*!
+ * @brief HMAC generate (FCE_PUSH_REQUEST HMAC generate).
+ *
+ * Computes the HMAC of @c op->input using the key previously loaded into
+ * @c op->keySlot and writes it to @c op->digest.
+ *
+ * @param handle Service handle.
+ * @param op     HMAC operation descriptor.
+ * @return kStatus_Success on success, kStatus_Fail otherwise.
+ */
+status_t V2X_FCE_HmacGenerate(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *op);
+
+/*!
+ * @brief HMAC verify (FCE_PUSH_REQUEST HMAC verify).
+ *
+ * Verifies @c op->digest against the HMAC of @c op->input computed with the key
+ * previously loaded into @c op->keySlot. Returns kStatus_Fail if the MAC does
+ * not match.
+ *
+ * @param handle Service handle.
+ * @param op     HMAC operation descriptor.
+ * @return kStatus_Success on success, kStatus_Fail otherwise.
+ */
+status_t V2X_FCE_HmacVerify(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *op);
+
+/*!
+ * @brief HASH generate (FCE_PUSH_REQUEST HASH generate).
+ *
+ * Computes the SHA digest of @c op->input and writes it to @c op->digest. No
+ * key slot is used.
+ *
+ * @param handle Service handle.
+ * @param op     HASH operation descriptor.
+ * @return kStatus_Success on success, kStatus_Fail otherwise.
+ */
+status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t *op);
+
 status_t V2X_FCE_GetInfo(v2x_fce_handle_t *handle, uint8_t *buffer, uint32_t size);
 
 #if defined(__cplusplus)

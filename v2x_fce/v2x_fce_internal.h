@@ -72,6 +72,33 @@
 #define V2X_FCE_REQ_AES_GCM_DECRYPT (0x69u) /* GCM verify + decrypt       */
 
 /*
+ * FCE authenticate (HASH / HMAC) request opcodes (see PRIME / FCE User Guide,
+ * "FCE Request IDs"). Like the AES-GCM request IDs above, these are the Command
+ * values placed in the header of a request descriptor written into an FCE MU
+ * slot buffer, then triggered with PUSH_REQUEST.
+ */
+#define V2X_FCE_REQ_HASH        (0x80u) /* HASH generate            */
+#define V2X_FCE_REQ_HMAC_GEN    (0x88u) /* HMAC generate            */
+#define V2X_FCE_REQ_HMAC_VERIFY (0x89u) /* HMAC verify              */
+
+/*
+ * SHA algorithm selector used in the authenticate descriptor word 2 bits 5-4
+ * (encoded value << 4). Matches the reference crypto_sha_algorithm enum.
+ */
+#define V2X_FCE_SHA_NONE   (0u)
+#define V2X_FCE_SHA_256    (1u)
+#define V2X_FCE_SHA_384    (2u)
+#define V2X_FCE_SHA_512    (3u)
+
+/* Output digest sizes (bytes) for each SHA algorithm. */
+#define V2X_FCE_DIGEST_SZ_SHA256 (32u)
+#define V2X_FCE_DIGEST_SZ_SHA384 (48u)
+#define V2X_FCE_DIGEST_SZ_SHA512 (64u)
+
+/* Key slot shift used in the authenticate descriptor word 2 (bits 31-16). */
+#define V2X_FCE_KEY_SLOT_SHIFT (16u)
+
+/*
  * PUSH_REQUEST low-nibble slot bitmap (see Table 17). The command ID is
  * V2X_FCE_CMD_PUSH_REQUEST OR-ed with the slot bit(s) to push.
  */
@@ -138,7 +165,7 @@
 #define V2X_FCE_SERVICE_CLOSE_SIZE  (0x1u)  /* Table 7:  header only            */
 #define V2X_FCE_GET_INFO_SIZE       (0x1u)  /* Table 9:  header only            */
 #define V2X_FCE_LOAD_AES_KEY_SIZE   (0xBu)  /* Table 13: hdr + fields + 8 key + CRC = 11 */
-#define V2X_FCE_LOAD_HMAC_KEY_SIZE  (0x25u) /* Table 15: hdr + fields + 33 key + CRC = 37 */
+#define V2X_FCE_LOAD_HMAC_KEY_SIZE  (0x23u) /* Table 15: hdr + fields + 32 key + CRC = 35 */
 #define V2X_FCE_PUSH_REQUEST_SIZE   (0x1u)  /* Table 18: header only            */
 
 /*
@@ -151,6 +178,16 @@
  *   W6 Output address, W7-10 IV, W11 AAD byte length, W12 AAD address.
  */
 #define V2X_FCE_GCM_DESC_WORDS (0xDu)
+
+/*
+ * HASH / HMAC authenticate request descriptor word count (PRIME_AUTH_SZ = 0x18
+ * bytes = 6 words). This descriptor is written into an FCE MU slot buffer and
+ * then triggered with PUSH_REQUEST; it is not an S3MU command message. 6 words:
+ *   W0 Header, W1 Status address,
+ *   W2 [KeySlot(31-16) | SHA algo(5-4) | Flags(1-0)] (HASH: KeySlot unused),
+ *   W3 Digest address, W4 Payload byte length, W5 Input address.
+ */
+#define V2X_FCE_AUTH_DESC_WORDS (0x6u)
 
 /*
  * GET_REQUEST_STATUS is a 2-word S3MU command (Table 20). Response word 2
