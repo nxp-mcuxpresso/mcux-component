@@ -4,6 +4,7 @@
 config MCUX_COMPONENT_utility.semihost
     bool "semihost"
     depends on CPU_CORTEX_M
+    select MCUX_COMPONENT_driver.common
     help
       ARM semihosting host-call layer (BKPT 0xAB) plus a libc-free direct file
       API (SEMIHOST_Open/Read/Seek/Flen/Close; writes reuse SEMIHOST_Write),

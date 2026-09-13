@@ -20,6 +20,19 @@
 #define SEMIHOST_HAS_DHCSR_ACCESS 0
 #endif
 
+/* The host reads the parameter block through the debug access port, which
+ * bypasses the caches, so keep it out of write-back cached RAM. Caller payload
+ * buffers are the caller's responsibility - see fsl_semihost.h. */
+#if SEMIHOST_USE_NONCACHEABLE
+#include "fsl_common.h"
+
+AT_NONCACHEABLE_SECTION_ALIGN(static uint32_t s_semihostBlock[3], 32U);
+
+#define SEMIHOST_DECLARE_BLOCK(name, words) uint32_t *const name = s_semihostBlock
+#else
+#define SEMIHOST_DECLARE_BLOCK(name, words) uint32_t name[words]
+#endif
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -92,7 +105,7 @@ int SEMIHOST_Write(int handle, const char *buffer, int size)
         return 0;
     }
 
-    uint32_t block[3];
+    SEMIHOST_DECLARE_BLOCK(block, 3);
     block[0] = (uint32_t)handle;
     block[1] = (uint32_t)buffer;
     block[2] = (uint32_t)size;
@@ -112,7 +125,7 @@ int SEMIHOST_Write(int handle, const char *buffer, int size)
 int SEMIHOST_Exit(int code)
 {
     /* Extended SYS_EXIT form (ARM v2): pass {reason, exit_status} via R1. */
-    uint32_t block[2];
+    SEMIHOST_DECLARE_BLOCK(block, 2);
     block[0] = SEMIHOST_EXIT_REASON_APPLICATION_EXIT;
     /* coverity[cert_int31_c_violation] -- code is intentionally signed (exit() contract) */
     block[1] = (uint32_t)code;
@@ -134,7 +147,7 @@ int SEMIHOST_Open(const char *path, int mode)
         return -1;
     }
 
-    uint32_t block[3];
+    SEMIHOST_DECLARE_BLOCK(block, 3);
     block[0] = (uint32_t)path;
     block[1] = (uint32_t)mode;
     block[2] = (uint32_t)strlen(path);
@@ -150,7 +163,7 @@ int SEMIHOST_Read(int handle, char *buffer, int size)
         return -1;
     }
 
-    uint32_t block[3];
+    SEMIHOST_DECLARE_BLOCK(block, 3);
     block[0] = (uint32_t)handle;
     block[1] = (uint32_t)buffer;
     block[2] = (uint32_t)size;
@@ -174,7 +187,7 @@ int SEMIHOST_Seek(int handle, int pos)
         return -1;
     }
 
-    uint32_t block[2];
+    SEMIHOST_DECLARE_BLOCK(block, 2);
     block[0] = (uint32_t)handle;
     block[1] = (uint32_t)pos;
 
@@ -192,7 +205,7 @@ int SEMIHOST_Flen(int handle)
         return -1;
     }
 
-    uint32_t block[1];
+    SEMIHOST_DECLARE_BLOCK(block, 1);
     block[0] = (uint32_t)handle;
 
     /* SYS_FLEN returns the file length in bytes, or -1 on failure. */
@@ -206,7 +219,7 @@ int SEMIHOST_Close(int handle)
         return -1;
     }
 
-    uint32_t block[1];
+    SEMIHOST_DECLARE_BLOCK(block, 1);
     block[0] = (uint32_t)handle;
 
     /* SYS_CLOSE returns 0 on success, nonzero on failure. */

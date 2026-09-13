@@ -40,6 +40,25 @@ typedef enum _semihost_syscall
 /*! @brief ARM semihosting extended-exit reason (used with kSemihost_SysExit). */
 #define SEMIHOST_EXIT_REASON_APPLICATION_EXIT 0x20026U
 
+/*! @brief Place semihosting data in non-cacheable memory.
+ *
+ * The debug host reads/writes target memory through the debug access port,
+ * bypassing the CPU caches, so host-visible buffers cannot be write-back
+ * cached. This unit's parameter block is placed there; give the same
+ * treatment to any buffer passed to SEMIHOST_Write()/SEMIHOST_Read(). Read-only
+ * data (e.g. a SYS_OPEN path literal) needs nothing.
+ *
+ * On unconditionally: AT_NONCACHEABLE_SECTION_ALIGN() already self-gates per
+ * part, so a second switch here would only add a way to get it wrong. Define
+ * to 0 to force the block back onto the stack.
+ *
+ * @note Makes SEMIHOST_* non-reentrant across tasks, on top of the existing
+ * "not callable from an ISR" restriction on SEMIHOST_HostCall().
+ */
+#ifndef SEMIHOST_USE_NONCACHEABLE
+#define SEMIHOST_USE_NONCACHEABLE 1
+#endif
+
 /*! @brief ARM semihosting SYS_OPEN file mode (DUI 0471). Mirrors the fopen mode
  * strings ("r", "rb", "r+", ...). Used by SEMIHOST_Open (fsl_semihost.c).
  */
@@ -89,7 +108,9 @@ int SEMIHOST_HostCall(int op, void *p1, void *p2);
  *
  * @param handle  Target stream handle. Use 2 for stderr or any handle returned
  *                by SYS_OPEN. The console redirect uses 2 unconditionally.
- * @param buffer  Pointer to bytes to write.
+ * @param buffer  Pointer to bytes to write. The host reads it behind the caches,
+ *                so on a cached part it must be either read-only data or
+ *                declared with AT_NONCACHEABLE_SECTION_ALIGN().
  * @param size    Number of bytes.
  * @return Number of bytes actually written; matches @p size on success.
  */
@@ -141,7 +162,8 @@ int SEMIHOST_Open(const char *path, int mode);
  * @brief Read from a host file (SYS_READ).
  *
  * @param handle  Handle returned by SEMIHOST_Open.
- * @param buffer  Destination buffer.
+ * @param buffer  Destination buffer. The host writes it behind the caches, so on
+ *                a cached part declare it with AT_NONCACHEABLE_SECTION_ALIGN().
  * @param size    Number of bytes to read.
  * @return Number of bytes read (0 at end of file), or -1 on error.
  */

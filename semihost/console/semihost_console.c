@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include "fsl_semihost.h"
 
+#if SEMIHOST_USE_NONCACHEABLE
+#include "fsl_common.h"
+#endif
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -19,7 +23,12 @@
  * Variables
  ******************************************************************************/
 
+/* The host reads this buffer behind the caches, so keep it non-cacheable. */
+#if SEMIHOST_USE_NONCACHEABLE
+AT_NONCACHEABLE_SECTION_ALIGN(static char s_console_buffer[SEMIHOST_CONSOLE_BUF_SIZE], 32U);
+#else
 static char s_console_buffer[SEMIHOST_CONSOLE_BUF_SIZE];
+#endif
 static unsigned s_console_idx    = 0U;
 static int s_console_last_handle = -1;
 

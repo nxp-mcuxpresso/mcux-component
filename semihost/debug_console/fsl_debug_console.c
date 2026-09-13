@@ -30,6 +30,21 @@ static void DbgConsole_PrintCallback(char *buf, int32_t *indicator, char val, in
 static int DbgConsole_ScanfFormattedData(const char *line_ptr, char *format, va_list args_ptr);
 
 /*******************************************************************************
+ * Variables
+ ******************************************************************************/
+
+/* The host reads this behind the caches, so it cannot be a stack buffer on a
+ * cached part - same reason as the parameter block in fsl_semihost.c. Putchar
+ * reuses byte 0 instead of a second buffer; both are already non-reentrant.
+ * A caller-supplied buffer (DbgConsole_Write, IAR __write below) stays the
+ * caller's responsibility, per fsl_semihost.h. */
+#if SEMIHOST_USE_NONCACHEABLE
+AT_NONCACHEABLE_SECTION_ALIGN(static char s_printBuf[DEBUG_CONSOLE_PRINTF_MAX_LOG_LEN], 32U);
+#else
+static char s_printBuf[DEBUG_CONSOLE_PRINTF_MAX_LOG_LEN];
+#endif
+
+/*******************************************************************************
  * Code
  ******************************************************************************/
 
@@ -67,13 +82,12 @@ static void DbgConsole_PrintCallback(char *buf, int32_t *indicator, char val, in
 
 int DbgConsole_Vprintf(const char *fmt_s, va_list formatStringArg)
 {
-    char printBuf[DEBUG_CONSOLE_PRINTF_MAX_LOG_LEN] = {'\0'};
     int logLength;
 
-    logLength = StrFormatPrintf(fmt_s, formatStringArg, printBuf, DbgConsole_PrintCallback);
+    logLength = StrFormatPrintf(fmt_s, formatStringArg, s_printBuf, DbgConsole_PrintCallback);
     if (logLength > 0)
     {
-        (void)SEMIHOST_Write(DEBUG_CONSOLE_SEMIHOST_HANDLE, printBuf, logLength);
+        (void)SEMIHOST_Write(DEBUG_CONSOLE_SEMIHOST_HANDLE, s_printBuf, logLength);
     }
     return logLength;
 }
@@ -92,8 +106,8 @@ int DbgConsole_Printf(const char *fmt_s, ...)
 
 int DbgConsole_Putchar(int ch)
 {
-    char c = (char)ch;
-    return SEMIHOST_Write(DEBUG_CONSOLE_SEMIHOST_HANDLE, &c, 1);
+    s_printBuf[0] = (char)ch;
+    return SEMIHOST_Write(DEBUG_CONSOLE_SEMIHOST_HANDLE, s_printBuf, 1);
 }
 
 int DbgConsole_Getchar(void)
