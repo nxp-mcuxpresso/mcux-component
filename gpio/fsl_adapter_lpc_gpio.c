@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 - 2022, 2025 NXP
+ * Copyright 2018-2022, 2025-2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -65,6 +65,12 @@ typedef struct _hal_gpio_state
 #define HAL_GPIO_PORT_INIT_SET_FLAG(port) (s_GpioPortInitializedFlag |= ((uint32_t)1U << (port)))
 #define HAL_GPIO_PORT_INIT_GET_FLAG(port) ((0U != (s_GpioPortInitializedFlag & ((uint32_t)1U << (port)))) ? 1U : 0U)
 
+/* FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTSn(x) expands to a pointer-comparison ternary on
+ * devices with SECPINT, which is not an integer constant expression and cannot size a static
+ * array. This adapter always targets the non-secure PINT, whose connected-output count is 8 on
+ * every supported device. */
+#define PINT_NUMBER_OF_CONNECTED_OUTPUTS_MAX (8U)
+
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -78,8 +84,8 @@ static void HAL_GpioInterruptHandle(uint8_t port, uint8_t pin);
 static uint8_t s_GpioPintInitialized      = 0;
 static uint32_t s_GpioPortInitializedFlag = 0;
 
-static uint8_t s_GpioInputMux[(FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS + 7) / 8];
-static uint8_t s_GpioInputMuxPin[FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS];
+static uint8_t s_GpioInputMux[(PINT_NUMBER_OF_CONNECTED_OUTPUTS_MAX + 7) / 8];
+static uint8_t s_GpioInputMuxPin[PINT_NUMBER_OF_CONNECTED_OUTPUTS_MAX];
 
 static hal_gpio_state_t *s_GpioHead;
 
@@ -277,7 +283,7 @@ hal_gpio_status_t HAL_GpioDeinit(hal_gpio_handle_t gpioHandle)
         PINT_DisableCallbackByIndex(PINT, (pint_pin_int_t)gpioStateHandle->pin.pint.pintIndex);
     }
 
-    for (k = 0U; k < (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS; k++)
+    for (k = 0U; k < (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTSn(PINT); k++)
     {
         if (HAL_GPIO_INPUTMUX_PIN_FLAG(gpioStateHandle->pin.port, gpioStateHandle->pin.pin) == s_GpioInputMuxPin[k])
         {
@@ -288,7 +294,7 @@ hal_gpio_status_t HAL_GpioDeinit(hal_gpio_handle_t gpioHandle)
         }
     }
 
-    for (i = 0U; i < (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS; i++)
+    for (i = 0U; i < (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTSn(PINT); i++)
     {
         if (0U != (s_GpioInputMux[i >> 3] & (1U << (i & 0x07U))))
         {
@@ -296,7 +302,7 @@ hal_gpio_status_t HAL_GpioDeinit(hal_gpio_handle_t gpioHandle)
         }
     }
 
-    if (i >= (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS)
+    if (i >= (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTSn(PINT))
     {
         if (0U != s_GpioPintInitialized)
         {
@@ -417,7 +423,7 @@ hal_gpio_status_t HAL_GpioSetTriggerMode(hal_gpio_handle_t gpioHandle, hal_gpio_
     /* initialize port interrupt */
     if (0U == gpioStateHandle->pin.pint.pintInitialized)
     {
-        for (uint32_t inputMuxIndex = 0; inputMuxIndex < (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS;
+        for (uint32_t inputMuxIndex = 0; inputMuxIndex < (uint32_t)FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTSn(PINT);
              inputMuxIndex++)
         {
             if (0U == (s_GpioInputMux[inputMuxIndex >> 3] & (1U << (inputMuxIndex & 0x07U))))
