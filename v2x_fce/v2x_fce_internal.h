@@ -72,6 +72,15 @@
 #define V2X_FCE_REQ_AES_GCM_DECRYPT (0x69u) /* GCM verify + decrypt       */
 
 /*
+ * FCE AES-CBC request opcodes (see PRIME / FCE User Guide, "FCE Request IDs").
+ * Like the AES-GCM request IDs above, these are the Command values placed in
+ * the header of a request descriptor written into an FCE MU slot buffer, then
+ * triggered with PUSH_REQUEST.
+ */
+#define V2X_FCE_REQ_AES_CBC_ENCRYPT (0x64u) /* CBC encrypt               */
+#define V2X_FCE_REQ_AES_CBC_DECRYPT (0x65u) /* CBC decrypt               */
+
+/*
  * FCE authenticate (HASH / HMAC) request opcodes (see PRIME / FCE User Guide,
  * "FCE Request IDs"). Like the AES-GCM request IDs above, these are the Command
  * values placed in the header of a request descriptor written into an FCE MU
@@ -178,6 +187,18 @@
  *   W6 Output address, W7-10 IV, W11 AAD byte length, W12 AAD address.
  */
 #define V2X_FCE_GCM_DESC_WORDS (0xDu)
+
+/*
+ * AES-CBC Oneshot request descriptor word count (FCE User Guide Table 25:
+ * 0xB = 11 words). Written into an FCE MU slot buffer and triggered with
+ * PUSH_REQUEST. 11 words:
+ *   W0 Header, W1 Status Address,
+ *   W2 [Key Slot(23-16) | Flags(7-0)],
+ *   W3 Digest Address (reused field, unused for CBC),
+ *   W4 Payload Byte Length, W5 Input Address, W6 Output Address,
+ *   W7-10 IV (16 bytes, inline little endian).
+ */
+#define V2X_FCE_CBC_DESC_WORDS (0xBu)
 
 /*
  * HASH / HMAC authenticate request descriptor word count (PRIME_AUTH_SZ = 0x18

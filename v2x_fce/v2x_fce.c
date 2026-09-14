@@ -67,6 +67,10 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
                                const v2x_fce_gcm_op_t *op,
                                uint8_t requestId);
 
+static status_t V2X_FCE_AesCbc(v2x_fce_handle_t *handle,
+                               const v2x_fce_cbc_op_t *op,
+                               uint8_t requestId);
+
 static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
                                      uint8_t requestId,
                                      uint8_t keySlot,
@@ -857,6 +861,196 @@ status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t 
     return V2X_FCE_Authenticate(handle, V2X_FCE_REQ_HASH, 0u,
                                 (uint8_t)op->shaAlgo, op->input, op->inputSize,
                                 op->digest, op->digestSize);
+}
+
+/*!
+ * @brief Shared AES-CBC encrypt/decrypt request.
+ *
+ * Submits an 11-word FCE AES-CBC Oneshot descriptor (FCE User Guide Table 25),
+ * mirroring V2X_FCE_AesGcm but without the TAG/AAD fields:
+ *
+ *   W0     Header: [Tag 0x1b | Command=requestId | Size 0xB | Ver 0x02]
+ *   W1     Status Address
+ *   W2     [Key Slot(23-16) | Flags(7-0)]
+ *   W3     Digest Address (reused field, unused for CBC; point at DDR scratch)
+ *   W4     Payload Byte Length
+ *   W5     Input Address
+ *   W6     Output Address
+ *   W7-10  IV (inline, little endian)
+ *
+ * The descriptor is written into FCE MU slot A and triggered with a header-only
+ * PUSH_REQUEST; the host then polls GET_REQUEST_STATUS until the request is no
+ * longer ongoing and reads the completion status the FCE wrote to the DDR
+ * Status Address. Input is staged into the DDR scratch region and the output is
+ * copied back out.
+ */
+static status_t V2X_FCE_AesCbc(v2x_fce_handle_t *handle,
+                               const v2x_fce_cbc_op_t *op,
+                               uint8_t requestId)
+{
+    volatile uint32_t *slot      = (volatile uint32_t *)V2X_FCE_SLOT_A_BASE(handle->mu);
+    volatile uint32_t *ddrStatus = (volatile uint32_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
+    uint8_t *ddrInput            = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
+    uint8_t *ddrOutput           = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
+    uint32_t desc[V2X_FCE_CBC_DESC_WORDS];
+    uint32_t msg[V2X_FCE_GET_REQUEST_STATUS_SIZE];
+    uint32_t resp[V2X_FCE_MSG_MAX_WORDS];
+    status_t status;
+    uint32_t i;
+    uint32_t reqId;
+    uint32_t reqStatus = V2X_FCE_REQ_ONGOING;
+
+    if ((handle == NULL) || (handle->mu == NULL) || (op == NULL))
+    {
+        V2X_FCE_TRACE("[FCE] CBC arg check: NULL handle/mu/op\r\n");
+        return kStatus_InvalidArgument;
+    }
+    if ((op->iv == NULL) || (op->input == NULL) || (op->output == NULL))
+    {
+        V2X_FCE_TRACE("[FCE] CBC arg check: NULL buffer iv=%p input=%p output=%p\r\n",
+                      (void *)op->iv, (void *)op->input, (void *)op->output);
+        return kStatus_InvalidArgument;
+    }
+    if (op->keySlot >= V2X_FCE_AES_KEY_SLOTS)
+    {
+        V2X_FCE_TRACE("[FCE] CBC arg check: bad keySlot=%u (max %u)\r\n",
+                      (unsigned)op->keySlot, (unsigned)V2X_FCE_AES_KEY_SLOTS);
+        return kStatus_InvalidArgument;
+    }
+    /* DMA-referenced buffers must be 64-bit aligned. */
+    if (!V2X_FCE_ADDR_ALIGNED(op->input) || !V2X_FCE_ADDR_ALIGNED(op->output))
+    {
+        V2X_FCE_TRACE("[FCE] CBC arg check: unaligned buffer input=%p output=%p (need 8-byte)\r\n",
+                      (void *)op->input, (void *)op->output);
+        return kStatus_InvalidArgument;
+    }
+
+    /* Seed the DDR status word with success (0xd6): the FCE overwrites it only
+     * on error, matching the AES-GCM path. Stage the caller input into DDR. */
+    *ddrStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
+    if (op->inputSize != 0u)
+    {
+        (void)memcpy(ddrInput, op->input, op->inputSize);
+    }
+
+    for (i = 0u; i < V2X_FCE_CBC_DESC_WORDS; i++)
+    {
+        desc[i] = 0u;
+    }
+
+    desc[0] = V2X_FCE_BUILD_HEADER((uint8_t)(V2X_FCE_MSG_TAG_CMD_BASE + 1u), requestId,
+                                   V2X_FCE_CBC_DESC_WORDS, V2X_FCE_MSG_VERSION);
+    desc[1] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
+    desc[2] = (((uint32_t)op->keySlot & 0xFFu) << 16) |
+              ((V2X_FCE_REQ_FLAG_SIGNAL | V2X_FCE_REQ_FLAG_AUTO_POP) & 0xFFu);
+    /* W3 is the (reused) Digest Address field; unused for CBC but pointed at a
+     * valid DDR scratch address (the GCM TAG offset) to stay safe. */
+    desc[3] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_TAG_OFF);
+    desc[4] = op->inputSize;
+    desc[5] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
+    desc[6] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
+
+    /* Words 7-10: IV inlined (up to 16 bytes, little endian). */
+    for (i = 0u; (i < op->ivSize) && (i < 16u); i++)
+    {
+        desc[7u + (i / 4u)] |= ((uint32_t)op->iv[i]) << (8u * (i % 4u));
+    }
+
+    for (i = 0u; i < V2X_FCE_CBC_DESC_WORDS; i++)
+    {
+        slot[i] = desc[i];
+    }
+
+#if V2X_FCE_DEBUG
+    {
+        V2X_FCE_TRACE("[FCE] CBC desc -> slot A @%08x:", (unsigned)V2X_FCE_SLOT_A_BASE(handle->mu));
+        for (i = 0u; i < V2X_FCE_CBC_DESC_WORDS; i++)
+        {
+            V2X_FCE_TRACE(" %08x", (unsigned)desc[i]);
+        }
+        V2X_FCE_TRACE("\r\n");
+    }
+#endif
+
+    __DSB();
+
+    /* PUSH_REQUEST (0xB0 | slot A). */
+    msg[0] = V2X_FCE_CMD_HEADER((uint8_t)(V2X_FCE_CMD_PUSH_REQUEST | V2X_FCE_SLOT_A),
+                                V2X_FCE_PUSH_REQUEST_SIZE);
+    status = V2X_FCE_Transceive(handle->mu, msg, V2X_FCE_PUSH_REQUEST_SIZE, resp,
+                                (uint8_t)(V2X_FCE_CMD_PUSH_REQUEST | V2X_FCE_SLOT_A));
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    reqId = resp[2];
+    V2X_FCE_TRACE("[FCE] CBC PUSH resp: w1=0x%08x w2(reqId)=0x%08x\r\n",
+                  (unsigned)resp[1], (unsigned)reqId);
+    if ((reqId & 0xFu) != 0u)
+    {
+        V2X_FCE_TRACE("[FCE] CBC PUSH rejected: req_id=0x%08x\r\n", (unsigned)reqId);
+        return kStatus_Fail;
+    }
+
+    for (i = 0u; i < V2X_FCE_GCM_STATUS_RETRIES; i++)
+    {
+        msg[0] = V2X_FCE_CMD_HEADER(V2X_FCE_CMD_GET_REQUEST_STATUS, V2X_FCE_GET_REQUEST_STATUS_SIZE);
+        msg[1] = reqId;
+
+        status = V2X_FCE_Transceive(handle->mu, msg, V2X_FCE_GET_REQUEST_STATUS_SIZE, resp,
+                                    V2X_FCE_CMD_GET_REQUEST_STATUS);
+        if (status != kStatus_Success)
+        {
+            return status;
+        }
+
+        reqStatus = resp[2];
+        if (reqStatus != V2X_FCE_REQ_ONGOING)
+        {
+            break;
+        }
+    }
+
+    if (reqStatus == V2X_FCE_REQ_ONGOING)
+    {
+        V2X_FCE_TRACE("[FCE] CBC timeout: request still ongoing\r\n");
+        return kStatus_Timeout;
+    }
+
+    __DSB();
+
+    if (V2X_FCE_RESP_STATUS(*ddrStatus) != V2X_FCE_STATUS_SUCCESS)
+    {
+        V2X_FCE_TRACE("[FCE] CBC completion failed: ddrStatus=0x%08x\r\n", (unsigned)*ddrStatus);
+        return kStatus_Fail;
+    }
+
+    /* Copy the produced ciphertext/plaintext back to the caller. */
+    if (op->inputSize != 0u)
+    {
+        (void)memcpy(op->output, ddrOutput, op->inputSize);
+    }
+
+    return kStatus_Success;
+}
+
+status_t V2X_FCE_AesCbcEncrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *op)
+{
+    if (op == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+    return V2X_FCE_AesCbc(handle, op, V2X_FCE_REQ_AES_CBC_ENCRYPT);
+}
+
+status_t V2X_FCE_AesCbcDecrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *op)
+{
+    if (op == NULL)
+    {
+        return kStatus_InvalidArgument;
+    }
+    return V2X_FCE_AesCbc(handle, op, V2X_FCE_REQ_AES_CBC_DECRYPT);
 }
 
 status_t V2X_FCE_GetInfo(v2x_fce_handle_t *handle, uint8_t *buffer, uint32_t size)

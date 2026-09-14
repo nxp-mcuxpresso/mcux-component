@@ -42,8 +42,8 @@
  * Definitions
  ******************************************************************************/
 
-/*! @brief v2x_fce driver version 1.2.0. */
-#define FSL_V2X_FCE_DRIVER_VERSION (MAKE_VERSION(1, 2, 0))
+/*! @brief v2x_fce driver version 1.3.0. */
+#define FSL_V2X_FCE_DRIVER_VERSION (MAKE_VERSION(1, 3, 0))
 
 /*! @brief Number of AES plain-key slots exposed by the FCE (0..7). */
 #define V2X_FCE_AES_KEY_SLOTS  (8u)
@@ -81,6 +81,22 @@ typedef struct _v2x_fce_gcm_op
     uint8_t *tag;           /*!< Auth tag out (encrypt) or in (decrypt). */
     uint32_t tagSize;       /*!< Tag length in bytes (typically 16). */
 } v2x_fce_gcm_op_t;
+
+/*! @brief Parameters for a single AES-CBC encrypt/decrypt operation.
+ *
+ * Buffers referenced by the DMA engine should be 64-bit aligned. The payload
+ * length must be a multiple of the AES block size (16 bytes). @c iv carries the
+ * 16-byte initialization vector.
+ */
+typedef struct _v2x_fce_cbc_op
+{
+    uint8_t keySlot;      /*!< AES key slot previously loaded (0..7). */
+    const uint8_t *iv;    /*!< 16-byte initialization vector. */
+    uint32_t ivSize;      /*!< IV length in bytes (16). */
+    const uint8_t *input; /*!< Plaintext (encrypt) or ciphertext (decrypt). */
+    uint32_t inputSize;   /*!< Payload length in bytes (multiple of 16). */
+    uint8_t *output;      /*!< Ciphertext (encrypt) or plaintext (decrypt) out. */
+} v2x_fce_cbc_op_t;
 
 /*! @brief SHA algorithm selector for the FCE HASH / HMAC operations. */
 typedef enum _v2x_fce_sha_algo
@@ -246,6 +262,30 @@ status_t V2X_FCE_HmacVerify(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *o
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
 status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t *op);
+
+/*!
+ * @brief AES-CBC encrypt (FCE_PUSH_REQUEST AES-CBC encrypt).
+ *
+ * Encrypts @c op->input with the key previously loaded into @c op->keySlot and
+ * the IV in @c op->iv, writing the ciphertext to @c op->output.
+ *
+ * @param handle Service handle.
+ * @param op     CBC operation descriptor.
+ * @return kStatus_Success on success, kStatus_Fail otherwise.
+ */
+status_t V2X_FCE_AesCbcEncrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *op);
+
+/*!
+ * @brief AES-CBC decrypt (FCE_PUSH_REQUEST AES-CBC decrypt).
+ *
+ * Decrypts @c op->input with the key previously loaded into @c op->keySlot and
+ * the IV in @c op->iv, writing the plaintext to @c op->output.
+ *
+ * @param handle Service handle.
+ * @param op     CBC operation descriptor.
+ * @return kStatus_Success on success, kStatus_Fail otherwise.
+ */
+status_t V2X_FCE_AesCbcDecrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *op);
 
 status_t V2X_FCE_GetInfo(v2x_fce_handle_t *handle, uint8_t *buffer, uint32_t size);
 
