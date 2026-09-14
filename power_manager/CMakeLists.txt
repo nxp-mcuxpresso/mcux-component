@@ -56,6 +56,10 @@ if ((${device} STREQUAL MCXW236) OR (${device} STREQUAL MCXW235))
     mcux_set_variable(pm_device_foldername MCXW236)
 endif()
 
+if ((${device} STREQUAL MIMXRT2660) OR (${device} STREQUAL MIMXRT2661) OR (${device} STREQUAL MIMXRT2662) OR (${device} STREQUAL MIMXRT2663))
+    mcux_set_variable(pm_device_foldername RT2660)
+endif()
+
 if (CONFIG_MCUX_COMPONENT_component.power_manager_framework)
 
     mcux_add_source(
