@@ -73,7 +73,7 @@ menu "wifi_bt_module"
             choice MCUX_DEPENDENCY_COMPONENT_component.wifi_bt_module.RW61X.selection
                 prompt "Select NXP RW61x board"
                 default MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x if MCUX_HW_BOARD_rdrw612bga
-                default MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x if MCUX_HW_BOARD_frdmrw612
+                default MCUX_COMPONENT_component.wifi_bt_module.board_frdm_rw61x if MCUX_HW_BOARD_frdmrw612 || MCUX_HW_BOARD_frdmrw610fml
                 config MCUX_COMPONENT_component.wifi_bt_module.board_rd_rw61x
                     bool "NXP RD-RW61x"
                     help

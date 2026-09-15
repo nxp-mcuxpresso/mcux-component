@@ -1,7 +1,30 @@
 /*
- * Copyright 2017-2022, 2024 NXP
+ * Copyright 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Flash driver adapted for XM25QH64DHIQT (Wuhan Xinxin / XMC).
+ *
+ * Device:      XM25QH64D (compatible with XM25QH64C command set)
+ * Density:     64 Mbit (8 MByte)
+ * Interface:   Standard / Dual / Quad SPI
+ * VCC:         2.3 V - 3.6 V
+ * Page size:   256 bytes
+ * Sector size: 4 KB  (erase command 20h)
+ * Block size:  64 KB (erase command D8h)
+ * Address:     24-bit (3-byte)
+ * Max clock:   133 MHz (Quad SDR, DC[1:0]=10 -> 8 dummy)
+ *              108 MHz (Quad I/O EBh, DC[1:0]=00 default -> 2 mode + 4 dummy)
+ * JEDEC ID:    20h / 40h / 17h
+ *
+ * Read sequence: Fast Read Quad I/O (EBh), 1-4-4 SDR
+ *   Instruction : EBh on 1 pad
+ *   Address     : 24-bit on 4 pads
+ *   Mode byte   : 8 bits on 4 pads (2 clocks, F0h = non-continuous)
+ *   Dummy       : 4 clocks on 4 pads
+ *   Data        : on 4 pads
+ *
+ * Quad Enable : QE = bit 1 of Status Register-2 (S9); set by Write SR-2 (31h).
  */
 
 #include <stdbool.h>
@@ -51,65 +74,93 @@ static flexspi_device_config_t deviceconfig = {
 };
 
 const uint32_t customLUT[CUSTOM_LUT_LENGTH] = {
-    /* Normal read mode -SDR */
+    /* ---------- Normal read (03h), 1-1-1, 24-bit address ----------
+     * Used for slow/fallback reads. Max clock 66 MHz.               */
     [4 * NOR_CMD_LUT_SEQ_IDX_READ_NORMAL] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x13, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x20),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x03,
+                        kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x18),
     [4 * NOR_CMD_LUT_SEQ_IDX_READ_NORMAL + 1] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04, kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04,
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
 
-    /* Fast read mode - SDR */
+    /* ---------- Fast Read (0Bh), 1-1-1, 24-bit address + 8 dummy clocks ----------
+     * Supports up to 133 MHz (DC[1:0]=00 default = 8 dummy for Fast Read). */
     [4 * NOR_CMD_LUT_SEQ_IDX_READ_FAST] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x0C, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x20),
-    [4 * NOR_CMD_LUT_SEQ_IDX_READ_FAST + 1] = FLEXSPI_LUT_SEQ(
-        kFLEXSPI_Command_DUMMY_SDR, kFLEXSPI_1PAD, 0x08, kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x0B,
+                        kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x18),
+    [4 * NOR_CMD_LUT_SEQ_IDX_READ_FAST + 1] =
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_DUMMY_SDR, kFLEXSPI_1PAD, 0x08,
+                        kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04),
 
-    /* Fast read quad mode - SDR */
+    /* ---------- Fast Read Quad I/O (EBh), 1-4-4, 24-bit address ----------
+     * Sequence: EBh | A[23:0] on 4 pads | M[7:0]=F0h on 4 pads (2 clocks,
+     * non-continuous mode) | 4 dummy clocks on 4 pads | data on 4 pads.
+     * DC[1:0]=00 default: 2 mode + 4 dummy = 6 cycles total -> 108 MHz.   */
     [4 * NOR_CMD_LUT_SEQ_IDX_READ_FAST_QUAD] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0xEC, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_4PAD, 0x20),
-    [4 * NOR_CMD_LUT_SEQ_IDX_READ_FAST_QUAD + 1] = FLEXSPI_LUT_SEQ(
-        kFLEXSPI_Command_MODE8_SDR, kFLEXSPI_4PAD, 0xF0, kFLEXSPI_Command_DUMMY_SDR, kFLEXSPI_4PAD, 0x04),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0xEB,
+                        kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_4PAD, 0x18),
+    [4 * NOR_CMD_LUT_SEQ_IDX_READ_FAST_QUAD + 1] =
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_MODE8_SDR, kFLEXSPI_4PAD, 0xF0,
+                        kFLEXSPI_Command_DUMMY_SDR, kFLEXSPI_4PAD, 0x04),
     [4 * NOR_CMD_LUT_SEQ_IDX_READ_FAST_QUAD + 2] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_READ_SDR, kFLEXSPI_4PAD, 0x04, kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0x00),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_READ_SDR, kFLEXSPI_4PAD, 0x04,
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0x00),
 
-    /* Write Enable */
+    /* ---------- Write Enable (06h) ---------- */
     [4 * NOR_CMD_LUT_SEQ_IDX_WRITEENABLE] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x06, kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x06,
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
 
-    /* Erase Sector  */
+    /* ---------- Sector Erase 4 KB (20h), 24-bit address ---------- */
     [4 * NOR_CMD_LUT_SEQ_IDX_ERASESECTOR] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x21, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x20),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x20,
+                        kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x18),
 
-    /* Page Program - single mode */
+    /* ---------- Page Program single (02h), 1-1-1, 24-bit address ---------- */
     [4 * NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM_SINGLE] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x12, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x20),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x02,
+                        kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x18),
     [4 * NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM_SINGLE + 1] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_1PAD, 0x04, kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_1PAD, 0x04,
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
 
-    /* Page Program - quad mode */
+    /* ---------- Quad Input Page Program (32h), 1-1-4, 24-bit address ----------
+     * Instruction and address on 1 pad; data clocked in on 4 pads.
+     * QE bit must be set before using this command.                           */
     [4 * NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM_QUAD] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x34, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x20),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x32,
+                        kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_1PAD, 0x18),
     [4 * NOR_CMD_LUT_SEQ_IDX_PAGEPROGRAM_QUAD + 1] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_4PAD, 0x04, kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_4PAD, 0x04,
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
 
-    /* Read ID */
+    /* ---------- Read JEDEC ID (9Fh) ---------- */
     [4 * NOR_CMD_LUT_SEQ_IDX_READID] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x9F, kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x9F,
+                        kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04),
 
-    /* Enable Quad mode */
+    /* ---------- Write Status Register-2 (31h) ----------
+     * Used to set QE bit (bit 1 of SR-2). Write 0x02 to enable Quad mode.
+     * Must be preceded by Write Enable (06h).                               */
     [4 * NOR_CMD_LUT_SEQ_IDX_WRITESTATUSREG] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x31, kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_1PAD, 0x01),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x31,
+                        kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_1PAD, 0x01),
 
-    /*  Dummy write, do nothing when AHB write command is triggered. */
+    /* ---------- Dummy write - no-op for AHB write triggers ---------- */
     [4 * NOR_CMD_LUT_SEQ_IDX_WRITE] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0x0, kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0x0),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0x0,
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0x0),
 
-    /* Read status register */
+    /* ---------- Read Status Register-1 (05h) ----------
+     * BUSY = bit 0 of SR-1. Poll until 0 to confirm idle.           */
     [4 * NOR_CMD_LUT_SEQ_IDX_READSTATUSREG] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x05, kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0x05,
+                        kFLEXSPI_Command_READ_SDR, kFLEXSPI_1PAD, 0x04),
 
-    /* Erase whole chip */
+    /* ---------- Chip Erase (C7h) ---------- */
     [4 * NOR_CMD_LUT_SEQ_IDX_ERASECHIP] =
-        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0xC7, kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
+        FLEXSPI_LUT_SEQ(kFLEXSPI_Command_SDR, kFLEXSPI_1PAD, 0xC7,
+                        kFLEXSPI_Command_STOP, kFLEXSPI_1PAD, 0),
 };
 
 static status_t flexspi_nor_wait_bus_busy(FLEXSPI_Type *base)
