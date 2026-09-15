@@ -148,3 +148,24 @@ config MCUX_COMPONENT_component.qsci_adapter
         # config DRIVER_qsci_ADAPTER_CONFIG_DEMO2
         #     bool "Driver qsci_ADAPTER config demo 2"
     endif
+
+config MCUX_COMPONENT_component.muxuart_adapter
+    bool "muxuart (serial_mux client as a HAL UART)"
+    select MCUX_COMPONENT_component.serial_mux
+    select MCUX_COMPONENT_component.serial_mux.client
+    help
+      Expose a serial_mux CLIENT as a standard HAL UART adapter, so a non-hub
+      core with no physical UART can use utility.debug_console_lite (or any
+      other HAL_Uart consumer) unmodified: PRINTF/GETCHAR travel over the
+      shared-memory slots to the hub core, which owns the wire.
+
+      Client cores only. Never enable it on the hub core, which drives its
+      transport backend straight on the UART driver: the hub would otherwise
+      recurse through the mux and duplicate the HAL_Uart* strong symbols.
+      Only one uart adapter may be linked into an image, so this option is
+      mutually exclusive with the lpuart/usart/iuart/... adapters.
+
+      Requires MUX_REGION_ADDR from the serial_mux options. The adapter uses
+      hal_uart_config_t::instance as the client's 0-based core index (its
+      logical mux channel); srcClock_Hz/baudRate_Bps are ignored because the
+      hub owns the physical link.

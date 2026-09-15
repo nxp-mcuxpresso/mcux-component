@@ -140,3 +140,16 @@ if (CONFIG_MCUX_COMPONENT_component.qsci_adapter)
     )
 
 endif()
+
+if (CONFIG_MCUX_COMPONENT_component.muxuart_adapter)
+
+    mcux_add_source(
+        SOURCES fsl_adapter_uart.h
+                fsl_adapter_muxuart.c
+    )
+
+    mcux_add_include(
+        INCLUDES .
+    )
+
+endif()
