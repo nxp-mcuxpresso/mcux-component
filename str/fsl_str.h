@@ -100,7 +100,7 @@ typedef void (*printfCb)(char *buf, int32_t *indicator, char val, int len);
  * @param[in] fmt   Format string for printf.
  * @param[in] ap  Arguments to printf.
  * @param[in] buf  pointer to the buffer
- * @param cb print callbck function pointer
+ * @param cb print callback function pointer
  *
  * @return Number of characters to be print
  */

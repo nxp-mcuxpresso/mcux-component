@@ -374,7 +374,7 @@ static void MEM_BufferFreeBlocksCleanUp(memAreaPrivDesc_t *p_area, blockHeader_t
         if (NextBlockHdr == NULL)
         {
 #if (gMemManagerLightFreeBlocksCleanUp == 2)
-            /* Step backwards to merge all preceeding contiguous free blocks */
+            /* Step backwards to merge all preceding contiguous free blocks */
             blockHeader_t *PrevFreeBlockHdr = BlockHdr->prev_free;
             while ((PrevFreeBlockHdr != NULL) && (PrevFreeBlockHdr->next == BlockHdr))
             {

@@ -38,7 +38,7 @@
 #endif
 
 #ifndef SERIAL_USE_CONFIGURE_STRUCTURE
-#define SERIAL_USE_CONFIGURE_STRUCTURE (0U) /*!< Enable or disable the confgure structure pointer */
+#define SERIAL_USE_CONFIGURE_STRUCTURE (0U) /*!< Enable or disable the configure structure pointer */
 #endif
 
 /*! @brief serial port uart parity mode*/

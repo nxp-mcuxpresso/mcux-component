@@ -496,7 +496,7 @@ void UsageFault_Handler(void)
  * Make sure __SEMIHOST_HARDFAULT_DISABLE Macro is defined in if want to use  HardFault_Handler function
  * in exception_handling.c.
  *
- * @retval No return vaule.
+ * @retval No return value.
  */
 
 void EXCEPTION_DataPrint(void)

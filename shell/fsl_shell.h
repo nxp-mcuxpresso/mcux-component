@@ -327,7 +327,7 @@ _Pragma("diag_suppress=Pm120")
      *
      * This function is used to check if code running in ISR.
      *
-     * @retval TRUE if code runing in ISR.
+     * @retval TRUE if code running in ISR.
      */
     static inline bool SHELL_checkRunningInIsr(void)
     {

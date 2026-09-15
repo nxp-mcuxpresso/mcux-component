@@ -170,7 +170,7 @@ typedef void* hal_timer_handle_t;
 hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_config_t* halTimerConfig);
 
 /*!
- * @brief DeInitilizate the timer adapter module.
+ * @brief Deinitialize the timer adapter module.
  *
  * @note This API should be called when not using the timer adapter anymore.
  *

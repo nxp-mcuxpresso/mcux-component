@@ -76,7 +76,7 @@ typedef struct _panic_data
  * @param location                   location address where the Panic occurred
  * @param extra1                     extra1 parameter to be stored in Panic structure.
  * @param extra2                     extra2 parameter to be stored in Panic structure
- * @retval No return vaule.
+ * @retval No return value.
  */
 void panic(panic_id_t id, uint32_t location, uint32_t extra1, uint32_t extra2);
 /*! @}*/

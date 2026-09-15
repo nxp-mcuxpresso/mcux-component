@@ -64,7 +64,7 @@ typedef struct _hal_crc_config
     uint32_t crcSeed;                   /*!< CRC Seed value. Initial value for CRC LFSR. */
     uint32_t crcPoly;                   /*!< CRC Polynomial value. */
     uint32_t crcXorOut;                 /*!< XOR mask for CRC result (for no mask, should be 0). */
-    uint8_t complementChecksum;         /*!< wether output the complement checksum. */
+    uint8_t complementChecksum;         /*!< whether output the complement checksum. */
     uint8_t crcSize;                    /*!< Number of CRC octets, 2 mean use CRC16, 4 mean use CRC32. */
     uint8_t crcStartByte; /*!< Start CRC with this byte position. Byte #0 is the first byte of Sync Address. */
 } hal_crc_config_t;

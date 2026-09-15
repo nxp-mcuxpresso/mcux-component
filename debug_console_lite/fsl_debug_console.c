@@ -1004,7 +1004,7 @@ static int DbgConsole_PrintfFormattedData(PUTCHAR_FUNC func_ptr, const char *fmt
                          * 1. misra_c_2012_rule_11_6_violation: The expression va_arg (ap, void *) of type void * is
                          * cast to type unsigned int.
                          *
-                         * Orignal code: uval = (unsigned int)va_arg(ap, void *);
+                         * Original code: uval = (unsigned int)va_arg(ap, void *);
                          */
                         void *pval;
                         pval = (void *)va_arg(ap, void *);

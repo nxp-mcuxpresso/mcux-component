@@ -28,9 +28,9 @@
 #define LED_COLOR_WHEEL_ENABLEMENT (0U) /*!< Enable or disable the color wheel feature */
 #endif
 
-/*! @brief Definition to determine whether use confgure structure. */
+/*! @brief Definition to determine whether use configure structure. */
 #ifndef LED_USE_CONFIGURE_STRUCTURE
-#define LED_USE_CONFIGURE_STRUCTURE (1U) /*!< Enable or disable the confgure structure pointer */
+#define LED_USE_CONFIGURE_STRUCTURE (1U) /*!< Enable or disable the configure structure pointer */
 #endif
 /*! @brief The handle of LED */
 typedef void *led_handle_t;

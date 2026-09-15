@@ -256,8 +256,8 @@ extern const uint8_t gUseRtos_c;
 #endif
 
 /*
- * Converse the percent of the priority to the priority of the OSA.
- * The the range of the parameter x is 0-100.
+ * Convert the percent of the priority to the priority of the OSA.
+ * The range of the parameter x is 0-100.
  */
 #define OSA_TASK_PRIORITY_PERCENT(x) \
     ((((OSA_TASK_PRIORITY_MIN - OSA_TASK_PRIORITY_MAX) * (100 - (x))) / 100) + OSA_TASK_PRIORITY_MAX)
@@ -337,7 +337,7 @@ extern const uint8_t gUseRtos_c;
                                                  NULL,   NULL,       (uint8_t *)#name, (useFloat)}
 #endif
 #endif
-/* Access a Thread defintion.
+/* Access a Thread definition.
  * \param         name          name of the thread definition object.
  */
 #define OSA_TASK(name) (const osa_task_def_t *)&os_thread_def_##name
@@ -484,7 +484,7 @@ extern const uint8_t gUseRtos_c;
  */
 #define OSA_ENTER_CRITICAL() OSA_EnterCritical(&osaCurrentSr)
 /*
- * Exit critical mode and retore the previous mode
+ * Exit critical mode and restore the previous mode
  */
 #define OSA_EXIT_CRITICAL() \
     __DSB();                \

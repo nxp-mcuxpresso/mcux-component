@@ -172,7 +172,7 @@ typedef struct _timer_config
 typedef void *timer_handle_t;
 
 /*
- * @brief   Timer callback fiction
+ * @brief   Timer callback function
  */
 typedef void (*timer_callback_t)(void *param);
 
@@ -308,7 +308,7 @@ timer_status_t TM_InstallCallback(timer_handle_t timerHandle, timer_callback_t c
  * @brief  Start a specified timer
  *
  * TM_Start() starts a specified timer that was previously opened using the TM_Open() API function.
- * The function is a non-blocking API, the funciton will return at once. And the callback function that was previously
+ * The function is a non-blocking API, the function will return at once. And the callback function that was previously
  * installed by using the TM_InstallCallback() API function will be called if timer is expired.
  *
  * @param timerHandle    the handle of the timer

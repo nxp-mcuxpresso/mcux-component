@@ -107,7 +107,7 @@ static volatile bool s_debugConsoleReadWaitSemaphore;
 
 #endif /* DEBUG_CONSOLE_SYNCHRONIZATION_MODE == DEBUG_CONSOLE_SYNCHRONIZATION_FREERTOS */
 
-/*! @brief get current runing environment is ISR or not */
+/*! @brief get current running environment is ISR or not */
 #ifdef __CA7_REV
 #define IS_RUNNING_IN_ISR() SystemGetIRQNestingLevel()
 #else
@@ -433,7 +433,7 @@ status_t DbgConsole_ReadOneCharacter(uint8_t *ch)
           DEBUG_CONSOLE_SYNCHRONIZATION_BM) && defined(OSA_USED)*/
     serial_manager_status_t serialManagerStatus = kStatus_SerialManager_Error;
 
-/* recieve one char every time */
+/* receive one char every time */
 #if defined(DEBUG_CONSOLE_TRANSFER_NON_BLOCKING)
     serialManagerStatus =
         SerialManager_ReadNonBlocking(((serial_read_handle_t)&s_debugConsoleState.serialReadHandleBuffer[0]), ch, 1);
@@ -468,7 +468,7 @@ static status_t DbgConsole_EchoCharacter(uint8_t *ch, bool isGetChar, int *index
     /* Due to scanf take \n and \r as end of string,should not echo */
     if (((*ch != (uint8_t)'\r') && (*ch != (uint8_t)'\n')) || (isGetChar))
     {
-        /* recieve one char every time */
+        /* receive one char every time */
         if (1 != DbgConsole_SendDataReliable(ch, 1U))
         {
             return (status_t)kStatus_Fail;
@@ -646,7 +646,7 @@ int DbgConsole_ReadLine(uint8_t *buf, size_t size)
 
     do
     {
-        /* recieve one char every time */
+        /* receive one char every time */
         if ((status_t)kStatus_Success != DbgConsole_ReadOneCharacter(&buf[i]))
         {
             /* release mutex lock function */
