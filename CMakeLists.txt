@@ -95,6 +95,7 @@ mcux_add_cmakelists(${SdkRootDirPath}/components/gen_hal)
 mcux_add_cmakelists(${SdkRootDirPath}/components/lce)
 mcux_add_cmakelists(${SdkRootDirPath}/components/sgi_pkc OPTIONAL)
 mcux_load_all_cmakelists_in_directory(${SdkRootDirPath}/components/cmsis_drivers)
+mcux_add_cmakelists(${SdkRootDirPath}/components/serial_mux)
 ##### cmakelists.txt end
 
 ##### mcux.cmake strart

@@ -195,4 +195,8 @@ menu "Component Configuration"
         rsource "unity/Kconfig"
     endmenu
 
+    menu "Serial MUX"
+        rsource "serial_mux/Kconfig"
+    endmenu
+
 endmenu

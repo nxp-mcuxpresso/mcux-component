@@ -1,0 +1,224 @@
+# Copyright 2026 NXP
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+menu "Serial MUX (COBS channel-framing serial multiplexer)"
+
+config MCUX_COMPONENT_component.serial_mux
+    bool "Serial MUX COBS core"
+    help
+      Portable COBS channel-framing core that multiplexes several logical
+      byte streams (channels) onto one physical UART. Wire framing is
+      identical to the PC-side scripts: COBS(<channel_byte> + <payload>) 0x00.
+      Arch-neutral with no hardware dependencies. Enabling this option
+      auto-enables the slot IPC, hub, client, and transport sub-parts
+      (each defaults to y inside this component); disable any of them
+      explicitly if a build does not need that role.
+
+if MCUX_COMPONENT_component.serial_mux
+
+config MCUX_COMPONENT_component.serial_mux.slots
+    bool "Shared-memory SPSC slot IPC"
+    default y
+    help
+      Lock-free single-producer / single-consumer slot rings in a shared
+      memory region used to move payloads between the hub core (which owns
+      the physical UART) and non-hub cores. Required by both the hub and
+      client roles on a multicore SoC.
+
+config MCUX_COMPONENT_component.serial_mux.hub
+    bool "Hub role (owns physical UART, COBS encode/decode + routing)"
+    default y
+    select MCUX_COMPONENT_component.serial_mux.slots
+    help
+      Runs on the core that owns the physical UART. Performs COBS
+      encode/decode on the wire and routes decoded payloads to/from the
+      per-channel shared-memory slots.
+
+config MCUX_COMPONENT_component.serial_mux.client
+    bool "Client role (non-hub core, no UART access)"
+    default y
+    select MCUX_COMPONENT_component.serial_mux.slots
+    help
+      Runs on a non-hub core. Exchanges payloads with the hub through the
+      shared-memory slots; never touches the UART. The channel id is
+      implied by the core's 0-based index.
+
+config MUX_CLIENT_BLOCKING_RECV
+    bool "Client recv blocks until a byte arrives (console getchar semantics)"
+    depends on MCUX_COMPONENT_component.serial_mux.client
+    default y
+    help
+      No prefix in generated macro
+      Selects blocking vs non-blocking client downlink receive. When enabled
+      (default), MUX_CLIENT_RecvBlocking() spins until at least one downlink
+      byte is available, and a console reader on top of the client (e.g. the
+      muxuart HAL UART adapter) uses it so GETCHAR blocks like a real UART
+      instead of returning a no-data sentinel (which an echo loop would
+      otherwise stream back to the PC). Disable to keep the original
+      non-blocking recv, which returns immediately when no byte is pending
+      (poll-style callers).
+
+
+config MCUX_COMPONENT_component.serial_mux.transport
+    bool "LPUART transport + one-call hub/client bring-up"
+    default y
+    select MCUX_COMPONENT_component.serial_mux.slots
+    help
+      Reusable application glue on top of the hub/client roles: a hub-side
+      LPUART software TX/RX ring pair with a drain-on-TDRE service call and an
+      RX ISR body and a deadlock-free channel self-console emit. Lets a demo
+      bring up a single-UART console mux by only supplying board wiring, with
+      no ring/ISR boilerplate.
+      The hub-side and client-side sources are compiled per role (driven by the
+      serial_mux.hub / serial_mux.client options).
+
+# Serial MUX hub transport backends. This is an INDEPENDENT bool group (not a
+# single-select choice), so more backends (e.g. I2C, SPI) can be added later as
+# their own MUX_TRANSPORT_* options and enabled alongside LPUART. Each option
+# compiles one concrete mux_transport_t backend source. The mux core stays
+# transport-neutral: a hub instance is bound to exactly one physical link, so
+# enabling several backends lets an application create one hub instance per link
+# and pass each a different backend - this is how multiple backends coexist at
+# runtime. For now only the LPUART backend exists. Leaving it disabled is the
+# "custom" case: no in-tree backend is compiled and the application supplies its
+# own mux_transport_t and drives MUX_HUB_Init() with that backend's write/read
+# hooks directly.
+config MUX_TRANSPORT_LPUART
+    bool "LPUART transport backend"
+    depends on MCUX_COMPONENT_component.serial_mux.transport
+    default y
+    help
+      No prefix in generated macro
+      Carry the COBS wire stream over an LPUART instance (software TX/RX rings
+      plus an RX-full ISR). This is the default in-tree backend. Board wiring
+      (LPUART instance, IRQ, clock) is supplied via mux_transport_lpuart_cfg_t /
+      the MUX_UART_Hub* one-call bring-up.
+
+config MUX_SLOTS_CORES
+    int "Number of non-hub client cores served by the hub"
+    depends on MCUX_COMPONENT_component.serial_mux.slots
+    help
+      No prefix in generated macro
+      type unsigned
+      Non-hub cores that get an uplink/downlink SPSC ring pair (and a
+      logical channel) in the shared slot region. Mandatory: there is
+      deliberately no default; set CONFIG_MUX_SLOTS_CORES in the
+      application or the build fails. On imx943evk set it to 2
+      (cm7_core0 -> channel 0, cm7_core1 -> channel 1).
+
+config MUX_SLOTS_PAYLOAD_MAX
+    int "Max payload bytes carried in one slot"
+    depends on MCUX_COMPONENT_component.serial_mux.slots
+    default 240
+    help
+      No prefix in generated macro
+      type unsigned
+      Largest payload, in bytes, that a single shared-memory slot can hold.
+      This is the capacity of the per-slot data[] buffer in the SPSC ring;
+      a payload longer than this is rejected by the slot layer. Safe
+      default (240): the slot header (2 x uint32_t) plus a 240-byte payload
+      is 248 bytes, which pads cleanly to 256 (8 x 32-byte cache lines).
+
+      Relationship to SERIAL_MUX_MAX_FRAME: SERIAL_MUX_MAX_FRAME bounds the
+      largest DECODED COBS frame on the wire (channel byte + payload), while
+      MUX_SLOTS_PAYLOAD_MAX bounds the PAYLOAD moved through one slot between
+      cores. The hub strips the 1-byte channel prefix before dropping the
+      payload into a slot, so the two are related by one framing byte:
+      keep MUX_SLOTS_PAYLOAD_MAX <= SERIAL_MUX_MAX_FRAME - 1 so any decoded
+      frame the hub accepts always fits in a single slot. With the defaults
+      (240 and 256) this holds with margin (240 <= 255).
+
+config MUX_SLOTS_DEPTH
+    int "SPSC ring depth per direction per core"
+    depends on MCUX_COMPONENT_component.serial_mux.slots
+    default 4
+    help
+      No prefix in generated macro
+      type unsigned
+      Slots per ring per direction. MUST be a power of two so the head/
+      tail counters wrap cleanly with a bit mask. Depth 1 is the original
+      single-slot scheme; a small depth (4/8) lets short bursts through.
+      Safe default (4): deep enough to absorb short bursts, still small.
+
+config MUX_SLOTS_CACHELINE
+    int "Cache line size (bytes) for counter/slot padding"
+    depends on MCUX_COMPONENT_component.serial_mux.slots
+    default 32
+    help
+      No prefix in generated macro
+      type unsigned
+      D-cache line size used to keep the producer-owned 'tail' and the
+      consumer-owned 'head' on separate cache lines on the non-coherent
+      shared bus. Safe default (32), which covers both the Cortex-M7 and
+      Cortex-M33 lines; raise it only if a core has a larger cache line.
+
+config MUX_REGION_ADDR
+    hex "Shared-memory slot region base address"
+    depends on MCUX_COMPONENT_component.serial_mux.slots
+    help
+      No prefix in generated macro
+      Base address of the shared-memory region that holds the SPSC slot
+      rings. Board specific and mandatory: it must resolve to the same
+      physical memory on every core (hub and clients) and be reserved from
+      all their linker maps. There is deliberately NO default: leaving it
+      unset emits no MUX_REGION_ADDR macro, and the source then fails to
+      compile (#error) so a missing region address can never be silently
+      wrong. On imx943evk set it to cm33_core1 system OCRAM, 0x20800000.
+
+config MUX_UART_TX_RING_SIZE
+    int "Hub UART transport TX ring size (bytes)"
+    depends on MCUX_COMPONENT_component.serial_mux.transport
+    default 1024
+    help
+      No prefix in generated macro
+      type unsigned
+      Software TX ring buffer size, in bytes, for the hub UART transport.
+      This is a tunable with a safe default (1024): deepen it only if a
+      demo bursts more outbound bytes than the default ring can hold
+      before the UART drains them.
+
+config MUX_UART_RX_RING_SIZE
+    int "Hub UART transport RX ring size (bytes)"
+    depends on MCUX_COMPONENT_component.serial_mux.transport
+    default 512
+    help
+      No prefix in generated macro
+      type unsigned
+      Software RX ring buffer size, in bytes, for the hub UART transport.
+      This is a tunable with a safe default (512): deepen it only if the
+      hub cannot service inbound UART bytes fast enough at the configured
+      baud rate and the default ring overruns.
+
+config MUX_HUB_DEDICATED_CONSOLE
+    bool "Hub core uses its own dedicated physical UART for its console"
+    depends on MCUX_COMPONENT_component.serial_mux.transport
+    default n
+    help
+      Default (n): the hub core (which owns the mux UART) sends its OWN
+      console output as one more logical COBS channel on the SAME physical
+      mux UART, alongside the client cores. Every core shares one wire and
+      one physical UART.
+
+      When enabled (y): the hub keeps a SECOND, dedicated physical UART for
+      its own console (standard DbgConsole/PRINTF), while the mux UART carries
+      ONLY the client cores' virtual channels. Use this when the hub core has
+      its own separate debug port. The board hub app.h must then also define
+      the dedicated console UART wiring (instance index, baud, clock); on
+      imx943evk cm33_core1 that second UART is LPUART11.
+
+config SERIAL_MUX_MAX_FRAME
+    int "Maximum decoded frame size (bytes)"
+    depends on MCUX_COMPONENT_component.serial_mux
+    default 256
+    help
+      No prefix in generated macro
+      type unsigned
+      Largest decoded COBS frame (channel byte + payload) the mux handles
+      at once, in bytes. This is a tunable with a safe default (256):
+      raise it if a channel needs larger single-frame payloads, at the
+      cost of larger per-instance reassembly buffers.
+
+endif # MCUX_COMPONENT_component.serial_mux
+
+endmenu
