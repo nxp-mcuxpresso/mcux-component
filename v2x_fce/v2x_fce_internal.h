@@ -221,36 +221,22 @@
 #define V2X_FCE_GCM_STATUS_RETRIES      (10000u)  /* status poll bound                           */
 
 /*
- * AES-GCM DMA scratch buffers in DDR.
+ * AES-GCM / hash / CBC DMA addressing.
  *
- * The FCE / V2X engine is an A55-side bus master and cannot resolve the
- * CM33-private TCM aliases; translating them to the CM33 secure/non-secure
- * global aliases still fails PUSH_REQUEST with status 0x29. Instead the GCM
- * descriptor addresses (Status/TAG/Input/Output/AAD) point into a plain DDR
- * scratch region that the FCE addresses directly with the same SoC-global
- * physical address the CM33 uses. The driver stages the caller input/AAD into
- * this region, runs the request, then copies the ciphertext/plaintext and TAG
- * back out to the caller buffers.
+ * The FCE AHB-DMA engine dereferences the descriptor addresses itself, so the
+ * caller Input / Output / AAD / TAG / Digest buffers are handed to it directly:
+ * no staging copy. The driver only translates each caller pointer with
+ * MEMORY_ConvertMemoryMapAddress(kMEMORY_Local2DMA) first, because a core-local
+ * TCM alias is not the address a bus master sees. That translation is a no-op
+ * for addresses which are already SoC-global (for example DDR).
  *
- * Layout inside the scratch region (each sub-buffer 64-bit aligned):
- *   +0x00000  Status word (4 bytes)
- *   +0x00040  TAG    (up to 16 bytes)
- *   +0x00100  Input  (payload)
- *   +0x08100  Output (payload)
- *   +0x10100  AAD
+ * The one buffer the driver still owns is the completion status word the FCE
+ * writes back (see s_v2xFceStatus in v2x_fce.c); it is not part of the caller
+ * API, so it cannot come from the caller.
+ *
+ * Callers must therefore place their crypto buffers in memory the V2X enclave
+ * eDMA is allowed to read/write, and keep them 64-bit aligned.
  */
-/* Base of the plain DDR scratch region the FCE AHB-DMA engine uses for the
- * GCM Status/TAG/Input/Output/AAD buffers. Configurable via the
- * V2X_FCE_DDR_SCRATCH_BASE Kconfig option (emitted without a CONFIG_
- * prefix); defaults to the i.MX943 EVK window when not configured. */
-#ifndef V2X_FCE_DDR_SCRATCH_BASE
-#define V2X_FCE_DDR_SCRATCH_BASE (0x86000000u)
-#endif
-#define V2X_FCE_DDR_STATUS_OFF   (0x00000u)
-#define V2X_FCE_DDR_TAG_OFF      (0x00040u)
-#define V2X_FCE_DDR_INPUT_OFF    (0x00100u)
-#define V2X_FCE_DDR_OUTPUT_OFF   (0x08100u)
-#define V2X_FCE_DDR_AAD_OFF      (0x10100u)
 
 
 /* Extract fields from a response header/status word. */

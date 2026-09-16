@@ -16,17 +16,4 @@ config MCUX_COMPONENT_component.v2x_fce
 
       encrypt/decrypt with plain AES/HMAC key loading.
 
-config V2X_FCE_DDR_SCRATCH_BASE
-    hex "V2X FCE DDR scratch buffer base address"
-    default 0x86000000
-    depends on MCUX_COMPONENT_component.v2x_fce
-    help
-      No prefix in generated macro
-      Physical base address of the plain DDR scratch region the FCE AHB-DMA
-      engine uses to stage the AES-GCM Status / TAG / Input / Output / AAD
-      buffers. The FCE addresses this region directly with the same physical
-      address the masters use, so it must point at a DDR range reserved for the
-      application (default 0x86000000, i.e. the 0x86000000-0x89FFFFFF window on
-      the i.MX943 EVK).
-
 endmenu

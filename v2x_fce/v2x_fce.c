@@ -14,6 +14,8 @@
 
 #include <string.h>
 
+#include "fsl_memory.h"
+
 #include "v2x_fce.h"
 #include "v2x_fce_internal.h"
 
@@ -49,6 +51,22 @@
 
 /* Buffers referenced by the DMA engine must be 64-bit aligned. */
 #define V2X_FCE_ADDR_ALIGNED(p) ((((uint32_t)(uint8_t *)(p)) & 0x7u) == 0u)
+
+/*
+ * Completion status word the FCE writes back. This is the only DMA buffer the
+ * driver owns: every other descriptor address is a caller buffer passed through
+ * untouched. It is a plain variable so the application linker script places it
+ * (TCM or DDR).
+ */
+SDK_ALIGN(static volatile uint32_t s_v2xFceStatus, 8u);
+
+/* Address of a buffer as the FCE AHB-DMA engine sees it. A core-local TCM alias
+ * is translated to the DMA view; SoC-global addresses pass through unchanged. */
+#define V2X_FCE_DMA_ADDR(p) \
+    MEMORY_ConvertMemoryMapAddress((uint32_t)(uintptr_t)(const void *)(p), kMEMORY_Local2DMA)
+
+/* Address of the driver-owned status word as the FCE sees it. */
+#define V2X_FCE_STATUS_DMA_ADDR() V2X_FCE_DMA_ADDR(&s_v2xFceStatus)
 
 /* Maximum AES-GCM payload the FCE accepts (see PRIME / FCE Limitations). */
 #define V2X_FCE_GCM_MAX_PAYLOAD (0x1fffc0u)
@@ -414,9 +432,9 @@ status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, v2x
  *      (0x10D6), then reads the completion status word the FCE wrote back to
  *      the descriptor Status Address.
  *
- * The descriptor addresses (Status/TAG/Input/Output/AAD) point into a plain DDR
- * scratch region the FCE addresses directly with the same physical address the
- * CM33 uses; the driver stages caller input/AAD in and copies results back out.
+ * The descriptor Input/Output/AAD/TAG addresses are the caller buffers,
+ * translated to the address the FCE AHB-DMA engine sees. There is no staging
+ * copy; only the completion status word belongs to the driver.
  */
 static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
                                const v2x_fce_gcm_op_t *op,
@@ -424,13 +442,8 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
 {
     /* Table 27 descriptor written straight into the FCE MU slot A buffer. */
     volatile uint32_t *slot = (volatile uint32_t *)V2X_FCE_SLOT_A_BASE(handle->mu);
-    /* GCM DMA buffers live in a plain DDR scratch region the FCE can address
-     * directly. The caller input/AAD are staged in, results copied back out. */
-    volatile uint32_t *ddrStatus = (volatile uint32_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
-    uint8_t *ddrTag              = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_TAG_OFF);
-    uint8_t *ddrInput            = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
-    uint8_t *ddrOutput           = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
-    uint8_t *ddrAad              = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_AAD_OFF);
+    /* The caller Input/Output/AAD/TAG buffers are given to the FCE AHB-DMA
+     * engine directly; only their addresses are translated. */
     uint32_t desc[V2X_FCE_GCM_DESC_WORDS];
     /* Big enough for both the 1-word PUSH_REQUEST and the 2-word
      * GET_REQUEST_STATUS message (whose word 1 must carry the request id). */
@@ -480,7 +493,7 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
     }
 
     /* Seed the DDR status word with success (0xd6) and stage the caller input
-     * (and AAD) into the DDR scratch region the FCE can address directly.
+     * (and AAD) into the driver scratch buffer.
      *
      * The reference PRIME library (sab_prime_crypt.c prime_aead_build) writes
      * REQ_SUCCESS (0xd6) into the status buffer before pushing the request and
@@ -488,16 +501,8 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
      * firmware leaves the status word untouched, so it must already read as
      * success. Clearing it to 0 (as before) made every successful GCM appear
      * to fail. */
-    *ddrStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
+    s_v2xFceStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
 
-    if (op->inputSize != 0u)
-    {
-        (void)memcpy(ddrInput, op->input, op->inputSize);
-    }
-    if ((op->aad != NULL) && (op->aadSize != 0u))
-    {
-        (void)memcpy(ddrAad, op->aad, op->aadSize);
-    }
 
     /*
      * Step 1: build the Table 27 AES-GCM Oneshot request descriptor (13 words,
@@ -521,16 +526,16 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
     /* W0 descriptor header: request ID command, size 0xD, command Tag 0x1b. */
     desc[0] = V2X_FCE_BUILD_HEADER((uint8_t)(V2X_FCE_MSG_TAG_CMD_BASE + 1u), requestId,
                                    V2X_FCE_GCM_DESC_WORDS, V2X_FCE_MSG_VERSION);
-    desc[1] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
+    desc[1] = V2X_FCE_STATUS_DMA_ADDR();
     desc[2] = (((uint32_t)op->ivSize & 0xFFu) << 24) |
               (((uint32_t)op->keySlot & 0xFFu) << 16) |
               (((uint32_t)op->tagSize & 0xFFu) << 8) |
               ((V2X_FCE_REQ_FLAG_SIGNAL | V2X_FCE_REQ_FLAG_AUTO_POP) & 0xFFu);
 
-    desc[3] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_TAG_OFF);
+    desc[3] = V2X_FCE_DMA_ADDR(op->tag);
     desc[4] = op->inputSize;
-    desc[5] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
-    desc[6] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
+    desc[5] = V2X_FCE_DMA_ADDR(op->input);
+    desc[6] = V2X_FCE_DMA_ADDR(op->output);
 
     /* Words 7-10: IV inlined (up to 16 bytes, little endian). */
     for (i = 0u; (i < op->ivSize) && (i < 16u); i++)
@@ -540,7 +545,7 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
 
     desc[11] = op->aadSize;
     desc[12] = ((op->aad != NULL) && (op->aadSize != 0u))
-                   ? (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_AAD_OFF)
+                   ? V2X_FCE_DMA_ADDR(op->aad)
                    : 0u;
 
     /* Publish the descriptor into the FCE slot buffer (volatile, in order). */
@@ -627,24 +632,19 @@ static status_t V2X_FCE_AesGcm(v2x_fce_handle_t *handle,
     __DSB();
 
     V2X_FCE_TRACE("[FCE] DDR status word=0x%08x (status=0x%02x) slotW15=0x%08x\r\n",
-                  (unsigned)*ddrStatus, (unsigned)V2X_FCE_RESP_STATUS(*ddrStatus),
+                  (unsigned)s_v2xFceStatus, (unsigned)V2X_FCE_RESP_STATUS(s_v2xFceStatus),
                   (unsigned)slot[15]);
 
     /* The FCE writes the final GCM completion status to the DDR Status word. */
-    if (V2X_FCE_RESP_STATUS(*ddrStatus) != V2X_FCE_STATUS_SUCCESS)
+    if (V2X_FCE_RESP_STATUS(s_v2xFceStatus) != V2X_FCE_STATUS_SUCCESS)
     {
-        V2X_FCE_TRACE("[FCE] GCM completion failed: ddrStatus=0x%08x\r\n", (unsigned)*ddrStatus);
+        V2X_FCE_TRACE("[FCE] GCM completion failed: status=0x%08x\r\n", (unsigned)s_v2xFceStatus);
         return kStatus_Fail;
     }
 
     /* Copy the produced ciphertext/plaintext and TAG back to the caller. */
-    if (op->inputSize != 0u)
-    {
-        (void)memcpy(op->output, ddrOutput, op->inputSize);
-    }
     if (op->tagSize != 0u)
     {
-        (void)memcpy(op->tag, ddrTag, op->tagSize);
     }
 
     return kStatus_Success;
@@ -679,9 +679,9 @@ status_t V2X_FCE_AesGcmDecrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t 
  * The descriptor is written into FCE MU slot A and triggered with a header-only
  * PUSH_REQUEST; the host then polls GET_REQUEST_STATUS until the request is no
  * longer ongoing and reads the completion status the FCE wrote to the DDR
- * Status Address. Input is staged into the DDR scratch region and the digest is
+ * Status Address. Input is staged into the driver scratch buffer and the digest is
  * copied back out (generate). For HMAC verify the expected MAC is staged into
- * the digest scratch and the FCE reports success/failure in the status word.
+ * the digest scratch buffer and the FCE reports success/failure in the status word.
  */
 static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
                                      uint8_t requestId,
@@ -693,9 +693,6 @@ static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
                                      uint32_t digestSize)
 {
     volatile uint32_t *slot    = (volatile uint32_t *)V2X_FCE_SLOT_A_BASE(handle->mu);
-    volatile uint32_t *ddrStatus = (volatile uint32_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
-    uint8_t *ddrInput          = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
-    uint8_t *ddrDigest         = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
     uint32_t desc[V2X_FCE_AUTH_DESC_WORDS];
     uint32_t msg[V2X_FCE_GET_REQUEST_STATUS_SIZE];
     uint32_t resp[V2X_FCE_MSG_MAX_WORDS];
@@ -721,17 +718,9 @@ static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
 
     /* Seed the DDR status word with success (0xd6): the FCE overwrites it only
      * on error, matching the AES-GCM path. Stage the caller input into DDR. */
-    *ddrStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
-    if (inputSize != 0u)
-    {
-        (void)memcpy(ddrInput, input, inputSize);
-    }
+    s_v2xFceStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
     /* For HMAC verify the expected MAC must already be present at the digest
      * address the FCE reads back. */
-    if ((requestId == V2X_FCE_REQ_HMAC_VERIFY) && (digestSize != 0u))
-    {
-        (void)memcpy(ddrDigest, digest, digestSize);
-    }
 
     for (i = 0u; i < V2X_FCE_AUTH_DESC_WORDS; i++)
     {
@@ -740,16 +729,16 @@ static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
 
     desc[0] = V2X_FCE_BUILD_HEADER((uint8_t)(V2X_FCE_MSG_TAG_CMD_BASE + 1u), requestId,
                                    V2X_FCE_AUTH_DESC_WORDS, V2X_FCE_MSG_VERSION);
-    desc[1] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
+    desc[1] = V2X_FCE_STATUS_DMA_ADDR();
     desc[2] = (((uint32_t)shaAlgo & 0xFu) << 4) |
               ((V2X_FCE_REQ_FLAG_SIGNAL | V2X_FCE_REQ_FLAG_AUTO_POP) & 0xFu);
     if (!isHash)
     {
         desc[2] |= ((uint32_t)keySlot << V2X_FCE_KEY_SLOT_SHIFT);
     }
-    desc[3] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
+    desc[3] = V2X_FCE_DMA_ADDR(digest);
     desc[4] = inputSize;
-    desc[5] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
+    desc[5] = V2X_FCE_DMA_ADDR(input);
 
     for (i = 0u; i < V2X_FCE_AUTH_DESC_WORDS; i++)
     {
@@ -815,17 +804,13 @@ static status_t V2X_FCE_Authenticate(v2x_fce_handle_t *handle,
 
     __DSB();
 
-    if (V2X_FCE_RESP_STATUS(*ddrStatus) != V2X_FCE_STATUS_SUCCESS)
+    if (V2X_FCE_RESP_STATUS(s_v2xFceStatus) != V2X_FCE_STATUS_SUCCESS)
     {
-        V2X_FCE_TRACE("[FCE] AUTH completion failed: ddrStatus=0x%08x\r\n", (unsigned)*ddrStatus);
+        V2X_FCE_TRACE("[FCE] AUTH completion failed: status=0x%08x\r\n", (unsigned)s_v2xFceStatus);
         return kStatus_Fail;
     }
 
     /* HMAC generate / HASH generate copy the produced digest back to caller. */
-    if ((requestId != V2X_FCE_REQ_HMAC_VERIFY) && (digestSize != 0u))
-    {
-        (void)memcpy(digest, ddrDigest, digestSize);
-    }
 
     return kStatus_Success;
 }
@@ -881,7 +866,7 @@ status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t 
  * The descriptor is written into FCE MU slot A and triggered with a header-only
  * PUSH_REQUEST; the host then polls GET_REQUEST_STATUS until the request is no
  * longer ongoing and reads the completion status the FCE wrote to the DDR
- * Status Address. Input is staged into the DDR scratch region and the output is
+ * Status Address. Input is staged into the driver scratch buffer and the output is
  * copied back out.
  */
 static status_t V2X_FCE_AesCbc(v2x_fce_handle_t *handle,
@@ -889,9 +874,6 @@ static status_t V2X_FCE_AesCbc(v2x_fce_handle_t *handle,
                                uint8_t requestId)
 {
     volatile uint32_t *slot      = (volatile uint32_t *)V2X_FCE_SLOT_A_BASE(handle->mu);
-    volatile uint32_t *ddrStatus = (volatile uint32_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
-    uint8_t *ddrInput            = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
-    uint8_t *ddrOutput           = (uint8_t *)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
     uint32_t desc[V2X_FCE_CBC_DESC_WORDS];
     uint32_t msg[V2X_FCE_GET_REQUEST_STATUS_SIZE];
     uint32_t resp[V2X_FCE_MSG_MAX_WORDS];
@@ -927,11 +909,7 @@ static status_t V2X_FCE_AesCbc(v2x_fce_handle_t *handle,
 
     /* Seed the DDR status word with success (0xd6): the FCE overwrites it only
      * on error, matching the AES-GCM path. Stage the caller input into DDR. */
-    *ddrStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
-    if (op->inputSize != 0u)
-    {
-        (void)memcpy(ddrInput, op->input, op->inputSize);
-    }
+    s_v2xFceStatus = (uint32_t)V2X_FCE_STATUS_SUCCESS;
 
     for (i = 0u; i < V2X_FCE_CBC_DESC_WORDS; i++)
     {
@@ -940,15 +918,15 @@ static status_t V2X_FCE_AesCbc(v2x_fce_handle_t *handle,
 
     desc[0] = V2X_FCE_BUILD_HEADER((uint8_t)(V2X_FCE_MSG_TAG_CMD_BASE + 1u), requestId,
                                    V2X_FCE_CBC_DESC_WORDS, V2X_FCE_MSG_VERSION);
-    desc[1] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_STATUS_OFF);
+    desc[1] = V2X_FCE_STATUS_DMA_ADDR();
     desc[2] = (((uint32_t)op->keySlot & 0xFFu) << 16) |
               ((V2X_FCE_REQ_FLAG_SIGNAL | V2X_FCE_REQ_FLAG_AUTO_POP) & 0xFFu);
     /* W3 is the (reused) Digest Address field; unused for CBC but pointed at a
-     * valid DDR scratch address (the GCM TAG offset) to stay safe. */
-    desc[3] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_TAG_OFF);
+     * valid address (the driver status word) to stay safe. */
+    desc[3] = V2X_FCE_STATUS_DMA_ADDR();
     desc[4] = op->inputSize;
-    desc[5] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_INPUT_OFF);
-    desc[6] = (uint32_t)(V2X_FCE_DDR_SCRATCH_BASE + V2X_FCE_DDR_OUTPUT_OFF);
+    desc[5] = V2X_FCE_DMA_ADDR(op->input);
+    desc[6] = V2X_FCE_DMA_ADDR(op->output);
 
     /* Words 7-10: IV inlined (up to 16 bytes, little endian). */
     for (i = 0u; (i < op->ivSize) && (i < 16u); i++)
@@ -1020,17 +998,13 @@ static status_t V2X_FCE_AesCbc(v2x_fce_handle_t *handle,
 
     __DSB();
 
-    if (V2X_FCE_RESP_STATUS(*ddrStatus) != V2X_FCE_STATUS_SUCCESS)
+    if (V2X_FCE_RESP_STATUS(s_v2xFceStatus) != V2X_FCE_STATUS_SUCCESS)
     {
-        V2X_FCE_TRACE("[FCE] CBC completion failed: ddrStatus=0x%08x\r\n", (unsigned)*ddrStatus);
+        V2X_FCE_TRACE("[FCE] CBC completion failed: status=0x%08x\r\n", (unsigned)s_v2xFceStatus);
         return kStatus_Fail;
     }
 
     /* Copy the produced ciphertext/plaintext back to the caller. */
-    if (op->inputSize != 0u)
-    {
-        (void)memcpy(op->output, ddrOutput, op->inputSize);
-    }
 
     return kStatus_Success;
 }
