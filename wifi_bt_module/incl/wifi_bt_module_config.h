@@ -340,16 +340,6 @@
         .ed_ctrl_2g = 0x1, .ed_offset_2g = 0x8, .ed_ctrl_5g = 0x1, .ed_offset_5g = 0x8 \
     }
 
-/* K32W061 transceiver */
-#elif defined(K32W061_TRANSCEIVER)
-/*
- * Wifi functions are not used with K32W061 but wifi files require to
- * be built, so stub macro are defined. Wifi functions won't be used at
- * link stage for k32w061 transceiver
- *
- */
-#define SD8987
-
 /* USD IW610 module */
 #elif defined(WIFI_IW610_BOARD_RD_USD)
 #define WIFI_BT_TX_PWR_LIMITS "wlan_txpwrlimit_cfg_murata_NH.h"
