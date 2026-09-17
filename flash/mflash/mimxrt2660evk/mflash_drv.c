@@ -131,7 +131,19 @@ static xspi_sfp_mdad_config_t s_mflashMdadConfig = {
 static xspi_sfp_frad_config_t s_mflashFradConfig = {
     .fradConfig[0] =
         {
+            .startAddress        = 0x70000000UL, /* secure alias -- the one mflash uses */
+            .endAddress          = 0x7FFF0000UL,
             .tg0MasterAccess     = 0x7U, /* MDnACP: secure/privileged/user writes allowed. */
+            .tg1MasterAccess     = 0x7U,
+            .assignIsValid       = true,
+            .descriptorLock      = kXSPI_DescriptorLockDisabled,
+            .exclusiveAccessLock = kXSPI_ExclusiveAccessLockDisabled,
+        },
+    .fradConfig[1] =
+        {
+            .startAddress        = 0x60000000UL, /* non-secure alias -- for robustness */
+            .endAddress          = 0x6FFF0000UL,
+            .tg0MasterAccess     = 0x7U,
             .tg1MasterAccess     = 0x7U,
             .assignIsValid       = true,
             .descriptorLock      = kXSPI_DescriptorLockDisabled,
@@ -139,7 +151,6 @@ static xspi_sfp_frad_config_t s_mflashFradConfig = {
         },
     /* Remaining FRAD entries stay invalid (zero-initialized). */
 };
-
 
 static xspi_device_config_t s_deviceConfig = {
     /* Set at runtime in mflash_drv_init_internal() via
