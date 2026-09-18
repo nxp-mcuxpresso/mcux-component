@@ -649,8 +649,8 @@ void TM_Deinit(void)
 #if defined(OSA_USED)
 #if (defined(TM_COMMON_TASK_ENABLE) && (TM_COMMON_TASK_ENABLE > 0U))
 #else
-    (void)OSA_SemaphoreDestroy((osa_semaphore_handle_t)s_timermanager.halTimerTaskSemaphoreHandle);
     (void)OSA_TaskDestroy((osa_task_handle_t)s_timermanager.timerTaskHandle);
+    (void)OSA_SemaphoreDestroy((osa_semaphore_handle_t)s_timermanager.halTimerTaskSemaphoreHandle);
 #endif
 #endif
     HAL_TimerDeinit((hal_timer_handle_t)s_timermanager.halTimerHandle);
