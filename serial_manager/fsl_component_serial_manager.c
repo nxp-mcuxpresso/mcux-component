@@ -1595,8 +1595,8 @@ serial_manager_status_t SerialManager_Deinit(serial_handle_t serialHandle)
 
 #if (defined(SERIAL_MANAGER_USE_COMMON_TASK) && (SERIAL_MANAGER_USE_COMMON_TASK > 0U))
 #else
-        (void)OSA_SemaphoreDestroy((osa_event_handle_t)serHandle->serSemaphore);
         (void)OSA_TaskDestroy((osa_task_handle_t)serHandle->taskId);
+        (void)OSA_SemaphoreDestroy((osa_event_handle_t)serHandle->serSemaphore);
 #endif
 
 #endif
