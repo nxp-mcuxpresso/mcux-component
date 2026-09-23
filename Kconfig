@@ -166,6 +166,7 @@ menu "Component Configuration"
     menu "System Manager"
         rsource "sm/Kconfig"
         rsource "imx_sm_crc/Kconfig"
+        rsource "datetime/Kconfig"
         rsource "scmi/Kconfig"
         rsource "smt/Kconfig"
     endmenu

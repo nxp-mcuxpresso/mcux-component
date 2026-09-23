@@ -1,0 +1,8 @@
+# Copyright 2026 NXP
+# SPDX-License-Identifier: BSD-3-Clause
+
+config MCUX_COMPONENT_component.datetime
+    bool "datetime"
+    default n
+    help
+	Enable component.datetime component, calendar date and time helpers
