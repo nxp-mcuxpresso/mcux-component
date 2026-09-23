@@ -289,6 +289,18 @@ void SCMI_SequenceSave(uint32_t *sequences);
  */
 void SCMI_SequenceRestore(const uint32_t *sequences);
 
+/*!
+ * Get the name of an SCMI status code.
+ *
+ * @param[in]     status  Status code to convert
+ *
+ * Returns the symbolic name of the status code, for example
+ * "SCMI_ERR_DENIED" for ::SCMI_ERR_DENIED. Unknown values return
+ * "SCMI_ERR_UNKNOWN". The returned string is static and never NULL, so it
+ * can be passed straight to a print function.
+ */
+const char *SCMI_StatusToString(int32_t status);
+
 /** @} */
 
 #endif /* SCMI_COMMON_H */

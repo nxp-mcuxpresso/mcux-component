@@ -31,6 +31,7 @@ if (CONFIG_MCUX_COMPONENT_component.sm.scmi)
                 scmi_reset.h
                 scmi_sensor.c
                 scmi_sensor.h
+                scmi_status.c
                 scmi_sys.c
                 scmi_sys.h
                 scmi_voltage.c
