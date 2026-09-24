@@ -256,7 +256,13 @@ static status_t WM8962_SetMasterClock(wm8962_handle_t *handle,
     assert(handle != NULL);
     assert(handle->config != NULL);
 
+    if ((handle == NULL) || (handle->config == NULL))
+    {
+        return kStatus_InvalidArgument;
+    }
+
     isMaster = handle->config->masterSlave;
+
     if ((((uint32_t)handle->config->bus & (uint32_t)kWM8962_BusTDM) != 0U))
     {
         frameWordNum = 4U;

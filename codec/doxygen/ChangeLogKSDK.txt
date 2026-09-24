@@ -375,7 +375,12 @@
 
 @if dox_section_wm8962
 @section wm8962 WM8962
-  The current wm8962 driver version is 2.4.1.
+  The current wm8962 driver version is 2.4.2.
+
+  - 2.4.2
+    - Bug Fixes
+      - Fixed CERT EXP34-C findings in WM8962_SetMasterClock by adding a runtime
+        NULL check on the handle and config arguments before dereferencing them.
 
   - 2.4.1
     - Bug Fixes
