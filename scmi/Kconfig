@@ -4,5 +4,6 @@
 config MCUX_COMPONENT_component.sm.scmi
     bool "sm.scmi"
     default n
+    select MCUX_COMPONENT_component.datetime
     help
 	Enable component.sm.scmi component
