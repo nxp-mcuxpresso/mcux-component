@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2021 NXP
+ * Copyright 2018-2021, 2026 NXP
  *
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -63,15 +63,31 @@ typedef enum _hal_timer_status
     kStatus_HAL_TimerOutOfRanger = MAKE_STATUS(kStatusGroup_HAL_TIMER, 4), /*!< timer is Out Of Ranger */
 } hal_timer_status_t;
 
-/*! @brief Definition of timer adapter handle size. */
+/*! @brief Definition of timer adapter handle size.
+ *
+ * The private handle structure defined by each timer adapter holds a timeout value, a 32-bit
+ * clock frequency, a callback function pointer, a callback parameter pointer and an 8-bit
+ * instance id. The two pointers are 4 bytes on 32-bit cores (Cortex-M) and 8 bytes on 64-bit
+ * cores (for example Cortex-A55 in AArch64 state), so the handle size is selected from
+ * UINTPTR_SIZE. Hard coding it to the 32-bit value made the caller-allocated buffer too small
+ * on 64-bit targets and the adapter wrote past the end of it.
+ */
 #if defined(TIMER_PORT_TYPE_OSTIMER)
 typedef uint64_t hal_timer_time_t;
 #define HAL_TIMER_RANGE_IN_BITS              (42U)
+#if (UINTPTR_SIZE == 8)
+#define HAL_TIMER_HANDLE_SIZE                (40U) /*!< 64-bit core: 8 byte timeout + 4 + pad + 2 * 8 byte pointer + 1 + pad. */
+#else
 #define HAL_TIMER_HANDLE_SIZE                (24U) /*!< 4 bytes extra because timeout needs to be 64bit instead of 32bit to cover full range of OS timer. */
+#endif
 #else
 typedef uint32_t hal_timer_time_t;
 #define HAL_TIMER_RANGE_IN_BITS              (32U)
+#if (UINTPTR_SIZE == 8)
+#define HAL_TIMER_HANDLE_SIZE                (32U) /*!< 64-bit core: 4 + 4 + 2 * 8 byte pointer + 1 + pad. */
+#else
 #define HAL_TIMER_HANDLE_SIZE                (20U)
+#endif
 #endif
 
 /*! @brief HAL timer configuration structure for HAL timer setting. */

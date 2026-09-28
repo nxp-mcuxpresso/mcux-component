@@ -2,7 +2,16 @@
 @page component_log Component Change Log
 
 @section Timer_Adapter TIMER_ADAPTER
-  The current Timer_Adapter component version is 1.0.1.
+  The current Timer_Adapter component version is 1.0.2.
+
+  - 1.0.2
+    - Bug Fixes
+      - Fixed an out-of-bounds write of the caller-allocated timer handle buffer on 64-bit
+        cores. HAL_TIMER_HANDLE_SIZE was hard coded to the 32-bit layout (20 bytes, or
+        24 bytes for the OS timer port), so TIMER_HANDLE_DEFINE() reserved less memory
+        than HAL_TimerInit() and the ISR path wrote. The size is now selected with
+        UINTPTR_SIZE (32 bytes, or 40 bytes for the OS timer port, on 64-bit cores).
+        The size is unchanged on 32-bit cores.
 
   - 1.0.1
     - Add prefixing fsl_adapter_xxx.
