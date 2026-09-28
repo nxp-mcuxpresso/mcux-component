@@ -23,7 +23,15 @@
 /*******************************************************************************
  * Macros
  ******************************************************************************/
-#define WUU_PIN_FLAG_MASK WUU_PF_WUF7_MASK
+/* All external wakeup pins of this device. The MCX Nx4x WUU implements WUPE0 to WUPE28,
+ * so PF carries the matching WUF0 to WUF28 flags. */
+#define WUU_PIN_FLAG_MASK                                                                                              \
+    (WUU_PF_WUF0_MASK | WUU_PF_WUF1_MASK | WUU_PF_WUF2_MASK | WUU_PF_WUF3_MASK | WUU_PF_WUF4_MASK | WUU_PF_WUF5_MASK | \
+     WUU_PF_WUF6_MASK | WUU_PF_WUF7_MASK | WUU_PF_WUF8_MASK | WUU_PF_WUF9_MASK | WUU_PF_WUF10_MASK |                   \
+     WUU_PF_WUF11_MASK | WUU_PF_WUF12_MASK | WUU_PF_WUF13_MASK | WUU_PF_WUF14_MASK | WUU_PF_WUF15_MASK |               \
+     WUU_PF_WUF16_MASK | WUU_PF_WUF17_MASK | WUU_PF_WUF18_MASK | WUU_PF_WUF19_MASK | WUU_PF_WUF20_MASK |               \
+     WUU_PF_WUF21_MASK | WUU_PF_WUF22_MASK | WUU_PF_WUF23_MASK | WUU_PF_WUF24_MASK | WUU_PF_WUF25_MASK |               \
+     WUU_PF_WUF26_MASK | WUU_PF_WUF27_MASK | WUU_PF_WUF28_MASK)
 
 /*******************************************************************************
  * Prototypes
@@ -388,12 +396,20 @@ static void SetSRAMOperateMode(uint8_t operateMode, resource_recode_t *pResource
 {
     assert(pResourceRecode);
 
+    ptrdiff_t rescOffset;
     uint32_t sramId;
 
-    /* Get the SRAM resc number */
-    sramId = (uint32_t)(pResourceRecode - resourceDB);
-    assert(sramId >= (uint32_t)kResc_SRAM_RAMA0_8K);
-    assert(sramId <= (uint32_t)kResc_SRAM_FLEXSPI0);
+    /* Get the SRAM resc number. Validate the offset before the conversion to an unsigned
+     * type, because assert() is compiled out when NDEBUG is defined. */
+    rescOffset = pResourceRecode - resourceDB;
+    assert(rescOffset >= (ptrdiff_t)kResc_SRAM_RAMA0_8K);
+    assert(rescOffset <= (ptrdiff_t)kResc_SRAM_FLEXSPI0);
+    if ((rescOffset < (ptrdiff_t)kResc_SRAM_RAMA0_8K) || (rescOffset > (ptrdiff_t)kResc_SRAM_FLEXSPI0))
+    {
+        return;
+    }
+
+    sramId = (uint32_t)rescOffset;
 
     if (sramId <= (uint32_t)kResc_SRAM_RAMA3_8K)
     {
@@ -472,12 +488,20 @@ static void SetAnalogOperateMode(uint8_t operateMode, resource_recode_t *pResour
 {
     assert(pResourceRecode);
 
+    ptrdiff_t rescOffset;
     uint8_t analogId;
 
-    /* Get the analog module resc number */
-    analogId = (uint8_t)(pResourceRecode - resourceDB);
-    assert(analogId >= (uint8_t)kResc_VREF);
-    assert(analogId <= (uint8_t)kResc_CMP2);
+    /* Get the analog module resc number. Validate the offset before the conversion to an
+     * unsigned type, because assert() is compiled out when NDEBUG is defined. */
+    rescOffset = pResourceRecode - resourceDB;
+    assert(rescOffset >= (ptrdiff_t)kResc_VREF);
+    assert(rescOffset <= (ptrdiff_t)kResc_CMP2);
+    if ((rescOffset < (ptrdiff_t)kResc_VREF) || (rescOffset > (ptrdiff_t)kResc_CMP2))
+    {
+        return;
+    }
+
+    analogId = (uint8_t)rescOffset;
 
     switch ((resc_name_t)analogId)
     {
@@ -725,7 +749,7 @@ static bool IsWakeupSource(pm_wakeup_source_t *ws)
         wuuPf = WUU_GetExternalWakeUpPinsFlag(WUU0);
         mask  = (1UL << inputId) & WUU_PIN_FLAG_MASK;
 
-        if ((wuuPf * mask) != 0U)
+        if ((wuuPf & mask) != 0U)
         {
             /* This wake up source triggered the last wake up */
             ret = true;

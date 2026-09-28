@@ -2,7 +2,16 @@
 @page component_log Component Change Log
 
 @section PowerManager POWERMANAGER
-  The current PowerManager component version is 1.0.1.
+  The current PowerManager component version is 1.0.2.
+
+  - 1.0.2
+    - Bug Fixes
+      - Fixed CERT INT31-C findings in SetSRAMOperateMode and SetAnalogOperateMode by
+        range checking the resource offset before converting it to an unsigned type.
+      - Fixed a CERT INT30-C finding in IsWakeupSource, where the wakeup pin flags were
+        combined with the pin mask using a multiplication instead of a bitwise AND.
+      - Fixed WUU_PIN_FLAG_MASK, which covered only WUF7 instead of all external wakeup
+        pins, so IsWakeupSource reported no wakeup for every other pin.
 
   - 1.0.1
     - Bug Fixes
