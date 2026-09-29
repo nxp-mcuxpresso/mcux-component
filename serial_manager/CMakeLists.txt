@@ -139,8 +139,8 @@ if (CONFIG_MCUX_COMPONENT_component.serial_manager_ble_wu)
     )
 
     mcux_add_configuration(
-        CC "-DSERIAL_PORT_TYPE_BLE_WU=1"
-        CX "-DSERIAL_PORT_TYPE_BLE_WU=1"
+        CC "-DSERIAL_PORT_TYPE_BLE_WU=1 -DSERIAL_MANAGER_NON_BLOCKING_MODE=1"
+        CX "-DSERIAL_PORT_TYPE_BLE_WU=1 -DSERIAL_MANAGER_NON_BLOCKING_MODE=1"
     )
 
 endif()
