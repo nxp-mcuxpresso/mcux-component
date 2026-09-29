@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 NXP
+ * Copyright 2022, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -21,6 +21,10 @@ typedef struct _hal_adc_sensor_state
     hal_adc_sensor_ts_param_t tsParam;
     lpadc_config_t config;
 } hal_adc_sensor_state_t;
+
+MCUX_BUILD_ASSERT(sizeof(hal_adc_sensor_state_t) <= HAL_ADC_SENSOR_HANDLE_SIZE,
+                  "hal_adc_sensor_state_t exceeds HAL_ADC_SENSOR_HANDLE_SIZE: "
+                  "increase HAL_ADC_SENSOR_HANDLE_SIZE in fsl_adapter_adc_sensor.h");
 
 /*******************************************************************************
  * Variables

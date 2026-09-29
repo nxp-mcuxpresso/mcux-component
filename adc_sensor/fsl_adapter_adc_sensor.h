@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 NXP
+ * Copyright 2022, 2026 NXP
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -17,11 +17,14 @@
  ******************************************************************************/
 /*! @name Driver version */
 /*! @{ */
-#define FSL_ADC_SENSOR_ADAPTER_VERSION (MAKE_VERSION(1, 0, 0)) /*!< Version 1.0.0. */
+#define FSL_ADC_SENSOR_ADAPTER_VERSION (MAKE_VERSION(1, 0, 1)) /*!< Version 1.0.1. */
 /*! @} */
 
-/*! @brief Definition of ADC_SENSOR adapter handle size. */
-#define HAL_ADC_SENSOR_HANDLE_SIZE (64U)
+/*! @brief Definition of ADC_SENSOR adapter handle size.
+ *
+ * Must be large enough to hold the private state of every backend implementation.
+ */
+#define HAL_ADC_SENSOR_HANDLE_SIZE (80U)
 
 /*! @brief Definition of ADC_SENSOR automatically identified channel. */
 #define HAL_ADC_SENSOR_CHANNEL_AUTO (0xFFFFU)
