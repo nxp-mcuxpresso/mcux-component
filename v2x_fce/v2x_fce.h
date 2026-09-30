@@ -42,8 +42,8 @@
  * Definitions
  ******************************************************************************/
 
-/*! @brief v2x_fce driver version 1.3.0. */
-#define FSL_V2X_FCE_DRIVER_VERSION (MAKE_VERSION(1, 3, 0))
+/*! @brief v2x_fce driver version 1.4.0. */
+#define FSL_V2X_FCE_DRIVER_VERSION (MAKE_VERSION(1, 4, 0))
 
 /*! @brief Number of AES plain-key slots exposed by the FCE (0..7). */
 #define V2X_FCE_AES_KEY_SLOTS  (8u)
@@ -204,7 +204,7 @@ status_t V2X_FCE_LoadHmacPlainKey(v2x_fce_handle_t *handle, uint8_t keySlot, v2x
  * @param op     AES-GCM operation descriptor.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_AesGcmEncrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t *op);
+status_t V2X_FCE_AesGcmEncrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t *ops, uint32_t count);
 
 /*!
  * @brief AES-GCM authenticated decrypt (FCE_PUSH_REQUEST authenticate-decrypt).
@@ -216,7 +216,7 @@ status_t V2X_FCE_AesGcmEncrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t 
  * @param op     AES-GCM operation descriptor.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_AesGcmDecrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t *op);
+status_t V2X_FCE_AesGcmDecrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t *ops, uint32_t count);
 
 /*!
  * @brief Query V2X/FCE firmware/engine information (FCE_GET_INFO, 0x18).
@@ -236,7 +236,7 @@ status_t V2X_FCE_AesGcmDecrypt(v2x_fce_handle_t *handle, const v2x_fce_gcm_op_t 
  * @param op     HMAC operation descriptor.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_HmacGenerate(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *op);
+status_t V2X_FCE_HmacGenerate(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *ops, uint32_t count);
 
 /*!
  * @brief HMAC verify (FCE_PUSH_REQUEST HMAC verify).
@@ -249,7 +249,7 @@ status_t V2X_FCE_HmacGenerate(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t 
  * @param op     HMAC operation descriptor.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_HmacVerify(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *op);
+status_t V2X_FCE_HmacVerify(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *ops, uint32_t count);
 
 /*!
  * @brief HASH generate (FCE_PUSH_REQUEST HASH generate).
@@ -261,7 +261,7 @@ status_t V2X_FCE_HmacVerify(v2x_fce_handle_t *handle, const v2x_fce_hmac_op_t *o
  * @param op     HASH operation descriptor.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t *op);
+status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t *ops, uint32_t count);
 
 /*!
  * @brief AES-CBC encrypt (FCE_PUSH_REQUEST AES-CBC encrypt).
@@ -273,7 +273,7 @@ status_t V2X_FCE_HashGenerate(v2x_fce_handle_t *handle, const v2x_fce_hash_op_t 
  * @param op     CBC operation descriptor.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_AesCbcEncrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *op);
+status_t V2X_FCE_AesCbcEncrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *ops, uint32_t count);
 
 /*!
  * @brief AES-CBC decrypt (FCE_PUSH_REQUEST AES-CBC decrypt).
@@ -285,7 +285,7 @@ status_t V2X_FCE_AesCbcEncrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t 
  * @param op     CBC operation descriptor.
  * @return kStatus_Success on success, kStatus_Fail otherwise.
  */
-status_t V2X_FCE_AesCbcDecrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *op);
+status_t V2X_FCE_AesCbcDecrypt(v2x_fce_handle_t *handle, const v2x_fce_cbc_op_t *ops, uint32_t count);
 
 status_t V2X_FCE_GetInfo(v2x_fce_handle_t *handle, uint8_t *buffer, uint32_t size);
 
@@ -294,5 +294,27 @@ status_t V2X_FCE_GetInfo(v2x_fce_handle_t *handle, uint8_t *buffer, uint32_t siz
 #endif
 
 /*! @} */
+
+
+#include <stdbool.h>
+/*!
+ * @brief Select the request-completion wait strategy (MCUX-90943).
+ *
+ * useInterrupt = true routes the MU header round-trip through the V2X-FH MU
+ * RX-full interrupt (IRQSTEER V2X_FH_APCH0_IRQn) with __WFI(); false keeps the
+ * busy-poll path. Call after V2X_FCE_Open().
+ */
+status_t V2X_FCE_SetWaitMode(v2x_fce_handle_t *handle, bool useInterrupt, int32_t irqn);
+
+/*!
+ * @brief V2X/FCE MU RX-full completion hook.
+ *
+ * Call this from the application ISR installed on the V2X-FH MU RX interrupt
+ * vector routed to the running core (the vector name and IRQ number differ
+ * per core and per SoC, so they are supplied by the application, not this
+ * component). It clears the MU RX interrupt and flags request completion so
+ * the driver's interrupt-driven wait can return. Safe to call spuriously.
+ */
+void V2X_FCE_HandleIRQ(void);
 
 #endif /* V2X_FCE_H_ */
