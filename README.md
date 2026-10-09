@@ -9,8 +9,8 @@ sub-repositories/projects. Navigate to the top/parent repository (mcuxsdk-manife
 for the complete delivery of MCUXpresso SDK.
 
 ## Documentation
-Overall details can be reviewed here: [MCUXpresso SDK Online Documentation](https://mcuxpresso.nxp.com/mcuxsdk/latest/html/introduction/README.html)
+Overall details can be reviewed here: [MCUXpresso SDK Online Documentation](https://docs.mcuxpresso.nxp.com/mcuxsdk/latest/introduction/README.html)
 
 ## Setup
 Instructions on how to install the MCUXpresso SDK provided from GitHub via west manifest
-[Getting Started with SDK - Detailed Installation Instructions](https://mcuxpresso.nxp.com/mcuxsdk/latest/html/gsd/installation.html#installation)
+[Getting Started with SDK - Detailed Installation Instructions](https://docs.mcuxpresso.nxp.com/mcuxsdk/latest/gsd/installation.html#installation)
