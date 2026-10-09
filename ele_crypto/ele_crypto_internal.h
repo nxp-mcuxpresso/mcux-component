@@ -22,9 +22,19 @@
 #define MSG_RESPONSE_MAX                    (16u)
 #define NEGATIVE_ONE_TWOS_COMPLEMENT_16_BIT (0xffffu)
 
-#define ECDH              (0x174d0a07u)
-#define ECDH_SIZE         (0xau)
+#define ECDH      (0x174d0a07u)
+#define ECDH_SIZE (0xau)
+
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+#define ECDH_RESPONSE_HDR (0xe14d0307u)
+#define ECDH_FLAG_PLAINTEXT (0x1u)
+#define ECDH_ALGO_ARGS_VERSION (0x1u)
+#define ECDH_ALGO_ARGS_WORDS   (8u)
+#define ECDH_RESP_BUFFER_TOO_SHORT (0x1d29u)
+#else  /* ELE S400 */
 #define ECDH_RESPONSE_HDR (0xe14d0407u)
+#define ECDH_RESP_INVALID_BUFFER_SIZE (0xa729u)
+#endif /* FSL_FEATURE_ELE_IS_S100 */
 
 #define LOAD_FW                  (0x17020406u)
 #define LOAD_FW_SIZE             (0x4u)

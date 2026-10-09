@@ -23,9 +23,15 @@
  *
  * Change log:
  *
+ * - Version 2.11.1
+ *   - Fix ELE_Ecdh() for ELE S100 (i.MX RT2660): adopt Key agreement (0x4D)
+ *     indirect argument-structure protocol (Table 247-250); S400 (RT1180)
+ *     inline layout preserved under the non-S100 build path.
+ *
  * - Version 2.11.0
  *   - Add ELE_GetFwVersionAndCommitSHA1 to expose commit SHA from GET FW VERSION response
  *   - Add ELE_Ecdh for ECDH key agreement (P-256, P-384, P-521)
+
  *
  * - Version 2.10.0
  *   - Add support for updated Fast MAC
@@ -884,8 +890,11 @@ typedef struct _ele_ecdh_t
     uint16_t public_key_size;   /*!< Size of public key in bytes */
     uint8_t *shared_secret;     /*!< Pointer to output shared secret buffer */
     uint16_t shared_secret_size; /*!< Size of shared secret buffer in bytes */
-    ecdh_algorithm_t operation; /*!< Algorithm identifier (always kECDH = 0x09020000) */
-    ecdh_key_size_t key_size_bits; /*!< Key size in bits: 256 (P-256), 384 (P-384), or 521 (P-521) */
+    ecdh_algorithm_t operation; /*!< Algorithm identifier, must be kECDH (0x89020000) */
+    ecdh_key_size_t key_size_bits; /*!< Key size in bits: 256 (P-256), 384 (P-384), or 521 (P-521).
+                                        Used by ELE S400 only; ELE S100 infers the curve from the
+                                        private key size. */
+
 } ele_ecdh_t;
 
 /*!

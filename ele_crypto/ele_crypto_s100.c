@@ -32,6 +32,9 @@
 #include "ele_crypto.h"
 #include "ele_crypto_internal.h"
 #include "ele_crypto_s100_internal.h"
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+#include "fsl_cache.h"
+#endif /* ELE_CACHE_HANDLING */
 
 /*******************************************************************************
  * ELE_Aead  (S100 - 19-word format, opcode 0x65)
@@ -108,11 +111,17 @@ status_t ELE_Aead(S3MU_Type *mu,
     {
         return status;
     }
+
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+    DCACHE_InvalidateByRange((uint32_t)conf->output, out_size);
+#endif /* defined(ELE_CACHE_HANDLING) */
+
     if ((resp[0] != CIPHER_AEAD_S100_RSP_HDR) || ((resp[1] & 0xFFu) != RESPONSE_SUCCESS))
     {
         return kStatus_Fail;
     }
     /* Write back actual output size reported by ELE */
+
     if (conf->output_size != NULL)
     {
         *conf->output_size = resp[2];
@@ -262,8 +271,14 @@ status_t ELE_GenericHmac(S3MU_Type *mu,
          * generated MAC output size is reported in response word 3 [15:0]. */
         *out_size = resp[3] & 0xFFFFu;
     }
+
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+    DCACHE_InvalidateByRange((uint32_t)out, mac_size);
+#endif /* defined(ELE_CACHE_HANDLING) */
+
     return kStatus_Success;
 }
+
 
 /*******************************************************************************
  * ELE_GenericCipher  (S100: route through Cipher HSM command with plaintext flag)
@@ -309,6 +324,11 @@ status_t ELE_GenericCipher(S3MU_Type *mu, ele_generic_cipher_t *conf)
     {
         return status;
     }
+
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+    DCACHE_InvalidateByRange((uint32_t)conf->output, conf->size);
+#endif /* defined(ELE_CACHE_HANDLING) */    
+
     if ((resp[0] != CIPHER_ONE_GO_S100_RSP_HDR) || ((resp[1] & 0xFFu) != RESPONSE_SUCCESS))
     {
         return kStatus_Fail;
@@ -365,6 +385,12 @@ status_t ELE_GenericAead(S3MU_Type *mu, ele_generic_aead_t *conf)
     {
         return status;
     }
+
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+    DCACHE_InvalidateByRange((uint32_t)conf->output, conf->size);
+    DCACHE_InvalidateByRange((uint32_t)conf->tag, conf->tag_size);
+#endif /* defined(ELE_CACHE_HANDLING) */
+
     if ((resp[0] != CIPHER_AEAD_S100_RSP_HDR) || ((resp[1] & 0xFFu) != RESPONSE_SUCCESS))
     {
         return kStatus_Fail;
@@ -415,6 +441,11 @@ status_t ELE_GenericEcdsa(S3MU_Type *mu, ele_generic_ecdsa_t *conf)
         return kStatus_Fail;
     }
     conf->signature_size = resp[2] & SIGN_SIGNATURE_SIZE_MASK;
+
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+    DCACHE_InvalidateByRange((uint32_t)conf->signature, conf->signature_size);
+#endif /* defined(ELE_CACHE_HANDLING) */
+
     return kStatus_Success;
 }
 

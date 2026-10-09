@@ -3887,6 +3887,15 @@ status_t ELE_GetEvent(S3MU_Type *mu, ele_events_t *events)
  * Only ECC NIST P-256, P-384, and P-521 curves are supported.
  * Public keys must be in non-compressed form {x, y}.
  *
+ * The command ID (0x4D) is common to both ELE generations, but the message body
+ * differs:
+ *  - ELE S400 ("ECDH (0x4D)") packs the key addresses and sizes directly into
+ *    the MU message words, and reports the produced shared secret size in the
+ *    response.
+ *  - ELE S100 ("Key agreement (0x4D)") is run here in plaintext mode and only
+ *    passes a pointer to an ECDH algorithm argument structure held in requester
+ *    memory. Its response carries no output size.
+ *
  * param mu MU peripheral base address
  * param conf pointer where ECDH configuration structure can be found
  * param output_size pointer where to save the resulting shared secret size or the expected
@@ -3903,12 +3912,28 @@ status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size)
     status_t status              = kStatus_Fail;
     uint32_t tmsg[ECDH_SIZE]     = {0u};
     uint32_t rmsg[S3MU_RR_COUNT] = {0u};
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+    /* Argument structure for the ECDH key agreement algorithm, read by ELE from
+       requester memory. Layout:
+         word 0: Reserved (bits 31-16) | Structure version (bits 15-0)
+         word 1: Peer public key LSB address
+         word 2: Peer public key size in bytes
+         word 3: Private key LSB address
+         word 4: Private key size in bytes
+         word 5: Shared secret LSB address
+         word 6: Shared secret size in bytes
+         word 7: Reserved */
+    uint32_t ecdh_args[ECDH_ALGO_ARGS_WORDS] = {0u};
+    uint32_t secret_len = 0u;
+#endif /* FSL_FEATURE_ELE_IS_S100 */
+
 
     /* Check argument validity */
     if (mu == NULL || conf == NULL || output_size == NULL)
     {
         return kStatus_InvalidArgument;
     }
+
 
     /* Validate key size - must be 256, 384, or 521 bits */
     if (conf->key_size_bits != kECDH_P256 && 
@@ -3930,18 +3955,37 @@ status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size)
         return kStatus_InvalidArgument;
     }
 
-    /****************** ECDH Command message ***********************/
-    tmsg[0] = ECDH;                                       // ECDH Command Header
-    tmsg[1] = 0x0u;                                       // Reserved
-    tmsg[2] = (uint32_t)conf->operation;                  // Operation (0x09020000 for ECDH)
-    tmsg[3] = ((uint32_t)conf->key_size_bits << SHIFT_16);              // Key size in bits (256, 384, or 521)
-    tmsg[4] = ADD_OFFSET((uint32_t)conf->private_key);    // Private key address
-    tmsg[5] = ADD_OFFSET((uint32_t)conf->public_key);     // Public key address
-    tmsg[6] = ((uint32_t)conf->public_key_size << SHIFT_16) | 
-              (uint32_t)conf->private_key_size;           // Public key size | Private key size
-    tmsg[7] = ADD_OFFSET((uint32_t)conf->shared_secret);  // Shared secret output address
-    tmsg[8] = (uint32_t)conf->shared_secret_size & 0xFFFFu; // Reserved (upper 16 bits) | Shared secret size (lower 16 bits)
-    ele_msg_crc(tmsg, ECDH_SIZE);   // CRC
+#if defined(FSL_FEATURE_ELE_IS_S100) && (FSL_FEATURE_ELE_IS_S100 > 0)
+    /* P-521: 521 bits is 66 bytes, but 521/8 would give 65.*/
+    secret_len = ((uint32_t)conf->key_size_bits + 7u) / 8u;
+
+    /* The caller's buffer must be able to hold the whole shared secret. */
+    if ((uint32_t)conf->shared_secret_size < secret_len)
+    {
+        *output_size = secret_len;
+        return kStatus_ELE_BufferTooSmall;
+    }
+
+    ecdh_args[0] = ECDH_ALGO_ARGS_VERSION;                      // Structure version = 0x1, Reserved
+    ecdh_args[1] = ADD_OFFSET((uint32_t)conf->public_key);      // Peer public key address
+    ecdh_args[2] = (uint32_t)conf->public_key_size;             // Peer public key size in bytes
+    ecdh_args[3] = ADD_OFFSET((uint32_t)conf->private_key);     // Private key address
+    ecdh_args[4] = (uint32_t)conf->private_key_size;            // Private key size in bytes
+    ecdh_args[5] = ADD_OFFSET((uint32_t)conf->shared_secret);   // Shared secret output address
+    ecdh_args[6] = secret_len;                                  // Exact shared secret size in bytes
+    ecdh_args[7] = 0x0u;                                        // Reserved
+
+
+    tmsg[0] = ECDH;                                          // Key agreement (0x4D) Command Header
+    tmsg[1] = 0x0u;                                          // Key management handle, 0 in plaintext mode
+    tmsg[2] = ECDH_FLAG_PLAINTEXT;                           // Flags, bit 0 = 1 (plaintext)
+    tmsg[3] = (uint32_t)conf->operation;                     // Key agreement algorithm (0x89020000)
+    tmsg[4] = 0x0u;                                          // Argument/buffer address MSB, must be 0
+    tmsg[5] = 0x0u;                                          // Key store arguments LSB addr, 0 in plaintext
+    tmsg[6] = 0x0u;                                          // Key store arguments size, 0 in plaintext
+    tmsg[7] = ADD_OFFSET((uint32_t)ecdh_args);               // Algorithm arguments LSB address
+    tmsg[8] = (uint32_t)sizeof(ecdh_args);                   // Algorithm arguments size in bytes
+    ele_msg_crc(tmsg, ECDH_SIZE);
 
     /* Send message to Security Sub-System */
     status = S3MU_SendMessage(mu, tmsg, ECDH_SIZE);
@@ -3957,7 +4001,60 @@ status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size)
         return status;
     }
 
-    /* Check that response corresponds to the sent command */
+    /* Check response header: S100 Key agreement response is 0xE14D0307 (3 words) */
+    if (rmsg[0] != ECDH_RESPONSE_HDR)
+    {
+        return kStatus_Fail;
+    }
+
+    /* Header OK, check response indicator (low 16 bits) */
+    if ((rmsg[1] & 0xFFFFu) == RESPONSE_SUCCESS)
+    {
+        *output_size = secret_len;
+#if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
+        DCACHE_InvalidateByRange((uint32_t)conf->shared_secret, *output_size);
+#endif /* defined(ELE_CACHE_HANDLING) */
+        return kStatus_Success;
+    }
+    else if ((rmsg[1] & 0xFFFFu) == ECDH_RESP_BUFFER_TOO_SHORT)
+    {
+        /* Output buffer is too short; expected size is not reported */
+        *output_size = 0u;
+        return kStatus_ELE_BufferTooSmall;
+    }
+    else
+    {
+        return kStatus_Fail;
+    }
+
+#else /* ELE S400 */
+    tmsg[0] = ECDH;                                              // ECDH Command Header
+    tmsg[1] = 0x0u;                                              // Reserved
+    tmsg[2] = (uint32_t)conf->operation;                         // Operation (0x89020000 for ECDH)
+    tmsg[3] = (uint32_t)conf->key_size_bits << SHIFT_16;         // Key size in bits (256, 384, or 521)
+    tmsg[4] = ADD_OFFSET((uint32_t)conf->private_key);           // Private key address
+    tmsg[5] = ADD_OFFSET((uint32_t)conf->public_key);            // Public key address
+    tmsg[6] = ((uint32_t)conf->public_key_size << SHIFT_16) |
+              (uint32_t)conf->private_key_size;                  // Public key size | Private key size
+    tmsg[7] = ADD_OFFSET((uint32_t)conf->shared_secret);         // Shared secret output address
+    tmsg[8] = (uint32_t)conf->shared_secret_size & 0xFFFFu;      // Shared secret size (bits 15-0)
+    ele_msg_crc(tmsg, ECDH_SIZE);
+
+    /* Send message to Security Sub-System */
+    status = S3MU_SendMessage(mu, tmsg, ECDH_SIZE);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    /* Wait for response from Security Sub-System */
+    status = ele_mu_get_response(mu, rmsg);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    /* Check response header: S400 ECDH response is 0xE14D0407 (4 words) */
     if (rmsg[0] != ECDH_RESPONSE_HDR)
     {
         return kStatus_Fail;
@@ -3966,7 +4063,7 @@ status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size)
     /* Header OK, check for success */
     if (rmsg[1] == RESPONSE_SUCCESS)
     {
-        /* Read the actual output shared secret size from word 2 (lower 16 bits) */
+        /* Read the actual output shared secret size from word 2 (bits 15-0) */
         *output_size = rmsg[2] & 0xFFFFu;
 
 #if defined(ELE_CACHE_HANDLING) && (ELE_CACHE_HANDLING > 0u)
@@ -3975,16 +4072,17 @@ status_t ELE_Ecdh(S3MU_Type *mu, ele_ecdh_t *conf, uint32_t *output_size)
 
         return kStatus_Success;
     }
-    else if (rmsg[1] == 0xA729u) /* Invalid buffer size error */
+    else if (rmsg[1] == ECDH_RESP_INVALID_BUFFER_SIZE)
     {
-        /* Return expected size if available in word 2 */
+        /* Return expected size from word 2 */
         *output_size = rmsg[2] & 0xFFFFu;
         return kStatus_ELE_BufferTooSmall;
     }
     else
     {
-        /* Other errors: 0x29 (general), 0x0229 (invalid address), 
-           0x0429 (invalid algo/key size), 0x0629 (out of memory) */
         return kStatus_Fail;
     }
+#endif /* FSL_FEATURE_ELE_IS_S100 */
 }
+
+
