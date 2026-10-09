@@ -56,7 +56,7 @@ typedef struct _hal_rpmsg_peer_ept_state
 typedef struct _rpmsg_mcmgr_event_ctx
 {
     volatile uint16_t last_event;
-    volatile uint8_t  ready_seen;
+    volatile uint8_t ready_seen;
 } rpmsg_mcmgr_event_ctx_t;
 
 static rpmsg_mcmgr_event_ctx_t s_mcmgrEventCtx = {0};
@@ -238,7 +238,7 @@ static void RPMsgPeerReadyEventHandler(mcmgr_core_t coreNum, uint16_t eventData,
 #if (defined(HAL_RPMSG_SELECT_ROLE) && (HAL_RPMSG_SELECT_ROLE == 0U))
 static hal_rpmsg_status_t HAL_RpmsgMcmgrMasterInit(void)
 {
-    volatile uint32_t timeout    = RPMSG_REMOTE_READY_RETRY_COUNT;
+    volatile uint32_t timeout = RPMSG_REMOTE_READY_RETRY_COUNT;
 
     if (0 > s_rpmsgEptCount)
     {
@@ -408,7 +408,7 @@ hal_rpmsg_status_t HAL_RpmsgInit(hal_rpmsg_handle_t handle, hal_rpmsg_config_t *
     uint8_t count = 0;
     uint8_t i;
 
-    assert(HAL_RPMSG_HANDLE_SIZE >= sizeof(hal_rpmsg_state_t));
+    MCUX_BUILD_ASSERT(HAL_RPMSG_HANDLE_SIZE >= sizeof(hal_rpmsg_state_t), "HAL_RPMSG_HANDLE_SIZE too small");
     assert(NULL != handle);
     rpmsgHandle = (hal_rpmsg_state_t *)handle;
 
@@ -498,8 +498,8 @@ hal_rpmsg_status_t HAL_RpmsgDeinit(hal_rpmsg_handle_t handle)
 
     if (0 == s_rpmsgEptCount)
     {
-        s_rpmsgEptCount             = -1;
-        s_peerRpmsgEptCount         = 0U;
+        s_rpmsgEptCount     = -1;
+        s_peerRpmsgEptCount = 0U;
         /* Do not clear ready_seen here. A peer may already have entered its
          * next cycle and sent READY; the master consumes the latch after it
          * observes the notification. */

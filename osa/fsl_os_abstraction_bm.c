@@ -482,10 +482,11 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
 
     task_control_block_t *ptaskStruct = (task_control_block_t *)taskHandle;
     uint32_t regPrimask;
-    assert(sizeof(task_control_block_t) == OSA_TASK_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(task_control_block_t) == OSA_TASK_HANDLE_SIZE, "OSA_TASK_HANDLE_SIZE mismatch");
     assert(taskHandle != NULL);
     assert(thread_def->tpriority <= OSA_TASK_PRIORITY_MIN);
-    assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
+    MCUX_BUILD_ASSERT(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX,
+                      "OSA_TASK_PRIORITY_MIN must exceed OSA_TASK_PRIORITY_MAX");
 
     ptaskStruct->p_func    = thread_def->pthread;
     ptaskStruct->haveToRun = 1U;
@@ -663,7 +664,7 @@ osa_status_t OSA_SemaphorePrecreate(osa_semaphore_handle_t semaphoreHandle, osa_
 osa_status_t OSA_SemaphoreCreate(osa_semaphore_handle_t semaphoreHandle, uint32_t initValue)
 {
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
-    assert(sizeof(semaphore_t) <= OSA_SEM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(semaphore_t) <= OSA_SEM_HANDLE_SIZE, "OSA_SEM_HANDLE_SIZE too small");
     assert(semaphoreHandle != NULL);
     assert(initValue <= UINT8_MAX);
 
@@ -693,7 +694,7 @@ osa_status_t OSA_SemaphoreCreate(osa_semaphore_handle_t semaphoreHandle, uint32_
 osa_status_t OSA_SemaphoreCreateBinary(osa_semaphore_handle_t semaphoreHandle)
 {
     semaphore_t *pSemStruct = (semaphore_t *)semaphoreHandle;
-    assert(sizeof(semaphore_t) <= OSA_SEM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(semaphore_t) <= OSA_SEM_HANDLE_SIZE, "OSA_SEM_HANDLE_SIZE too small");
     assert(semaphoreHandle != NULL);
 
     pSemStruct->semCount      = 1U;
@@ -854,7 +855,7 @@ osa_status_t OSA_SemaphorePost(osa_semaphore_handle_t semaphoreHandle)
 osa_status_t OSA_MutexCreate(osa_mutex_handle_t mutexHandle)
 {
     mutex_t *pMutexStruct = (mutex_t *)mutexHandle;
-    assert(sizeof(mutex_t) <= OSA_MUTEX_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(mutex_t) <= OSA_MUTEX_HANDLE_SIZE, "OSA_MUTEX_HANDLE_SIZE too small");
     assert(mutexHandle != NULL);
 
     pMutexStruct->isLocked  = 0U;
@@ -1000,7 +1001,7 @@ osa_status_t OSA_EventPrecreate(osa_event_handle_t eventHandle, osa_task_ptr_t t
 osa_status_t OSA_EventCreate(osa_event_handle_t eventHandle, uint8_t autoClear)
 {
     event_t *pEventStruct = eventHandle;
-    assert(sizeof(event_t) == OSA_EVENT_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(event_t) == OSA_EVENT_HANDLE_SIZE, "OSA_EVENT_HANDLE_SIZE mismatch");
     assert(eventHandle != NULL);
 
     pEventStruct->isWaiting  = 0U;
@@ -1143,7 +1144,7 @@ osa_status_t OSA_EventWait(osa_event_handle_t eventHandle,
         {
             pEventStruct->flags &= ~flagsToWait;
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
-            if(pEventStruct->waitingTask != NULL)
+            if (pEventStruct->waitingTask != NULL)
             {
                 pEventStruct->waitingTask->haveToRun = 0U;
             }
@@ -1180,7 +1181,7 @@ osa_status_t OSA_EventWait(osa_event_handle_t eventHandle,
         else
         {
 #if (defined(FSL_OSA_TASK_ENABLE) && (FSL_OSA_TASK_ENABLE > 0U))
-            if(pEventStruct->waitingTask != NULL)
+            if (pEventStruct->waitingTask != NULL)
             {
                 pEventStruct->waitingTask->haveToRun = 0U;
             }
@@ -1222,7 +1223,7 @@ osa_status_t OSA_EventDestroy(osa_event_handle_t eventHandle)
 osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32_t msgSize)
 {
     msg_queue_t *pMsgQStruct = msgqHandle;
-    assert(sizeof(msg_queue_t) == OSA_MSGQ_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(msg_queue_t) == OSA_MSGQ_HANDLE_SIZE, "OSA_MSGQ_HANDLE_SIZE mismatch");
     assert(msgqHandle != NULL);
 
     pMsgQStruct->max      = (uint16_t)msgNo;

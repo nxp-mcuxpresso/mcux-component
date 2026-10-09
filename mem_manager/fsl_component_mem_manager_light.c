@@ -254,7 +254,7 @@ static void MEM_BufferAllocates_memStatis(void *buffer, uint32_t time, uint32_t 
     void_ptr_t buffer_ptr;
     void_ptr_t blockHdr_ptr;
     blockHeader_t *BlockHdr;
-	memAreaPrivDesc_t *p_area;
+    memAreaPrivDesc_t *p_area;
 
     /* Using union to fix Misra */
     buffer_ptr.void_ptr      = buffer;
@@ -485,8 +485,9 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
     mem_status_t st = kStatus_MemSuccess;
     memAreaPrivDesc_t *p_area;
     uint32_t regPrimask = DisableGlobalIRQ();
-    assert(offsetof(memAreaCfg_t, internal_ctx) == offsetof(memAreaPrivDesc_t, ctx));
-    assert(sizeof(memAreaCfg_t) >= sizeof(memAreaPrivDesc_t));
+    MCUX_BUILD_ASSERT(offsetof(memAreaCfg_t, internal_ctx) == offsetof(memAreaPrivDesc_t, ctx),
+                      "internal_ctx/ctx offset mismatch");
+    MCUX_BUILD_ASSERT(sizeof(memAreaCfg_t) >= sizeof(memAreaPrivDesc_t), "memAreaCfg_t too small");
     do
     {
         void_ptr_t ptr;
@@ -552,11 +553,11 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
                     break;
                 }
                 if (((new_area_desc->start_address.raw_address >= p_area->start_address.raw_address) &&
-                    (new_area_desc->start_address.raw_address <= p_area->end_address.raw_address)) ||
+                     (new_area_desc->start_address.raw_address <= p_area->end_address.raw_address)) ||
                     ((new_area_desc->end_address.raw_address >= p_area->start_address.raw_address) &&
-                    (new_area_desc->end_address.raw_address <= p_area->end_address.raw_address)) ||
+                     (new_area_desc->end_address.raw_address <= p_area->end_address.raw_address)) ||
                     ((new_area_desc->start_address.raw_address < p_area->start_address.raw_address) &&
-                    (new_area_desc->end_address.raw_address > p_area->end_address.raw_address)))
+                     (new_area_desc->end_address.raw_address > p_area->end_address.raw_address)))
                 {
                     st = kStatus_MemInitError; /* overlap with previously registered blocks */
                     break;
@@ -1118,17 +1119,17 @@ mem_status_t MEM_BufferCheck(void *buffer, uint32_t size)
             if (p_area != NULL)
             {
                 /* Not memory manager buffer, do not care */
-                if (((uint8_t*)buffer < (uint8_t*)p_area->start_address.raw_address) ||
-                    ((uint8_t*)buffer > (uint8_t*)p_area->end_address.raw_address))
+                if (((uint8_t *)buffer < (uint8_t *)p_area->start_address.raw_address) ||
+                    ((uint8_t *)buffer > (uint8_t *)p_area->end_address.raw_address))
                 {
                     ret = kStatus_MemUnknownError;
                 }
                 else
                 {
-                    if( size > MEM_BufferGetSize(buffer) )
+                    if (size > MEM_BufferGetSize(buffer))
                     {
-                      assert(false);
-                      ret = kStatus_MemOverFlowError;
+                        assert(false);
+                        ret = kStatus_MemOverFlowError;
                     }
                 }
             }
@@ -1321,7 +1322,8 @@ static uint32_t MEM_GetFreeHeapSpaceInArea(memAreaPrivDesc_t *p_area)
     }
 
     /* Add remaining free space in the heap */
-    free_sz += p_area->end_address.raw_address - (uint32_t)p_area->ctx.FreeBlockHdrList.tail - BLOCK_HDR_SIZE + (uint32_t)1U;
+    free_sz +=
+        p_area->end_address.raw_address - (uint32_t)p_area->ctx.FreeBlockHdrList.tail - BLOCK_HDR_SIZE + (uint32_t)1U;
     return free_sz;
 }
 

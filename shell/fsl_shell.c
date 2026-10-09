@@ -141,8 +141,8 @@ typedef enum _fun_key_status
 /*! @brief Data structure for Shell environment. */
 typedef struct _shell_context_handle
 {
-    list_label_t commandContextListHead; /*!< Command shellContextHandle list queue head */
-    serial_handle_t serialHandle;        /*!< Serial manager handle */
+    list_label_t commandContextListHead;                             /*!< Command shellContextHandle list queue head */
+    serial_handle_t serialHandle;                                    /*!< Serial manager handle */
     uint8_t
         serialWriteHandleBuffer[SERIAL_MANAGER_WRITE_HANDLE_SIZE];   /*!< The buffer for serial manager write handle */
     serial_write_handle_t serialWriteHandle;                         /*!< The serial manager write handle */
@@ -194,14 +194,14 @@ static shell_status_t SHELL_HelpCommand(shell_handle_t shellHandle, int32_t argc
 
 static shell_status_t SHELL_ExitCommand(shell_handle_t shellHandle, int32_t argc, char **argv); /*!< exit command */
 
-static int32_t SHELL_ParseLine(const char *cmd, uint32_t len, char *argv[]); /*!< parse line command */
+static int32_t SHELL_ParseLine(const char *cmd, uint32_t len, char *argv[]);           /*!< parse line command */
 
 static int32_t SHELL_StringCompare(const char *str1, const char *str2, int32_t count); /*!< compare string command */
 
 static void SHELL_ProcessCommand(shell_context_handle_t *shellContextHandle, const char *cmd); /*!< process a command */
 
 static void SHELL_GetHistoryCommand(shell_context_handle_t *shellContextHandle,
-                                    uint8_t hist_pos); /*!< get commands history */
+                                    uint8_t hist_pos);                      /*!< get commands history */
 
 static void SHELL_AutoComplete(shell_context_handle_t *shellContextHandle); /*!< auto complete command */
 
@@ -1005,7 +1005,7 @@ shell_status_t SHELL_Init(shell_handle_t shellHandle, serial_handle_t serialHand
     assert(serialHandle);
 #endif
     assert(prompt);
-    assert(SHELL_HANDLE_SIZE >= sizeof(shell_context_handle_t));
+    MCUX_BUILD_ASSERT(SHELL_HANDLE_SIZE >= sizeof(shell_context_handle_t), "SHELL_HANDLE_SIZE too small");
 
     shellContextHandle = (shell_context_handle_t *)shellHandle;
 

@@ -233,7 +233,7 @@ hal_gpio_status_t HAL_GpioInit(hal_gpio_handle_t gpioHandle, hal_gpio_pin_config
 
     assert(gpioHandle);
     assert(pinConfig);
-    assert(HAL_GPIO_HANDLE_SIZE >= sizeof(hal_gpio_state_t));
+    MCUX_BUILD_ASSERT(HAL_GPIO_HANDLE_SIZE >= sizeof(hal_gpio_state_t), "HAL_GPIO_HANDLE_SIZE too small");
 
     gpioState = (hal_gpio_state_t *)gpioHandle;
 

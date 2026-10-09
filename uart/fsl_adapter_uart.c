@@ -226,7 +226,7 @@ hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t
     assert(uart_config->instance < (sizeof(s_UartAdapterBase) / sizeof(UART_Type *)));
     assert(s_UartAdapterBase[uart_config->instance]);
 
-    assert(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t));
+    MCUX_BUILD_ASSERT(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t), "HAL_UART_HANDLE_SIZE too small");
 
     UART_GetDefaultConfig(&uartConfig);
     uartConfig.baudRate_Bps = uart_config->baudRate_Bps;

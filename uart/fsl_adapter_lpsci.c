@@ -223,10 +223,7 @@ hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t
     assert(uart_config->instance < (sizeof(s_LpsciAdapterBase) / sizeof(UART0_Type *)));
     assert(s_LpsciAdapterBase[uart_config->instance]);
 
-    if (HAL_UART_HANDLE_SIZE < sizeof(hal_uart_state_t))
-    {
-        return kStatus_HAL_UartError;
-    }
+    MCUX_BUILD_ASSERT(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t), "HAL_UART_HANDLE_SIZE too small");
 
     LPSCI_GetDefaultConfig(&lpsciConfig);
     lpsciConfig.baudRate_Bps = uart_config->baudRate_Bps;

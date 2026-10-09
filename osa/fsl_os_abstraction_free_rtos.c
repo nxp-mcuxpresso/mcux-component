@@ -344,7 +344,8 @@ osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority
 {
     assert(NULL != taskHandle);
     assert(taskPriority <= OSA_TASK_PRIORITY_MIN);
-    assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
+    MCUX_BUILD_ASSERT(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX,
+                      "OSA_TASK_PRIORITY_MIN must exceed OSA_TASK_PRIORITY_MAX");
     osa_freertos_task_t *ptask = (osa_freertos_task_t *)taskHandle;
     vTaskPrioritySet((task_handler_t)ptask->taskHandle, PRIORITY_OSA_TO_RTOS(((uint32_t)taskPriority)));
     return KOSA_StatusSuccess;
@@ -366,14 +367,16 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
     osa_status_t status = KOSA_StatusError;
 #if (defined(configSUPPORT_STATIC_ALLOCATION) && (configSUPPORT_STATIC_ALLOCATION > 0U)) && \
     !((defined(configSUPPORT_DYNAMIC_ALLOCATION) && (configSUPPORT_DYNAMIC_ALLOCATION > 0U)))
-    assert((sizeof(osa_freertos_task_t) + sizeof(StaticTask_t)) <= OSA_TASK_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT((sizeof(osa_freertos_task_t) + sizeof(StaticTask_t)) <= OSA_TASK_HANDLE_SIZE,
+                      "OSA_TASK_HANDLE_SIZE too small");
 #else
-    assert(sizeof(osa_freertos_task_t) == OSA_TASK_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(osa_freertos_task_t) == OSA_TASK_HANDLE_SIZE, "OSA_TASK_HANDLE_SIZE mismatch");
 #endif
     assert(NULL != taskHandle);
     assert(NULL != thread_def);
     assert(thread_def->tpriority <= OSA_TASK_PRIORITY_MIN);
-    assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
+    MCUX_BUILD_ASSERT(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX,
+                      "OSA_TASK_PRIORITY_MIN must exceed OSA_TASK_PRIORITY_MAX");
 #if defined(configSUPPORT_DYNAMIC_ALLOCATION) && (configSUPPORT_DYNAMIC_ALLOCATION > 0)
     TaskHandle_t pxCreatedTask;
 #endif
@@ -402,14 +405,13 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
         status = KOSA_StatusSuccess;
     }
 #else
-    if (xTaskCreate(
-            (TaskFunction_t)thread_def->pthread, /* pointer to the task */
-            (char const *)thread_def->tname,     /* task name for kernel awareness debugging */
-            (configSTACK_DEPTH_TYPE)(thread_def->stacksize / sizeof(portSTACK_TYPE)), /* task stack size */
-            (task_param_t)task_param,                      /* optional task startup argument */
-            PRIORITY_OSA_TO_RTOS((thread_def->tpriority)), /* initial priority */
-            &pxCreatedTask                                 /* optional task handle to create */
-            ) == pdPASS)
+    if (xTaskCreate((TaskFunction_t)thread_def->pthread, /* pointer to the task */
+                    (char const *)thread_def->tname,     /* task name for kernel awareness debugging */
+                    (configSTACK_DEPTH_TYPE)(thread_def->stacksize / sizeof(portSTACK_TYPE)), /* task stack size */
+                    (task_param_t)task_param,                      /* optional task startup argument */
+                    PRIORITY_OSA_TO_RTOS((thread_def->tpriority)), /* initial priority */
+                    &pxCreatedTask                                 /* optional task handle to create */
+                    ) == pdPASS)
     {
         ptask->taskHandle = pxCreatedTask;
 
@@ -515,9 +517,10 @@ osa_status_t OSA_SemaphoreCreate(osa_semaphore_handle_t semaphoreHandle, uint32_
 {
 #if (defined(configSUPPORT_STATIC_ALLOCATION) && (configSUPPORT_STATIC_ALLOCATION > 0U)) && \
     !((defined(configSUPPORT_DYNAMIC_ALLOCATION) && (configSUPPORT_DYNAMIC_ALLOCATION > 0U)))
-    assert((sizeof(osa_semaphore_handle_t) + sizeof(StaticQueue_t)) == OSA_SEM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT((sizeof(osa_semaphore_handle_t) + sizeof(StaticQueue_t)) == OSA_SEM_HANDLE_SIZE,
+                      "OSA_SEM_HANDLE_SIZE mismatch");
 #else
-    assert(sizeof(osa_semaphore_handle_t) == OSA_SEM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(osa_semaphore_handle_t) == OSA_SEM_HANDLE_SIZE, "OSA_SEM_HANDLE_SIZE mismatch");
 #endif
     assert(NULL != semaphoreHandle);
 
@@ -552,9 +555,10 @@ osa_status_t OSA_SemaphoreCreateBinary(osa_semaphore_handle_t semaphoreHandle)
 {
 #if (defined(configSUPPORT_STATIC_ALLOCATION) && (configSUPPORT_STATIC_ALLOCATION > 0U)) && \
     !((defined(configSUPPORT_DYNAMIC_ALLOCATION) && (configSUPPORT_DYNAMIC_ALLOCATION > 0U)))
-    assert((sizeof(osa_semaphore_handle_t) + sizeof(StaticQueue_t)) == OSA_SEM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT((sizeof(osa_semaphore_handle_t) + sizeof(StaticQueue_t)) == OSA_SEM_HANDLE_SIZE,
+                      "OSA_SEM_HANDLE_SIZE mismatch");
 #else
-    assert(sizeof(osa_semaphore_handle_t) == OSA_SEM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(osa_semaphore_handle_t) == OSA_SEM_HANDLE_SIZE, "OSA_SEM_HANDLE_SIZE mismatch");
 #endif
     assert(NULL != semaphoreHandle);
 
@@ -688,9 +692,10 @@ osa_status_t OSA_MutexCreate(osa_mutex_handle_t mutexHandle)
 {
 #if (defined(configSUPPORT_STATIC_ALLOCATION) && (configSUPPORT_STATIC_ALLOCATION > 0U)) && \
     !((defined(configSUPPORT_DYNAMIC_ALLOCATION) && (configSUPPORT_DYNAMIC_ALLOCATION > 0U)))
-    assert((sizeof(osa_mutex_handle_t) + sizeof(StaticQueue_t)) == OSA_MUTEX_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT((sizeof(osa_mutex_handle_t) + sizeof(StaticQueue_t)) == OSA_MUTEX_HANDLE_SIZE,
+                      "OSA_MUTEX_HANDLE_SIZE mismatch");
 #else
-    assert(sizeof(osa_mutex_handle_t) == OSA_MUTEX_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(osa_mutex_handle_t) == OSA_MUTEX_HANDLE_SIZE, "OSA_MUTEX_HANDLE_SIZE mismatch");
 #endif
     assert(NULL != mutexHandle);
 
@@ -815,9 +820,10 @@ osa_status_t OSA_EventCreate(osa_event_handle_t eventHandle, uint8_t autoClear)
     assert(NULL != eventHandle);
 #if (defined(configSUPPORT_STATIC_ALLOCATION) && (configSUPPORT_STATIC_ALLOCATION > 0U)) && \
     !((defined(configSUPPORT_DYNAMIC_ALLOCATION) && (configSUPPORT_DYNAMIC_ALLOCATION > 0U)))
-    assert((sizeof(osa_event_struct_t) + sizeof(StaticEventGroup_t)) <= OSA_EVENT_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT((sizeof(osa_event_struct_t) + sizeof(StaticEventGroup_t)) <= OSA_EVENT_HANDLE_SIZE,
+                      "OSA_EVENT_HANDLE_SIZE too small");
 #else
-    assert(sizeof(osa_event_struct_t) == OSA_EVENT_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(osa_event_struct_t) == OSA_EVENT_HANDLE_SIZE, "OSA_EVENT_HANDLE_SIZE mismatch");
 #endif
     osa_event_struct_t *pEventStruct = (osa_event_struct_t *)eventHandle;
 
@@ -1047,9 +1053,10 @@ osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32
 {
 #if (defined(configSUPPORT_STATIC_ALLOCATION) && (configSUPPORT_STATIC_ALLOCATION > 0U)) && \
     !((defined(configSUPPORT_DYNAMIC_ALLOCATION) && (configSUPPORT_DYNAMIC_ALLOCATION > 0U)))
-    assert((sizeof(osa_msgq_handle_t) + sizeof(StaticQueue_t)) == OSA_MSGQ_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT((sizeof(osa_msgq_handle_t) + sizeof(StaticQueue_t)) == OSA_MSGQ_HANDLE_SIZE,
+                      "OSA_MSGQ_HANDLE_SIZE mismatch");
 #else
-    assert(sizeof(osa_msgq_handle_t) == OSA_MSGQ_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(osa_msgq_handle_t) == OSA_MSGQ_HANDLE_SIZE, "OSA_MSGQ_HANDLE_SIZE mismatch");
 #endif
     assert(NULL != msgqHandle);
 

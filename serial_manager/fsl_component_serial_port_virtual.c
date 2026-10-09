@@ -266,7 +266,8 @@ serial_manager_status_t Serial_PortVirtualInit(serial_handle_t serialHandle, voi
 
     assert(NULL != config);
     assert(NULL != serialHandle);
-    assert(SERIAL_PORT_VIRTUAL_HANDLE_SIZE >= sizeof(serial_port_virtual_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_VIRTUAL_HANDLE_SIZE >= sizeof(serial_port_virtual_state_t),
+                      "SERIAL_PORT_VIRTUAL_HANDLE_SIZE too small");
 
     serialPortVirtual       = (serial_port_virtual_state_t *)serialHandle;
     serialPortVirtualConfig = (serial_port_virtual_config_t *)config;

@@ -225,7 +225,7 @@ hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t
     assert(uart_config);
     assert(uart_config->instance < (sizeof(s_QsciAdapterBase) / sizeof(QSCI_Type *)));
     assert(s_QsciAdapterBase[uart_config->instance]);
-    assert(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t));
+    MCUX_BUILD_ASSERT(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t), "HAL_UART_HANDLE_SIZE too small");
 
     QSCI_GetDefaultConfig(&qsciConfig, uart_config->baudRate_Bps, uart_config->srcClock_Hz);
 

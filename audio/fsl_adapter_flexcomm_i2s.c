@@ -111,7 +111,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     /* If asserted, please check if the value of I2S_NUM_BUFFERS defined in the fsl_i2s.h is modified.
        If modified, please modify the value of HAL_AUDIO_QUEUE_SIZE defined in the fsl_adapter_audio.h to be the same as
        I2S_NUM_BUFFERS. */
-    assert(HAL_AUDIO_HANDLE_SIZE >= sizeof(hal_audio_state_t));
+    MCUX_BUILD_ASSERT(HAL_AUDIO_HANDLE_SIZE >= sizeof(hal_audio_state_t), "HAL_AUDIO_HANDLE_SIZE too small");
     assert(config->instance < ARRAY_SIZE(s_i2sBases));
     assert(config->dmaConfig->instance < ARRAY_SIZE(dmaBases));
 
@@ -161,7 +161,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     u32Temp = config->srcClock_Hz / (uint32_t)config->sampleRate_Hz / (uint32_t)config->bitWidth / channelNum;
     assert(u32Temp <= UINT16_MAX);
 
-    i2sConfig.divider = (uint16_t)u32Temp;
+    i2sConfig.divider    = (uint16_t)u32Temp;
     i2sConfig.dataLength = config->bitWidth;
     if (0U == config->frameLength)
     {

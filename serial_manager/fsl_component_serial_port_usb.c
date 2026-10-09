@@ -832,7 +832,8 @@ serial_manager_status_t Serial_UsbCdcInit(serial_handle_t serialHandle, void *co
 
     assert(config != NULL);
     assert(serialHandle != NULL);
-    assert(SERIAL_PORT_USB_CDC_HANDLE_SIZE >= sizeof(serial_usb_cdc_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_USB_CDC_HANDLE_SIZE >= sizeof(serial_usb_cdc_state_t),
+                      "SERIAL_PORT_USB_CDC_HANDLE_SIZE too small");
 
 #if (defined(FSL_FEATURE_SOC_SYSMPU_COUNT) && (FSL_FEATURE_SOC_SYSMPU_COUNT > 0U))
     SYSMPU_Enable(SYSMPU, (bool)false);
@@ -900,7 +901,7 @@ serial_manager_status_t Serial_UsbCdcWrite(serial_handle_t serialHandle, uint8_t
     {
         return kStatus_SerialManager_Busy;
     }
-    
+
     serialUsbCdc->tx.busy          = 1U;
     serialUsbCdc->tx.waiting4Prime = 0U;
 
@@ -1032,8 +1033,10 @@ serial_manager_status_t Serial_UsbCdcGetConnectedStatus(serial_handle_t serialHa
     serial_usb_cdc_state_t *serialUsbCdc;
     assert(serialHandle != NULL);
     serialUsbCdc = (serial_usb_cdc_state_t *)serialHandle;
-    return ((serialUsbCdc->attach == 1U) && (serialUsbCdc->startTransactions == 1U)) ? kStatus_SerialManager_Success : kStatus_SerialManager_NotConnected;
-#else/* USB_CDC_SERIAL_MANAGER_RUN_NO_HOST == 1 */
+    return ((serialUsbCdc->attach == 1U) && (serialUsbCdc->startTransactions == 1U)) ?
+               kStatus_SerialManager_Success :
+               kStatus_SerialManager_NotConnected;
+#else /* USB_CDC_SERIAL_MANAGER_RUN_NO_HOST == 1 */
     return kStatus_SerialManager_Success;
 #endif
 }

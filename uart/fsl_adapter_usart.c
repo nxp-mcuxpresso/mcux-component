@@ -280,7 +280,7 @@ static hal_uart_status_t HAL_UartInitCommon(hal_uart_handle_t handle, const hal_
     assert(config != NULL);
     assert(config->instance < (sizeof(s_UsartAdapterBase) / sizeof(USART_Type *)));
     assert(s_UsartAdapterBase[config->instance] != NULL);
-    assert(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t));
+    MCUX_BUILD_ASSERT(HAL_UART_HANDLE_SIZE >= sizeof(hal_uart_state_t), "HAL_UART_HANDLE_SIZE too small");
 
     USART_GetDefaultConfig(&usartConfig);
     usartConfig.baudRate_Bps = config->baudRate_Bps;
@@ -840,7 +840,7 @@ hal_uart_dma_status_t HAL_UartDMAInit(hal_uart_handle_t handle,
 
     assert(handle != NULL);
     assert(dmaHandle);
-    assert(HAL_UART_DMA_HANDLE_SIZE >= sizeof(hal_uart_dma_state_t));
+    MCUX_BUILD_ASSERT(HAL_UART_DMA_HANDLE_SIZE >= sizeof(hal_uart_dma_state_t), "HAL_UART_DMA_HANDLE_SIZE too small");
 
     /* DMA init process. */
     uartHandle    = (hal_uart_state_t *)handle;

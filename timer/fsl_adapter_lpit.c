@@ -107,7 +107,7 @@ hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_co
     /* Structure of initialize LPIT */
     lpit_config_t lpitConfig;
 
-    assert(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE, "HAL_TIMER_HANDLE_SIZE mismatch");
     assert(halTimerConfig != NULL);
     assert(halTimerHandle != NULL);
     assert(halTimerConfig->instance < (sizeof(s_LpitBase) / sizeof(LPIT_Type *)));

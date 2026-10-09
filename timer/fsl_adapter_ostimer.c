@@ -63,7 +63,7 @@ static ostimer_callback_t ostimer_callback_table[] = {ostimer_match_callback};
 hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_config_t *halTimerConfig)
 {
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
-    assert(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE, "HAL_TIMER_HANDLE_SIZE mismatch");
     assert(halTimerConfig != NULL);
     assert(halTimerHandle != NULL);
     assert(halTimerConfig->instance < (sizeof(s_ostimerBase) / sizeof(OSTIMER_Type *)));
@@ -114,7 +114,7 @@ uint64_t HAL_TimerGetMaxTimeout(hal_timer_handle_t halTimerHandle)
     assert(halTimerHandle != NULL);
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     reserveCount                             = (uint32_t)MSEC_TO_COUNT((reserveMs), (halTimerState->timerClock_Hz));
-    hwTmrResolutionMask = 	(((uint64_t)1 << HAL_TIMER_RANGE_IN_BITS) - 1);
+    hwTmrResolutionMask                      = (((uint64_t)1 << HAL_TIMER_RANGE_IN_BITS) - 1);
     retValue = COUNT_TO_USEC((hwTmrResolutionMask - (uint64_t)reserveCount), (uint64_t)halTimerState->timerClock_Hz);
     return (retValue > hwTmrResolutionMask) ? (hwTmrResolutionMask - reserveMs * 1000U) : retValue;
 }
@@ -141,7 +141,7 @@ hal_timer_status_t HAL_TimerUpdateTimeout(hal_timer_handle_t halTimerHandle, uin
 
     /* Set the match value with unit of ticks. */
     OSTIMER_SetMatchValueSafe(s_ostimerBase[halTimerState->instance], timerTicks,
-                          ostimer_callback_table[halTimerState->instance]);
+                              ostimer_callback_table[halTimerState->instance]);
     return kStatus_HAL_TimerSuccess;
 }
 
@@ -165,7 +165,8 @@ uint64_t HAL_TimerGetCurrentTicks(hal_timer_handle_t halTimerHandle)
 void HAL_TimerUpdateMatchValueInTicks(hal_timer_handle_t halTimerHandle, uint64_t matchValue)
 {
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
-    status_t status = OSTIMER_SetMatchValueSafe(s_ostimerBase[halTimerState->instance], matchValue, ostimer_callback_table[halTimerState->instance]);
+    status_t status = OSTIMER_SetMatchValueSafe(s_ostimerBase[halTimerState->instance], matchValue,
+                                                ostimer_callback_table[halTimerState->instance]);
     (void)status;
     assert(status == kStatus_Success);
 }

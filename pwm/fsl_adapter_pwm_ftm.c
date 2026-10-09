@@ -40,7 +40,7 @@ hal_pwm_status_t HAL_PwmInit(hal_pwm_handle_t halPwmHandle, uint8_t instance, ui
 
     assert(instance < (uint8_t)FSL_FEATURE_SOC_FTM_COUNT);
     assert(NULL != halPwmHandle);
-    assert(sizeof(hal_pwm_handle_struct_t) == HAL_PWM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(hal_pwm_handle_struct_t) == HAL_PWM_HANDLE_SIZE, "HAL_PWM_HANDLE_SIZE mismatch");
     halPwmState->pwmClock_Hz = srcClock_Hz;
     halPwmState->instance    = instance;
 

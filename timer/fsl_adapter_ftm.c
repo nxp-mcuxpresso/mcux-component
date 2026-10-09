@@ -82,7 +82,7 @@ hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_co
     ftm_config_t ftmInfo;
     FTM_Type *FTMBaseAddr;
 
-    assert(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE, "HAL_TIMER_HANDLE_SIZE mismatch");
     assert(halTimerConfig);
     assert(halTimerHandle);
     assert(halTimerConfig->instance < (sizeof(s_FtmBase) / sizeof(FTM_Type *)));
@@ -211,5 +211,5 @@ hal_timer_time_t HAL_TimerGetCurrentTicks(hal_timer_handle_t halTimerHandle)
 void HAL_TimerUpdateMatchValueInTicks(hal_timer_handle_t halTimerHandle, hal_timer_time_t matchValue)
 {
     /* NOT IMPLEMENTED */
-    assert(false); 
+    assert(false);
 }

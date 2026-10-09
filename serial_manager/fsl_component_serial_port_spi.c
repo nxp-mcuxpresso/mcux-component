@@ -179,9 +179,12 @@ serial_manager_status_t Serial_SpiMasterInit(serial_handle_t serialHandle, void 
     assert(serialHandle);
     assert(serialConfig);
 #if (defined(HAL_SPI_MASTER_DMA_ENABLE) && (HAL_SPI_MASTER_DMA_ENABLE > 0U))
-    assert((SERIAL_PORT_SPI_MASTER_HANDLE_SIZE - HAL_SPI_MASTER_DMA_HANDLE_SIZE) >= sizeof(serial_spi_master_state_t));
+    MCUX_BUILD_ASSERT(
+        (SERIAL_PORT_SPI_MASTER_HANDLE_SIZE - HAL_SPI_MASTER_DMA_HANDLE_SIZE) >= sizeof(serial_spi_master_state_t),
+        "SERIAL_PORT_SPI_MASTER_HANDLE_SIZE too small");
 #else
-    assert(SERIAL_PORT_SPI_MASTER_HANDLE_SIZE >= sizeof(serial_spi_master_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_SPI_MASTER_HANDLE_SIZE >= sizeof(serial_spi_master_state_t),
+                      "SERIAL_PORT_SPI_MASTER_HANDLE_SIZE too small");
 #endif
     serialSpiMasterHandle = (serial_spi_master_state_t *)serialHandle;
     serialSpiMasterConfig = (serial_spi_master_config_t *)serialConfig;
@@ -236,9 +239,12 @@ serial_manager_status_t Serial_SpiSlaveInit(serial_handle_t serialHandle, void *
     assert(serialConfig);
 
 #if (defined(HAL_SPI_SLAVE_DMA_ENABLE) && (HAL_SPI_SLAVE_DMA_ENABLE > 0U))
-    assert((SERIAL_PORT_SPI_SLAVE_HANDLE_SIZE - HAL_SPI_SLAVE_DMA_HANDLE_SIZE) >= sizeof(serial_spi_slave_state_t));
+    MCUX_BUILD_ASSERT(
+        (SERIAL_PORT_SPI_SLAVE_HANDLE_SIZE - HAL_SPI_SLAVE_DMA_HANDLE_SIZE) >= sizeof(serial_spi_slave_state_t),
+        "SERIAL_PORT_SPI_SLAVE_HANDLE_SIZE too small");
 #else
-    assert(SERIAL_PORT_SPI_SLAVE_HANDLE_SIZE >= sizeof(serial_spi_slave_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_SPI_SLAVE_HANDLE_SIZE >= sizeof(serial_spi_slave_state_t),
+                      "SERIAL_PORT_SPI_SLAVE_HANDLE_SIZE too small");
 #endif
 
     serialSpiSlaveHandle = (serial_spi_slave_state_t *)serialHandle;

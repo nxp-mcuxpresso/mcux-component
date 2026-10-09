@@ -269,8 +269,8 @@ static void MEM_Reports_memStatis(void)
 mem_status_t MEM_Init(void)
 {
     static bool initialized = false;
-    assert(sizeof(mem_pool_structure_t) == MEM_POOL_SIZE);
-    assert(sizeof(block_list_header_t) == MEM_BLOCK_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(mem_pool_structure_t) == MEM_POOL_SIZE, "MEM_POOL_SIZE mismatch");
+    MCUX_BUILD_ASSERT(sizeof(block_list_header_t) == MEM_BLOCK_SIZE, "MEM_BLOCK_SIZE mismatch");
     if (!initialized)
     {
         s_memmanager.pHeadPool = NULL;

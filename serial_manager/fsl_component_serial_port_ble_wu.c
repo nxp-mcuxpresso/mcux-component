@@ -260,7 +260,8 @@ serial_manager_status_t Serial_PortBleWuInit(serial_handle_t serialHandle, void 
     serial_manager_status_t ret;
 
     assert(NULL != serialHandle);
-    assert(SERIAL_PORT_BLE_WU_HANDLE_SIZE >= sizeof(serial_port_ble_wu_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_BLE_WU_HANDLE_SIZE >= sizeof(serial_port_ble_wu_state_t),
+                      "SERIAL_PORT_BLE_WU_HANDLE_SIZE too small");
 
     (void)config;
 

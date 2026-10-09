@@ -354,13 +354,13 @@ osa_status_t OSA_TaskSetPriority(osa_task_handle_t taskHandle, osa_task_priority
 {
     assert(taskHandle != NULL);
     assert(taskPriority <= OSA_TASK_PRIORITY_MIN);
-    assert(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX);
+    MCUX_BUILD_ASSERT(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX,
+                      "OSA_TASK_PRIORITY_MIN must exceed OSA_TASK_PRIORITY_MAX");
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
     UINT status              = 0U;
     UINT priority;
 
-    status =
-        tx_thread_priority_change((TX_THREAD *)&ptask->taskHandle, PRIORITY_OSA_TO_RTOS(taskPriority), &priority);
+    status = tx_thread_priority_change((TX_THREAD *)&ptask->taskHandle, PRIORITY_OSA_TO_RTOS(taskPriority), &priority);
 
     if (status != TX_SUCCESS)
     {
@@ -388,12 +388,12 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
     osa_thread_task_t *ptask = (osa_thread_task_t *)taskHandle;
 
     if (tx_thread_create(
-            &ptask->taskHandle,                            /* task handle, allocated by application */
-            (char *)thread_def->tname,                     /* thread name */
-            (void (*)(ULONG))thread_def->pthread,          /* entry function */
-            (ULONG)((ULONG *)task_param),                  /* entry input */
-            (void *)thread_def->tstack,                    /* stack start */
-            (ULONG)thread_def->stacksize,                  /* stack size */
+            &ptask->taskHandle,                          /* task handle, allocated by application */
+            (char *)thread_def->tname,                   /* thread name */
+            (void (*)(ULONG))thread_def->pthread,        /* entry function */
+            (ULONG)((ULONG *)task_param),                /* entry input */
+            (void *)thread_def->tstack,                  /* stack start */
+            (ULONG)thread_def->stacksize,                /* stack size */
             PRIORITY_OSA_TO_RTOS(thread_def->tpriority), /* initial priority */
             PRIORITY_OSA_TO_RTOS(
                 thread_def->tpriority), /* preempt threshold (same value than the priority means disabled) */

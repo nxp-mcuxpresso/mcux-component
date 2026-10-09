@@ -223,7 +223,7 @@ hal_spi_status_t HAL_SpiMasterInit(hal_spi_master_handle_t handle, const hal_spi
     assert(handle);
     assert(config);
 
-    assert(HAL_SPI_MASTER_HANDLE_SIZE >= sizeof(hal_spi_master_t));
+    MCUX_BUILD_ASSERT(HAL_SPI_MASTER_HANDLE_SIZE >= sizeof(hal_spi_master_t), "HAL_SPI_MASTER_HANDLE_SIZE too small");
 
     masterHandle = (hal_spi_master_t *)handle;
 
@@ -253,7 +253,7 @@ hal_spi_status_t HAL_SpiSlaveInit(hal_spi_slave_handle_t handle, const hal_spi_s
     assert(handle);
     assert(config);
 
-    assert(HAL_SPI_SLAVE_HANDLE_SIZE >= sizeof(hal_spi_slave_t));
+    MCUX_BUILD_ASSERT(HAL_SPI_SLAVE_HANDLE_SIZE >= sizeof(hal_spi_slave_t), "HAL_SPI_SLAVE_HANDLE_SIZE too small");
 
     slaveHandle = (hal_spi_slave_t *)handle;
 
@@ -586,7 +586,8 @@ hal_spi_status_t HAL_SpiSlaveDMAInit(hal_spi_slave_handle_t handle,
 #endif
 
     assert(handle);
-    assert(HAL_SPI_SLAVE_DMA_HANDLE_SIZE >= sizeof(hal_spi_slave_dma_state_t));
+    MCUX_BUILD_ASSERT(HAL_SPI_SLAVE_DMA_HANDLE_SIZE >= sizeof(hal_spi_slave_dma_state_t),
+                      "HAL_SPI_SLAVE_DMA_HANDLE_SIZE too small");
 
     spi_slaveHandle            = (hal_spi_slave_t *)handle;
     spi_slaveDmaHandle         = (hal_spi_slave_dma_state_t *)dmaHandle;
@@ -676,7 +677,8 @@ hal_spi_status_t HAL_SpiMasterDMAInit(hal_spi_master_handle_t handle,
     edma_config_t config;
 #endif
     assert(handle);
-    assert(HAL_SPI_MASTER_DMA_HANDLE_SIZE >= sizeof(hal_spi_master_dma_state_t));
+    MCUX_BUILD_ASSERT(HAL_SPI_MASTER_DMA_HANDLE_SIZE >= sizeof(hal_spi_master_dma_state_t),
+                      "HAL_SPI_MASTER_DMA_HANDLE_SIZE too small");
 
     spi_masterHandle            = (hal_spi_master_t *)handle;
     spi_masterDmaHandle         = (hal_spi_master_dma_state_t *)dmaHandle;

@@ -469,7 +469,7 @@ static hal_audio_status_t HAL_AudioCommonInit(hal_audio_handle_t handle,
     /* If asserted, please check if the value of SAI_XFER_QUEUE_SIZE defined in the fsl_sai.h is modified.
        If modified, please modify the value of HAL_AUDIO_QUEUE_SIZE defined in the fsl_adapter_audio.h to be the same as
        SAI_XFER_QUEUE_SIZE. */
-    assert(HAL_AUDIO_HANDLE_SIZE >= sizeof(hal_audio_state_t));
+    MCUX_BUILD_ASSERT(HAL_AUDIO_HANDLE_SIZE >= sizeof(hal_audio_state_t), "HAL_AUDIO_HANDLE_SIZE too small");
     assert(config->instance < ARRAY_SIZE(s_i2sBases));
     assert(config->dmaConfig->instance < ARRAY_SIZE(dmaBases));
 

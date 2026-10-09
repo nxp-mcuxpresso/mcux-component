@@ -397,12 +397,9 @@ static void TimerManagerTaskProcess(bool isInTaskContext)
             regPrimask = DisableGlobalIRQ();
             previousBeforeEnableTimeInUs =
                 HAL_TimerGetCurrentTimerCount((hal_timer_handle_t)s_timermanager.halTimerHandle);
-            if (previousBeforeEnableTimeInUs >
-                s_timermanager.previousTimeInUs)
+            if (previousBeforeEnableTimeInUs > s_timermanager.previousTimeInUs)
             {
-                TimersUpdate(true, false,
-                             (previousBeforeEnableTimeInUs -
-                              s_timermanager.previousTimeInUs));
+                TimersUpdate(true, false, (previousBeforeEnableTimeInUs - s_timermanager.previousTimeInUs));
             }
             HAL_TimerDisable((hal_timer_handle_t)s_timermanager.halTimerHandle);
             previousBeforeEnableTimeInUs =
@@ -786,7 +783,7 @@ timer_status_t TM_Open(timer_handle_t timerHandle)
 {
     timer_handle_struct_t *timerState = timerHandle;
     timer_handle_struct_t *th;
-    assert(sizeof(timer_handle_struct_t) == TIMER_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(timer_handle_struct_t) == TIMER_HANDLE_SIZE, "TIMER_HANDLE_SIZE mismatch");
     assert(timerHandle);
     TIMER_ENTER_CRITICAL();
     th = s_timermanager.timerHead;

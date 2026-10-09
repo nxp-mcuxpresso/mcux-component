@@ -249,7 +249,7 @@ hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_co
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     tpm_config_t tpmInfo;
 
-    assert(sizeof(hal_timer_handle_struct_t) <= HAL_TIMER_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(hal_timer_handle_struct_t) <= HAL_TIMER_HANDLE_SIZE, "HAL_TIMER_HANDLE_SIZE too small");
     assert(halTimerConfig != NULL);
     assert(halTimerHandle != NULL);
     assert(halTimerConfig->instance < (sizeof(s_TPMBase) / sizeof(TPM_Type *)));

@@ -352,7 +352,7 @@ led_status_t LED_Init(led_handle_t ledHandle, const led_config_t *ledConfig)
 #endif
 
     assert((NULL != ledHandle) && (NULL != ledConfig));
-    assert(LED_HANDLE_SIZE >= sizeof(led_state_t));
+    MCUX_BUILD_ASSERT(LED_HANDLE_SIZE >= sizeof(led_state_t), "LED_HANDLE_SIZE too small");
 
     if (kLED_TypeRgb == ledConfig->type)
     {
@@ -379,7 +379,7 @@ led_status_t LED_Init(led_handle_t ledHandle, const led_config_t *ledConfig)
             tmState = TM_Start(s_ledList.timerHandle, (uint8_t)kTimerModeIntervalTimer, LED_TIMER_INTERVAL);
             assert(kStatus_TimerSuccess == tmState);
             (void)tmState;
-            regPrimask = DisableGlobalIRQ();
+            regPrimask         = DisableGlobalIRQ();
             s_ledList.ledState = ledState;
         } while (false);
     }

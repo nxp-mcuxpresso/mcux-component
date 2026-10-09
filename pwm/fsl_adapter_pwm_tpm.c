@@ -43,7 +43,7 @@ hal_pwm_status_t HAL_PwmInit(hal_pwm_handle_t halPwmHandle, uint8_t instance, ui
     assert(instance < (sizeof(s_tpmBase) / sizeof(s_tpmBase[0])));
     assert(s_tpmBase[instance] != NULL);
     assert(halPwmHandle);
-    assert(sizeof(hal_pwm_handle_struct_t) == HAL_PWM_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(hal_pwm_handle_struct_t) == HAL_PWM_HANDLE_SIZE, "HAL_PWM_HANDLE_SIZE mismatch");
     halPwmState->pwmClock_Hz = srcClock_Hz;
     halPwmState->instance    = instance;
 

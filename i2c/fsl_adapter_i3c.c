@@ -138,7 +138,7 @@ hal_i2c_status_t HAL_I2cMasterInit(hal_i2c_master_handle_t handle, const hal_i2c
     assert(handle != NULL);
     assert(halI2cConfig);
     assert(halI2cConfig->instance < ARRAY_SIZE(s_i3cBases));
-    assert(HAL_I2C_MASTER_HANDLE_SIZE >= sizeof(hal_i3c_master_t));
+    MCUX_BUILD_ASSERT(HAL_I2C_MASTER_HANDLE_SIZE >= sizeof(hal_i3c_master_t), "HAL_I2C_MASTER_HANDLE_SIZE too small");
 
     i3cMasterHandle = (hal_i3c_master_t *)handle;
 
@@ -161,10 +161,7 @@ hal_i2c_status_t HAL_I2cSlaveInit(hal_i2c_slave_handle_t handle, const hal_i2c_s
     assert(halI2cConfig);
     assert(halI2cConfig->instance < ARRAY_SIZE(s_i3cBases));
 
-    if (HAL_I2C_SLAVE_HANDLE_SIZE < sizeof(hal_i3c_slave_t))
-    {
-        return kStatus_HAL_I2cError;
-    }
+    MCUX_BUILD_ASSERT(HAL_I2C_SLAVE_HANDLE_SIZE >= sizeof(hal_i3c_slave_t), "HAL_I2C_SLAVE_HANDLE_SIZE too small");
 
     i2cSlaveHandle = (hal_i3c_slave_t *)handle;
 

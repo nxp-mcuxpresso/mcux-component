@@ -186,7 +186,8 @@ serial_manager_status_t Serial_UartInit(serial_handle_t serialHandle, void *seri
 
     assert(serialConfig);
     assert(serialHandle != NULL);
-    assert(SERIAL_PORT_UART_HANDLE_SIZE >= sizeof(serial_uart_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_UART_HANDLE_SIZE >= sizeof(serial_uart_state_t),
+                      "SERIAL_PORT_UART_HANDLE_SIZE too small");
 
     serialUartHandle    = (serial_uart_state_t *)serialHandle;
     serialManagerStatus = (serial_manager_status_t)HAL_UartInit(
@@ -508,7 +509,8 @@ serial_manager_status_t Serial_UartDmaInit(serial_handle_t serialHandle, void *s
     assert(serialConfig);
     assert(serialHandle != NULL);
 
-    assert(SERIAL_PORT_UART_DMA_HANDLE_SIZE >= sizeof(serial_uart_dma_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_UART_DMA_HANDLE_SIZE >= sizeof(serial_uart_dma_state_t),
+                      "SERIAL_PORT_UART_DMA_HANDLE_SIZE too small");
 
     serialUartHandle    = (serial_uart_dma_state_t *)serialHandle;
     serialManagerStatus = (serial_manager_status_t)HAL_UartInit(

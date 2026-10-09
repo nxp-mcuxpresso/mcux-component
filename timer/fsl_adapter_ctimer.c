@@ -54,7 +54,7 @@ void ctimer0_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(0);
 }
-#else /* CTIMER0 */
+#else  /* CTIMER0 */
 #define ctimer0_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER0 */
 
@@ -64,7 +64,7 @@ void ctimer1_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(1);
 }
-#else /* CTIMER1 */
+#else  /* CTIMER1 */
 #define ctimer1_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER1 */
 
@@ -74,7 +74,7 @@ void ctimer2_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(2);
 }
-#else /* CTIMER2 */
+#else  /* CTIMER2 */
 #define ctimer2_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER2 */
 
@@ -84,7 +84,7 @@ void ctimer3_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(3);
 }
-#else /* CTIMER3 */
+#else  /* CTIMER3 */
 #define ctimer3_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER3 */
 
@@ -94,7 +94,7 @@ void ctimer4_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(4);
 }
-#else /* CTIMER4 */
+#else  /* CTIMER4 */
 #define ctimer4_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER4 */
 
@@ -104,7 +104,7 @@ void ctimer5_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(5);
 }
-#else /* CTIMER5 */
+#else  /* CTIMER5 */
 #define ctimer5_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER5 */
 
@@ -114,7 +114,7 @@ void ctimer6_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(6);
 }
-#else /* CTIMER6 */
+#else  /* CTIMER6 */
 #define ctimer6_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER6 */
 
@@ -124,13 +124,13 @@ void ctimer7_match0_callback(uint32_t flags)
 {
     HAL_TimerInterruptHandle(7);
 }
-#else /* CTIMER7 */
+#else  /* CTIMER7 */
 #define ctimer7_match0_callback (ctimer_callback_t)0u
 #endif /* CTIMER7 */
 
-static ctimer_callback_t ctimer_callback_table[] = {ctimer0_match0_callback, ctimer1_match0_callback,
-    ctimer2_match0_callback, ctimer3_match0_callback, ctimer4_match0_callback, ctimer5_match0_callback,
-    ctimer6_match0_callback, ctimer7_match0_callback};
+static ctimer_callback_t ctimer_callback_table[] = {
+    ctimer0_match0_callback, ctimer1_match0_callback, ctimer2_match0_callback, ctimer3_match0_callback,
+    ctimer4_match0_callback, ctimer5_match0_callback, ctimer6_match0_callback, ctimer7_match0_callback};
 
 /************************************************************************************
 *************************************************************************************
@@ -139,10 +139,10 @@ static ctimer_callback_t ctimer_callback_table[] = {ctimer0_match0_callback, cti
 ************************************************************************************/
 hal_timer_status_t HAL_TimerInit(hal_timer_handle_t halTimerHandle, hal_timer_config_t *halTimerConfig)
 {
-    IRQn_Type instanceIrq[] = CTIMER_IRQS;
+    IRQn_Type instanceIrq[]                  = CTIMER_IRQS;
     hal_timer_handle_struct_t *halTimerState = halTimerHandle;
     ctimer_config_t config;
-    assert(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE);
+    MCUX_BUILD_ASSERT(sizeof(hal_timer_handle_struct_t) == HAL_TIMER_HANDLE_SIZE, "HAL_TIMER_HANDLE_SIZE mismatch");
     assert(halTimerConfig != NULL);
     assert(halTimerHandle != NULL);
     assert(halTimerConfig->instance < (sizeof(s_CtimerBase) / sizeof(CTIMER_Type *)));
@@ -261,4 +261,3 @@ void HAL_TimerUpdateMatchValueInTicks(hal_timer_handle_t halTimerHandle, uint32_
     hal_timer_handle_struct_t *halTimerState       = halTimerHandle;
     (s_CtimerBase[halTimerState->instance])->MR[0] = matchValue;
 }
-

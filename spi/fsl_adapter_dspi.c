@@ -105,7 +105,7 @@ hal_spi_status_t HAL_SpiMasterInit(hal_spi_master_handle_t handle, const hal_spi
     dspi_master_config_t dspiConfig;
     assert(handle);
     assert(config);
-    assert(HAL_SPI_MASTER_HANDLE_SIZE >= sizeof(hal_spi_master_t));
+    MCUX_BUILD_ASSERT(HAL_SPI_MASTER_HANDLE_SIZE >= sizeof(hal_spi_master_t), "HAL_SPI_MASTER_HANDLE_SIZE too small");
 
     masterHandle = (hal_spi_master_t *)handle;
 
@@ -131,7 +131,7 @@ hal_spi_status_t HAL_SpiSlaveInit(hal_spi_slave_handle_t handle, const hal_spi_s
     dspi_slave_config_t dspiConfig;
     assert(handle);
     assert(config);
-    assert(HAL_SPI_SLAVE_HANDLE_SIZE >= sizeof(hal_spi_slave_t));
+    MCUX_BUILD_ASSERT(HAL_SPI_SLAVE_HANDLE_SIZE >= sizeof(hal_spi_slave_t), "HAL_SPI_SLAVE_HANDLE_SIZE too small");
 
     slaveHandle = (hal_spi_slave_t *)handle;
 

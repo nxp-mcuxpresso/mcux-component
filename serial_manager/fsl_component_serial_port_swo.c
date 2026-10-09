@@ -56,7 +56,8 @@ serial_manager_status_t Serial_SwoInit(serial_handle_t serialHandle, void *confi
     assert(config != NULL);
     assert(serialHandle != NULL);
 
-    assert(SERIAL_PORT_SWO_HANDLE_SIZE >= sizeof(serial_swo_state_t));
+    MCUX_BUILD_ASSERT(SERIAL_PORT_SWO_HANDLE_SIZE >= sizeof(serial_swo_state_t),
+                      "SERIAL_PORT_SWO_HANDLE_SIZE too small");
 
     swoConfig = (serial_port_swo_config_t *)config;
 

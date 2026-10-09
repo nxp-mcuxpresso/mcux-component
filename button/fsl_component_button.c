@@ -145,7 +145,7 @@ static void BUTTON_Event(void *param)
     {
         if (buttonState->pinStateDefault != pinState)
         {
-            buttonState->state.pressed = buttonState->state.pressed + 1U;
+            buttonState->state.pressed   = buttonState->state.pressed + 1U;
             buttonState->pushPeriodCount = s_buttonList.periodCount;
 
             /* Start timer for interval scan button state. */
@@ -345,7 +345,7 @@ button_status_t BUTTON_Init(button_handle_t buttonHandle, button_config_t *butto
     BUTTON_SR_ALLOC();
 
     assert((buttonHandle != NULL) && (buttonConfig != NULL));
-    assert(BUTTON_HANDLE_SIZE >= sizeof(button_state_t));
+    MCUX_BUILD_ASSERT(BUTTON_HANDLE_SIZE >= sizeof(button_state_t), "BUTTON_HANDLE_SIZE too small");
 
     buttonState = (button_state_t *)buttonHandle;
 
