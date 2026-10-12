@@ -126,7 +126,9 @@ typedef struct _serial_usb_cdc_state
     uint8_t currentInterfaceAlternateSetting[USB_CDC_VCOM_INTERFACE_COUNT]; /* Current alternate setting value for each
                                                                                interface. */
     uint8_t instance;                                                       /* The instance of the interface */
-    uint8_t irqNumber;                                                      /* The IRQ number of the interface */
+    /* Must be IRQn_Type, not uint8_t: SoCs such as i.MX RT2660 place the USB IRQ above 255
+     * (COMM_USB0_IRQn == 304), and truncating to 8 bits would enable an unrelated vector. */
+    IRQn_Type irqNumber;                                                    /* The IRQ number of the interface */
 } serial_usb_cdc_state_t;
 
 /*******************************************************************************
@@ -792,25 +794,25 @@ static void USB_DeviceIsrEnable(serial_usb_cdc_state_t *serialUsbCdc)
 #if defined(USB_DEVICE_CONFIG_EHCI) && (USB_DEVICE_CONFIG_EHCI > 0U)
     IRQn_Type usbDeviceEhciIrq[] = USBHS_IRQS;
     serialUsbCdc->irqNumber =
-        (uint8_t)usbDeviceEhciIrq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerEhci0];
+        usbDeviceEhciIrq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerEhci0];
 #endif
 
 #if defined(USB_DEVICE_CONFIG_KHCI) && (USB_DEVICE_CONFIG_KHCI > 0U)
     IRQn_Type usbDeviceKhciIrq[] = USB_IRQS;
     serialUsbCdc->irqNumber =
-        (uint8_t)usbDeviceKhciIrq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerKhci0];
+        usbDeviceKhciIrq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerKhci0];
 #endif
 
 #if defined(USB_DEVICE_CONFIG_LPCIP3511FS) && (USB_DEVICE_CONFIG_LPCIP3511FS > 0U)
     IRQn_Type usbDeviceIP3511Irq[] = USB_IRQS;
     serialUsbCdc->irqNumber =
-        (uint8_t)usbDeviceIP3511Irq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerLpcIp3511Fs0];
+        usbDeviceIP3511Irq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerLpcIp3511Fs0];
 #endif
 
 #if defined(USB_DEVICE_CONFIG_LPCIP3511HS) && (USB_DEVICE_CONFIG_LPCIP3511HS > 0U)
     IRQn_Type usbDeviceIP3511Irq[] = USBHSD_IRQS;
     serialUsbCdc->irqNumber =
-        (uint8_t)usbDeviceIP3511Irq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerLpcIp3511Hs0];
+        usbDeviceIP3511Irq[serialUsbCdc->instance - (uint8_t)kSerialManager_UsbControllerLpcIp3511Hs0];
 #endif
 
 /* Install isr, set priority, and enable IRQ. */
