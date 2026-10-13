@@ -1007,8 +1007,10 @@ static srtm_status_t SRTM_SaiEdmaAdapter_End(srtm_sai_adapter_t adapter, srtm_au
         if (otherRtm->state != SRTM_AudioStateStarted)
         {
 #endif
-            /* If both Tx and Rx are not running, we can deinitialize this SAI instance. */
-            SAI_Deinit(handle->sai);
+            /* Keep the shared Audio PLL1 clock root (Linux-owned)
+             * untouched; do not call SAI_Deinit() here, only disable Tx/Rx. */
+            SAI_TxEnable(handle->sai, false);
+            SAI_RxEnable(handle->sai, false);
 #if SRTM_SAI_EDMA_CONFIG_RX_ENABLE
         }
 #endif

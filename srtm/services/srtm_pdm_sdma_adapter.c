@@ -767,8 +767,14 @@ static void SRTM_PdmSdmaAdapter_SetConfig(srtm_pdm_sdma_adapter_t handle)
 static void SRTM_PdmSdmaAdapter_DeinitPDM(srtm_pdm_sdma_adapter_t handle)
 {
     assert(handle != NULL);
+    /* The PDM clock root is sourced from the shared Audio PLL1 (owned
+     * by the A core / Linux clk). Do NOT call PDM_Deinit() here (it clears the
+     * clock root and hangs if the A core already released the PLL). Only quiesce
+     * the PDM IP; let Linux manage the clock. */
+    PDM_DisableInterrupts(handle->pdm,
+                          (uint32_t)kPDM_FIFOInterruptEnable | (uint32_t)kPDM_ErrorInterruptEnable);
+    PDM_Enable(handle->pdm, false);
     PDM_Reset(handle->pdm);
-    PDM_Deinit(handle->pdm);
 }
 
 /* Currently only 1 audio instance is adequate, so index is just ignored */

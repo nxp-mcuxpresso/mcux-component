@@ -862,8 +862,12 @@ static void SRTM_PdmEdmaAdapter_SetConfig(srtm_pdm_edma_adapter_t handle)
 static void SRTM_PdmEdmaAdapter_DeinitPDM(srtm_pdm_edma_adapter_t handle)
 {
     assert(handle != NULL);
+    /* Keep the shared Audio PLL1 clock root (Linux-owned) untouched;
+     * do not call PDM_Deinit() here, only quiesce the PDM IP. */
+    PDM_DisableInterrupts(handle->pdm,
+                          (uint32_t)kPDM_FIFOInterruptEnable | (uint32_t)kPDM_ErrorInterruptEnable);
+    PDM_Enable(handle->pdm, false);
     PDM_Reset(handle->pdm);
-    PDM_Deinit(handle->pdm);
 }
 
 /* Currently only 1 audio instance is adequate, so index is just ignored */
