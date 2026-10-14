@@ -218,7 +218,7 @@ extern uint32_t __HEAP_end__[];
 static const uint32_t memHeapEnd = (uint32_t)&__HEAP_end__;
 #endif
 #else
-static const uint32_t memHeapEnd = (uint32_t)(memHeap + MinimalHeapSize_c / sizeof(uint32_t));
+static const uint32_t memHeapEnd = (uint32_t)(memHeap + MinimalHeapSize_c / sizeof(uint32_t)) - 1U;
 #endif
 
 #else
@@ -507,8 +507,9 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
             /* The head of the area des list is necessarily the main heap */
             p_area->start_address.address_ptr = &memHeap[0];
             p_area->end_address.raw_address   = memHeapEnd;
-            assert(p_area->start_address.raw_address < SIZE_MAX - BLOCK_HDR_SIZE);
-            assert(p_area->end_address.raw_address > p_area->start_address.raw_address + BLOCK_HDR_SIZE);
+            assert(p_area->start_address.raw_address < SIZE_MAX - BLOCK_HDR_SIZE + 1U);
+            assert(p_area->end_address.raw_address > p_area->start_address.raw_address + BLOCK_HDR_SIZE - 1U);
+            assert(ROUNDUP_WORD(p_area->start_address.raw_address) == p_area->start_address.raw_address);
             p_area->next = NULL;
             if (p_area_id != NULL)
             {
@@ -534,9 +535,11 @@ mem_status_t MEM_RegisterExtendedArea(memAreaCfg_t *area_desc, uint8_t *p_area_i
                 st = kStatus_MemInitError;
                 break;
             }
-            assert(new_area_desc->start_address.raw_address < SIZE_MAX - BLOCK_HDR_SIZE);
-            assert(new_area_desc->end_address.raw_address > new_area_desc->start_address.raw_address + BLOCK_HDR_SIZE);
-            area_sz = new_area_desc->end_address.raw_address - new_area_desc->start_address.raw_address;
+            assert(new_area_desc->start_address.raw_address < SIZE_MAX - BLOCK_HDR_SIZE + 1U);
+            assert(new_area_desc->end_address.raw_address >
+                   new_area_desc->start_address.raw_address + BLOCK_HDR_SIZE - 1U);
+            assert(ROUNDUP_WORD(new_area_desc->start_address.raw_address) == new_area_desc->start_address.raw_address);
+            area_sz = new_area_desc->end_address.raw_address - new_area_desc->start_address.raw_address + 1U;
             if (area_sz <= (uint32_t)KB((uint32_t)1U))
             {
                 /* doesn't make sense to register an area smaller than 1024 bytes */
@@ -780,7 +783,7 @@ static void *MEM_BufferAllocateFromArea(memAreaPrivDesc_t *p_area, uint8_t area_
             available_size = p_area->end_address.raw_address - current_footprint;
 
             assert(FreeBlockHdr == p_area->ctx.FreeBlockHdrList.tail);
-            total_size = numBytes + BLOCK_HDR_SIZE;
+            total_size = ROUNDUP_WORD(numBytes + BLOCK_HDR_SIZE);
             if (available_size >= total_size) /* need to keep the room for the next BlockHeader */
             {
                 remaining_bytes = available_size - total_size;
@@ -791,14 +794,14 @@ static void *MEM_BufferAllocateFromArea(memAreaPrivDesc_t *p_area, uint8_t area_
                 /* Depending on the platform, some RAM banks could need some reinitialization after a low power
                  * period, such as ECC RAM banks */
                 MEM_ReinitRamBank((uint32_t)FreeBlockHdr + BLOCK_HDR_SIZE,
-                                  ROUNDUP_WORD(((uint32_t)FreeBlockHdr + total_size + BLOCK_HDR_SIZE)));
+                                  (uint32_t)FreeBlockHdr + total_size + BLOCK_HDR_SIZE);
 
                 FreeBlockHdr->used    = MEMMANAGER_BLOCK_USED;
                 FreeBlockHdr->area_id = area_id;
 #if defined(MEM_STATISTICS_INTERNAL)
                 FreeBlockHdr->buff_size = (uint16_t)numBytes;
 #endif
-                FreeBlockHdr->next      = (blockHeader_t *)ROUNDUP_WORD(((uint32_t)FreeBlockHdr + total_size));
+                FreeBlockHdr->next      = (blockHeader_t *)((uint32_t)FreeBlockHdr + total_size);
                 FreeBlockHdr->next_free = FreeBlockHdr->next;
 
                 PrevFreeBlockHdr = FreeBlockHdr->prev_free;
@@ -875,6 +878,10 @@ static void *MEM_BufferAllocateFromArea(memAreaPrivDesc_t *p_area, uint8_t area_
         MEM_BlockHeaderCheck(FreeBlockHdr->next_free);
 #endif
         FreeBlockHdr = FreeBlockHdr->next_free;
+        /* NULL here means the free list has been corrupted by something
+           outside this module (buffer overrun, ...). This is unrecoverable:
+           the heap metadata can no longer be trusted. */
+        assert(FreeBlockHdr != NULL);
         /* avoid looping */
         assert(FreeBlockHdr != FreeBlockHdr->next_free);
     } while (true);
