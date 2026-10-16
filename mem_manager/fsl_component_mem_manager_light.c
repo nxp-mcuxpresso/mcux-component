@@ -794,7 +794,7 @@ static void *MEM_BufferAllocateFromArea(memAreaPrivDesc_t *p_area, uint8_t area_
                 /* Depending on the platform, some RAM banks could need some reinitialization after a low power
                  * period, such as ECC RAM banks */
                 MEM_ReinitRamBank((uint32_t)FreeBlockHdr + BLOCK_HDR_SIZE,
-                                  (uint32_t)FreeBlockHdr + total_size + BLOCK_HDR_SIZE);
+                                  (uint32_t)FreeBlockHdr + total_size + BLOCK_HDR_SIZE - 1U);
 
                 FreeBlockHdr->used    = MEMMANAGER_BLOCK_USED;
                 FreeBlockHdr->area_id = area_id;
