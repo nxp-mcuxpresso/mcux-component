@@ -396,7 +396,7 @@ void PM_EnterLowPower(uint64_t duration)
 #endif /* FSL_PM_SUPPORT_NOTIFICATION */
 
             
-#if (defined(FSL_PM_SUPPORT_NOTIFICATION) && FSL_PM_SUPPORT_NOTIFICATION)
+#if (defined(FSL_PM_SUPPORT_LP_TIMER_CONTROLLER) && FSL_PM_SUPPORT_LP_TIMER_CONTROLLER)
             s_pmHandle->lpDuration = duration;
 #endif /* FSL_PM_SUPPORT_LP_TIMER_CONTROLLER */
             if (status == kStatus_PMSuccess)
