@@ -29,6 +29,7 @@ menu "Component Configuration"
         rsource "cmsis_drivers/cmsis_lpsci/Kconfig"
         rsource "cmsis_drivers/cmsis_gpio/Kconfig"
         rsource "cmsis_drivers/cmsis_mcx_flash/Kconfig"
+        rsource "cmsis_drivers/cmsis_usb/Kconfig"
     endmenu
 
     menu "Utility"

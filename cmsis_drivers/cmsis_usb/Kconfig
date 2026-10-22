@@ -1,0 +1,13 @@
+# Copyright 2026 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+config MCUX_HAS_COMPONENT_driver.cmsis_usb
+    bool
+    default y if MCUX_HW_IP_DriverType_USB_HOST_DEVICE_EHCI
+
+config MCUX_COMPONENT_driver.cmsis_usb
+    bool "usb (CMSIS-Driver USBD EHCI)"
+    select MCUX_COMPONENT_middleware.usb.device.ehci
+    select MCUX_COMPONENT_middleware.usb.phy
+    select MCUX_COMPONENT_CMSIS_Driver_Include.USB_Device
+    depends on MCUX_HAS_COMPONENT_driver.cmsis_usb

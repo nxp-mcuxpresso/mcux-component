@@ -1,0 +1,38 @@
+/*!
+@addtogroup usbd_ehci_cmsis_driver
+@details This section describes the programming interface of the USB Device EHCI Cortex Microcontroller
+ Software Interface Standard (CMSIS) driver. This driver defines generic peripheral driver interfaces
+ for middleware making it reusable across a wide range of supported microcontroller devices. The API
+ connects microcontroller peripherals with middleware that implements communication stacks, file
+ systems, or other USB device class implementations.
+ More information and usage method see http://www.keil.com/pack/doc/cmsis/Driver/html/index.html.
+
+The driver implements the ARM_DRIVER_USBD interface and exposes Driver_USBD1 for use by CMSIS
+USB Device middleware or validation frameworks. It wraps the MCUXpresso SDK USB Device EHCI
+stack and handles clock configuration, endpoint management, and interrupt routing.
+
+# Typical use case {#USBDTpyUC}
+
+~~~~~{.c}
+    /* Obtain pointer to the CMSIS USB Device driver */
+    extern ARM_DRIVER_USBD Driver_USBD1;
+    ARM_DRIVER_USBD *usbd = &Driver_USBD1;
+
+    /* Register device and endpoint event callbacks */
+    usbd->Initialize(DeviceEvent_Callback, EndpointEvent_Callback);
+
+    /* Power on the USB Device controller */
+    usbd->PowerControl(ARM_POWER_FULL);
+
+    /* Connect to the USB bus */
+    usbd->DeviceConnect();
+
+    /* Handle device events in the application loop */
+    while (1)
+    {
+        /* Application processes DeviceEvent_Callback and EndpointEvent_Callback
+           notifications to respond to enumeration, endpoint transfers, etc. */
+    }
+~~~~~
+
+*/
