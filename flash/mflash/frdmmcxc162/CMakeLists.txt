@@ -1,4 +1,4 @@
-# Copyright 2025 NXP
+# Copyright 2025-2026 NXP
 # SPDX-License-Identifier: BSD-3-Clause
 
 if (CONFIG_MCUX_COMPONENT_component.mflash_onchip)
@@ -17,4 +17,14 @@ if (CONFIG_MCUX_COMPONENT_component.mflash_onchip)
             ./frdmmcxc162/mflash_drv.c
             ./frdmmcxc162/mflash_drv.h
     )
+    # Use the last flash sector for mflash file storage
+    if (${board} STREQUAL frdmmcxc353)
+        mcux_add_macro(
+            "-DMFLASH_FILE_BASEADDR=122880"
+        )
+    else()
+        mcux_add_macro(
+            "-DMFLASH_FILE_BASEADDR=57344"
+        )
+    endif()
 endif()
