@@ -89,7 +89,6 @@ SDK_ALIGN(static volatile uint32_t s_v2xFceStatus, 8u);
 static volatile uint32_t s_v2xFceIrqMode = 0u;   /* 1 = interrupt-driven wait */
 static volatile uint32_t s_v2xFceDone    = 0u;   /* set by ISR on RX-full */
 static MU_Type          *s_v2xFceIrqMu   = NULL; /* MU armed for interrupts */
-static int32_t           s_v2xFceIrqn    = -1;   /* caller-supplied IRQ number */
 
 /*!
  * @brief V2X/FCE MU RX-full completion hook, to be called from the
@@ -1107,7 +1106,6 @@ status_t V2X_FCE_SetWaitMode(v2x_fce_handle_t *handle, bool useInterrupt, int32_
 
     s_v2xFceIrqMu   = handle->mu;
     s_v2xFceIrqMode = useInterrupt ? 1u : 0u;
-    s_v2xFceIrqn    = irqn;
 
     if (useInterrupt && (irqn >= 0))
     {
