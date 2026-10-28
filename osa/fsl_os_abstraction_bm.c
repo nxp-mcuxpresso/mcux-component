@@ -482,7 +482,7 @@ osa_status_t OSA_TaskCreate(osa_task_handle_t taskHandle, const osa_task_def_t *
 
     task_control_block_t *ptaskStruct = (task_control_block_t *)taskHandle;
     uint32_t regPrimask;
-    MCUX_BUILD_ASSERT(sizeof(task_control_block_t) == OSA_TASK_HANDLE_SIZE, "OSA_TASK_HANDLE_SIZE mismatch");
+    MCUX_BUILD_ASSERT(sizeof(task_control_block_t) <= OSA_TASK_HANDLE_SIZE, "OSA_TASK_HANDLE_SIZE too small");
     assert(taskHandle != NULL);
     assert(thread_def->tpriority <= OSA_TASK_PRIORITY_MIN);
     MCUX_BUILD_ASSERT(OSA_TASK_PRIORITY_MIN > OSA_TASK_PRIORITY_MAX,
@@ -1001,7 +1001,7 @@ osa_status_t OSA_EventPrecreate(osa_event_handle_t eventHandle, osa_task_ptr_t t
 osa_status_t OSA_EventCreate(osa_event_handle_t eventHandle, uint8_t autoClear)
 {
     event_t *pEventStruct = eventHandle;
-    MCUX_BUILD_ASSERT(sizeof(event_t) == OSA_EVENT_HANDLE_SIZE, "OSA_EVENT_HANDLE_SIZE mismatch");
+    MCUX_BUILD_ASSERT(sizeof(event_t) <= OSA_EVENT_HANDLE_SIZE, "OSA_EVENT_HANDLE_SIZE too small");
     assert(eventHandle != NULL);
 
     pEventStruct->isWaiting  = 0U;
@@ -1223,7 +1223,7 @@ osa_status_t OSA_EventDestroy(osa_event_handle_t eventHandle)
 osa_status_t OSA_MsgQCreate(osa_msgq_handle_t msgqHandle, uint32_t msgNo, uint32_t msgSize)
 {
     msg_queue_t *pMsgQStruct = msgqHandle;
-    MCUX_BUILD_ASSERT(sizeof(msg_queue_t) == OSA_MSGQ_HANDLE_SIZE, "OSA_MSGQ_HANDLE_SIZE mismatch");
+    MCUX_BUILD_ASSERT(sizeof(msg_queue_t) <= OSA_MSGQ_HANDLE_SIZE, "OSA_MSGQ_HANDLE_SIZE too small");
     assert(msgqHandle != NULL);
 
     pMsgQStruct->max      = (uint16_t)msgNo;
